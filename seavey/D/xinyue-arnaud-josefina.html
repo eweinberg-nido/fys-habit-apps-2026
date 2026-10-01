@@ -1,0 +1,2471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudyQuest - After-School Focus, Virtual Pet & Practice Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            indigo: '#6366F1',
+                            violet: '#8B5CF6',
+                            cyan: '#06B6D4',
+                            emerald: '#10B981',
+                            amber: '#F59E0B',
+                            coral: '#FF6B6B',
+                            darkBg: '#0F172A',
+                            cardBg: '#1E293B'
+                        }
+                    },
+                    animation: {
+                        'bounce-subtle': 'bounceSubtle 2s infinite ease-in-out',
+                        'wiggle': 'wiggle 0.5s ease-in-out infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                        'pop': 'pop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                        'pulse-glow': 'pulseGlow 2s infinite ease-in-out'
+                    },
+                    keyframes: {
+                        bounceSubtle: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-8px)' }
+                        },
+                        wiggle: {
+                            '0%, 100%': { transform: 'rotate(-4deg)' },
+                            '50%': { transform: 'rotate(4deg)' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-6px) rotate(2deg)' }
+                        },
+                        pop: {
+                            '0%': { transform: 'scale(0.85)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' }
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: '0.8', transform: 'scale(1)' },
+                            '50%': { opacity: '1', transform: 'scale(1.03)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #FDFBF7;
+            background-image: 
+                radial-gradient(at 10% 15%, rgba(245, 158, 11, 0.12) 0px, transparent 50%),
+                radial-gradient(at 90% 20%, rgba(255, 126, 103, 0.12) 0px, transparent 50%),
+                radial-gradient(at 50% 85%, rgba(16, 185, 129, 0.08) 0px, transparent 50%),
+                radial-gradient(at 80% 80%, rgba(167, 139, 250, 0.10) 0px, transparent 50%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #4A3B32;
+        }
+
+        .card-glow {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(229, 217, 203, 0.8);
+            box-shadow: 0 12px 32px -8px rgba(180, 150, 120, 0.12), 0 4px 12px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-glow:hover {
+            border-color: rgba(245, 158, 11, 0.4);
+            box-shadow: 0 16px 36px -8px rgba(245, 158, 11, 0.18);
+        }
+
+        .timer-circle {
+            transition: stroke-dashoffset 0.5s ease-in-out, stroke 0.3s ease;
+        }
+
+        /* Floating heart / star animation effect */
+        .floating-particle {
+            position: absolute;
+            pointer-events: none;
+            animation: floatUpFade 1.2s ease-out forwards;
+        }
+
+        @keyframes floatUpFade {
+            0% { opacity: 1; transform: translateY(0) scale(0.8); }
+            50% { opacity: 0.9; transform: translateY(-30px) scale(1.2); }
+            100% { opacity: 0; transform: translateY(-60px) scale(1); }
+        }
+
+        /* 3D Flashcard Flip Effect */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(245, 238, 227, 0.6); }
+        ::-webkit-scrollbar-thumb { background: rgba(245, 158, 11, 0.4); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(245, 158, 11, 0.7); }
+
+        /* Cute Pet Animation Keyframes */
+        @keyframes petEarTwitch {
+            0%, 100% { transform: rotate(0deg); }
+            5% { transform: rotate(-6deg); }
+            10% { transform: rotate(6deg); }
+            15% { transform: rotate(0deg); }
+        }
+        .animate-ear-twitch { animation: petEarTwitch 4s infinite; }
+        
+        @keyframes petTailWag {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(12deg); }
+        }
+        .animate-tail-wag { animation: petTailWag 1.5s infinite ease-in-out; }
+    </style>
+</head>
+<body class="font-sans pb-16 antialiased selection:bg-amber-200 selection:text-amber-900">
+
+    <header class="sticky top-0 z-40 bg-[#FFFDF9]/90 backdrop-blur-md border-b border-amber-900/10 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            
+            <!-- Brand Logo & Navigation Quick Jump -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-400 via-orange-300 to-rose-300 flex items-center justify-center text-amber-950 font-black text-xl shadow-md shadow-amber-500/20">
+                    🐾
+                </div>
+                <div>
+                    <h1 class="text-xl font-extrabold tracking-tight text-amber-950 flex items-center gap-2">
+                        StudyQuest
+                        <span class="text-[10px] uppercase font-black px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-300/60">Focus & Practice</span>
+                    </h1>
+                    <p class="text-xs text-amber-800/70 font-medium hidden sm:block">Warm Homework Planner, Companion & Multi-Topic Hub</p>
+                </div>
+            </div>
+
+            <!-- Header Quick Links -->
+            <nav class="hidden md:flex items-center gap-1 bg-amber-100/50 p-1 rounded-2xl border border-amber-200/60 text-xs font-extrabold text-amber-900">
+                <a href="#petSection" class="px-3 py-1.5 rounded-xl hover:bg-white/80 transition flex items-center gap-1">🐾 Pet Companion</a>
+                <a href="#phoneSection" class="px-3 py-1.5 rounded-xl hover:bg-white/80 transition flex items-center gap-1">📱 Phone Detox</a>
+                <a href="#focusSection" class="px-3 py-1.5 rounded-xl hover:bg-white/80 transition flex items-center gap-1">🎯 Focus Timer</a>
+                <a href="#plannerSection" class="px-3 py-1.5 rounded-xl hover:bg-white/80 transition flex items-center gap-1">📝 Planner</a>
+                <a href="#practiceSection" class="px-3 py-1.5 rounded-xl bg-amber-500 text-white shadow-sm transition flex items-center gap-1">🧠 Practice Hub</a>
+            </nav>
+
+            <!-- Header Status & Star Currency Bar -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                
+                <!-- Stars Wallet -->
+                <div class="flex items-center gap-2 bg-amber-50/90 px-3.5 py-1.5 rounded-2xl border border-amber-200/80 shadow-inner">
+                    <span class="text-xl animate-bounce-subtle">⭐</span>
+                    <div>
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-amber-700">Stars</div>
+                        <div id="starBalance" class="text-sm font-black text-amber-900 leading-none">0</div>
+                    </div>
+                </div>
+
+                <!-- Daily Streak -->
+                <div class="flex items-center gap-2 bg-orange-50/90 px-3.5 py-1.5 rounded-2xl border border-orange-200/80">
+                    <span class="text-xl">🔥</span>
+                    <div>
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-orange-700">Streak</div>
+                        <div id="streakCount" class="text-sm font-black text-orange-900 leading-none">1 Day</div>
+                    </div>
+                </div>
+
+                <!-- Daily Check-In Button -->
+                <button onclick="openCheckInModal()" class="hidden sm:flex items-center gap-1.5 px-3.5 py-2 bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400 hover:from-amber-300 hover:to-rose-300 text-amber-950 font-extrabold text-xs rounded-xl shadow-md transition transform hover:scale-105 active:scale-95">
+                    📅 Check-In
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-8">
+
+        <!-- HERO SECTION: Virtual Pet Care Haven & Playroom -->
+        <section id="petSection" class="card-glow rounded-3xl p-6 relative overflow-hidden border border-amber-200/80 bg-gradient-to-br from-amber-50/60 via-orange-50/30 to-rose-50/40">
+            <div class="absolute -top-10 -right-10 w-72 h-72 bg-amber-300/20 rounded-full blur-3xl -z-10"></div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                
+                <!-- Left: Pet Interactive Stage -->
+                <div class="lg:col-span-5 flex flex-col items-center justify-center relative p-5 bg-white/90 rounded-3xl border border-amber-100 shadow-sm group">
+                    
+                    <!-- Floating Heart Spawner Canvas/Area -->
+                    <div id="petStage" onclick="petCompanion(event)" class="relative cursor-pointer w-full flex flex-col items-center justify-center py-4 select-none">
+                        
+                        <!-- Vector SVG Pet Render Container -->
+                        <div id="petSvgContainer" class="w-48 h-48 flex items-center justify-center filter drop-shadow-md transition transform group-hover:scale-105 duration-300 animate-bounce-subtle">
+                            <!-- Vector Pet Rendered dynamically -->
+                        </div>
+
+                        <!-- Pet Mood & Name Badge -->
+                        <div class="mt-2 flex items-center gap-2">
+                            <span id="petName" class="text-xl font-black text-amber-950">Mochi</span>
+                            <span id="petLevelBadge" class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 font-extrabold text-xs border border-amber-300/60">Lvl 1</span>
+                        </div>
+
+                        <p id="petStatusText" class="text-xs text-amber-800/80 font-bold mt-1 text-center">
+                            "Purr... Tap me to send warm hugs! ❤️"
+                        </p>
+                    </div>
+
+                    <!-- Pet Quick Action Buttons -->
+                    <div class="flex items-center gap-2 mt-2 w-full">
+                        <button onclick="feedPet()" class="flex-1 py-2 px-3 bg-gradient-to-r from-emerald-400 to-teal-400 hover:from-emerald-300 hover:to-teal-300 text-emerald-950 font-black rounded-xl text-xs shadow-sm transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-1">
+                            🍖 Feed Treats
+                        </button>
+                        <button onclick="playWithPet()" class="flex-1 py-2 px-3 bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-300 hover:to-orange-300 text-amber-950 font-black rounded-xl text-xs shadow-sm transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-1">
+                            🎾 Play Toys
+                        </button>
+                        <button onclick="openShopModal()" class="py-2 px-3 bg-amber-800 hover:bg-amber-700 text-amber-50 font-extrabold rounded-xl text-xs shadow-sm transition transform hover:scale-105 active:scale-95 flex items-center justify-center gap-1">
+                            🛒 Pet Shop
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right: Pet Stats & Star Earnings Hub -->
+                <div class="lg:col-span-7 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 text-amber-800 font-bold text-xs border border-amber-200">
+                                🐾 Cozy Pet Care Station
+                            </div>
+                            <h2 class="text-2xl sm:text-3xl font-black text-amber-950 mt-1">
+                                Complete Tasks & Practice to Earn Stars!
+                            </h2>
+                        </div>
+                        <button onclick="openAdoptionModal()" title="Switch Companion" class="px-3.5 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-xl text-xs border border-amber-300/80 transition">
+                            🔄 Choose Pet
+                        </button>
+                    </div>
+
+                    <!-- Pet Vitals Bars -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 bg-white/80 p-4 rounded-2xl border border-amber-100/80">
+                        <!-- Hunger Bar -->
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between text-xs font-bold">
+                                <span class="text-amber-900 flex items-center gap-1">🍗 Hunger Level</span>
+                                <span id="hungerVal" class="text-emerald-700">80%</span>
+                            </div>
+                            <div class="w-full bg-amber-100/60 h-3 rounded-full overflow-hidden border border-amber-200/60">
+                                <div id="hungerBar" class="bg-gradient-to-r from-emerald-400 to-teal-400 h-full w-4/5 transition-all duration-500"></div>
+                            </div>
+                        </div>
+
+                        <!-- Happiness Bar -->
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between text-xs font-bold">
+                                <span class="text-amber-900 flex items-center gap-1">💖 Happiness</span>
+                                <span id="happinessVal" class="text-orange-600">85%</span>
+                            </div>
+                            <div class="w-full bg-amber-100/60 h-3 rounded-full overflow-hidden border border-amber-200/60">
+                                <div id="happinessBar" class="bg-gradient-to-r from-amber-400 to-orange-400 h-full w-[85%] transition-all duration-500"></div>
+                            </div>
+                        </div>
+
+                        <!-- Pet Level Progress Bar -->
+                        <div class="sm:col-span-2 space-y-1.5 pt-1">
+                            <div class="flex items-center justify-between text-xs font-bold">
+                                <span class="text-amber-900 flex items-center gap-1">⭐ Pet Growth XP</span>
+                                <span id="petXpVal" class="text-amber-700">25 / 100 XP</span>
+                            </div>
+                            <div class="w-full bg-amber-100/60 h-3 rounded-full overflow-hidden border border-amber-200/60">
+                                <div id="petXpBar" class="bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400 h-full w-[25%] transition-all duration-500"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- How to Earn Stars Guide -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-xs font-bold text-amber-900">
+                        <div class="p-2.5 rounded-xl bg-white/80 border border-amber-100">
+                            <div class="text-amber-600 text-sm">📱 +15 ⭐</div>
+                            <div class="text-[11px] text-amber-800/70 mt-0.5">30m Phone Detox</div>
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-white/80 border border-amber-100">
+                            <div class="text-amber-600 text-sm">📚 +50 ⭐</div>
+                            <div class="text-[11px] text-amber-800/70 mt-0.5">45m Homework Focus</div>
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-white/80 border border-amber-100">
+                            <div class="text-amber-600 text-sm">📝 +30 ⭐</div>
+                            <div class="text-[11px] text-amber-800/70 mt-0.5">Finish Task</div>
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-gradient-to-br from-amber-100 to-orange-100 border border-amber-300">
+                            <div class="text-orange-700 text-sm">🧠 +25 ⭐</div>
+                            <div class="text-[11px] text-amber-900 font-extrabold mt-0.5">Practice Quiz!</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 1: Phone Detox Timer (30 Mins) -->
+        <section id="phoneSection" class="card-glow rounded-3xl p-6 relative overflow-hidden border border-amber-200/80 bg-gradient-to-br from-amber-50/40 via-white to-orange-50/30">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+                
+                <!-- Left Info -->
+                <div class="space-y-3 max-w-lg text-center md:text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-100 text-amber-800 font-bold text-xs border border-amber-200">
+                        <span>📱</span> Post-School Phone Detox Clock
+                    </div>
+                    <h3 class="text-2xl sm:text-3xl font-black text-amber-950">
+                        30-Min Post-School Buffer Timer
+                    </h3>
+                    <p class="text-sm text-amber-900/80 leading-relaxed">
+                        Arriving home tired? Enjoy a relaxing 30-minute unwind window. When the warm chime sounds, put down your phone and begin homework feeling refreshed!
+                    </p>
+                    <div class="flex flex-wrap items-center gap-2 justify-center md:justify-start text-xs font-semibold text-amber-900/70 pt-1">
+                        <span class="bg-amber-100/60 px-3 py-1 rounded-xl border border-amber-200">⏳ 30 Minutes Built-in</span>
+                        <span class="bg-amber-100/60 px-3 py-1 rounded-xl border border-amber-200">🔔 Warm Chime Alarm</span>
+                        <span class="bg-amber-200/60 text-amber-900 px-3 py-1 rounded-xl border border-amber-300 font-bold">⭐ +15 Stars Bonus</span>
+                    </div>
+                </div>
+
+                <!-- Timer Ring Display -->
+                <div class="flex flex-col items-center justify-center">
+                    <div class="relative w-52 h-52 flex items-center justify-center">
+                        <svg class="w-full h-full transform -rotate-90">
+                            <circle cx="104" cy="104" r="88" stroke="currentColor" stroke-width="12" class="text-amber-100" fill="transparent" />
+                            <circle id="phoneProgress" cx="104" cy="104" r="88" stroke="currentColor" stroke-width="12" class="text-amber-500 timer-circle" fill="transparent" stroke-dasharray="553" stroke-dashoffset="0" stroke-linecap="round" />
+                        </svg>
+                        <div class="absolute flex flex-col items-center justify-center text-center">
+                            <span id="phoneTimeDisplay" class="text-4xl font-black text-amber-950 tracking-tight">30:00</span>
+                            <span id="phoneStatusText" class="text-xs font-bold text-amber-700 mt-1">Ready to Start</span>
+                        </div>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="flex items-center gap-3 mt-4">
+                        <button id="phoneStartBtn" onclick="togglePhoneTimer()" class="px-6 py-2.5 bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-300 hover:to-orange-300 text-amber-950 font-black rounded-xl shadow-md transition transform hover:scale-105 active:scale-95 text-sm">
+                            ▶ Start Phone Break
+                        </button>
+                        <button onclick="resetPhoneTimer()" class="px-4 py-2.5 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-xl border border-amber-200 transition text-sm">
+                            ↺ Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Focus & Rest Hub (45m Focus / 10m Break) -->
+        <section id="focusSection" class="card-glow rounded-3xl p-6 relative overflow-hidden border border-rose-200/80 bg-gradient-to-br from-rose-50/40 via-white to-amber-50/30">
+            <div class="flex flex-col lg:flex-row items-center justify-between gap-8">
+                
+                <!-- Left Details & Mode Switcher -->
+                <div class="space-y-4 max-w-lg w-full text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-100 text-rose-800 font-bold text-xs border border-rose-200">
+                        <span>🎯</span> Focus & Rest Station
+                    </div>
+                    <h3 class="text-2xl sm:text-3xl font-black text-amber-950">
+                        45-Min Focus + 10-Min Rest
+                    </h3>
+                    <p class="text-sm text-amber-900/80 leading-relaxed">
+                        The ideal study cadence: <strong class="text-orange-700">45 minutes of homework focus</strong>, followed by a cozy <strong class="text-emerald-700">10-minute rest break</strong>!
+                    </p>
+
+                    <!-- Toggle Mode Pills -->
+                    <div class="grid grid-cols-2 gap-2 bg-amber-100/60 p-1.5 rounded-2xl border border-amber-200/80">
+                        <button id="btnModeFocus" onclick="switchTimerMode('focus')" class="py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm transition flex items-center justify-center gap-2 bg-orange-500 text-white shadow-sm">
+                            📚 Focus Sprint (45m)
+                        </button>
+                        <button id="btnModeBreak" onclick="switchTimerMode('break')" class="py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm transition flex items-center justify-center gap-2 text-amber-900/70 hover:text-amber-950">
+                            ☕ Rest Break (10m)
+                        </button>
+                    </div>
+
+                    <!-- Audio FX Toggle -->
+                    <div class="flex items-center justify-between bg-white/80 p-3 rounded-2xl border border-amber-100 text-xs text-amber-900">
+                        <span class="flex items-center gap-2 font-bold">
+                            🔊 Audio Notifications & Chimes
+                        </span>
+                        <button id="bgSoundToggle" onclick="toggleSoundFx()" class="px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-lg border border-amber-200 transition">
+                            🔔 Sound Enabled
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Circular Timer Ring -->
+                <div class="flex flex-col items-center justify-center">
+                    <div class="relative w-64 h-64 flex items-center justify-center">
+                        <svg class="w-full h-full transform -rotate-90">
+                            <circle cx="128" cy="128" r="108" stroke="currentColor" stroke-width="14" class="text-amber-100" fill="transparent" />
+                            <circle id="focusProgress" cx="128" cy="128" r="108" stroke="currentColor" stroke-width="14" class="text-orange-400 timer-circle" fill="transparent" stroke-dasharray="678" stroke-dashoffset="0" stroke-linecap="round" />
+                        </svg>
+                        <div class="absolute flex flex-col items-center justify-center text-center">
+                            <span id="focusTimeDisplay" class="text-5xl font-black text-amber-950 tracking-tight">45:00</span>
+                            <span id="focusStatusBadge" class="mt-2 px-3.5 py-1 rounded-full bg-orange-100 text-orange-900 text-xs font-bold border border-orange-200">
+                                Ready for Homework
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Controls -->
+                    <div class="flex items-center gap-3 mt-5">
+                        <button id="focusStartBtn" onclick="toggleFocusTimer()" class="px-8 py-3 bg-gradient-to-r from-orange-400 via-rose-400 to-amber-400 hover:from-orange-300 hover:to-amber-300 text-amber-950 font-black rounded-2xl shadow-md transition transform hover:scale-105 active:scale-95 text-base">
+                            ▶ Start 45-Min Focus
+                        </button>
+                        <button onclick="resetFocusTimer()" class="px-5 py-3 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-2xl border border-amber-200 transition text-base">
+                            ↺ Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Calendar & Homework Planner -->
+        <section id="plannerSection" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            <!-- LEFT: Interactive Calendar -->
+            <div class="lg:col-span-5 card-glow rounded-3xl p-5 sm:p-6 border border-amber-200/80">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                        <span class="text-2xl">📅</span>
+                        <h3 class="text-lg font-black text-amber-950" id="calendarTitle">Month Year</h3>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <button onclick="changeMonth(-1)" class="w-8 h-8 flex items-center justify-center bg-amber-100 hover:bg-amber-200 rounded-xl text-amber-900 font-bold transition border border-amber-200">
+                            ❮
+                        </button>
+                        <button onclick="changeMonth(1)" class="w-8 h-8 flex items-center justify-center bg-amber-100 hover:bg-amber-200 rounded-xl text-amber-900 font-bold transition border border-amber-200">
+                            ❯
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Calendar Grid Header -->
+                <div class="grid grid-cols-7 text-center text-xs font-bold text-amber-800/70 mb-2">
+                    <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                </div>
+                <div id="calendarDays" class="grid grid-cols-7 gap-1 text-sm font-semibold">
+                    <!-- Dynamic calendar dates generated by JS -->
+                </div>
+
+                <!-- Legend -->
+                <div class="mt-5 pt-3 border-t border-amber-100 flex items-center justify-around text-xs text-amber-800/80 font-medium">
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span> Today
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span> Task Due
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span> Selected
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Homework Planner List -->
+            <div class="lg:col-span-7 card-glow rounded-3xl p-5 sm:p-6 border border-amber-200/80 flex flex-col min-h-[460px]">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-2xl">📝</span>
+                            <h3 class="text-lg font-black text-amber-950">Homework Planner & Tasks</h3>
+                        </div>
+                        <p class="text-xs text-amber-800/70 mt-0.5" id="selectedDateLabel">
+                            Showing: All Scheduled Assignments
+                        </p>
+                    </div>
+
+                    <!-- Add Homework Button -->
+                    <button onclick="openAddModal()" class="w-full sm:w-auto px-4 py-2.5 bg-gradient-to-r from-amber-400 to-orange-400 text-amber-950 font-black rounded-xl shadow-md hover:brightness-105 transition transform hover:scale-105 active:scale-95 text-xs sm:text-sm flex items-center justify-center gap-2">
+                        ➕ Plan New Task
+                    </button>
+                </div>
+
+                <!-- Homework List Filters -->
+                <div class="flex items-center gap-2 mb-4 overflow-x-auto pb-1 text-xs font-bold">
+                    <button onclick="setFilter('all')" id="filterAll" class="px-3.5 py-1.5 rounded-xl bg-amber-200/80 text-amber-950 border border-amber-300">
+                        All Tasks
+                    </button>
+                    <button onclick="setFilter('pending')" id="filterPending" class="px-3.5 py-1.5 rounded-xl bg-amber-100/60 text-amber-900/80 hover:text-amber-950 border border-amber-200">
+                        ⏳ Pending
+                    </button>
+                    <button onclick="setFilter('completed')" id="filterCompleted" class="px-3.5 py-1.5 rounded-xl bg-amber-100/60 text-amber-900/80 hover:text-amber-950 border border-amber-200">
+                        ✅ Completed
+                    </button>
+                </div>
+
+                <!-- Homework Cards Container -->
+                <div id="homeworkContainer" class="space-y-3 flex-1 overflow-y-auto max-h-[360px] pr-1">
+                    <!-- Dynamic task cards -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="hidden flex-1 flex flex-col items-center justify-center text-center py-10 text-amber-800/60">
+                    <span class="text-4xl mb-2">🎉</span>
+                    <p class="font-bold text-sm text-amber-900">No tasks found for this selection!</p>
+                    <p class="text-xs text-amber-800/70 mt-1">Click "Plan New Task" above to add your assignments.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: Multi-Topic Practice & Quiz Station -->
+        <section id="practiceSection" class="card-glow rounded-3xl p-6 relative overflow-hidden border border-amber-300/80 bg-gradient-to-br from-amber-50/70 via-white to-orange-50/50">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-amber-200/80">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-200/80 text-amber-950 font-black text-xs border border-amber-300">
+                        <span>🧠</span> Multi-Topic Skill Practice Hub
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-black text-amber-950 mt-1">
+                        Master Subjects & Test Your Knowledge
+                    </h2>
+                    <p class="text-xs sm:text-sm text-amber-900/80 mt-1">
+                        Practice flashcards, solve interactive quizzes, and take speed challenges to boost your grades and earn pet rewards!
+                    </p>
+                </div>
+
+                <!-- Practice Stats Summary Cards -->
+                <div class="flex items-center gap-2 sm:gap-3 w-full md:w-auto">
+                    <div class="flex-1 md:flex-none px-3.5 py-2 bg-white/90 rounded-2xl border border-amber-200 text-center shadow-sm">
+                        <div class="text-[10px] font-extrabold uppercase text-amber-700">Questions Answered</div>
+                        <div id="totalQuestionsStat" class="text-base font-black text-amber-950">0</div>
+                    </div>
+                    <div class="flex-1 md:flex-none px-3.5 py-2 bg-white/90 rounded-2xl border border-amber-200 text-center shadow-sm">
+                        <div class="text-[10px] font-extrabold uppercase text-emerald-700">Accuracy Rate</div>
+                        <div id="accuracyStat" class="text-base font-black text-emerald-950">100%</div>
+                    </div>
+                    <div class="flex-1 md:flex-none px-3.5 py-2 bg-gradient-to-br from-amber-400 to-orange-400 text-amber-950 rounded-2xl text-center shadow-sm">
+                        <div class="text-[10px] font-black uppercase text-amber-950">Stars Earned</div>
+                        <div id="practiceStarsStat" class="text-base font-black">+0 ⭐</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subject & Topic Selector Tabs -->
+            <div class="pt-6 space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-black text-amber-950 uppercase tracking-wider flex items-center gap-2">
+                        <span>📚</span> Select Subject & Topic:
+                    </h3>
+                    
+                    <!-- Practice Mode Switcher (Quiz / Flashcards / Speed Challenge) -->
+                    <div class="flex items-center gap-1 bg-amber-100/80 p-1 rounded-xl border border-amber-200 text-xs font-bold">
+                        <button onclick="setPracticeMode('quiz')" id="btnModeQuiz" class="px-3 py-1.5 rounded-lg bg-amber-500 text-white shadow-sm transition">
+                            🎯 Multiple Choice
+                        </button>
+                        <button onclick="setPracticeMode('flashcards')" id="btnModeFlashcards" class="px-3 py-1.5 rounded-lg text-amber-900 hover:bg-white/60 transition">
+                            🃏 Flashcards
+                        </button>
+                        <button onclick="setPracticeMode('speed')" id="btnModeSpeed" class="px-3 py-1.5 rounded-lg text-amber-900 hover:bg-white/60 transition">
+                            ⚡ Speed Run
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Subject Category Pills -->
+                <div class="flex items-center gap-2 overflow-x-auto pb-2 text-xs font-extrabold">
+                    <button onclick="selectSubject('math')" id="subjMath" class="px-4 py-2 rounded-2xl bg-amber-500 text-white shadow-sm flex items-center gap-1.5 whitespace-nowrap transition">
+                        📐 Math & Algebra
+                    </button>
+                    <button onclick="selectSubject('science')" id="subjScience" class="px-4 py-2 rounded-2xl bg-white/80 text-amber-900 hover:bg-amber-100 border border-amber-200 flex items-center gap-1.5 whitespace-nowrap transition">
+                        🧪 Science & Physics
+                    </button>
+                    <button onclick="selectSubject('english')" id="subjEnglish" class="px-4 py-2 rounded-2xl bg-white/80 text-amber-900 hover:bg-amber-100 border border-amber-200 flex items-center gap-1.5 whitespace-nowrap transition">
+                        🔤 English & Vocab
+                    </button>
+                    <button onclick="selectSubject('history')" id="subjHistory" class="px-4 py-2 rounded-2xl bg-white/80 text-amber-900 hover:bg-amber-100 border border-amber-200 flex items-center gap-1.5 whitespace-nowrap transition">
+                        🌍 History & Social Studies
+                    </button>
+                    <button onclick="selectSubject('cs')" id="subjCS" class="px-4 py-2 rounded-2xl bg-white/80 text-amber-900 hover:bg-amber-100 border border-amber-200 flex items-center gap-1.5 whitespace-nowrap transition">
+                        💻 Computer Science
+                    </button>
+                    <button onclick="selectSubject('languages')" id="subjLanguages" class="px-4 py-2 rounded-2xl bg-white/80 text-amber-900 hover:bg-amber-100 border border-amber-200 flex items-center gap-1.5 whitespace-nowrap transition">
+                        🗣️ Foreign Languages
+                    </button>
+                </div>
+
+                <!-- Topic List / Cards Grid -->
+                <div id="topicsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                    <!-- Dynamic Subtopics generated by JS -->
+                </div>
+            </div>
+
+            <!-- INTERACTIVE PRACTICE DISPLAY AREA (Quiz / Flashcards / Speed Mode Container) -->
+            <div id="practiceContainer" class="mt-6 p-6 bg-white/95 rounded-3xl border border-amber-200 shadow-sm relative min-h-[320px] flex flex-col items-center justify-center">
+                <!-- Content generated dynamically based on active mode & topic -->
+            </div>
+            
+            <!-- Custom Deck Creation Bar -->
+            <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 p-4 bg-amber-100/60 rounded-2xl border border-amber-200">
+                <div class="flex items-center gap-2 text-xs font-bold text-amber-950">
+                    <span class="text-lg">✏️</span>
+                    <div>
+                        <div>Want to add your own test questions or flashcards?</div>
+                        <div class="text-[11px] text-amber-800/80 font-semibold">Create custom study decks for upcoming class exams!</div>
+                    </div>
+                </div>
+                <button onclick="openCustomDeckModal()" class="w-full sm:w-auto px-4 py-2 bg-amber-800 hover:bg-amber-900 text-amber-50 font-extrabold rounded-xl text-xs transition shadow-sm whitespace-nowrap">
+                    ➕ Add Custom Practice Questions
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL 1: Pet Adoption (5 Cute Companions) -->
+    <div id="adoptionModal" class="fixed inset-0 bg-amber-950/40 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="card-glow bg-white/95 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-5 border border-amber-200 animate-pop">
+            <div class="text-center space-y-1">
+                <span class="text-4xl">🐾</span>
+                <h4 class="text-2xl font-black text-amber-950">Choose Your Companion</h4>
+                <p class="text-xs text-amber-800/80">Select a cute mascot friend to guide your study time!</p>
+            </div>
+
+            <!-- Pet Selection Grid (5 Cute Options) -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-60 overflow-y-auto p-1">
+                <button onclick="selectPetType('cat')" id="adoptCatBtn" class="p-3 rounded-2xl border-2 border-amber-400 bg-amber-50 flex flex-col items-center gap-1 hover:scale-105 transition text-center">
+                    <span class="text-3xl">🐱</span>
+                    <span class="font-extrabold text-xs text-amber-950">Mochi</span>
+                    <span class="text-[10px] text-amber-700 font-semibold">Cute Cat</span>
+                </button>
+
+                <button onclick="selectPetType('dog')" id="adoptDogBtn" class="p-3 rounded-2xl border-2 border-amber-200 bg-white flex flex-col items-center gap-1 hover:scale-105 transition text-center">
+                    <span class="text-3xl">🐶</span>
+                    <span class="font-extrabold text-xs text-amber-950">Coco</span>
+                    <span class="text-[10px] text-amber-700 font-semibold">Puppy</span>
+                </button>
+
+                <button onclick="selectPetType('bunny')" id="adoptBunnyBtn" class="p-3 rounded-2xl border-2 border-amber-200 bg-white flex flex-col items-center gap-1 hover:scale-105 transition text-center">
+                    <span class="text-3xl">🐰</span>
+                    <span class="font-extrabold text-xs text-amber-950">Matcha</span>
+                    <span class="text-[10px] text-amber-700 font-semibold">Fluffy Bunny</span>
+                </button>
+
+                <button onclick="selectPetType('fox')" id="adoptFoxBtn" class="p-3 rounded-2xl border-2 border-amber-200 bg-white flex flex-col items-center gap-1 hover:scale-105 transition text-center">
+                    <span class="text-3xl">🦊</span>
+                    <span class="font-extrabold text-xs text-amber-950">Panko</span>
+                    <span class="text-[10px] text-amber-700 font-semibold">Cozy Fox</span>
+                </button>
+
+                <button onclick="selectPetType('panda')" id="adoptPandaBtn" class="p-3 rounded-2xl border-2 border-amber-200 bg-white flex flex-col items-center gap-1 hover:scale-105 transition text-center col-span-2 sm:col-span-1">
+                    <span class="text-3xl">🐼</span>
+                    <span class="font-extrabold text-xs text-amber-950">Bao</span>
+                    <span class="text-[10px] text-amber-700 font-semibold">Baby Panda</span>
+                </button>
+            </div>
+
+            <!-- Pet Name Input -->
+            <div>
+                <label class="block text-xs font-bold text-amber-900 mb-1">Give Your Pet a Name:</label>
+                <input id="petNameInput" type="text" value="Mochi" placeholder="Enter pet name..." class="w-full p-3 bg-amber-50 text-amber-950 rounded-xl border border-amber-200 font-bold focus:ring-2 focus:ring-amber-400 outline-none text-sm">
+            </div>
+
+            <button onclick="confirmPetAdoption()" class="w-full py-3 bg-gradient-to-r from-amber-400 via-orange-400 to-rose-400 hover:from-amber-300 hover:to-rose-300 text-amber-950 font-black rounded-xl shadow-md transition text-sm">
+                🎉 Welcome Companion!
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 2: Pet Shop & Accessory Locker -->
+    <div id="shopModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="card-glow bg-slate-900 rounded-3xl p-6 max-w-lg w-full shadow-2xl space-y-4 border border-amber-500/30 animate-pop max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between border-b pb-3 border-slate-800">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">🛒</span>
+                    <div>
+                        <h4 class="text-lg font-black text-white">Pet Shop & Outfits</h4>
+                        <p class="text-xs text-amber-400 font-bold">Your Balance: ⭐ <span id="shopStarBalance">0</span> Stars</p>
+                    </div>
+                </div>
+                <button onclick="closeShopModal()" class="text-slate-400 hover:text-white font-bold text-lg">✕</button>
+            </div>
+
+            <!-- Shop Items Grid -->
+            <div class="overflow-y-auto space-y-4 pr-1 flex-1">
+                <!-- Food & Treats Category -->
+                <div>
+                    <h5 class="text-xs font-extrabold text-emerald-400 uppercase tracking-wider mb-2">🍖 Food & Treats</h5>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <button onclick="buyShopItem('food_kibble', 15)" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 rounded-2xl border border-slate-700 flex items-center justify-between text-left transition">
+                            <div>
+                                <div class="font-bold text-white">🥣 Yummy Kibble</div>
+                                <div class="text-[10px] text-emerald-400">+25 Hunger</div>
+                            </div>
+                            <span class="font-black text-amber-400 bg-slate-900 px-2 py-1 rounded-lg">15 ⭐</span>
+                        </button>
+                        <button onclick="buyShopItem('food_treat', 30)" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 rounded-2xl border border-slate-700 flex items-center justify-between text-left transition">
+                            <div>
+                                <div class="font-bold text-white">🐟 Fish / Bone Treats</div>
+                                <div class="text-[10px] text-emerald-400">+50 Hunger & XP</div>
+                            </div>
+                            <span class="font-black text-amber-400 bg-slate-900 px-2 py-1 rounded-lg">30 ⭐</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Toys & Fun Category -->
+                <div>
+                    <h5 class="text-xs font-extrabold text-amber-400 uppercase tracking-wider mb-2">🎾 Toys & Activities</h5>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <button onclick="buyShopItem('toy_ball', 20)" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 rounded-2xl border border-slate-700 flex items-center justify-between text-left transition">
+                            <div>
+                                <div class="font-bold text-white">🎾 Bouncy Ball</div>
+                                <div class="text-[10px] text-amber-400">+30 Happiness</div>
+                            </div>
+                            <span class="font-black text-amber-400 bg-slate-900 px-2 py-1 rounded-lg">20 ⭐</span>
+                        </button>
+                        <button onclick="buyShopItem('toy_plush', 40)" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 rounded-2xl border border-slate-700 flex items-center justify-between text-left transition">
+                            <div>
+                                <div class="font-bold text-white">🧸 Golden Plushie</div>
+                                <div class="text-[10px] text-amber-400">+60 Happiness</div>
+                            </div>
+                            <span class="font-black text-amber-400 bg-slate-900 px-2 py-1 rounded-lg">40 ⭐</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Accessories & Hats Category -->
+                <div>
+                    <h5 class="text-xs font-extrabold text-indigo-400 uppercase tracking-wider mb-2">👑 Hats & Accessories</h5>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
+                        <button onclick="buyAccessory('👑', 50)" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 rounded-2xl border border-slate-700 flex items-center justify-between text-left transition">
+                            <div>
+                                <div class="font-bold text-white">👑 Royal Crown</div>
+                                <div class="text-[10px] text-indigo-300">Wear on Pet</div>
+                            </div>
+                            <span class="font-black text-amber-400 bg-slate-900 px-2 py-1 rounded-lg">50 ⭐</span>
+                        </button>
+                        <button onclick="buyAccessory('🕶️', 45)" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 rounded-2xl border border-slate-700 flex items-center justify-between text-left transition">
+                            <div>
+                                <div class="font-bold text-white">🕶️ Cool Shades</div>
+                                <div class="text-[10px] text-indigo-300">Wear on Pet</div>
+                            </div>
+                            <span class="font-black text-amber-400 bg-slate-900 px-2 py-1 rounded-lg">45 ⭐</span>
+                        </button>
+                        <button onclick="buyAccessory('🎓', 60)" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 rounded-2xl border border-slate-700 flex items-center justify-between text-left transition">
+                            <div>
+                                <div class="font-bold text-white">🎓 Grad Cap</div>
+                                <div class="text-[10px] text-indigo-300">Wear on Pet</div>
+                            </div>
+                            <span class="font-black text-amber-400 bg-slate-900 px-2 py-1 rounded-lg">60 ⭐</span>
+                        </button>
+                        <button onclick="buyAccessory('🥳', 35)" class="p-3 bg-slate-800/80 hover:bg-slate-700/80 rounded-2xl border border-slate-700 flex items-center justify-between text-left transition">
+                            <div>
+                                <div class="font-bold text-white">🥳 Party Hat</div>
+                                <div class="text-[10px] text-indigo-300">Wear on Pet</div>
+                            </div>
+                            <span class="font-black text-amber-400 bg-slate-900 px-2 py-1 rounded-lg">35 ⭐</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="closeShopModal()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-xs transition">
+                Close Shop
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 3: Daily Sign-In & Rewards -->
+    <div id="checkInModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="card-glow bg-slate-900 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 border border-amber-500/30 animate-pop text-center">
+            <div class="space-y-1">
+                <span class="text-4xl">🎁</span>
+                <h4 class="text-2xl font-black text-white">Daily Sign-In Reward</h4>
+                <p class="text-xs text-slate-300">Check in daily to build your streak & earn extra Stars!</p>
+            </div>
+
+            <!-- 7-Day Streak Rewards Track -->
+            <div class="grid grid-cols-7 gap-1.5 py-2">
+                <div class="p-2 rounded-xl bg-slate-800 border border-slate-700 text-center">
+                    <div class="text-[10px] text-slate-400 font-bold">D1</div>
+                    <div class="text-xs font-black text-amber-400 mt-1">+10⭐</div>
+                </div>
+                <div class="p-2 rounded-xl bg-slate-800 border border-slate-700 text-center">
+                    <div class="text-[10px] text-slate-400 font-bold">D2</div>
+                    <div class="text-xs font-black text-amber-400 mt-1">+20⭐</div>
+                </div>
+                <div class="p-2 rounded-xl bg-slate-800 border border-slate-700 text-center">
+                    <div class="text-[10px] text-slate-400 font-bold">D3</div>
+                    <div class="text-xs font-black text-amber-400 mt-1">+30⭐</div>
+                </div>
+                <div class="p-2 rounded-xl bg-slate-800 border border-slate-700 text-center">
+                    <div class="text-[10px] text-slate-400 font-bold">D4</div>
+                    <div class="text-xs font-black text-amber-400 mt-1">+40⭐</div>
+                </div>
+                <div class="p-2 rounded-xl bg-slate-800 border border-slate-700 text-center">
+                    <div class="text-[10px] text-slate-400 font-bold">D5</div>
+                    <div class="text-xs font-black text-amber-400 mt-1">+50⭐</div>
+                </div>
+                <div class="p-2 rounded-xl bg-slate-800 border border-slate-700 text-center">
+                    <div class="text-[10px] text-slate-400 font-bold">D6</div>
+                    <div class="text-xs font-black text-amber-400 mt-1">+60⭐</div>
+                </div>
+                <div class="p-2 rounded-xl bg-amber-500/20 border border-amber-500/40 text-center">
+                    <div class="text-[10px] text-amber-300 font-bold">D7</div>
+                    <div class="text-xs font-black text-amber-400 mt-1">+100⭐</div>
+                </div>
+            </div>
+
+            <button id="claimCheckInBtn" onclick="claimDailyCheckIn()" class="w-full py-3 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black rounded-xl shadow-lg transition text-sm">
+                🎉 Claim Today's +25 Stars
+            </button>
+            <button onclick="closeCheckInModal()" class="w-full py-2 bg-slate-800 text-slate-400 hover:text-white font-bold rounded-xl text-xs">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 4: Add Homework Assignment -->
+    <div id="addModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="card-glow bg-slate-900 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 border border-slate-700 animate-pop">
+            <div class="flex items-center justify-between border-b pb-3 border-slate-800">
+                <h4 class="text-lg font-black text-white flex items-center gap-2">
+                    ✏️ Add Homework Assignment
+                </h4>
+                <button onclick="closeAddModal()" class="text-slate-400 hover:text-white font-bold text-lg">✕</button>
+            </div>
+
+            <form id="homeworkForm" onsubmit="saveHomework(event)" class="space-y-3.5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Subject</label>
+                    <select id="hwSubject" class="w-full p-2.5 bg-slate-800 text-white rounded-xl border border-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm font-semibold">
+                        <option value="Math">📐 Math</option>
+                        <option value="English">🔤 English</option>
+                        <option value="Science">🧪 Science / Physics</option>
+                        <option value="History">🌍 History / Social Studies</option>
+                        <option value="Languages">🗣️ Foreign Languages</option>
+                        <option value="Computer Science">💻 Computer Science</option>
+                        <option value="Art & Music">🎨 Art & Music</option>
+                        <option value="Other">📚 Other Homework</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Assignment Title / Details</label>
+                    <input id="hwTitle" type="text" required placeholder="e.g., Complete Algebra Exercises #1-15" class="w-full p-2.5 bg-slate-800 text-white placeholder-slate-500 rounded-xl border border-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Est. Time (Mins)</label>
+                        <input id="hwDuration" type="number" min="5" max="300" value="30" class="w-full p-2.5 bg-slate-800 text-white rounded-xl border border-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Priority Level</label>
+                        <select id="hwPriority" class="w-full p-2.5 bg-slate-800 text-white rounded-xl border border-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm font-semibold">
+                            <option value="high">🔴 High Priority</option>
+                            <option value="medium" selected>🟡 Medium</option>
+                            <option value="low">🟢 Low / Quick</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Due / Planned Date</label>
+                        <input id="hwDate" type="date" required class="w-full p-2.5 bg-slate-800 text-white rounded-xl border border-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Target Start Time</label>
+                        <input id="hwTime" type="time" value="18:00" class="w-full p-2.5 bg-slate-800 text-white rounded-xl border border-slate-700 focus:outline-none focus:ring-2 focus:ring-cyan-400 text-sm">
+                    </div>
+                </div>
+
+                <div class="pt-3 flex gap-3">
+                    <button type="button" onclick="closeAddModal()" class="w-1/2 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-sm border border-slate-700 transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="w-1/2 py-2.5 bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-black rounded-xl text-sm shadow-md hover:brightness-110 transition">
+                        Save Assignment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 5: Custom Deck Creation Modal -->
+    <div id="customDeckModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="card-glow bg-slate-900 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 border border-amber-500/30 animate-pop">
+            <div class="flex items-center justify-between border-b pb-3 border-slate-800">
+                <h4 class="text-lg font-black text-white flex items-center gap-2">
+                    ✏️ Add Custom Practice Question
+                </h4>
+                <button onclick="closeCustomDeckModal()" class="text-slate-400 hover:text-white font-bold text-lg">✕</button>
+            </div>
+
+            <form id="customDeckForm" onsubmit="saveCustomQuestion(event)" class="space-y-3.5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Select Subject</label>
+                    <select id="customSubject" class="w-full p-2.5 bg-slate-800 text-white rounded-xl border border-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm font-semibold">
+                        <option value="math">📐 Math & Algebra</option>
+                        <option value="science">🧪 Science & Physics</option>
+                        <option value="english">🔤 English & Vocabulary</option>
+                        <option value="history">🌍 History & Social Studies</option>
+                        <option value="cs">💻 Computer Science</option>
+                        <option value="languages">🗣️ Foreign Languages</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Question / Flashcard Front</label>
+                    <textarea id="customQuestionText" required rows="2" placeholder="e.g., What is the slope-intercept equation formula?" class="w-full p-2.5 bg-slate-800 text-white placeholder-slate-500 rounded-xl border border-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Correct Answer / Flashcard Back</label>
+                    <input id="customCorrectAns" type="text" required placeholder="e.g., y = mx + b" class="w-full p-2.5 bg-slate-800 text-white placeholder-slate-500 rounded-xl border border-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-400 text-sm">
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Wrong Answer #1</label>
+                        <input id="customWrong1" type="text" required placeholder="e.g., a^2 + b^2 = c^2" class="w-full p-2 bg-slate-800 text-white placeholder-slate-500 rounded-xl border border-slate-700 text-xs">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Wrong Answer #2</label>
+                        <input id="customWrong2" type="text" required placeholder="e.g., E = mc^2" class="w-full p-2 bg-slate-800 text-white placeholder-slate-500 rounded-xl border border-slate-700 text-xs">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Explanation / Key Takeaway Note</label>
+                    <input id="customExplanation" type="text" placeholder="e.g., m is slope, b is y-intercept" class="w-full p-2.5 bg-slate-800 text-white placeholder-slate-500 rounded-xl border border-slate-700 text-sm">
+                </div>
+
+                <div class="pt-2 flex gap-3">
+                    <button type="button" onclick="closeCustomDeckModal()" class="w-1/2 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-sm border border-slate-700 transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="w-1/2 py-2.5 bg-gradient-to-r from-amber-400 to-orange-400 text-slate-950 font-black rounded-xl text-sm shadow-md hover:brightness-110 transition">
+                        Save Question
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Banner -->
+    <div id="toastBox" class="fixed bottom-6 right-6 z-50 hidden transform transition-all duration-300">
+        <div class="bg-slate-900/95 text-white px-5 py-4 rounded-2xl shadow-2xl flex items-center gap-3.5 border border-slate-700 max-w-sm backdrop-blur-md">
+            <span id="toastIcon" class="text-2xl">🔔</span>
+            <div>
+                <h5 id="toastTitle" class="font-extrabold text-sm text-cyan-400">Notification</h5>
+                <p id="toastMessage" class="text-xs text-slate-300 mt-0.5">Time is up!</p>
+            </div>
+            <button onclick="hideToast()" class="ml-auto text-slate-400 hover:text-white font-bold text-sm">✕</button>
+        </div>
+    </div>
+
+    <!-- Confetti Canvas -->
+    <canvas id="confettiCanvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
+
+    <script>
+        // Storage Key
+        const STORAGE_KEY = 'study_quest_pet_v5_data';
+
+        // Master Application Data State
+        let appData = {
+            stars: 75,
+            streak: 1,
+            lastCheckIn: '',
+            pet: {
+                type: 'cat', // 'cat', 'dog', 'bunny', 'fox', 'panda'
+                name: 'Mochi',
+                hunger: 85,
+                happiness: 90,
+                level: 1,
+                xp: 25,
+                hat: ''
+            },
+            homeworks: [
+                {
+                    id: '1',
+                    subject: 'Math',
+                    title: 'Solve Quadratic Equations Worksheet (p. 42)',
+                    duration: 35,
+                    priority: 'high',
+                    date: new Date().toISOString().split('T')[0],
+                    time: '18:00',
+                    completed: false
+                },
+                {
+                    id: '2',
+                    subject: 'English',
+                    title: 'Read Chapter 4 of Novel & Summarize Key Ideas',
+                    duration: 25,
+                    priority: 'medium',
+                    date: new Date().toISOString().split('T')[0],
+                    time: '19:00',
+                    completed: false
+                }
+            ],
+            practiceStats: {
+                totalAnswered: 0,
+                correctCount: 0,
+                starsEarned: 0
+            },
+            customQuestions: []
+        };
+
+        // Sound Effects Engine (Web Audio API Synthesizer - Zero External Files)
+        let soundEnabled = true;
+        let audioCtx = null;
+
+        function playSynthesizedSound(type) {
+            if (!soundEnabled) return;
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'correct') {
+                    // Upbeat major triad chord
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+                    osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+                    osc.start(now);
+                    osc.stop(now + 0.4);
+                } else if (type === 'wrong') {
+                    // Low gentle double pulse
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(220, now); // A3
+                    osc.frequency.setValueAtTime(196, now + 0.12); // G3
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+                    osc.start(now);
+                    osc.stop(now + 0.3);
+                } else if (type === 'chime') {
+                    // Warm alarm chime
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(587.33, now); // D5
+                    osc.frequency.setValueAtTime(880, now + 0.2); // A5
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+                    osc.start(now);
+                    osc.stop(now + 0.8);
+                } else if (type === 'pet') {
+                    // Happy squeak
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    osc.frequency.exponentialRampToValueAtTime(1200, now + 0.15);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+                    osc.start(now);
+                    osc.stop(now + 0.2);
+                }
+            } catch (e) {
+                console.warn('Audio not initialized yet:', e);
+            }
+        }
+
+        function toggleSoundFx() {
+            soundEnabled = !soundEnabled;
+            const btn = document.getElementById('bgSoundToggle');
+            if (soundEnabled) {
+                btn.innerHTML = '🔔 Sound Enabled';
+                btn.className = 'px-3 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-lg border border-amber-200 transition';
+                playSynthesizedSound('correct');
+            } else {
+                btn.innerHTML = '🔕 Sound Muted';
+                btn.className = 'px-3 py-1.5 bg-slate-200 text-slate-600 font-bold rounded-lg border border-slate-300 transition';
+            }
+        }
+
+        // Render Vector SVG Cute Mascot Companions with Animations and Accessories
+        function renderPetSVG(type, hunger, happiness, hat) {
+            let bodyColor = "#FFB366"; // Mochi Cat
+            let earColor = "#E68A00";
+            let cheekColor = "#FF9999";
+
+            if (type === 'dog') {
+                bodyColor = "#E2A76F";
+                earColor = "#A66E38";
+            } else if (type === 'bunny') {
+                bodyColor = "#F3E8FF";
+                earColor = "#DDD6FE";
+            } else if (type === 'fox') {
+                bodyColor = "#FB923C";
+                earColor = "#C2410C";
+            } else if (type === 'panda') {
+                bodyColor = "#FFFFFF";
+                earColor = "#334155";
+            }
+
+            // Accessories Render
+            let hatSvg = '';
+            if (hat === '👑') {
+                hatSvg = `<text x="90" y="28" font-size="32">👑</text>`;
+            } else if (hat === '🕶️') {
+                hatSvg = `<text x="82" y="92" font-size="34">🕶️</text>`;
+            } else if (hat === '🎓') {
+                hatSvg = `<text x="88" y="28" font-size="32">🎓</text>`;
+            } else if (hat === '🥳') {
+                hatSvg = `<text x="92" y="28" font-size="32">🥳</text>`;
+            }
+
+            // Pet Base SVG
+            return `
+                <svg viewBox="0 0 200 200" class="w-full h-full select-none">
+                    <!-- Tail -->
+                    <path d="M 145 130 Q 185 110 170 80 Q 155 50 140 90" fill="none" stroke="${earColor}" stroke-width="12" stroke-linecap="round" class="animate-tail-wag" />
+                    
+                    <!-- Ears -->
+                    <g class="animate-ear-twitch">
+                        <polygon points="50,70 30,20 80,45" fill="${earColor}" />
+                        <polygon points="150,70 170,20 120,45" fill="${earColor}" />
+                    </g>
+                    
+                    <!-- Head & Body -->
+                    <ellipse cx="100" cy="115" rx="55" ry="48" fill="${bodyColor}" />
+                    <circle cx="100" cy="85" r="48" fill="${bodyColor}" />
+                    
+                    <!-- Panda Eye Patches -->
+                    ${type === 'panda' ? `
+                        <ellipse cx="80" cy="80" rx="14" ry="10" fill="#334155" transform="rotate(-15 80 80)" />
+                        <ellipse cx="120" cy="80" rx="14" ry="10" fill="#334155" transform="rotate(15 120 80)" />
+                    ` : ''}
+
+                    <!-- Eyes -->
+                    <circle cx="80" cy="80" r="${happiness > 50 ? '6' : '3'}" fill="#1E293B" />
+                    <circle cx="120" cy="80" r="${happiness > 50 ? '6' : '3'}" fill="#1E293B" />
+                    <circle cx="82" cy="78" r="2" fill="#FFFFFF" />
+                    <circle cx="122" cy="78" r="2" fill="#FFFFFF" />
+
+                    <!-- Blushing Cheeks -->
+                    <circle cx="68" cy="92" r="8" fill="${cheekColor}" opacity="0.6" />
+                    <circle cx="132" cy="92" r="8" fill="${cheekColor}" opacity="0.6" />
+
+                    <!-- Nose & Mouth -->
+                    <polygon points="97,88 103,88 100,92" fill="#E11D48" />
+                    <path d="M 94 95 Q 100 102 100 95 Q 100 102 106 95" fill="none" stroke="#1E293B" stroke-width="2.5" stroke-linecap="round" />
+
+                    <!-- Paws -->
+                    <ellipse cx="75" cy="150" rx="14" ry="10" fill="${earColor}" />
+                    <ellipse cx="125" cy="150" rx="14" ry="10" fill="${earColor}" />
+
+                    <!-- Worn Accessory -->
+                    ${hatSvg}
+                </svg>
+            `;
+        }
+
+        // Update Pet Visuals & Stats Bars
+        function updatePetDisplay() {
+            const container = document.getElementById('petSvgContainer');
+            if (container) {
+                container.innerHTML = renderPetSVG(appData.pet.type, appData.pet.hunger, appData.pet.happiness, appData.pet.hat);
+            }
+
+            document.getElementById('petName').innerText = appData.pet.name;
+            document.getElementById('petLevelBadge').innerText = `Lvl ${appData.pet.level}`;
+            document.getElementById('starBalance').innerText = appData.stars;
+            document.getElementById('shopStarBalance').innerText = appData.stars;
+            document.getElementById('streakCount').innerText = `${appData.streak} Day${appData.streak > 1 ? 's' : ''}`;
+
+            // Vitals
+            document.getElementById('hungerVal').innerText = `${appData.pet.hunger}%`;
+            document.getElementById('hungerBar').style.width = `${appData.pet.hunger}%`;
+
+            document.getElementById('happinessVal').innerText = `${appData.pet.happiness}%`;
+            document.getElementById('happinessBar').style.width = `${appData.pet.happiness}%`;
+
+            const maxXp = appData.pet.level * 100;
+            document.getElementById('petXpVal').innerText = `${appData.pet.xp} / ${maxXp} XP`;
+            document.getElementById('petXpBar').style.width = `${Math.min(100, (appData.pet.xp / maxXp) * 100)}%`;
+
+            // Mood Text
+            const statusText = document.getElementById('petStatusText');
+            if (appData.pet.hunger < 30) {
+                statusText.innerText = `"Tummy is rumbling... Treat me please! 🍖"`;
+            } else if (appData.pet.happiness < 40) {
+                statusText.innerText = `"Feeling a bit lonely... Let's play toys! 🎾"`;
+            } else {
+                statusText.innerText = `"Purr... Studying together is super fun! ❤️"`;
+            }
+
+            saveState();
+        }
+
+        // Tap Pet Interactive Hugs
+        function petCompanion(event) {
+            appData.pet.happiness = Math.min(100, appData.pet.happiness + 2);
+            playSynthesizedSound('pet');
+
+            // Spawn floating heart particle at click location
+            const stage = document.getElementById('petStage');
+            const rect = stage.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            const particle = document.createElement('div');
+            particle.className = 'floating-particle text-2xl z-20';
+            particle.innerText = ['❤️', '💖', '⭐', '✨'][Math.floor(Math.random() * 4)];
+            particle.style.left = `${x - 12}px`;
+            particle.style.top = `${y - 12}px`;
+
+            stage.appendChild(particle);
+            setTimeout(() => particle.remove(), 1200);
+
+            updatePetDisplay();
+        }
+
+        function feedPet() {
+            if (appData.stars < 10) {
+                showToast('Need Stars', 'Complete homework tasks or practice quizzes to get more Stars!', '⭐');
+                return;
+            }
+            appData.stars -= 10;
+            appData.pet.hunger = Math.min(100, appData.pet.hunger + 30);
+            addPetXp(15);
+            playSynthesizedSound('pet');
+            showToast('Nom Nom!', `${appData.pet.name} enjoyed the yummy treats! +30 Hunger`, '🍖');
+            updatePetDisplay();
+        }
+
+        function playWithPet() {
+            if (appData.stars < 10) {
+                showToast('Need Stars', 'Complete homework tasks or practice quizzes to get more Stars!', '⭐');
+                return;
+            }
+            appData.stars -= 10;
+            appData.pet.happiness = Math.min(100, appData.pet.happiness + 35);
+            addPetXp(15);
+            playSynthesizedSound('pet');
+            showToast('Playtime!', `${appData.pet.name} loved playing bouncy ball! +35 Happiness`, '🎾');
+            updatePetDisplay();
+        }
+
+        function addPetXp(amount) {
+            appData.pet.xp += amount;
+            const maxXp = appData.pet.level * 100;
+            if (appData.pet.xp >= maxXp) {
+                appData.pet.xp -= maxXp;
+                appData.pet.level += 1;
+                triggerConfetti();
+                playSynthesizedSound('correct');
+                showToast('LEVEL UP! 🎉', `${appData.pet.name} grew to Level ${appData.pet.level}!`, '🌟');
+            }
+        }
+
+        // Phone Detox Timer Logic (30 Mins)
+        let phoneTimeLeft = 30 * 60;
+        let phoneTimerInterval = null;
+        let phoneRunning = false;
+
+        function togglePhoneTimer() {
+            const btn = document.getElementById('phoneStartBtn');
+            if (!phoneRunning) {
+                phoneRunning = true;
+                btn.innerHTML = '⏸ Pause Break';
+                btn.className = 'px-6 py-2.5 bg-amber-800 hover:bg-amber-900 text-amber-50 font-black rounded-xl shadow-md transition transform hover:scale-105 active:scale-95 text-sm';
+                document.getElementById('phoneStatusText').innerText = 'Unwinding Peacefully...';
+
+                phoneTimerInterval = setInterval(() => {
+                    phoneTimeLeft--;
+                    updatePhoneDisplay();
+
+                    if (phoneTimeLeft <= 0) {
+                        clearInterval(phoneTimerInterval);
+                        phoneRunning = false;
+                        playSynthesizedSound('chime');
+                        appData.stars += 15;
+                        addPetXp(20);
+                        triggerConfetti();
+                        showToast('Phone Break Complete!', 'Great job unwinding! +15 Stars earned.', '🎉');
+                        resetPhoneTimer();
+                    }
+                }, 1000);
+            } else {
+                phoneRunning = false;
+                clearInterval(phoneTimerInterval);
+                btn.innerHTML = '▶ Resume Break';
+                btn.className = 'px-6 py-2.5 bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-300 hover:to-orange-300 text-amber-950 font-black rounded-xl shadow-md transition transform hover:scale-105 active:scale-95 text-sm';
+                document.getElementById('phoneStatusText').innerText = 'Paused';
+            }
+        }
+
+        function resetPhoneTimer() {
+            clearInterval(phoneTimerInterval);
+            phoneRunning = false;
+            phoneTimeLeft = 30 * 60;
+            document.getElementById('phoneStartBtn').innerHTML = '▶ Start Phone Break';
+            document.getElementById('phoneStatusText').innerText = 'Ready to Start';
+            updatePhoneDisplay();
+        }
+
+        function updatePhoneDisplay() {
+            const m = Math.floor(phoneTimeLeft / 60);
+            const s = phoneTimeLeft % 60;
+            document.getElementById('phoneTimeDisplay').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+
+            const total = 30 * 60;
+            const dashoffset = 553 - (553 * phoneTimeLeft) / total;
+            document.getElementById('phoneProgress').style.strokeDashoffset = dashoffset;
+        }
+
+        // Focus & Rest Pomodoro Timer Logic (45m / 10m)
+        let focusMode = 'focus'; // 'focus' or 'break'
+        let focusTimeLeft = 45 * 60;
+        let focusTimerInterval = null;
+        let focusRunning = false;
+
+        function switchTimerMode(mode) {
+            focusMode = mode;
+            clearInterval(focusTimerInterval);
+            focusRunning = false;
+
+            const btnFocus = document.getElementById('btnModeFocus');
+            const btnBreak = document.getElementById('btnModeBreak');
+            const badge = document.getElementById('focusStatusBadge');
+            const startBtn = document.getElementById('focusStartBtn');
+
+            if (mode === 'focus') {
+                focusTimeLeft = 45 * 60;
+                btnFocus.className = 'py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm transition flex items-center justify-center gap-2 bg-orange-500 text-white shadow-sm';
+                btnBreak.className = 'py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm transition flex items-center justify-center gap-2 text-amber-900/70 hover:text-amber-950';
+                badge.className = 'mt-2 px-3.5 py-1 rounded-full bg-orange-100 text-orange-900 text-xs font-bold border border-orange-200';
+                badge.innerText = 'Ready for Homework';
+                startBtn.innerText = '▶ Start 45-Min Focus';
+            } else {
+                focusTimeLeft = 10 * 60;
+                btnBreak.className = 'py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm transition flex items-center justify-center gap-2 bg-emerald-500 text-white shadow-sm';
+                btnFocus.className = 'py-2.5 px-3 rounded-xl font-extrabold text-xs sm:text-sm transition flex items-center justify-center gap-2 text-amber-900/70 hover:text-amber-950';
+                badge.className = 'mt-2 px-3.5 py-1 rounded-full bg-emerald-100 text-emerald-900 text-xs font-bold border border-emerald-200';
+                badge.innerText = 'Rest & Recharge Time';
+                startBtn.innerText = '▶ Start 10-Min Break';
+            }
+            updateFocusDisplay();
+        }
+
+        function toggleFocusTimer() {
+            const btn = document.getElementById('focusStartBtn');
+            if (!focusRunning) {
+                focusRunning = true;
+                btn.innerText = '⏸ Pause Sprint';
+                btn.className = 'px-8 py-3 bg-amber-800 hover:bg-amber-900 text-amber-50 font-black rounded-2xl shadow-md transition transform hover:scale-105 active:scale-95 text-base';
+
+                focusTimerInterval = setInterval(() => {
+                    focusTimeLeft--;
+                    updateFocusDisplay();
+
+                    if (focusTimeLeft <= 0) {
+                        clearInterval(focusTimerInterval);
+                        focusRunning = false;
+                        playSynthesizedSound('chime');
+
+                        if (focusMode === 'focus') {
+                            appData.stars += 50;
+                            addPetXp(50);
+                            triggerConfetti();
+                            showToast('Sprint Finished!', 'Awesome study session! +50 Stars earned.', '🎉');
+                            switchTimerMode('break');
+                        } else {
+                            showToast('Break Completed!', 'Ready for another productive sprint?', '☕');
+                            switchTimerMode('focus');
+                        }
+                    }
+                }, 1000);
+            } else {
+                focusRunning = false;
+                clearInterval(focusTimerInterval);
+                btn.innerText = '▶ Resume Sprint';
+                btn.className = 'px-8 py-3 bg-gradient-to-r from-orange-400 via-rose-400 to-amber-400 hover:from-orange-300 hover:to-amber-300 text-amber-950 font-black rounded-2xl shadow-md transition transform hover:scale-105 active:scale-95 text-base';
+            }
+        }
+
+        function resetFocusTimer() {
+            switchTimerMode(focusMode);
+        }
+
+        function updateFocusDisplay() {
+            const m = Math.floor(focusTimeLeft / 60);
+            const s = focusTimeLeft % 60;
+            document.getElementById('focusTimeDisplay').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+
+            const total = focusMode === 'focus' ? 45 * 60 : 10 * 60;
+            const dashoffset = 678 - (678 * focusTimeLeft) / total;
+            document.getElementById('focusProgress').style.strokeDashoffset = dashoffset;
+        }
+
+        let currentCalendarDate = new Date();
+        let selectedFilter = 'all';
+
+        function renderCalendar() {
+            const year = currentCalendarDate.getFullYear();
+            const month = currentCalendarDate.getMonth();
+
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById('calendarTitle').innerText = `${monthNames[month]} ${year}`;
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            const container = document.getElementById('calendarDays');
+            container.innerHTML = '';
+
+            // Empty slots for padding
+            for (let i = 0; i < firstDay; i++) {
+                container.innerHTML += `<div class="h-9"></div>`;
+            }
+
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                const hasTask = appData.homeworks.some(hw => hw.date === dateStr && !hw.completed);
+
+                let cellClass = "h-9 flex items-center justify-center rounded-xl cursor-pointer font-bold transition text-amber-950 hover:bg-amber-100/80";
+
+                if (dateStr === todayStr) {
+                    cellClass += " bg-amber-400 text-amber-950 shadow-sm";
+                } else if (hasTask) {
+                    cellClass += " bg-rose-100 text-rose-950 border border-rose-300";
+                }
+
+                container.innerHTML += `
+                    <div onclick="filterByCalendarDate('${dateStr}')" class="${cellClass}">
+                        ${day}
+                    </div>
+                `;
+            }
+        }
+
+        function changeMonth(delta) {
+            currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta);
+            renderCalendar();
+        }
+
+        function filterByCalendarDate(dateStr) {
+            document.getElementById('selectedDateLabel').innerText = `Filter: Tasks for ${dateStr}`;
+            renderHomeworks(dateStr);
+        }
+
+        function setFilter(filter) {
+            selectedFilter = filter;
+            document.getElementById('selectedDateLabel').innerText = 'Showing: All Scheduled Assignments';
+            
+            ['filterAll', 'filterPending', 'filterCompleted'].forEach(id => {
+                document.getElementById(id).className = "px-3.5 py-1.5 rounded-xl bg-amber-100/60 text-amber-900/80 hover:text-amber-950 border border-amber-200";
+            });
+
+            if (filter === 'all') document.getElementById('filterAll').className = "px-3.5 py-1.5 rounded-xl bg-amber-200/80 text-amber-950 border border-amber-300";
+            if (filter === 'pending') document.getElementById('filterPending').className = "px-3.5 py-1.5 rounded-xl bg-amber-200/80 text-amber-950 border border-amber-300";
+            if (filter === 'completed') document.getElementById('filterCompleted').className = "px-3.5 py-1.5 rounded-xl bg-amber-200/80 text-amber-950 border border-amber-300";
+
+            renderHomeworks();
+        }
+
+        function renderHomeworks(specificDate = null) {
+            const container = document.getElementById('homeworkContainer');
+            const emptyState = document.getElementById('emptyState');
+            container.innerHTML = '';
+
+            let list = appData.homeworks;
+
+            if (specificDate) {
+                list = list.filter(hw => hw.date === specificDate);
+            } else if (selectedFilter === 'pending') {
+                list = list.filter(hw => !hw.completed);
+            } else if (selectedFilter === 'completed') {
+                list = list.filter(hw => hw.completed);
+            }
+
+            if (list.length === 0) {
+                container.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            container.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+
+            list.forEach(hw => {
+                const priorityBadge = hw.priority === 'high' 
+                    ? '<span class="px-2 py-0.5 rounded-lg bg-rose-100 text-rose-800 text-[10px] font-extrabold">🔴 High</span>'
+                    : hw.priority === 'medium'
+                    ? '<span class="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-800 text-[10px] font-extrabold">🟡 Medium</span>'
+                    : '<span class="px-2 py-0.5 rounded-lg bg-emerald-100 text-emerald-800 text-[10px] font-extrabold">🟢 Low</span>';
+
+                container.innerHTML += `
+                    <div class="p-4 rounded-2xl bg-white/90 border ${hw.completed ? 'border-emerald-200 bg-emerald-50/30' : 'border-amber-100'} flex items-center justify-between gap-3 shadow-sm hover:border-amber-300 transition">
+                        <div class="flex items-start gap-3">
+                            <button onclick="toggleHomeworkDone('${hw.id}')" class="mt-0.5 w-6 h-6 rounded-lg border-2 ${hw.completed ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-amber-300 hover:border-amber-500'} flex items-center justify-center text-xs font-bold transition">
+                                ${hw.completed ? '✓' : ''}
+                            </button>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-extrabold text-xs text-amber-900 bg-amber-100 px-2 py-0.5 rounded-md">${hw.subject}</span>
+                                    ${priorityBadge}
+                                </div>
+                                <h4 class="font-bold text-sm text-amber-950 mt-1 ${hw.completed ? 'line-through text-amber-800/60' : ''}">
+                                    ${hw.title}
+                                </h4>
+                                <div class="text-[11px] text-amber-800/70 font-semibold mt-0.5 flex items-center gap-2">
+                                    <span>⏳ ${hw.duration} mins</span>
+                                    <span>•</span>
+                                    <span>📅 Due: ${hw.date} at ${hw.time}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="deleteHomework('${hw.id}')" class="text-amber-800/40 hover:text-rose-600 font-bold text-sm px-2 py-1">
+                            ✕
+                        </button>
+                    </div>
+                `;
+            });
+        }
+
+        function toggleHomeworkDone(id) {
+            const hw = appData.homeworks.find(item => item.id === id);
+            if (hw) {
+                hw.completed = !hw.completed;
+                if (hw.completed) {
+                    appData.stars += 30;
+                    addPetXp(30);
+                    triggerConfetti();
+                    playSynthesizedSound('correct');
+                    showToast('Assignment Done!', 'Finished homework assignment! +30 Stars earned.', '🎉');
+                }
+                updatePetDisplay();
+                renderHomeworks();
+                renderCalendar();
+            }
+        }
+
+        function deleteHomework(id) {
+            appData.homeworks = appData.homeworks.filter(item => item.id !== id);
+            renderHomeworks();
+            renderCalendar();
+            saveState();
+        }
+
+        function openAddModal() {
+            document.getElementById('hwDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('addModal').classList.remove('hidden');
+        }
+
+        function closeAddModal() {
+            document.getElementById('addModal').classList.add('hidden');
+        }
+
+        function saveHomework(event) {
+            event.preventDefault();
+            const subject = document.getElementById('hwSubject').value;
+            const title = document.getElementById('hwTitle').value;
+            const duration = parseInt(document.getElementById('hwDuration').value);
+            const priority = document.getElementById('hwPriority').value;
+            const date = document.getElementById('hwDate').value;
+            const time = document.getElementById('hwTime').value;
+
+            appData.homeworks.unshift({
+                id: Date.now().toString(),
+                subject,
+                title,
+                duration,
+                priority,
+                date,
+                time,
+                completed: false
+            });
+
+            closeAddModal();
+            renderHomeworks();
+            renderCalendar();
+            showToast('Task Scheduled', 'New assignment added to your study planner!', '📝');
+            saveState();
+        }
+
+        // Comprehensive Multi-Topic Question Database across 6 Subjects & Topics
+        const PRACTICE_DATABASE = {
+            math: {
+                title: "📐 Math & Algebra",
+                topics: [
+                    {
+                        id: "m1",
+                        name: "Quadratic Equations & Factoring",
+                        desc: "Master standard form, quadratic formula & factoring roots",
+                        questions: [
+                            {
+                                q: "What are the roots of the quadratic equation x² - 5x + 6 = 0?",
+                                options: ["x = 2 and x = 3", "x = -2 and x = -3", "x = 1 and x = 6", "x = -1 and x = 5"],
+                                answer: 0,
+                                explanation: "Factor the quadratic into (x - 2)(x - 3) = 0. Solving gives x = 2 and x = 3."
+                            },
+                            {
+                                q: "What is the discriminant formula for ax² + bx + c = 0?",
+                                options: ["b² - 4ac", "b + 4ac", "2a / b²", "a² + b² - c²"],
+                                answer: 0,
+                                explanation: "The discriminant Δ = b² - 4ac tells us the nature of the roots (real, equal, or complex)."
+                            },
+                            {
+                                q: "If the discriminant b² - 4ac > 0, how many real roots exist?",
+                                options: ["Two distinct real roots", "Exactly one real root", "No real roots", "Infinitely many"],
+                                answer: 0,
+                                explanation: "A positive discriminant means the parabola crosses the x-axis twice, yielding 2 real roots."
+                            }
+                        ]
+                    },
+                    {
+                        id: "m2",
+                        name: "Order of Operations & Expressions",
+                        desc: "Practice PEMDAS / BODMAS evaluating multi-step equations",
+                        questions: [
+                            {
+                                q: "Evaluate the expression: 8 + 2 × (3² - 1) ÷ 4",
+                                options: ["12", "16", "20", "10"],
+                                answer: 0,
+                                explanation: "PEMDAS: Exponent 3²=9. Parentheses (9-1)=8. Multiply 2×8=16. Divide 16÷4=4. Add 8+4=12."
+                            },
+                            {
+                                q: "Simplify: 4(2x - 3) + 5x",
+                                options: ["13x - 12", "8x - 12", "13x + 12", "9x - 3"],
+                                answer: 0,
+                                explanation: "Distribute 4: 8x - 12 + 5x. Combine like terms: 8x + 5x = 13x - 12."
+                            }
+                        ]
+                    }
+                ]
+            },
+            science: {
+                title: "🧪 Science & Physics",
+                topics: [
+                    {
+                        id: "s1",
+                        name: "Cell Biology & Genetics",
+                        desc: "Organelles, DNA replication, Mitosis vs Meiosis",
+                        questions: [
+                            {
+                                q: "Which organelle is known as the powerhouse of the cell?",
+                                options: ["Mitochondria", "Nucleus", "Ribosome", "Golgi Apparatus"],
+                                answer: 0,
+                                explanation: "Mitochondria generate most of the chemical energy (ATP) needed to power cellular reactions."
+                            },
+                            {
+                                q: "What is the primary function of Ribosomes?",
+                                options: ["Protein Synthesis", "Lipid Storage", "Cell Movement", "DNA Replication"],
+                                answer: 0,
+                                explanation: "Ribosomes translate genetic mRNA instructions into protein chains essential for cell function."
+                            }
+                        ]
+                    },
+                    {
+                        id: "s2",
+                        name: "Newtonian Physics & Forces",
+                        desc: "Laws of motion, acceleration, gravity & energy conversion",
+                        questions: [
+                            {
+                                q: "According to Newton's Second Law, Force is equal to:",
+                                options: ["Mass × Acceleration (F = ma)", "Mass ÷ Velocity", "Work × Distance", "Gravity × Time"],
+                                answer: 0,
+                                explanation: "Newton's 2nd Law states that force equals mass times acceleration (F = ma)."
+                            },
+                            {
+                                q: "What unit is used to measure Energy and Work in the SI system?",
+                                options: ["Joule (J)", "Newton (N)", "Watt (W)", "Pascal (Pa)"],
+                                answer: 0,
+                                explanation: "The Joule (J) is the SI unit for energy and work (1 Joule = 1 Newton × 1 meter)."
+                            }
+                        ]
+                    }
+                ]
+            },
+            english: {
+                title: "🔤 English & Vocab",
+                topics: [
+                    {
+                        id: "e1",
+                        name: "Literary Devices & Figurative Language",
+                        desc: "Identify metaphors, similes, personification & hyperbole",
+                        questions: [
+                            {
+                                q: "Which literary device directly compares two things using 'like' or 'as'?",
+                                options: ["Simile", "Metaphor", "Alliteration", "Onomatopoeia"],
+                                answer: 0,
+                                explanation: "A simile explicitly compares two things using 'like' or 'as' (e.g., 'Brave as a lion')."
+                            },
+                            {
+                                q: "'The wind whispered through the dark trees.' This is an example of:",
+                                options: ["Personification", "Hyperbole", "Oxymoron", "Irony"],
+                                answer: 0,
+                                explanation: "Personification gives human qualities (whispering) to non-human objects (wind)."
+                            }
+                        ]
+                    },
+                    {
+                        id: "e2",
+                        name: "Advanced SAT Vocabulary",
+                        desc: "Enhance reading comprehension with essential vocabulary words",
+                        questions: [
+                            {
+                                q: "What is the synonym of the word 'PRAGMATIC'?",
+                                options: ["Practical & realistic", "Idealistic & dreamy", "Aggressive", "Careless"],
+                                answer: 0,
+                                explanation: "Pragmatic means dealing with things sensibly and realistically based on practical considerations."
+                            },
+                            {
+                                q: "Choose the word that means 'to make less severe or lighter':",
+                                options: ["Mitigate", "Exacerbate", "Denounce", "Elaborate"],
+                                answer: 0,
+                                explanation: "To mitigate means to alleviate, reduce, or lessen the severity or pain of something."
+                            }
+                        ]
+                    }
+                ]
+            },
+            history: {
+                title: "🌍 History & Civics",
+                topics: [
+                    {
+                        id: "h1",
+                        name: "World Geography & Capitals",
+                        desc: "Continents, oceans, landmark geography and capital cities",
+                        questions: [
+                            {
+                                q: "What is the capital city of Australia?",
+                                options: ["Canberra", "Sydney", "Melbourne", "Brisbane"],
+                                answer: 0,
+                                explanation: "Canberra is the federal capital of Australia, chosen as a compromise between Sydney and Melbourne."
+                            },
+                            {
+                                q: "Which is the longest river in the world?",
+                                options: ["Nile River", "Amazon River", "Mississippi River", "Yangtze River"],
+                                answer: 0,
+                                explanation: "The Nile River in Africa spans approximately 6,650 kilometers (4,130 miles)."
+                            }
+                        ]
+                    }
+                ]
+            },
+            cs: {
+                title: "💻 Computer Science",
+                topics: [
+                    {
+                        id: "c1",
+                        name: "Coding Fundamentals & Logic",
+                        desc: "Variables, loops, conditionals, functions & algorithms",
+                        questions: [
+                            {
+                                q: "In programming, what data structure stores an ordered collection of elements?",
+                                options: ["Array / List", "Boolean", "Integer", "String"],
+                                answer: 0,
+                                explanation: "Arrays or Lists store indexed sequential elements accessible by integer positions."
+                            },
+                            {
+                                q: "What is the time complexity of searching an item in a balanced Binary Search Tree (BST)?",
+                                options: ["O(log n)", "O(n²)", "O(1)", "O(n!)"],
+                                answer: 0,
+                                explanation: "Binary search eliminates half of the remaining elements at each step, yielding logarithmic O(log n) time."
+                            }
+                        ]
+                    }
+                ]
+            },
+            languages: {
+                title: "🗣️ Foreign Languages",
+                topics: [
+                    {
+                        id: "l1",
+                        name: "Spanish Key Expressions",
+                        desc: "Common conversational Spanish phrases & vocabulary",
+                        questions: [
+                            {
+                                q: "How do you say 'Good morning, how are you?' in Spanish?",
+                                options: ["Buenos días, ¿cómo estás?", "Buenas noches, ¿dónde estás?", "Hasta luego, por favor", "Muchas gracias, amigo"],
+                                answer: 0,
+                                explanation: "'Buenos días' means good morning, and '¿cómo estás?' asks how are you!"
+                            }
+                        ]
+                    }
+                ]
+            }
+        };
+
+        // Practice Hub Interactive State
+        let activeSubject = 'math';
+        let activePracticeMode = 'quiz'; // 'quiz', 'flashcards', 'speed'
+        let currentTopic = null;
+        let currentQuestionIndex = 0;
+        let quizScore = 0;
+        let flashcardFlipped = false;
+
+        // Speed Challenge State
+        let speedTimerInterval = null;
+        let speedTimeLeft = 60;
+        let speedScore = 0;
+
+        function selectSubject(subjectKey) {
+            activeSubject = subjectKey;
+
+            // Highlight Pills
+            ['math', 'science', 'english', 'history', 'cs', 'languages'].forEach(s => {
+                const btn = document.getElementById(`subj${s.charAt(0).toUpperCase() + s.slice(1)}`);
+                if (btn) {
+                    btn.className = s === subjectKey 
+                        ? "px-4 py-2 rounded-2xl bg-amber-500 text-white shadow-sm flex items-center gap-1.5 whitespace-nowrap transition"
+                        : "px-4 py-2 rounded-2xl bg-white/80 text-amber-900 hover:bg-amber-100 border border-amber-200 flex items-center gap-1.5 whitespace-nowrap transition";
+                }
+            });
+
+            renderTopicsList();
+        }
+
+        function setPracticeMode(mode) {
+            activePracticeMode = mode;
+
+            document.getElementById('btnModeQuiz').className = mode === 'quiz'
+                ? "px-3 py-1.5 rounded-lg bg-amber-500 text-white shadow-sm transition"
+                : "px-3 py-1.5 rounded-lg text-amber-900 hover:bg-white/60 transition";
+
+            document.getElementById('btnModeFlashcards').className = mode === 'flashcards'
+                ? "px-3 py-1.5 rounded-lg bg-amber-500 text-white shadow-sm transition"
+                : "px-3 py-1.5 rounded-lg text-amber-900 hover:bg-white/60 transition";
+
+            document.getElementById('btnModeSpeed').className = mode === 'speed'
+                ? "px-3 py-1.5 rounded-lg bg-amber-500 text-white shadow-sm transition"
+                : "px-3 py-1.5 rounded-lg text-amber-900 hover:bg-white/60 transition";
+
+            if (currentTopic) {
+                startPracticeSession(currentTopic);
+            } else {
+                renderTopicsList();
+            }
+        }
+
+        function renderTopicsList() {
+            const container = document.getElementById('topicsGrid');
+            container.innerHTML = '';
+
+            const subjectData = PRACTICE_DATABASE[activeSubject];
+            if (!subjectData) return;
+
+            // Include user-added custom questions for this subject if any
+            const customForSubject = appData.customQuestions.filter(q => q.subject === activeSubject);
+
+            subjectData.topics.forEach(topic => {
+                const qCount = topic.questions.length;
+                container.innerHTML += `
+                    <div onclick="startPracticeSession('${topic.id}')" class="p-4 rounded-2xl bg-white/90 border border-amber-200/80 hover:border-amber-400 cursor-pointer transition shadow-sm hover:shadow-md group flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between text-xs font-bold text-amber-800">
+                                <span>📚 ${qCount} Questions</span>
+                                <span class="text-amber-600 bg-amber-100 px-2 py-0.5 rounded-md">+25 ⭐ Reward</span>
+                            </div>
+                            <h4 class="font-extrabold text-sm text-amber-950 mt-1.5 group-hover:text-amber-600 transition">
+                                ${topic.name}
+                            </h4>
+                            <p class="text-xs text-amber-800/70 mt-1 leading-relaxed">
+                                ${topic.desc}
+                            </p>
+                        </div>
+                        <div class="mt-3 pt-2 border-t border-amber-100 flex items-center justify-between text-xs font-black text-amber-700">
+                            <span>Start Practice</span>
+                            <span class="group-hover:translate-x-1 transition">➔</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            if (customForSubject.length > 0) {
+                container.innerHTML += `
+                    <div onclick="startCustomPractice('${activeSubject}')" class="p-4 rounded-2xl bg-amber-50 border-2 border-dashed border-amber-300 hover:border-amber-500 cursor-pointer transition shadow-sm group flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between text-xs font-bold text-amber-800">
+                                <span>✏️ Custom Deck</span>
+                                <span class="text-amber-600 bg-amber-200 px-2 py-0.5 rounded-md">${customForSubject.length} Cards</span>
+                            </div>
+                            <h4 class="font-extrabold text-sm text-amber-950 mt-1.5">
+                                My Custom ${subjectData.title} Questions
+                            </h4>
+                            <p class="text-xs text-amber-800/70 mt-1">
+                                Questions you added for upcoming school quizzes.
+                            </p>
+                        </div>
+                        <div class="mt-3 pt-2 border-t border-amber-200 flex items-center justify-between text-xs font-black text-amber-800">
+                            <span>Practice Custom Deck</span>
+                            <span>➔</span>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function startPracticeSession(topicId) {
+            currentTopic = topicId;
+            currentQuestionIndex = 0;
+            quizScore = 0;
+            flashcardFlipped = false;
+
+            const subjectData = PRACTICE_DATABASE[activeSubject];
+            const topic = subjectData.topics.find(t => t.id === topicId);
+            if (!topic) return;
+
+            if (activePracticeMode === 'quiz') {
+                renderQuizCard(topic);
+            } else if (activePracticeMode === 'flashcards') {
+                renderFlashcard(topic);
+            } else if (activePracticeMode === 'speed') {
+                startSpeedChallenge(topic);
+            }
+        }
+
+        function startCustomPractice(subjectKey) {
+            const customQuestions = appData.customQuestions.filter(q => q.subject === subjectKey);
+            if (customQuestions.length === 0) return;
+
+            const customTopicObj = {
+                id: 'custom_' + subjectKey,
+                name: 'Custom Study Deck',
+                questions: customQuestions.map(q => ({
+                    q: q.question,
+                    options: [q.correctAns, q.wrong1, q.wrong2, "All of the above"].sort(() => Math.random() - 0.5),
+                    answer: 0, // dynamic check
+                    correctAns: q.correctAns,
+                    explanation: q.explanation || "Great memory retention!"
+                }))
+            };
+
+            currentTopic = customTopicObj.id;
+            currentQuestionIndex = 0;
+            quizScore = 0;
+
+            renderQuizCard(customTopicObj);
+        }
+
+        // Mode 1: Multiple Choice Quiz Card Render
+        function renderQuizCard(topicObj) {
+            const container = document.getElementById('practiceContainer');
+            const questions = topicObj.questions;
+
+            if (currentQuestionIndex >= questions.length) {
+                // Quiz Finish Summary
+                const pct = Math.round((quizScore / questions.length) * 100);
+                const earnedStars = quizScore * 5 + 15;
+                
+                appData.stars += earnedStars;
+                appData.practiceStats.totalAnswered += questions.length;
+                appData.practiceStats.correctCount += quizScore;
+                appData.practiceStats.starsEarned += earnedStars;
+                addPetXp(quizScore * 10);
+                triggerConfetti();
+                playSynthesizedSound('correct');
+
+                container.innerHTML = `
+                    <div class="text-center space-y-4 max-w-md py-4">
+                        <span class="text-5xl animate-bounce">🏆</span>
+                        <h3 class="text-2xl font-black text-amber-950">Topic Practice Complete!</h3>
+                        <p class="text-sm font-semibold text-amber-800">
+                            You scored <strong class="text-amber-600 text-lg">${quizScore} / ${questions.length}</strong> (${pct}% Accuracy)
+                        </p>
+                        
+                        <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200 flex justify-around text-xs font-bold text-amber-900">
+                            <div>
+                                <div class="text-amber-600 text-lg">+${earnedStars} ⭐</div>
+                                <div>Stars Earned</div>
+                            </div>
+                            <div>
+                                <div class="text-emerald-600 text-lg">+${quizScore * 10} XP</div>
+                                <div>Pet Growth</div>
+                            </div>
+                        </div>
+
+                        <button onclick="renderTopicsList()" class="px-6 py-3 bg-gradient-to-r from-amber-400 to-orange-400 text-amber-950 font-black rounded-xl shadow-md hover:brightness-105 transition text-sm">
+                            Back to Topic List
+                        </button>
+                    </div>
+                `;
+                updatePracticeStatsDisplay();
+                updatePetDisplay();
+                return;
+            }
+
+            const currentQ = questions[currentQuestionIndex];
+
+            container.innerHTML = `
+                <div class="w-full max-w-xl space-y-4">
+                    <!-- Progress Header -->
+                    <div class="flex items-center justify-between text-xs font-extrabold text-amber-800">
+                        <span>Question ${currentQuestionIndex + 1} of ${questions.length}</span>
+                        <span>Score: ${quizScore}</span>
+                    </div>
+
+                    <div class="w-full bg-amber-100 h-2 rounded-full overflow-hidden">
+                        <div class="bg-amber-500 h-full transition-all duration-300" style="width: ${((currentQuestionIndex + 1) / questions.length) * 100}%"></div>
+                    </div>
+
+                    <!-- Question Text -->
+                    <div class="p-4 bg-amber-50/80 rounded-2xl border border-amber-200">
+                        <h4 class="text-base sm:text-lg font-black text-amber-950 leading-snug">
+                            ${currentQ.q}
+                        </h4>
+                    </div>
+
+                    <!-- Options Buttons -->
+                    <div id="optionsGrid" class="space-y-2">
+                        ${currentQ.options.map((opt, idx) => `
+                            <button onclick="checkAnswer(${idx}, '${topicObj.id}')" class="w-full p-3.5 rounded-2xl bg-white border border-amber-200 hover:border-amber-400 text-left font-bold text-xs sm:text-sm text-amber-900 transition flex items-center justify-between group">
+                                <span>${opt}</span>
+                                <span class="w-6 h-6 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center text-xs font-extrabold group-hover:bg-amber-400 group-hover:text-amber-950 transition">
+                                    ${String.fromCharCode(65 + idx)}
+                                </span>
+                            </button>
+                        `).join('')}
+                    </div>
+
+                    <!-- Explanation Container -->
+                    <div id="explanationBox" class="hidden p-4 rounded-2xl text-xs font-bold leading-relaxed border animate-pop"></div>
+                </div>
+            `;
+        }
+
+        function checkAnswer(selectedIndex, topicId) {
+            const subjectData = PRACTICE_DATABASE[activeSubject];
+            const topic = subjectData ? subjectData.topics.find(t => t.id === topicId) : null;
+            const questions = topic ? topic.questions : appData.customQuestions;
+
+            const currentQ = questions[currentQuestionIndex];
+            const explanationBox = document.getElementById('explanationBox');
+            const optionsButtons = document.querySelectorAll('#optionsGrid button');
+
+            // Disable all option buttons
+            optionsButtons.forEach(btn => btn.disabled = true);
+
+            let isCorrect = false;
+            if (currentQ.correctAns) {
+                // Custom question
+                isCorrect = (currentQ.options[selectedIndex] === currentQ.correctAns);
+            } else {
+                isCorrect = (selectedIndex === currentQ.answer);
+            }
+
+            if (isCorrect) {
+                quizScore++;
+                playSynthesizedSound('correct');
+                optionsButtons[selectedIndex].className = "w-full p-3.5 rounded-2xl bg-emerald-500 text-white font-black text-xs sm:text-sm text-left flex items-center justify-between";
+                
+                explanationBox.className = "p-4 rounded-2xl text-xs font-bold leading-relaxed bg-emerald-50 text-emerald-900 border border-emerald-300 block";
+                explanationBox.innerHTML = `✅ <strong>Correct!</strong> ${currentQ.explanation}`;
+            } else {
+                playSynthesizedSound('wrong');
+                optionsButtons[selectedIndex].className = "w-full p-3.5 rounded-2xl bg-rose-500 text-white font-black text-xs sm:text-sm text-left flex items-center justify-between";
+                
+                explanationBox.className = "p-4 rounded-2xl text-xs font-bold leading-relaxed bg-rose-50 text-rose-900 border border-rose-300 block";
+                explanationBox.innerHTML = `❌ <strong>Incorrect.</strong> ${currentQ.explanation}`;
+            }
+
+            // Next Question Button
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (topic) renderQuizCard(topic);
+            }, 2200);
+        }
+
+        // Mode 2: 3D Interactive Flashcard Render
+        function renderFlashcard(topicObj) {
+            const container = document.getElementById('practiceContainer');
+            const questions = topicObj.questions;
+            const currentQ = questions[currentQuestionIndex];
+
+            container.innerHTML = `
+                <div class="w-full max-w-md flex flex-col items-center space-y-4">
+                    <div class="flex items-center justify-between w-full text-xs font-extrabold text-amber-800">
+                        <span>Flashcard ${currentQuestionIndex + 1} of ${questions.length}</span>
+                        <span>Tap Card to Flip 🔄</span>
+                    </div>
+
+                    <!-- 3D Card Container -->
+                    <div onclick="flipFlashcard()" class="w-full h-64 perspective-1000 cursor-pointer">
+                        <div id="flashcardInner" class="relative w-full h-full transform-style-3d rounded-3xl shadow-lg border border-amber-200">
+                            <!-- Front -->
+                            <div class="absolute inset-0 backface-hidden bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-6 flex flex-col items-center justify-center text-center">
+                                <span class="text-xs font-extrabold text-amber-700 uppercase tracking-wider mb-2">Question / Concept</span>
+                                <h4 class="text-lg font-black text-amber-950">${currentQ.q}</h4>
+                                <span class="mt-4 text-[11px] font-bold text-amber-600 bg-amber-100 px-3 py-1 rounded-full">Click to Reveal Answer 💡</span>
+                            </div>
+
+                            <!-- Back -->
+                            <div class="absolute inset-0 backface-hidden rotate-y-180 bg-slate-900 text-white rounded-3xl p-6 flex flex-col items-center justify-center text-center border border-amber-400">
+                                <span class="text-xs font-extrabold text-amber-400 uppercase tracking-wider mb-2">Answer & Explanation</span>
+                                <h4 class="text-base font-bold text-emerald-300">${currentQ.options[currentQ.answer] || currentQ.correctAns}</h4>
+                                <p class="text-xs text-slate-300 mt-2">${currentQ.explanation}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Controls -->
+                    <div class="flex items-center gap-3 w-full">
+                        <button onclick="prevFlashcard('${topicObj.id}')" class="flex-1 py-2.5 bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold rounded-xl text-xs transition">
+                            ❮ Previous
+                        </button>
+                        <button onclick="nextFlashcard('${topicObj.id}')" class="flex-1 py-2.5 bg-gradient-to-r from-amber-400 to-orange-400 text-amber-950 font-black rounded-xl text-xs transition">
+                            Next Card ❯
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function flipFlashcard() {
+            const card = document.getElementById('flashcardInner');
+            flashcardFlipped = !flashcardFlipped;
+            if (flashcardFlipped) {
+                card.classList.add('rotate-y-180');
+            } else {
+                card.classList.remove('rotate-y-180');
+            }
+        }
+
+        function nextFlashcard(topicId) {
+            const subjectData = PRACTICE_DATABASE[activeSubject];
+            const topic = subjectData.topics.find(t => t.id === topicId);
+            if (topic) {
+                currentQuestionIndex = (currentQuestionIndex + 1) % topic.questions.length;
+                flashcardFlipped = false;
+                renderFlashcard(topic);
+            }
+        }
+
+        function prevFlashcard(topicId) {
+            const subjectData = PRACTICE_DATABASE[activeSubject];
+            const topic = subjectData.topics.find(t => t.id === topicId);
+            if (topic) {
+                currentQuestionIndex = (currentQuestionIndex - 1 + topic.questions.length) % topic.questions.length;
+                flashcardFlipped = false;
+                renderFlashcard(topic);
+            }
+        }
+
+        // Mode 3: 60-Second Speed Challenge
+        function startSpeedChallenge(topicObj) {
+            speedTimeLeft = 60;
+            speedScore = 0;
+            currentQuestionIndex = 0;
+
+            const container = document.getElementById('practiceContainer');
+
+            container.innerHTML = `
+                <div class="w-full max-w-md text-center space-y-4">
+                    <div class="flex items-center justify-between text-xs font-black text-amber-900">
+                        <span class="text-rose-600 animate-pulse">⏳ Time Left: <span id="speedTimerVal">60</span>s</span>
+                        <span class="text-amber-600">⚡ Score: <span id="speedScoreVal">0</span></span>
+                    </div>
+
+                    <div id="speedQBox" class="p-5 bg-amber-50 rounded-2xl border border-amber-200 font-black text-base text-amber-950">
+                        ${topicObj.questions[0].q}
+                    </div>
+
+                    <div id="speedOptionsGrid" class="grid grid-cols-2 gap-2">
+                        ${topicObj.questions[0].options.map((opt, idx) => `
+                            <button onclick="checkSpeedAnswer(${idx}, '${topicObj.id}')" class="p-3 bg-white hover:bg-amber-100 rounded-xl border border-amber-200 text-xs font-bold text-amber-900 transition">
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            clearInterval(speedTimerInterval);
+            speedTimerInterval = setInterval(() => {
+                speedTimeLeft--;
+                const timerElem = document.getElementById('speedTimerVal');
+                if (timerElem) timerElem.innerText = speedTimeLeft;
+
+                if (speedTimeLeft <= 0) {
+                    clearInterval(speedTimerInterval);
+                    finishSpeedChallenge();
+                }
+            }, 1000);
+        }
+
+        function checkSpeedAnswer(idx, topicId) {
+            const subjectData = PRACTICE_DATABASE[activeSubject];
+            const topic = subjectData.topics.find(t => t.id === topicId);
+            const currentQ = topic.questions[currentQuestionIndex];
+
+            if (idx === currentQ.answer) {
+                speedScore += 10;
+                playSynthesizedSound('correct');
+            } else {
+                playSynthesizedSound('wrong');
+            }
+
+            document.getElementById('speedScoreVal').innerText = speedScore;
+            currentQuestionIndex = (currentQuestionIndex + 1) % topic.questions.length;
+
+            const nextQ = topic.questions[currentQuestionIndex];
+            document.getElementById('speedQBox').innerText = nextQ.q;
+
+            const grid = document.getElementById('speedOptionsGrid');
+            grid.innerHTML = nextQ.options.map((opt, oIdx) => `
+                <button onclick="checkSpeedAnswer(${oIdx}, '${topicId}')" class="p-3 bg-white hover:bg-amber-100 rounded-xl border border-amber-200 text-xs font-bold text-amber-900 transition">
+                    ${opt}
+                </button>
+            `).join('');
+        }
+
+        function finishSpeedChallenge() {
+            const container = document.getElementById('practiceContainer');
+            const earnedStars = Math.floor(speedScore / 2);
+            appData.stars += earnedStars;
+            addPetXp(speedScore);
+            triggerConfetti();
+
+            container.innerHTML = `
+                <div class="text-center space-y-4 max-w-sm py-4">
+                    <span class="text-5xl">⚡</span>
+                    <h3 class="text-2xl font-black text-amber-950">Speed Challenge Complete!</h3>
+                    <p class="text-sm font-semibold text-amber-800">
+                        High Speed Score: <strong class="text-orange-600 text-lg">${speedScore} Points</strong>
+                    </p>
+
+                    <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs font-bold text-amber-900">
+                        Earned +${earnedStars} ⭐ Bonus Stars!
+                    </div>
+
+                    <button onclick="renderTopicsList()" class="px-6 py-2.5 bg-gradient-to-r from-amber-400 to-orange-400 text-amber-950 font-black rounded-xl text-xs transition">
+                        Back to Topics
+                    </button>
+                </div>
+            `;
+            updatePetDisplay();
+        }
+
+        function updatePracticeStatsDisplay() {
+            document.getElementById('totalQuestionsStat').innerText = appData.practiceStats.totalAnswered;
+            const pct = appData.practiceStats.totalAnswered > 0 
+                ? Math.round((appData.practiceStats.correctCount / appData.practiceStats.totalAnswered) * 100) 
+                : 100;
+            document.getElementById('accuracyStat').innerText = `${pct}%`;
+            document.getElementById('practiceStarsStat').innerText = `+${appData.practiceStats.starsEarned} ⭐`;
+        }
+
+        function openCustomDeckModal() {
+            document.getElementById('customDeckModal').classList.remove('hidden');
+        }
+
+        function closeCustomDeckModal() {
+            document.getElementById('customDeckModal').classList.add('hidden');
+        }
+
+        function saveCustomQuestion(event) {
+            event.preventDefault();
+            const subject = document.getElementById('customSubject').value;
+            const question = document.getElementById('customQuestionText').value;
+            const correctAns = document.getElementById('customCorrectAns').value;
+            const wrong1 = document.getElementById('customWrong1').value;
+            const wrong2 = document.getElementById('customWrong2').value;
+            const explanation = document.getElementById('customExplanation').value;
+
+            appData.customQuestions.push({
+                id: Date.now().toString(),
+                subject,
+                question,
+                correctAns,
+                wrong1,
+                wrong2,
+                explanation
+            });
+
+            closeCustomDeckModal();
+            renderTopicsList();
+            showToast('Custom Question Added', 'Added to your study cards!', '✏️');
+            saveState();
+        }
+
+        function openAdoptionModal() {
+            document.getElementById('adoptionModal').classList.remove('hidden');
+        }
+
+        function selectPetType(type) {
+            appData.pet.type = type;
+            ['Cat', 'Dog', 'Bunny', 'Fox', 'Panda'].forEach(p => {
+                const btn = document.getElementById(`adopt${p}Btn`);
+                if (btn) btn.className = p.toLowerCase() === type 
+                    ? "p-3 rounded-2xl border-2 border-amber-400 bg-amber-50 flex flex-col items-center gap-1 hover:scale-105 transition text-center"
+                    : "p-3 rounded-2xl border-2 border-amber-200 bg-white flex flex-col items-center gap-1 hover:scale-105 transition text-center";
+            });
+        }
+
+        function confirmPetAdoption() {
+            const nameInput = document.getElementById('petNameInput').value.trim();
+            if (nameInput) appData.pet.name = nameInput;
+            document.getElementById('adoptionModal').classList.add('hidden');
+            updatePetDisplay();
+            showToast('New Companion!', `Welcome your new friend, ${appData.pet.name}!`, '🐾');
+        }
+
+        function openShopModal() {
+            document.getElementById('shopModal').classList.remove('hidden');
+        }
+
+        function closeShopModal() {
+            document.getElementById('shopModal').classList.add('hidden');
+        }
+
+        function buyShopItem(itemType, cost) {
+            if (appData.stars < cost) {
+                showToast('Not Enough Stars', 'Solve practice quizzes or finish homework to earn stars!', '⭐');
+                return;
+            }
+            appData.stars -= cost;
+            if (itemType === 'food_kibble') appData.pet.hunger = Math.min(100, appData.pet.hunger + 25);
+            if (itemType === 'food_treat') {
+                appData.pet.hunger = Math.min(100, appData.pet.hunger + 50);
+                addPetXp(25);
+            }
+            if (itemType === 'toy_ball') appData.pet.happiness = Math.min(100, appData.pet.happiness + 30);
+            if (itemType === 'toy_plush') appData.pet.happiness = Math.min(100, appData.pet.happiness + 60);
+
+            playSynthesizedSound('pet');
+            updatePetDisplay();
+            showToast('Item Purchased!', 'Your pet loves the new treat/toy!', '🎉');
+        }
+
+        function buyAccessory(hatSymbol, cost) {
+            if (appData.stars < cost) {
+                showToast('Not Enough Stars', 'Solve practice quizzes or finish homework to earn stars!', '⭐');
+                return;
+            }
+            appData.stars -= cost;
+            appData.pet.hat = hatSymbol;
+            playSynthesizedSound('pet');
+            updatePetDisplay();
+            showToast('Outfit Unlocked!', `${appData.pet.name} is now wearing ${hatSymbol}!`, '👑');
+        }
+
+        function openCheckInModal() {
+            document.getElementById('checkInModal').classList.remove('hidden');
+        }
+
+        function closeCheckInModal() {
+            document.getElementById('checkInModal').classList.add('hidden');
+        }
+
+        function claimDailyCheckIn() {
+            const today = new Date().toISOString().split('T')[0];
+            if (appData.lastCheckIn === today) {
+                showToast('Already Claimed', 'You have already collected today\'s check-in bonus!', '📅');
+                return;
+            }
+            appData.lastCheckIn = today;
+            appData.stars += 25;
+            appData.streak += 1;
+            triggerConfetti();
+            playSynthesizedSound('correct');
+            closeCheckInModal();
+            updatePetDisplay();
+            showToast('Daily Bonus Claimed!', '+25 Stars added to your balance!', '🎁');
+        }
+
+        // Toast & Confetti Utilities
+        function showToast(title, msg, icon = '🔔') {
+            const box = document.getElementById('toastBox');
+            document.getElementById('toastIcon').innerText = icon;
+            document.getElementById('toastTitle').innerText = title;
+            document.getElementById('toastMessage').innerText = msg;
+            box.classList.remove('hidden');
+            setTimeout(() => hideToast(), 3500);
+        }
+
+        function hideToast() {
+            document.getElementById('toastBox').classList.add('hidden');
+        }
+
+        function triggerConfetti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const colors = ['#F59E0B', '#10B981', '#06B6D4', '#EC4899', '#8B5CF6'];
+
+            for (let i = 0; i < 60; i++) {
+                particles.push({
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    vx: (Math.random() - 0.5) * 12,
+                    vy: (Math.random() - 0.7) * 12,
+                    size: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)]
+                });
+            }
+
+            let frame = 0;
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.vy += 0.3; // gravity
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(p.x, p.y, p.size, p.size);
+                });
+                frame++;
+                if (frame < 60) requestAnimationFrame(animate);
+                else ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+            animate();
+        }
+
+        // Persistence Helpers
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+            } catch (e) {
+                console.warn('Storage quota exceeded:', e);
+            }
+        }
+
+        function loadState() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    appData = Object.assign(appData, JSON.parse(saved));
+                }
+            } catch (e) {
+                console.warn('Could not parse saved data:', e);
+            }
+        }
+
+        // Window Initialization
+        window.onload = function() {
+            loadState();
+            updatePetDisplay();
+            renderCalendar();
+            renderHomeworks();
+            selectSubject('math');
+            updatePracticeStatsDisplay();
+
+            // Setup smooth scroll for header navigation
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+        };
+    </script>
+</body>
+</html>

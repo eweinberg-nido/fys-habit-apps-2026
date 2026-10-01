@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamSlice - AI Sleep & Pizza Rewards</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Fredoka & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tone.js for web audio alarm sound effects -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pink: {
+                            50: '#fff5f7',
+                            100: '#ffe3ec',
+                            200: '#ffc9dc',
+                            300: '#ffa1c2',
+                            400: '#ff699e',
+                            500: '#ff3b7e',
+                            600: '#e61d62',
+                            700: '#c20e48',
+                            800: '#a1103d',
+                            900: '#861237',
+                        },
+                        crust: '#e29555',
+                        sauce: '#d33f34',
+                        cheese: '#ffdc73'
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fff5f7;
+            color: #4a2838;
+        }
+        h1, h2, h3, .font-fun {
+            font-family: 'Fredoka', sans-serif;
+        }
+        .pizza-canvas {
+            touch-action: none;
+            cursor: pointer;
+        }
+        .glow-pink {
+            box-shadow: 0 0 20px rgba(255, 105, 158, 0.35);
+        }
+        /* Custom smooth scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #ffe3ec;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ffa1c2;
+            border-radius: 999px;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.03); opacity: 1; box-shadow: 0 0 30px rgba(255, 59, 126, 0.6); }
+        }
+        .animate-pulse-glow {
+            animation: pulseGlow 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-pink-50 text-gray-800">
+
+    <header class="bg-white/80 backdrop-blur-md border-b border-pink-200 sticky top-0 z-30">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-400 to-pink-600 flex items-center justify-center text-white text-xl shadow-md font-fun">
+                    <i class="fa-solid font-bold fa-pizza-slice"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-pink-600 leading-tight">DreamSlice</h1>
+                    <p class="text-xs text-pink-400 font-medium">FYS Sleep & Rest Companion</p>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="flex items-center gap-3">
+                <div class="bg-pink-100 border border-pink-200 px-3 py-1.5 rounded-full flex items-center gap-2 text-pink-700 font-fun font-semibold text-sm shadow-sm">
+                    <i class="fa-solid fa-coins text-amber-500 text-base"></i>
+                    <span id="userCoins">0</span>
+                    <span class="text-xs font-normal text-pink-500">Coins</span>
+                </div>
+                <div class="bg-pink-100 border border-pink-200 px-3 py-1.5 rounded-full flex items-center gap-2 text-pink-700 font-fun font-semibold text-sm shadow-sm hidden sm:flex">
+                    <i class="fa-solid fa-fire text-orange-500"></i>
+                    <span id="userStreak">0</span>
+                    <span class="text-xs font-normal text-pink-500">Day Streak</span>
+                </div>
+                <button id="openSettingsBtn" class="p-2 rounded-full hover:bg-pink-100 text-pink-500 transition-colors">
+                    <i class="fa-solid fa-gear text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Sidebar / Navigation Tabs -->
+        <nav class="lg:col-span-3 flex lg:flex-col gap-2 overflow-x-auto pb-2 lg:pb-0">
+            <button data-tab="dashboard" class="tab-btn active flex items-center gap-3 px-4 py-3 rounded-2xl font-fun font-medium text-pink-600 bg-pink-200 border border-pink-300 transition-all text-left w-full whitespace-nowrap">
+                <i class="fa-solid fa-compass text-lg"></i>
+                <span>Today's Hub</span>
+            </button>
+            <button data-tab="calendar" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-2xl font-fun font-medium text-pink-700 hover:bg-pink-100 transition-all text-left w-full whitespace-nowrap">
+                <i class="fa-solid fa-calendar-days text-lg text-indigo-500"></i>
+                <span>Afterschool Track</span>
+            </button>
+            <button data-tab="pizza" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-2xl font-fun font-medium text-pink-700 hover:bg-pink-100 transition-all text-left w-full whitespace-nowrap">
+                <i class="fa-solid fa-pizza-slice text-lg text-pink-500"></i>
+                <span>Weekly Pizza</span>
+            </button>
+            <button data-tab="store" class="tab-btn flex items-center gap-3 px-4 py-3 rounded-2xl font-fun font-medium text-pink-700 hover:bg-pink-100 transition-all text-left w-full whitespace-nowrap">
+                <i class="fa-solid fa-store text-lg text-amber-500"></i>
+                <span>Pizza Store</span>
+            </button>
+        </nav>
+
+        <!-- Main Content Area -->
+        <div class="lg:col-span-9 space-y-6">
+
+            <section id="tab-dashboard" class="tab-content space-y-6">
+                <!-- Morning Checkin Prompt Card -->
+                <div id="morningPromptCard" class="bg-gradient-to-r from-pink-400 via-pink-500 to-pink-600 text-white rounded-3xl p-6 shadow-xl relative overflow-hidden">
+                    <div class="absolute -right-6 -bottom-6 opacity-20 text-9xl pointer-events-none">
+                        <i class="fa-solid fa-sun"></i>
+                    </div>
+                    <div class="relative z-10 space-y-3">
+                        <span class="inline-block bg-white/20 backdrop-blur-md text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Morning Routine</span>
+                        <h2 class="text-2xl md:text-3xl font-bold font-fun">Good Morning! How did you sleep?</h2>
+                        <p class="text-pink-100 text-sm max-w-lg">Log your sleep hours to claim today's pizza budget coins and keep your rest streak alive!</p>
+                        <button id="openSleepLogBtn" class="mt-2 bg-white text-pink-600 hover:bg-pink-50 font-fun font-bold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center gap-2">
+                            <i class="fa-solid fa-bed"></i>
+                            <span>Log Sleep & Claim Coins</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="sleepLoggedBanner" class="hidden bg-emerald-500 text-white rounded-3xl p-5 shadow-md flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-fun font-bold">Sleep Logged for Today!</h3>
+                            <p class="text-xs text-emerald-100" id="todaySleepSummary text-sm">You slept 8 hours. Great job resting up!</p>
+                        </div>
+                    </div>
+                    <button id="relogSleepBtn" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg font-medium transition-colors">Edit</button>
+                </div>
+
+                <!-- Pink Night Wind-Down Alarm Moved directly into Today's Hub -->
+                <div class="bg-gradient-to-br from-indigo-950 via-purple-950 to-pink-950 text-white rounded-3xl p-6 shadow-xl space-y-5 relative overflow-hidden border border-pink-500/30">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-2xl bg-pink-500/30 border border-pink-400/30 flex items-center justify-center text-pink-300">
+                                <i class="fa-solid fa-moon text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold font-fun text-pink-200">Pink Night Wind-Down Alarm</h3>
+                                <p class="text-xs text-indigo-200">Stop scrolling, set phone down, and get ready for rest!</p>
+                            </div>
+                        </div>
+                        <span id="alarmStatusBadge" class="bg-indigo-500/20 text-indigo-300 text-xs px-3 py-1 rounded-full border border-indigo-400/20 font-medium">Ready</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                        <div class="flex flex-col items-center text-center space-y-3">
+                            <div id="alarmMoonCircle" class="w-32 h-32 rounded-full bg-gradient-to-tr from-pink-500/30 to-purple-500/30 border-2 border-pink-400/50 flex flex-col items-center justify-center shadow-lg transition-transform duration-1000">
+                                <i class="fa-solid fa-bed text-2xl text-pink-300 mb-1"></i>
+                                <span id="nightTimerDisplay" class="text-xl font-bold font-fun text-white">10:30 PM</span>
+                                <span class="text-[9px] text-pink-300 uppercase tracking-widest">Bedtime</span>
+                            </div>
+                            <p class="text-xs text-indigo-200 italic font-medium">"Your brain consolidates memory during sleep!"</p>
+                        </div>
+
+                        <div class="space-y-3">
+                            <p class="text-xs text-indigo-200 leading-relaxed">
+                                Turn off social media alerts and put your phone face down on your desk or nightstand.
+                            </p>
+                            <div class="flex flex-col gap-2">
+                                <button id="toggleAlarmBtn" class="w-full bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 hover:to-pink-700 text-white font-fun font-bold py-2.5 px-4 rounded-xl shadow transition-all flex items-center justify-center gap-2 text-sm">
+                                    <i class="fa-solid fa-bell"></i>
+                                    <span id="toggleAlarmText">Start Night Alarm</span>
+                                </button>
+                                <button id="testSoundBtn" class="w-full bg-white/10 hover:bg-white/20 text-pink-200 border border-white/10 font-fun font-semibold py-2 px-3 rounded-xl text-xs transition-colors flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-volume-high"></i>
+                                    <span>Test Gentle Chime</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Toothbrush Screen Lock Helper & Homework To-Do Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <!-- Toothbrush Phone-Free Companion -->
+                    <div class="bg-gradient-to-br from-pink-500 to-pink-600 text-white rounded-3xl p-5 shadow-sm space-y-4 relative overflow-hidden">
+                        <div class="flex items-center justify-between border-b border-pink-400/60 pb-3">
+                            <div class="flex items-center gap-2 font-fun font-bold text-lg">
+                                <i class="fa-solid fa-tooth text-yellow-200 text-xl"></i>
+                                <h3>2-Min Toothbrush Beat</h3>
+                            </div>
+                            <span class="text-[10px] bg-white/20 text-white font-semibold px-2.5 py-0.5 rounded-full">Phone-Free Tool</span>
+                        </div>
+                        <p class="text-xs text-pink-100 leading-relaxed">
+                            Don't scroll on your phone while brushing! Start the 2-minute beat guide, put your phone down, brush along with the rhythm, and earn <strong>+15 Coins</strong>!
+                        </p>
+
+                        <div id="toothbrushDisplay" class="bg-white/10 backdrop-blur-md rounded-2xl p-4 text-center space-y-2 border border-white/20">
+                            <div class="text-3xl font-fun font-bold text-yellow-200 tracking-wider" id="brushTimerText">02:00</div>
+                            <div class="w-full bg-pink-900/40 h-2.5 rounded-full overflow-hidden">
+                                <div id="brushProgressBar" class="bg-yellow-300 h-full w-0 transition-all duration-1000"></div>
+                            </div>
+                            <p id="brushGuideText" class="text-xs text-pink-100 font-medium italic">Ready to brush teeth without distraction?</p>
+                        </div>
+
+                        <button id="startBrushBtn" class="w-full bg-white hover:bg-pink-50 text-pink-600 font-fun font-bold py-2.5 rounded-xl shadow transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-play"></i>
+                            <span>Start 2-Min Toothbrush Beat</span>
+                        </button>
+                    </div>
+
+                    <!-- Interactive Homework To-Do List -->
+                    <div class="bg-white border border-pink-100 rounded-3xl p-5 shadow-sm space-y-4 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2 text-pink-600 font-fun font-bold text-lg">
+                                    <i class="fa-solid fa-list-check"></i>
+                                    <h3>Homework To-Do List</h3>
+                                </div>
+                                <span id="hwTotalTimeBadge" class="text-xs bg-pink-100 text-pink-700 font-semibold px-2.5 py-0.5 rounded-full">0 mins left</span>
+                            </div>
+                            <p class="text-xs text-gray-500 mb-3">Add your assignments to track work time & get your automatic sleep cutoff.</p>
+
+                            <!-- Add Task Form -->
+                            <form id="hwTodoForm" class="flex gap-2 mb-3">
+                                <input type="text" id="hwTaskTitle" placeholder="e.g. Math Worksheet" required class="flex-1 bg-pink-50 border border-pink-200 rounded-xl px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-pink-400">
+                                <select id="hwTaskMins" class="bg-pink-50 border border-pink-200 rounded-xl px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-pink-400">
+                                    <option value="15">15m</option>
+                                    <option value="30" selected>30m</option>
+                                    <option value="45">45m</option>
+                                    <option value="60">60m</option>
+                                </select>
+                                <button type="submit" class="bg-pink-500 hover:bg-pink-600 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition-colors">
+                                    + Add
+                                </button>
+                            </form>
+
+                            <!-- Task Items List -->
+                            <div id="hwTodoList" class="space-y-2 max-h-36 overflow-y-auto pr-1">
+                                <!-- Dynamic HW Tasks -->
+                            </div>
+                        </div>
+
+                        <div class="bg-pink-50 border border-pink-200 rounded-2xl p-3 text-xs space-y-1 mt-2">
+                            <div class="flex justify-between font-bold font-fun text-pink-700">
+                                <span>Suggested Homework Cutoff:</span>
+                                <span id="planCutoffTime" class="text-pink-600">9:15 PM</span>
+                            </div>
+                            <div class="flex justify-between text-gray-600">
+                                <span>Target Bedtime:</span>
+                                <span id="planBedtime" class="font-semibold text-gray-800">10:15 PM</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <section id="tab-calendar" class="tab-content hidden space-y-6">
+                <div class="bg-white border border-pink-100 rounded-3xl p-6 shadow-sm space-y-5">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-pink-100 pb-4">
+                        <div>
+                            <span class="text-xs font-semibold text-pink-500 uppercase tracking-wider">Apple-Style Planner</span>
+                            <h2 class="text-2xl font-bold font-fun text-gray-800">Afterschool Calendar Track</h2>
+                            <p class="text-xs text-gray-500">Plan afternoon classes, tutoring, sports, and relaxation time to protect your sleep schedule.</p>
+                        </div>
+                        <button id="addEventBtn" class="bg-gradient-to-r from-pink-500 to-pink-600 hover:from-pink-600 text-white font-fun font-bold text-xs px-4 py-2.5 rounded-xl shadow transition-all flex items-center gap-1.5">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add Class / Event</span>
+                        </button>
+                    </div>
+
+                    <!-- Apple Calendar Time Grid View -->
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between text-xs font-fun font-bold text-pink-600 bg-pink-50 px-4 py-2 rounded-2xl">
+                            <span>Time Block</span>
+                            <span>Activity / Class</span>
+                            <span>Reminder Tag</span>
+                        </div>
+
+                        <div id="calendarEventsContainer" class="space-y-2 max-h-96 overflow-y-auto pr-1">
+                            <!-- Dynamic Calendar Events -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-pizza" class="tab-content hidden space-y-6">
+                <div class="bg-white border border-pink-100 rounded-3xl p-6 shadow-sm space-y-6">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-pink-100 pb-4">
+                        <div>
+                            <span class="text-xs font-semibold text-pink-500 uppercase tracking-wider">Weekly Creation</span>
+                            <h2 class="text-2xl font-bold font-fun text-gray-800">This Week's Dream Pizza</h2>
+                            <p class="text-xs text-gray-500">Buy toppings with sleep coins! Your pizza resets every week and saves to your store gallery.</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button id="finishWeekBtn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-fun font-bold text-xs px-4 py-2.5 rounded-xl shadow transition-colors flex items-center gap-1.5">
+                                <i class="fa-solid fa-box-archive"></i>
+                                <span>Finish & Store Pizza</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Main Canvas & Topping Shop Split -->
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                        
+                        <!-- Interactive Canvas Container -->
+                        <div class="md:col-span-6 flex flex-col items-center justify-center space-y-3">
+                            <div class="relative w-64 h-64 sm:w-80 sm:h-80 bg-pink-50 border-4 border-pink-200 rounded-full shadow-inner flex items-center justify-center p-2">
+                                <canvas id="pizzaCanvas" width="320" height="320" class="pizza-canvas rounded-full shadow-md"></canvas>
+                            </div>
+                            <div class="text-center space-y-1">
+                                <p class="text-xs text-pink-500 font-medium"><i class="fa-solid fa-hand-pointer mr-1"></i> Tap on pizza to add selected topping!</p>
+                                <p class="text-xs text-gray-400" id="toppingCountText">Toppings added: 0</p>
+                            </div>
+                        </div>
+
+                        <!-- Topping Store Grid -->
+                        <div class="md:col-span-6 space-y-3">
+                            <h3 class="font-fun font-bold text-lg text-pink-600 flex items-center gap-2">
+                                <i class="fa-solid fa-basket-shopping"></i>
+                                <span>Topping Shop</span>
+                            </h3>
+                            <div id="toppingShopGrid" class="grid grid-cols-2 gap-2.5 max-h-80 overflow-y-auto p-1">
+                                <!-- Dynamic toppings injected by JS -->
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-store" class="tab-content hidden space-y-6">
+                <div class="bg-white border border-pink-100 rounded-3xl p-6 shadow-sm space-y-6">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-pink-100 pb-4">
+                        <div>
+                            <span class="text-xs font-semibold text-pink-500 uppercase tracking-wider">Archive & Collection</span>
+                            <h2 class="text-2xl font-bold font-fun text-gray-800">My Pizza Bakery Gallery</h2>
+                            <p class="text-xs text-gray-500">View past completed weekly pizzas. Keep them as trophies or sell them for extra coins!</p>
+                        </div>
+                        <div class="bg-pink-100 text-pink-700 text-xs font-fun font-bold px-3 py-1.5 rounded-xl flex items-center gap-2">
+                            <i class="fa-solid fa-boxes-packing"></i>
+                            <span id="storedPizzaCount">0 Pizzas in Store</span>
+                        </div>
+                    </div>
+
+                    <!-- Store Grid -->
+                    <div id="pizzaStoreGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Dynamic stored pizzas -->
+                    </div>
+
+                    <div id="emptyStoreMessage" class="text-center py-12 space-y-3">
+                        <div class="w-16 h-16 rounded-full bg-pink-100 text-pink-400 mx-auto flex items-center justify-center text-2xl">
+                            <i class="fa-solid fa-pizza-slice"></i>
+                        </div>
+                        <h3 class="font-fun font-bold text-gray-700">No Past Pizzas Saved Yet</h3>
+                        <p class="text-xs text-gray-400 max-w-sm mx-auto">Complete a week of healthy sleep and finish your pizza to add it to your permanent bakery shop collection!</p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Add Calendar Event Modal -->
+    <div id="calendarModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-pink-100 space-y-4">
+            <div class="flex items-center justify-between border-b border-pink-100 pb-3">
+                <h3 class="font-fun font-bold text-xl text-pink-600">Add Afterschool Class / Activity</h3>
+                <button id="closeCalendarModalBtn" class="text-gray-400 hover:text-gray-600 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form id="calendarForm" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-semibold text-gray-700 mb-1">Class / Activity Name</label>
+                    <input type="text" id="eventTitleInput" placeholder="e.g. FYS Seminar / Math Tutoring" required class="w-full bg-pink-50 border border-pink-200 rounded-xl px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-400">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block font-semibold text-gray-700 mb-1">Start Time</label>
+                        <input type="time" id="eventStartTime" value="15:30" class="w-full bg-pink-50 border border-pink-200 rounded-xl px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-400">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-gray-700 mb-1">End Time</label>
+                        <input type="time" id="eventEndTime" value="16:30" class="w-full bg-pink-50 border border-pink-200 rounded-xl px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-400">
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-semibold text-gray-700 mb-1">Category & Tag Color</label>
+                    <select id="eventCategory" class="w-full bg-pink-50 border border-pink-200 rounded-xl px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-pink-400">
+                        <option value="class">📚 Academic / FYS Class</option>
+                        <option value="tutoring">✏️ Tutoring / Homework</option>
+                        <option value="sports">⚽ Sports / Activity</option>
+                        <option value="rest">🧘 Rest & Free Time</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-pink-500 hover:bg-pink-600 text-white font-fun font-bold py-2.5 rounded-xl shadow transition-colors mt-2">
+                    Save to Afterschool Calendar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="sleepModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-pink-100 space-y-5 transform transition-all">
+            <div class="flex items-center justify-between border-b border-pink-100 pb-3">
+                <div class="flex items-center gap-2 text-pink-600 font-fun font-bold text-xl">
+                    <i class="fa-solid fa-cloud-moon"></i>
+                    <h3>Log Morning Sleep</h3>
+                </div>
+                <button id="closeSleepModalBtn" class="text-gray-400 hover:text-gray-600 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="sleepLogForm" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-1">How many hours did you sleep last night?</label>
+                    <div class="flex items-center gap-3">
+                        <input type="range" id="sleepHoursRange" min="2" max="12" step="0.5" value="8" class="w-full accent-pink-500">
+                        <span id="sleepHoursVal" class="font-fun font-bold text-lg text-pink-600 min-w-[3.5rem] text-right">8 hrs</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-2">How do you feel this morning?</label>
+                    <div class="grid grid-cols-4 gap-2 text-center">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="sleepMood" value="great" checked class="peer sr-only">
+                            <div class="p-2.5 rounded-2xl border border-gray-200 peer-checked:border-pink-500 peer-checked:bg-pink-100 hover:bg-pink-50 transition-colors">
+                                <div class="text-2xl mb-1">😃</div>
+                                <div class="text-[10px] font-semibold text-gray-600">Great</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="sleepMood" value="good" class="peer sr-only">
+                            <div class="p-2.5 rounded-2xl border border-gray-200 peer-checked:border-pink-500 peer-checked:bg-pink-100 hover:bg-pink-50 transition-colors">
+                                <div class="text-2xl mb-1">😊</div>
+                                <div class="text-[10px] font-semibold text-gray-600">Good</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="sleepMood" value="tired" class="peer sr-only">
+                            <div class="p-2.5 rounded-2xl border border-gray-200 peer-checked:border-pink-500 peer-checked:bg-pink-100 hover:bg-pink-50 transition-colors">
+                                <div class="text-2xl mb-1">🥱</div>
+                                <div class="text-[10px] font-semibold text-gray-600">Tired</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="sleepMood" value="exhausted" class="peer sr-only">
+                            <div class="p-2.5 rounded-2xl border border-gray-200 peer-checked:border-pink-500 peer-checked:bg-pink-100 hover:bg-pink-50 transition-colors">
+                                <div class="text-2xl mb-1">😴</div>
+                                <div class="text-[10px] font-semibold text-gray-600">Exhausted</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-pink-50 border border-pink-200 rounded-2xl flex items-center justify-between text-xs text-pink-700">
+                    <span>Reward Earned:</span>
+                    <span id="calculatedRewardText" class="font-bold font-fun text-sm text-pink-600">+50 Coins 🪙</span>
+                </div>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-pink-500 to-pink-600 text-white font-fun font-bold py-3 rounded-2xl shadow-lg hover:shadow-xl transition-all">
+                    Claim Coins & Update Pizza
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-pink-100 space-y-5">
+            <div class="flex items-center justify-between border-b border-pink-100 pb-3">
+                <h3 class="font-fun font-bold text-xl text-pink-600">App Settings & Data</h3>
+                <button id="closeSettingsBtn" class="text-gray-400 hover:text-gray-600 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-semibold text-gray-700 mb-1">Client FYS Goal</label>
+                    <p class="text-gray-500">Sleep earlier, manage homework deadlines, reduce screen time before bed, and collect weekly pizzas.</p>
+                </div>
+                <div class="pt-3 border-t border-gray-100 space-y-2">
+                    <button id="resetWeekBtn" class="w-full bg-amber-100 hover:bg-amber-200 text-amber-800 font-fun font-semibold py-2.5 rounded-xl transition-colors">
+                        Reset Current Weekly Pizza
+                    </button>
+                    <button id="resetAllDataBtn" class="w-full bg-red-100 hover:bg-red-200 text-red-700 font-fun font-semibold py-2.5 rounded-xl transition-colors">
+                        Clear All Local Storage Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const APP_STORAGE_KEY = 'dream_slice_fys_v2';
+
+        const TOPPINGS = [
+            { id: 'pepperoni', name: 'Pepperoni', cost: 15, color: '#c0392b', shape: 'circle', radius: 10, icon: '🍕' },
+            { id: 'mushroom', name: 'Mushroom', cost: 10, color: '#d7ccc8', shape: 'mushroom', radius: 9, icon: '🍄' },
+            { id: 'basil', name: 'Fresh Basil', cost: 12, color: '#27ae60', shape: 'leaf', radius: 8, icon: '🌿' },
+            { id: 'olive', name: 'Black Olive', cost: 10, color: '#2c3e50', shape: 'ring', radius: 7, icon: '🫒' },
+            { id: 'pineapple', name: 'Pineapple', cost: 15, color: '#f1c40f', shape: 'wedge', radius: 9, icon: '🍍' },
+            { id: 'jalapeno', name: 'Jalapeño', cost: 12, color: '#2ecc71', shape: 'ring', radius: 8, icon: '🌶️' },
+            { id: 'cute_star', name: 'Magic Star', cost: 25, color: '#ff007f', shape: 'star', radius: 11, icon: '⭐' },
+            { id: 'marshmallow', name: 'Marshmallow', cost: 20, color: '#ffffff', shape: 'circle', radius: 10, icon: '🍬' }
+        ];
+
+        let state = {
+            coins: 60,
+            streak: 1,
+            lastLoggedDate: null,
+            todayLogged: false,
+            hwTasks: [
+                { id: 1, title: "Math Practice Sheet", mins: 30, done: false },
+                { id: 2, title: "FYS Reading Journal", mins: 30, done: false }
+            ],
+            calendarEvents: [
+                { id: 101, title: "FYS Class & Seminar", start: "15:30", end: "16:30", cat: "class" },
+                { id: 102, title: "Math Homework Block", start: "17:00", end: "18:00", cat: "tutoring" },
+                { id: 103, title: "Free Rest / Dinner Time", start: "18:30", end: "19:30", cat: "rest" }
+            ],
+            currentPizza: {
+                weekId: getWeekIdentifier(),
+                toppings: []
+            },
+            storePizzas: [],
+            selectedToppingId: 'pepperoni'
+        };
+
+        let alarmInterval = null;
+        let isAlarmActive = false;
+        let brushInterval = null;
+        let brushSecondsLeft = 120;
+
+        function getWeekIdentifier() {
+            const now = new Date();
+            const startOfYear = new Date(now.getFullYear(), 0, 1);
+            const pastDays = (now - startOfYear) / 86400000;
+            const weekNum = Math.ceil((pastDays + startOfYear.getDay() + 1) / 7);
+            return `${now.getFullYear()}-W${weekNum}`;
+        }
+
+        function getTodayDateString() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        function loadState() {
+            try {
+                const saved = localStorage.getItem(APP_STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    state = { ...state, ...parsed };
+                }
+            } catch (e) {
+                console.error("Failed to load local storage", e);
+            }
+
+            if (state.lastLoggedDate === getTodayDateString()) {
+                state.todayLogged = true;
+            } else {
+                state.todayLogged = false;
+            }
+
+            const currentWeek = getWeekIdentifier();
+            if (state.currentPizza.weekId !== currentWeek) {
+                if (state.currentPizza.toppings.length > 0) {
+                    state.storePizzas.push({
+                        id: Date.now(),
+                        weekId: state.currentPizza.weekId,
+                        toppings: state.currentPizza.toppings,
+                        dateCreated: new Date().toLocaleDateString()
+                    });
+                }
+                state.currentPizza = { weekId: currentWeek, toppings: [] };
+            }
+
+            saveState();
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(state));
+            } catch (e) {
+                console.error("Failed to save state", e);
+            }
+            updateUI();
+        }
+
+        function playChime(type = 'reward') {
+            try {
+                if (Tone && Tone.context.state !== 'running') {
+                    Tone.start();
+                }
+                const synth = new Tone.PolySynth(Tone.Synth).toDestination();
+                if (type === 'reward') {
+                    synth.triggerAttackRelease(["C5", "E5", "G5", "C6"], "8n");
+                } else if (type === 'alarm') {
+                    synth.triggerAttackRelease(["E4", "B4", "E5"], "4n");
+                } else if (type === 'sell') {
+                    synth.triggerAttackRelease(["G4", "C5", "E5"], "8n");
+                } else if (type === 'brush') {
+                    synth.triggerAttackRelease(["G5", "C6"], "16n");
+                }
+            } catch (err) {
+                console.log("Audio play suppressed", err);
+            }
+        }
+
+        function drawPizza(canvasId, toppingsArray, size = 320) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const scale = size / 320; // Scale relative to base 320px dimensions
+            const center = size / 2;
+            const radius = size * 0.42;
+
+            ctx.clearRect(0, 0, size, size);
+
+            // 1. Crust
+            ctx.beginPath();
+            ctx.arc(center, center, radius, 0, Math.PI * 2);
+            ctx.fillStyle = '#e29555';
+            ctx.fill();
+            ctx.lineWidth = Math.max(1, 4 * scale);
+            ctx.strokeStyle = '#c87836';
+            ctx.stroke();
+
+            // 2. Tomato Sauce
+            ctx.beginPath();
+            ctx.arc(center, center, radius * 0.86, 0, Math.PI * 2);
+            ctx.fillStyle = '#d33f34';
+            ctx.fill();
+
+            // 3. Cheese
+            ctx.beginPath();
+            ctx.arc(center, center, radius * 0.81, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffdc73';
+            ctx.fill();
+
+            // Cheese spots
+            ctx.fillStyle = '#ffe79a';
+            for (let i = 0; i < 8; i++) {
+                const angle = (i / 8) * Math.PI * 2;
+                const dist = radius * 0.4;
+                ctx.beginPath();
+                ctx.arc(center + Math.cos(angle) * dist, center + Math.sin(angle) * dist, Math.max(3, 12 * scale), 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // 4. Scaled Toppings
+            toppingsArray.forEach(top => {
+                const spec = TOPPINGS.find(t => t.id === top.id) || TOPPINGS[0];
+                ctx.save();
+                ctx.translate(top.x * scale, top.y * scale);
+                ctx.rotate(top.angle || 0);
+
+                ctx.fillStyle = spec.color;
+                ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+                ctx.lineWidth = Math.max(1, 1.5 * scale);
+
+                const r = spec.radius * scale;
+
+                if (spec.shape === 'circle') {
+                    ctx.beginPath();
+                    ctx.arc(0, 0, r, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                } else if (spec.shape === 'mushroom') {
+                    ctx.beginPath();
+                    ctx.arc(0, -2 * scale, r, Math.PI, 0);
+                    ctx.rect(-2 * scale, -2 * scale, 4 * scale, r + 2 * scale);
+                    ctx.fill();
+                    ctx.stroke();
+                } else if (spec.shape === 'leaf') {
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, r * 1.2, r * 0.6, Math.PI / 4, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                } else if (spec.shape === 'ring') {
+                    ctx.beginPath();
+                    ctx.arc(0, 0, r, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(0, 0, r * 0.4, 0, Math.PI * 2);
+                    ctx.fillStyle = '#ffdc73';
+                    ctx.fill();
+                } else if (spec.shape === 'star') {
+                    ctx.font = `${r * 2.2}px sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('⭐', 0, 0);
+                } else {
+                    ctx.beginPath();
+                    ctx.arc(0, 0, r, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+                }
+
+                ctx.restore();
+            });
+        }
+
+        function updateUI() {
+            document.getElementById('userCoins').textContent = state.coins;
+            document.getElementById('userStreak').textContent = state.streak;
+
+            const morningCard = document.getElementById('morningPromptCard');
+            const sleepBanner = document.getElementById('sleepLoggedBanner');
+            if (state.todayLogged) {
+                morningCard.classList.add('hidden');
+                sleepBanner.classList.remove('hidden');
+            } else {
+                morningCard.classList.remove('hidden');
+                sleepBanner.classList.add('hidden');
+            }
+
+            drawPizza('pizzaCanvas', state.currentPizza.toppings, 320);
+            document.getElementById('toppingCountText').textContent = `Toppings added: ${state.currentPizza.toppings.length}`;
+
+            renderToppingShop();
+            renderHwTodoList();
+            renderCalendarEvents();
+            renderStoreGallery();
+        }
+
+        function renderToppingShop() {
+            const grid = document.getElementById('toppingShopGrid');
+            grid.innerHTML = '';
+
+            TOPPINGS.forEach(topping => {
+                const isSelected = state.selectedToppingId === topping.id;
+                const canAfford = state.coins >= topping.cost;
+
+                const btn = document.createElement('button');
+                btn.className = `p-2.5 rounded-2xl border text-left flex items-center justify-between transition-all ${
+                    isSelected ? 'border-pink-500 bg-pink-100 ring-2 ring-pink-300' : 'border-gray-200 bg-white hover:bg-pink-50'
+                } ${!canAfford ? 'opacity-50' : ''}`;
+
+                btn.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl">${topping.icon}</span>
+                        <div>
+                            <div class="text-xs font-bold text-gray-800 font-fun">${topping.name}</div>
+                            <div class="text-[10px] text-pink-600 font-semibold">${topping.cost} Coins</div>
+                        </div>
+                    </div>
+                    ${isSelected ? '<i class="fa-solid fa-circle-check text-pink-500 text-sm"></i>' : ''}
+                `;
+
+                btn.onclick = () => {
+                    state.selectedToppingId = topping.id;
+                    saveState();
+                };
+
+                grid.appendChild(btn);
+            });
+        }
+
+        function renderHwTodoList() {
+            const listContainer = document.getElementById('hwTodoList');
+            listContainer.innerHTML = '';
+
+            let totalMinsLeft = 0;
+
+            if (state.hwTasks.length === 0) {
+                listContainer.innerHTML = `<p class="text-xs text-gray-400 italic text-center py-2">No homework tasks added!</p>`;
+            }
+
+            state.hwTasks.forEach((task, index) => {
+                if (!task.done) totalMinsLeft += parseInt(task.mins);
+
+                const item = document.createElement('div');
+                item.className = `flex items-center justify-between p-2 rounded-xl text-xs border ${
+                    task.done ? 'bg-gray-50 border-gray-200 text-gray-400 line-through' : 'bg-pink-50/70 border-pink-200 text-gray-700'
+                }`;
+
+                item.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" ${task.done ? 'checked' : ''} class="task-checkbox accent-pink-500 rounded">
+                        <span class="font-medium">${task.title}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] bg-white px-2 py-0.5 rounded-md border text-gray-500">${task.mins}m</span>
+                        <button class="delete-task-btn text-gray-300 hover:text-red-500 p-1"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+
+                item.querySelector('.task-checkbox').onchange = (e) => {
+                    state.hwTasks[index].done = e.target.checked;
+                    saveState();
+                };
+
+                item.querySelector('.delete-task-btn').onclick = () => {
+                    state.hwTasks.splice(index, 1);
+                    saveState();
+                };
+
+                listContainer.appendChild(item);
+            });
+
+            document.getElementById('hwTotalTimeBadge').textContent = `${totalMinsLeft} mins left`;
+
+            // Dynamic Bedtime Calculation (assuming 6:30 AM wake up)
+            const targetWake = new Date();
+            targetWake.setHours(6, 30, 0, 0);
+            const bedtime = new Date(targetWake.getTime() - (8 * 60 * 60 * 1000)); // 10:30 PM
+            const cutoff = new Date(bedtime.getTime() - (totalMinsLeft * 60 * 1000)); // Bedtime minus homework duration
+
+            const formatTime = (d) => d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('planCutoffTime').textContent = formatTime(cutoff);
+            document.getElementById('planBedtime').textContent = formatTime(bedtime);
+            document.getElementById('nightTimerDisplay').textContent = formatTime(bedtime);
+        }
+
+        function renderCalendarEvents() {
+            const container = document.getElementById('calendarEventsContainer');
+            container.innerHTML = '';
+
+            if (state.calendarEvents.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-400 italic text-center py-6">No afterschool classes or events added yet.</p>`;
+                return;
+            }
+
+            // Sort by start time
+            state.calendarEvents.sort((a, b) => a.start.localeCompare(b.start));
+
+            const categoryStyles = {
+                class: { bg: 'bg-indigo-50 border-indigo-200 text-indigo-700', badge: '📚 Class', badgeBg: 'bg-indigo-200 text-indigo-800' },
+                tutoring: { bg: 'bg-pink-50 border-pink-200 text-pink-700', badge: '✏️ Study', badgeBg: 'bg-pink-200 text-pink-800' },
+                sports: { bg: 'bg-emerald-50 border-emerald-200 text-emerald-700', badge: '⚽ Activity', badgeBg: 'bg-emerald-200 text-emerald-800' },
+                rest: { bg: 'bg-amber-50 border-amber-200 text-amber-700', badge: '🧘 Rest', badgeBg: 'bg-amber-200 text-amber-800' }
+            };
+
+            state.calendarEvents.forEach((evt, idx) => {
+                const style = categoryStyles[evt.cat] || categoryStyles.class;
+                const card = document.createElement('div');
+                card.className = `p-3 rounded-2xl border ${style.bg} flex items-center justify-between shadow-sm transition-all`;
+
+                card.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="font-fun font-bold text-xs bg-white/80 px-2.5 py-1 rounded-xl border border-black/5 shadow-xs">
+                            ${evt.start} - ${evt.end}
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-xs">${evt.title}</h4>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full ${style.badgeBg}">${style.badge}</span>
+                        <button class="delete-evt-btn text-gray-300 hover:text-red-500 p-1"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                `;
+
+                card.querySelector('.delete-evt-btn').onclick = () => {
+                    state.calendarEvents.splice(idx, 1);
+                    saveState();
+                };
+
+                container.appendChild(card);
+            });
+        }
+
+        function renderStoreGallery() {
+            const grid = document.getElementById('pizzaStoreGrid');
+            const emptyMsg = document.getElementById('emptyStoreMessage');
+            const countLabel = document.getElementById('storedPizzaCount');
+
+            grid.innerHTML = '';
+            countLabel.textContent = `${state.storePizzas.length} Pizzas in Store`;
+
+            if (state.storePizzas.length === 0) {
+                emptyMsg.classList.remove('hidden');
+                return;
+            } else {
+                emptyMsg.classList.add('hidden');
+            }
+
+            state.storePizzas.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = "bg-pink-50 border border-pink-200 rounded-3xl p-4 flex flex-col items-center text-center space-y-3 shadow-sm hover:shadow-md transition-shadow";
+                
+                const canvasId = `storeCanvas_${index}`;
+                card.innerHTML = `
+                    <div class="relative w-40 h-40 bg-white rounded-full p-1 border-2 border-pink-200 flex items-center justify-center shadow-inner">
+                        <canvas id="${canvasId}" width="150" height="150" class="rounded-full"></canvas>
+                    </div>
+                    <div class="w-full">
+                        <h4 class="font-fun font-bold text-pink-700 text-sm">Week ${item.weekId} Pizza</h4>
+                        <p class="text-[10px] text-gray-400">${item.toppings.length} toppings • Built ${item.dateCreated || 'Recently'}</p>
+                    </div>
+                    <button class="sell-pizza-btn w-full bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-fun font-bold py-2 rounded-xl transition-colors flex items-center justify-center gap-1 shadow">
+                        <i class="fa-solid fa-hand-holding-dollar"></i>
+                        <span>Sell Pizza (+${40 + item.toppings.length * 5} Coins)</span>
+                    </button>
+                `;
+
+                grid.appendChild(card);
+
+                // Render small store canvas with full topping scaling
+                setTimeout(() => {
+                    drawPizza(canvasId, item.toppings, 150);
+                }, 10);
+
+                card.querySelector('.sell-pizza-btn').onclick = () => {
+                    const earnings = 40 + item.toppings.length * 5;
+                    state.coins += earnings;
+                    state.storePizzas.splice(index, 1);
+                    playChime('sell');
+                    saveState();
+                };
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadState();
+
+            // Tab Navigation
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const target = btn.dataset.tab;
+                    tabBtns.forEach(b => {
+                        b.classList.remove('active', 'bg-pink-200', 'border-pink-300', 'text-pink-600');
+                        b.classList.add('hover:bg-pink-100', 'text-pink-700');
+                    });
+                    btn.classList.add('active', 'bg-pink-200', 'border-pink-300', 'text-pink-600');
+
+                    tabContents.forEach(content => {
+                        if (content.id === `tab-${target}`) {
+                            content.classList.remove('hidden');
+                        } else {
+                            content.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+
+            // Sleep Modal Logic
+            const sleepModal = document.getElementById('sleepModal');
+            const openSleepBtn = document.getElementById('openSleepLogBtn');
+            const closeSleepBtn = document.getElementById('closeSleepModalBtn');
+            const relogBtn = document.getElementById('relogSleepBtn');
+            const sleepRange = document.getElementById('sleepHoursRange');
+            const sleepVal = document.getElementById('sleepHoursVal');
+            const rewardLabel = document.getElementById('calculatedRewardText');
+
+            const openSleepModal = () => sleepModal.classList.remove('hidden');
+            const closeSleepModal = () => sleepModal.classList.add('hidden');
+
+            if (openSleepBtn) openSleepBtn.addEventListener('click', openSleepModal);
+            if (relogBtn) relogBtn.addEventListener('click', openSleepModal);
+            if (closeSleepBtn) closeSleepBtn.addEventListener('click', closeSleepModal);
+
+            if (sleepRange) {
+                sleepRange.addEventListener('input', (e) => {
+                    const hours = parseFloat(e.target.value);
+                    sleepVal.textContent = `${hours} hrs`;
+                    const reward = hours >= 7 ? 50 : 25;
+                    rewardLabel.textContent = `+${reward} Coins 🪙`;
+                });
+            }
+
+            document.getElementById('sleepLogForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const hours = parseFloat(sleepRange.value);
+                const reward = hours >= 7 ? 50 : 25;
+
+                state.coins += reward;
+                if (!state.todayLogged) {
+                    state.streak += 1;
+                }
+                state.lastLoggedDate = getTodayDateString();
+                state.todayLogged = true;
+
+                playChime('reward');
+                saveState();
+                closeSleepModal();
+            });
+
+            // Toothbrush Beat Companion Logic
+            const startBrushBtn = document.getElementById('startBrushBtn');
+            const brushTimerText = document.getElementById('brushTimerText');
+            const brushProgressBar = document.getElementById('brushProgressBar');
+            const brushGuideText = document.getElementById('brushGuideText');
+
+            const brushTips = [
+                "Top Outer Teeth (Brushing rhythm...)",
+                "Top Inner Surfaces (No phone scrolling!)",
+                "Bottom Outer Teeth (Keep going!)",
+                "Bottom Inner Surfaces & Chewing area",
+                "Almost done! Clean your tongue gently!"
+            ];
+
+            startBrushBtn.addEventListener('click', () => {
+                if (brushInterval) clearInterval(brushInterval);
+                brushSecondsLeft = 120;
+                startBrushBtn.disabled = true;
+                startBrushBtn.classList.add('opacity-50');
+
+                brushInterval = setInterval(() => {
+                    brushSecondsLeft--;
+                    const mins = Math.floor(brushSecondsLeft / 60).toString().padStart(2, '0');
+                    const secs = (brushSecondsLeft % 60).toString().padStart(2, '0');
+                    brushTimerText.textContent = `${mins}:${secs}`;
+                    
+                    const percent = ((120 - brushSecondsLeft) / 120) * 100;
+                    brushProgressBar.style.width = `${percent}%`;
+
+                    const tipIdx = Math.min(4, Math.floor((120 - brushSecondsLeft) / 24));
+                    brushGuideText.textContent = brushTips[tipIdx];
+
+                    if (brushSecondsLeft % 5 === 0) playChime('brush');
+
+                    if (brushSecondsLeft <= 0) {
+                        clearInterval(brushInterval);
+                        brushTimerText.textContent = "00:00";
+                        brushGuideText.textContent = "Great job! +15 Coins Earned! 🦷✨";
+                        state.coins += 15;
+                        playChime('reward');
+                        saveState();
+                        startBrushBtn.disabled = false;
+                        startBrushBtn.classList.remove('opacity-50');
+                    }
+                }, 1000);
+            });
+
+            // Homework To-Do Form
+            document.getElementById('hwTodoForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const titleInput = document.getElementById('hwTaskTitle');
+                const minsSelect = document.getElementById('hwTaskMins');
+
+                state.hwTasks.push({
+                    id: Date.now(),
+                    title: titleInput.value.trim(),
+                    mins: parseInt(minsSelect.value),
+                    done: false
+                });
+
+                titleInput.value = '';
+                saveState();
+            });
+
+            // Afterschool Calendar Form & Modal
+            const calendarModal = document.getElementById('calendarModal');
+            document.getElementById('addEventBtn').addEventListener('click', () => calendarModal.classList.remove('hidden'));
+            document.getElementById('closeCalendarModalBtn').addEventListener('click', () => calendarModal.classList.add('hidden'));
+
+            document.getElementById('calendarForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const title = document.getElementById('eventTitleInput').value.trim();
+                const start = document.getElementById('eventStartTime').value;
+                const end = document.getElementById('eventEndTime').value;
+                const cat = document.getElementById('eventCategory').value;
+
+                state.calendarEvents.push({
+                    id: Date.now(),
+                    title, start, end, cat
+                });
+
+                document.getElementById('eventTitleInput').value = '';
+                calendarModal.classList.add('hidden');
+                saveState();
+            });
+
+            // Canvas Topping Click
+            const canvas = document.getElementById('pizzaCanvas');
+            canvas.addEventListener('pointerdown', (e) => {
+                const spec = TOPPINGS.find(t => t.id === state.selectedToppingId);
+                if (!spec) return;
+
+                if (state.coins < spec.cost) {
+                    playChime('alarm');
+                    alertModal("Not enough coins!", `You need ${spec.cost} coins to buy this topping. Log your sleep or complete your toothbrush beat!`);
+                    return;
+                }
+
+                const rect = canvas.getBoundingClientRect();
+                const scale = canvas.width / rect.width;
+                const x = (e.clientX - rect.left) * scale;
+                const y = (e.clientY - rect.top) * scale;
+
+                const dx = x - 160;
+                const dy = y - 160;
+                if (Math.sqrt(dx * dx + dy * dy) > 130) return;
+
+                state.coins -= spec.cost;
+                state.currentPizza.toppings.push({
+                    id: spec.id,
+                    x: Math.round(x),
+                    y: Math.round(y),
+                    angle: Math.random() * Math.PI * 2
+                });
+
+                playChime('reward');
+                saveState();
+            });
+
+            // Alarm Mode Logic
+            const toggleAlarmBtn = document.getElementById('toggleAlarmBtn');
+            const toggleAlarmText = document.getElementById('toggleAlarmText');
+            const alarmBadge = document.getElementById('alarmStatusBadge');
+
+            const startAlarm = () => {
+                isAlarmActive = true;
+                toggleAlarmText.textContent = "Stop Alarm";
+                alarmBadge.textContent = "Active Wind-Down";
+                alarmBadge.className = "bg-pink-500 text-white text-xs px-3 py-1 rounded-full animate-pulse";
+                document.getElementById('alarmMoonCircle').classList.add('animate-pulse-glow');
+                playChime('alarm');
+
+                if (alarmInterval) clearInterval(alarmInterval);
+                alarmInterval = setInterval(() => {
+                    playChime('alarm');
+                }, 10000);
+            };
+
+            const stopAlarm = () => {
+                isAlarmActive = false;
+                toggleAlarmText.textContent = "Start Night Alarm";
+                alarmBadge.textContent = "Ready";
+                alarmBadge.className = "bg-indigo-500/20 text-indigo-300 text-xs px-3 py-1 rounded-full border border-indigo-400/20";
+                document.getElementById('alarmMoonCircle').classList.remove('animate-pulse-glow');
+                if (alarmInterval) clearInterval(alarmInterval);
+            };
+
+            toggleAlarmBtn.addEventListener('click', () => {
+                if (isAlarmActive) stopAlarm();
+                else startAlarm();
+            });
+
+            document.getElementById('testSoundBtn').addEventListener('click', () => {
+                playChime('reward');
+            });
+
+            // Finish Week Pizza
+            document.getElementById('finishWeekBtn').addEventListener('click', () => {
+                if (state.currentPizza.toppings.length === 0) {
+                    alertModal("Empty Pizza!", "Add at least one topping before storing your pizza in the bakery!");
+                    return;
+                }
+
+                state.storePizzas.push({
+                    id: Date.now(),
+                    weekId: state.currentPizza.weekId,
+                    toppings: [...state.currentPizza.toppings],
+                    dateCreated: new Date().toLocaleDateString()
+                });
+
+                state.currentPizza.toppings = [];
+                playChime('sell');
+                saveState();
+                alertModal("Pizza Saved!", "Your weekly pizza is now stored in your Pizza Store collection!");
+            });
+
+            // Settings Modal
+            const settingsModal = document.getElementById('settingsModal');
+            document.getElementById('openSettingsBtn').addEventListener('click', () => settingsModal.classList.remove('hidden'));
+            document.getElementById('closeSettingsBtn').addEventListener('click', () => settingsModal.classList.add('hidden'));
+
+            document.getElementById('resetWeekBtn').addEventListener('click', () => {
+                state.currentPizza.toppings = [];
+                saveState();
+                settingsModal.classList.add('hidden');
+            });
+
+            document.getElementById('resetAllDataBtn').addEventListener('click', () => {
+                localStorage.removeItem(APP_STORAGE_KEY);
+                location.reload();
+            });
+        });
+
+        function alertModal(title, msg) {
+            const modal = document.createElement('div');
+            modal.className = "fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4";
+            modal.innerHTML = `
+                <div class="bg-white rounded-3xl max-w-xs w-full p-5 shadow-2xl text-center space-y-3 border border-pink-200">
+                    <h3 class="font-fun font-bold text-lg text-pink-600">${title}</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">${msg}</p>
+                    <button class="w-full bg-pink-500 hover:bg-pink-600 text-white font-fun font-bold py-2 rounded-xl transition-colors">
+                        Okay
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.querySelector('button').onclick = () => modal.remove();
+        }
+    </script>
+</body>
+</html>

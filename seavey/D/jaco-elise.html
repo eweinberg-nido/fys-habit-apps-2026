@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusLaunch - Put Down Your Phone & Study</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Identity Services (GIS) for Google Calendar Integration -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['Space Grotesk', 'monospace']
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f6ff',
+                            100: '#e0edff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        .bg-wallpaper {
+            transition: background-image 0.6s ease-in-out, filter 0.5s ease;
+            background-size: cover;
+            background-position: center;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .glass-dark {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .widget-shadow {
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.15), 0 0 15px rgba(0, 0, 0, 0.05);
+        }
+        .pulse-ring {
+            animation: pulseRing 3s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+        @keyframes pulseRing {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 0.4; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+        /* Click Pop Animation for Buttons */
+        .btn-pop {
+            animation: popScale 0.25s ease-out;
+        }
+        @keyframes popScale {
+            0% { transform: scale(0.92); }
+            50% { transform: scale(1.06); }
+            100% { transform: scale(1); }
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.4); border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(107, 114, 128, 0.7); }
+    </style>
+</head>
+<body class="min-h-screen relative flex flex-col overflow-x-hidden selection:bg-blue-500 selection:text-white">
+
+    <div id="bgPhoto" class="fixed inset-0 bg-wallpaper z-0 transition-all duration-700 pointer-events-none scale-105" 
+         style="background-image: url('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1920&q=80');">
+    </div>
+    <!-- Dark/Light Overlay layer for background contrast -->
+    <div id="bgOverlay" class="fixed inset-0 bg-white/70 transition-all duration-500 z-0 pointer-events-none"></div>
+
+    <!-- MAIN APP WRAPPER -->
+    <div class="relative z-10 flex-1 flex flex-col max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+        
+        <header class="flex items-center justify-between py-3 px-4 sm:px-6 glass-card rounded-2xl mb-6 shadow-sm">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+                    <i data-lucide="zap" class="w-5 h-5 fill-current"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg sm:text-xl text-slate-900 tracking-tight leading-none">FocusLaunch</h1>
+                    <p class="text-xs text-slate-500 font-medium">Beat Phone Distraction First</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <!-- Wallpaper Picker Button -->
+                <button onclick="toggleWallpaperModal()" class="p-2 sm:px-3 sm:py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold rounded-xl flex items-center space-x-1.5 transition duration-200" title="Change Background">
+                    <i data-lucide="image" class="w-4 h-4 text-emerald-600"></i>
+                    <span class="hidden md:inline">Background</span>
+                </button>
+
+                <!-- Settings Button -->
+                <button onclick="toggleSettingsModal()" class="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition duration-200" title="Settings">
+                    <i data-lucide="sliders" class="w-4 h-4"></i>
+                </button>
+
+                <!-- User Profile / Auth Button -->
+                <button id="userProfileBtn" onclick="toggleAuthModal()" class="flex items-center space-x-2 px-3 py-1.5 bg-blue-50 border border-blue-200 hover:bg-blue-100 text-blue-700 text-xs sm:text-sm font-bold rounded-xl transition duration-200">
+                    <div class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold" id="userAvatarText">A</div>
+                    <span id="userNameText" class="max-w-[80px] sm:max-w-[120px] truncate">Alex M.</span>
+                </button>
+            </div>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 items-start">
+            
+            <!-- LEFT COLUMN: Homework Kickstart & Method Selector (7 cols) -->
+            <section class="lg:col-span-7 space-y-6">
+                
+                <!-- Encouragement & Phone Detox Banner -->
+                <div class="glass-card rounded-3xl p-6 relative overflow-hidden shadow-lg border border-white/60">
+                    <div class="absolute -right-8 -bottom-8 w-36 h-36 bg-blue-400/10 rounded-full blur-2xl"></div>
+                    
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                                <i data-lucide="sparkles" class="w-3.5 h-3.5 mr-1 text-amber-600"></i>
+                                Daily Momentum Quote
+                            </span>
+                            <!-- 24h Countdown Badge -->
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold font-mono bg-slate-100 text-slate-700 border border-slate-200/80 shadow-xs" title="Time remaining until next quote">
+                                <i data-lucide="clock" class="w-3.5 h-3.5 mr-1 text-blue-600"></i>
+                                Next in: <span id="quoteCountdownText" class="ml-1 font-bold text-blue-700 font-mono">23:59:59</span>
+                            </span>
+                        </div>
+                        <span class="text-xs font-semibold text-slate-400 flex items-center gap-1">
+                            <i data-lucide="flame" class="w-3.5 h-3.5 text-orange-500 fill-orange-500"></i>
+                            <span id="streakDays">4</span> Day Homework Streak
+                        </span>
+                    </div>
+
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight leading-tight mb-2" id="dashboardQuoteText">
+                        "The hardest part is just starting. Give yourself 5 minutes, put the phone down, and let momentum win."
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-600 font-medium">
+                        Arrived home? Don't fall into the social media scroll loop. Select your method below and launch your homework timer immediately.
+                    </p>
+                </div>
+
+                <!-- COMPACT STUDY METHOD CARD -->
+                <div class="glass-card rounded-2xl p-4 shadow-md border border-white/60">
+                    <div class="flex items-center justify-between mb-2.5">
+                        <div>
+                            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+                                <i data-lucide="brain-circuit" class="w-4 h-4 text-blue-600"></i>
+                                Choose Study Method
+                            </h3>
+                            <p class="text-[11px] text-slate-500">Pick a structured focus method.</p>
+                        </div>
+                        <button onclick="openCustomMethodModal()" class="text-[11px] font-bold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-lg transition flex items-center gap-1">
+                            <i data-lucide="plus" class="w-3 h-3"></i> Custom
+                        </button>
+                    </div>
+
+                    <!-- Method Cards Container (Compact) -->
+                    <div class="grid grid-cols-2 gap-2" id="methodsGrid">
+                        <!-- Standard Pomodoro -->
+                        <div onclick="selectMethod('pomodoro')" id="methodCard-pomodoro" class="method-card cursor-pointer p-2.5 rounded-xl border-2 border-blue-500 bg-blue-50/80 hover:border-blue-600 active:scale-95 transition-all duration-200 relative">
+                            <div class="flex items-center justify-between mb-0.5">
+                                <span class="font-bold text-xs text-slate-900">Pomodoro</span>
+                                <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-blue-600 text-white">25m/5m</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500 leading-tight">25m study, 5m break standard interval.</p>
+                        </div>
+
+                        <!-- 50-40-30-20-10 Method -->
+                        <div onclick="selectMethod('decreasing')" id="methodCard-decreasing" class="method-card cursor-pointer p-2.5 rounded-xl border-2 border-slate-200 bg-white/70 hover:border-blue-400 active:scale-95 transition-all duration-200 relative">
+                            <div class="flex items-center justify-between mb-0.5">
+                                <span class="font-bold text-xs text-slate-900">50-40-30-20-10</span>
+                                <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700">De-escalating</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500 leading-tight">Shorter intervals as brain tires.</p>
+                        </div>
+
+                        <!-- 52/17 Method -->
+                        <div onclick="selectMethod('rule52')" id="methodCard-rule52" class="method-card cursor-pointer p-2.5 rounded-xl border-2 border-slate-200 bg-white/70 hover:border-blue-400 active:scale-95 transition-all duration-200 relative">
+                            <div class="flex items-center justify-between mb-0.5">
+                                <span class="font-bold text-xs text-slate-900">52 / 17 Rule</span>
+                                <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700">Deep Work</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500 leading-tight">52m deep study + 17m reset.</p>
+                        </div>
+
+                        <!-- Quick 15 Min Sprint -->
+                        <div onclick="selectMethod('sprint')" id="methodCard-sprint" class="method-card cursor-pointer p-2.5 rounded-xl border-2 border-slate-200 bg-white/70 hover:border-blue-400 active:scale-95 transition-all duration-200 relative">
+                            <div class="flex items-center justify-between mb-0.5">
+                                <span class="font-bold text-xs text-slate-900">15m Sprint</span>
+                                <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700">Quick Start</span>
+                            </div>
+                            <p class="text-[10px] text-slate-500 leading-tight">Fast 15m jumpstart session.</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Time Duration Selection -->
+                    <div class="mt-4 pt-3 border-t border-slate-200/60">
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                                Session Duration
+                            </label>
+                            <span class="text-sm font-extrabold text-blue-600 font-mono" id="selectedDurationDisplay">25 Minutes</span>
+                        </div>
+
+                        <!-- Quick duration pills -->
+                        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 mb-2" id="durationPillsContainer">
+                            <button onclick="toggleDurationMinutes(15, this)" data-mins="15" class="duration-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 active:scale-90 transition-all duration-200">15m</button>
+                            <button onclick="toggleDurationMinutes(25, this)" data-mins="25" class="duration-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-sm active:scale-90 transition-all duration-200">25m</button>
+                            <button onclick="toggleDurationMinutes(40, this)" data-mins="40" class="duration-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 active:scale-90 transition-all duration-200">40m</button>
+                            <button onclick="toggleDurationMinutes(50, this)" data-mins="50" class="duration-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 active:scale-90 transition-all duration-200">50m</button>
+                            <button onclick="toggleDurationMinutes(60, this)" data-mins="60" class="duration-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 active:scale-90 transition-all duration-200">60m</button>
+                        </div>
+
+                        <!-- Slider control -->
+                        <input type="range" id="durationSlider" min="5" max="90" step="5" value="25" oninput="onSliderChange(this.value)"
+                               class="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+                    </div>
+
+                    <!-- LAUNCH TIMER BUTTON -->
+                    <div class="mt-4">
+                        <button onclick="startFocusTimerSession()" class="w-full py-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-700 hover:to-indigo-800 text-white font-extrabold text-sm rounded-xl shadow-lg shadow-blue-600/20 transform active:scale-[0.98] transition-all flex items-center justify-center space-x-2">
+                            <i data-lucide="play-circle" class="w-4 h-4 fill-current text-white/90"></i>
+                            <span>LOCK PHONE & START HOMEWORK</span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="lg:col-span-5 space-y-6">
+                
+                <!-- UPCOMING HOMEWORK & TESTS BANNER -->
+                <div class="glass-card rounded-3xl p-4 shadow-md border border-white/60">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                            <i data-lucide="bell" class="w-4 h-4 text-blue-600"></i>
+                            Upcoming Homework & Tests
+                        </span>
+                        <span id="upcomingBadgeCount" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">Schedule</span>
+                    </div>
+                    <div id="upcomingHomeworkContent" class="text-xs">
+                        <!-- Populated by updateUpcomingHomeworkDisplay() -->
+                    </div>
+                </div>
+
+                <!-- NORMAL INTERACTIVE STUDY CALENDAR -->
+                <div class="glass-card rounded-3xl p-5 shadow-lg border border-white/60 relative">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center space-x-2">
+                            <button onclick="changeCalMonth(-1)" class="p-1.5 hover:bg-slate-100 rounded-lg text-slate-600 transition" title="Previous Month">
+                                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                            </button>
+                            <span id="calendarMonthYearDisplay" class="text-sm font-extrabold text-slate-900 font-mono tracking-tight">September 2026</span>
+                            <button onclick="changeCalMonth(1)" class="p-1.5 hover:bg-slate-100 rounded-lg text-slate-600 transition" title="Next Month">
+                                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+
+                        <div class="flex items-center space-x-2">
+                            <button onclick="goToTodayCalendar()" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200/60 transition">
+                                Today
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Calendar Grid Header Days -->
+                    <div class="grid grid-cols-7 text-center text-[10px] font-bold text-slate-400 uppercase mb-2">
+                        <div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
+                    </div>
+
+                    <!-- Calendar Days Grid -->
+                    <div id="calendarDaysGrid" class="grid grid-cols-7 gap-1 text-center">
+                        <!-- Days populated dynamically by JS -->
+                    </div>
+
+                    <p class="text-[11px] text-slate-400 text-center mt-3 font-medium">
+                        💡 Click on any date to add or delete homework & test items.
+                    </p>
+                </div>
+
+                <!-- AMBIENT FOCUS AUDIO SOUNDBOARD -->
+                <div class="glass-card rounded-3xl p-5 shadow-md border border-white/60">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                            <i data-lucide="headphones" class="w-4 h-4 text-indigo-600"></i>
+                            Focus Sound Generator
+                        </h3>
+                        <span class="text-[10px] text-slate-400 font-medium">Built-in Ambient Noise</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                        <button onclick="toggleAudioTrack('rain')" id="audioBtn-rain" class="audio-btn p-2.5 rounded-2xl border border-slate-200 bg-white/80 hover:bg-indigo-50 text-center transition">
+                            <i data-lucide="cloud-rain" class="w-5 h-5 mx-auto mb-1 text-blue-500"></i>
+                            <span class="block text-xs font-bold text-slate-700">Cozy Rain</span>
+                        </button>
+                        <button onclick="toggleAudioTrack('white')" id="audioBtn-white" class="audio-btn p-2.5 rounded-2xl border border-slate-200 bg-white/80 hover:bg-indigo-50 text-center transition">
+                            <i data-lucide="wind" class="w-5 h-5 mx-auto mb-1 text-slate-500"></i>
+                            <span class="block text-xs font-bold text-slate-700">White Noise</span>
+                        </button>
+                        <button onclick="toggleAudioTrack('ocean')" id="audioBtn-ocean" class="audio-btn p-2.5 rounded-2xl border border-slate-200 bg-white/80 hover:bg-indigo-50 text-center transition">
+                            <i data-lucide="waves" class="w-5 h-5 mx-auto mb-1 text-cyan-600"></i>
+                            <span class="block text-xs font-bold text-slate-700">Ocean Waves</span>
+                        </button>
+                        <button onclick="toggleAudioTrack('drone')" id="audioBtn-drone" class="audio-btn p-2.5 rounded-2xl border border-slate-200 bg-white/80 hover:bg-indigo-50 text-center transition">
+                            <i data-lucide="radio" class="w-5 h-5 mx-auto mb-1 text-purple-600"></i>
+                            <span class="block text-xs font-bold text-slate-700">Alpha Wave</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- HOMEWORK PROGRESS SUMMARY & RECENT LOGS -->
+                <div class="glass-card rounded-3xl p-5 shadow-md border border-white/60">
+                    <h3 class="text-sm font-bold text-slate-900 mb-3 flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
+                            Today's Homework Log
+                        </span>
+                        <span class="text-xs text-blue-600 font-bold" id="totalStudiedToday">0m Done</span>
+                    </h3>
+
+                    <div class="space-y-2 text-xs" id="homeworkLogList">
+                        <!-- Rendered dynamically by renderHomeworkLog() -->
+                    </div>
+                </div>
+
+            </section>
+        </main>
+    </div>
+
+    <div id="focusOverlayModal" class="fixed inset-0 z-50 hidden flex flex-col justify-between p-6 sm:p-12 transition-all duration-500 bg-wallpaper">
+        <!-- Backdrop Dark Filter Overlay -->
+        <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-xl -z-10"></div>
+
+        <!-- Top Header Controls inside Focus Mode -->
+        <div class="flex items-center justify-between relative z-10">
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-blue-300">
+                    <i data-lucide="shield-alert" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <span class="text-xs font-bold text-blue-300 uppercase tracking-widest block">DEEP FOCUS MODE</span>
+                    <span id="activeFocusTaskTitle" class="text-sm font-semibold text-white">Doing Homework</span>
+                </div>
+            </div>
+
+            <button onclick="toggleAudioTrack('active')" id="focusOverlayAudioToggle" class="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-xl text-xs font-bold transition flex items-center space-x-2">
+                <i data-lucide="volume-2" class="w-4 h-4 text-emerald-400"></i>
+                <span id="overlayAudioText">Sound: Rain</span>
+            </button>
+        </div>
+
+        <!-- Center Timer & Encouragement Counter -->
+        <div class="my-auto text-center relative z-10 max-w-xl mx-auto space-y-6">
+            <div class="inline-block px-4 py-1.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-200 text-xs font-bold tracking-wide uppercase pulse-ring">
+                📱 Put phone face-down on desk
+            </div>
+
+            <!-- Huge Timer Display -->
+            <div class="font-mono font-extrabold text-7xl sm:text-9xl text-white tracking-tighter drop-shadow-2xl" id="fullscreenTimerDisplay">
+                25:00
+            </div>
+
+            <p id="fullscreenQuote" class="text-base sm:text-xl font-medium text-slate-200 italic max-w-lg mx-auto">
+                "You are training your brain to stay focused. 25 minutes of deep focus is worth 3 hours of distracted studying."
+            </p>
+
+            <div class="flex items-center justify-center space-x-4 pt-4">
+                <button id="pauseTimerBtn" onclick="togglePauseTimer()" class="px-8 py-4 bg-white/15 hover:bg-white/25 active:scale-95 text-white font-extrabold text-sm rounded-2xl backdrop-blur-md border border-white/30 transition flex items-center space-x-2">
+                    <i data-lucide="pause" id="pauseIcon" class="w-5 h-5"></i>
+                    <span id="pauseBtnText">Pause</span>
+                </button>
+
+                <button onclick="confirmStopTimer()" class="px-8 py-4 bg-red-500/30 hover:bg-red-500/40 text-red-200 font-extrabold text-sm rounded-2xl backdrop-blur-md border border-red-500/40 transition flex items-center space-x-2">
+                    <i data-lucide="square" class="w-4 h-4 fill-current"></i>
+                    <span>End Session</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Bottom Footer Banner -->
+        <div class="text-center relative z-10">
+            <p class="text-xs text-slate-400 font-medium">
+                Focus Method: <span id="activeMethodNameDisplay" class="text-blue-300 font-bold">Classic Pomodoro</span>
+            </p>
+        </div>
+    </div>
+
+    <div id="wallpaperModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
+        <div class="glass-card w-full max-w-2xl rounded-3xl p-6 shadow-2xl border border-white/80 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h3 class="text-lg font-extrabold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="image-plus" class="w-5 h-5 text-blue-600"></i>
+                        Aesthetic Backgrounds & Custom Upload
+                    </h3>
+                    <p class="text-xs text-slate-500">Upload your own photo or pick from our high-res focus wallpapers.</p>
+                </div>
+                <button onclick="toggleWallpaperModal()" class="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- CUSTOM IMAGE UPLOAD BOX -->
+            <div class="mb-5 p-4 rounded-2xl border-2 border-dashed border-blue-300 bg-blue-50/50 hover:bg-blue-50 transition text-center cursor-pointer relative group" onclick="triggerCustomUpload()">
+                <input type="file" id="customBgInput" accept="image/*" onchange="handleCustomBgUpload(event)" class="hidden">
+                <div class="flex flex-col items-center justify-center space-y-1">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center group-hover:scale-110 transition">
+                        <i data-lucide="upload-cloud" class="w-5 h-5"></i>
+                    </div>
+                    <p class="text-xs font-bold text-slate-800">Upload Your Own Background Picture</p>
+                    <p class="text-[10px] text-slate-500">JPG, PNG, WebP supported • High resolution recommended</p>
+                </div>
+            </div>
+
+            <!-- Custom Uploaded Preview Card (hidden until uploaded) -->
+            <div id="customBgPreviewCard" class="hidden mb-4 p-3 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <img id="customBgPreviewImg" src="" class="w-12 h-12 object-cover rounded-xl border border-slate-300">
+                    <div>
+                        <span class="text-xs font-bold text-slate-800 block">Custom Upload Active</span>
+                        <span class="text-[10px] font-semibold text-emerald-600 flex items-center gap-1">
+                            <i data-lucide="check-circle-2" class="w-3 h-3"></i> Currently Applied
+                        </span>
+                    </div>
+                </div>
+                <button onclick="triggerCustomUpload()" class="px-3 py-1.5 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 font-bold text-xs rounded-xl transition">
+                    Change Custom Image
+                </button>
+            </div>
+
+            <!-- CATEGORY FILTER TABS -->
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-2 mb-3 text-xs" id="bgCategoryTabs">
+                <button onclick="filterWallpapers('all', this)" class="bg-tab-btn px-3 py-1.5 rounded-xl font-bold bg-blue-600 text-white shadow-sm transition">All</button>
+                <button onclick="filterWallpapers('cozy', this)" class="bg-tab-btn px-3 py-1.5 rounded-xl font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition">Cozy & Study</button>
+                <button onclick="filterWallpapers('nature', this)" class="bg-tab-btn px-3 py-1.5 rounded-xl font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition">Nature & Mountains</button>
+                <button onclick="filterWallpapers('city', this)" class="bg-tab-btn px-3 py-1.5 rounded-xl font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition">City & Skyline</button>
+                <button onclick="filterWallpapers('minimal', this)" class="bg-tab-btn px-3 py-1.5 rounded-xl font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition">Minimal & Dark</button>
+            </div>
+
+            <!-- Wallpapers Grid (Expanded & Categorized) -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-5" id="wallpapersGrid">
+                <!-- Empire State Night -->
+                <div data-category="city" onclick="changeWallpaper('empire')" class="wallpaper-item cursor-pointer group relative h-28 rounded-2xl overflow-hidden border-2 border-transparent hover:border-blue-500 transition shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Empire State Night">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent p-2.5 flex items-end">
+                        <span class="text-xs font-bold text-white">Empire State Night</span>
+                    </div>
+                </div>
+
+                <!-- National Park Sunset -->
+                <div data-category="nature" onclick="changeWallpaper('sunset')" class="wallpaper-item cursor-pointer group relative h-28 rounded-2xl overflow-hidden border-2 border-transparent hover:border-blue-500 transition shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1426604966848-d7adac402bff?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="National Park Sunset">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent p-2.5 flex items-end">
+                        <span class="text-xs font-bold text-white">Yosemite Sunset</span>
+                    </div>
+                </div>
+
+                <!-- Alpine Snowy Peaks -->
+                <div data-category="nature" onclick="changeWallpaper('alpine')" class="wallpaper-item cursor-pointer group relative h-28 rounded-2xl overflow-hidden border-2 border-transparent hover:border-blue-500 transition shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Alpine Mountain">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent p-2.5 flex items-end">
+                        <span class="text-xs font-bold text-white">Alpine Silence</span>
+                    </div>
+                </div>
+
+                <!-- Cozy Rainy Library -->
+                <div data-category="cozy" onclick="changeWallpaper('rainy')" class="wallpaper-item cursor-pointer group relative h-28 rounded-2xl overflow-hidden border-2 border-transparent hover:border-blue-500 transition shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Cozy Library">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent p-2.5 flex items-end">
+                        <span class="text-xs font-bold text-white">Cozy Academic Study</span>
+                    </div>
+                </div>
+
+                <!-- Coffee Shop Desk -->
+                <div data-category="cozy" onclick="changeWallpaper('coffee')" class="wallpaper-item cursor-pointer group relative h-28 rounded-2xl overflow-hidden border-2 border-transparent hover:border-blue-500 transition shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Coffee Shop Study">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent p-2.5 flex items-end">
+                        <span class="text-xs font-bold text-white">Coffee Shop Corner</span>
+                    </div>
+                </div>
+
+                <!-- Deep Space Galaxy -->
+                <div data-category="minimal" onclick="changeWallpaper('galaxy')" class="wallpaper-item cursor-pointer group relative h-28 rounded-2xl overflow-hidden border-2 border-transparent hover:border-blue-500 transition shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Deep Galaxy">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent p-2.5 flex items-end">
+                        <span class="text-xs font-bold text-white">Starry Deep Space</span>
+                    </div>
+                </div>
+
+                <!-- Pine Forest Canopy -->
+                <div data-category="nature" onclick="changeWallpaper('forest')" class="wallpaper-item cursor-pointer group relative h-28 rounded-2xl overflow-hidden border-2 border-transparent hover:border-blue-500 transition shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Pine Forest">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent p-2.5 flex items-end">
+                        <span class="text-xs font-bold text-white">Mist Pine Forest</span>
+                    </div>
+                </div>
+
+                <!-- Tokyo Neon City -->
+                <div data-category="city" onclick="changeWallpaper('tokyo')" class="wallpaper-item cursor-pointer group relative h-28 rounded-2xl overflow-hidden border-2 border-transparent hover:border-blue-500 transition shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Tokyo Night">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent p-2.5 flex items-end">
+                        <span class="text-xs font-bold text-white">Tokyo Cyber Lights</span>
+                    </div>
+                </div>
+
+                <!-- Minimalist Ocean Sunset -->
+                <div data-category="minimal" onclick="changeWallpaper('minimal')" class="wallpaper-item cursor-pointer group relative h-28 rounded-2xl overflow-hidden border-2 border-transparent hover:border-blue-500 transition shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Minimal Ocean">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent p-2.5 flex items-end">
+                        <span class="text-xs font-bold text-white">Minimal Horizon</span>
+                    </div>
+                </div>
+
+                <!-- Classical Library Stacks -->
+                <div data-category="cozy" onclick="changeWallpaper('library')" class="wallpaper-item cursor-pointer group relative h-28 rounded-2xl overflow-hidden border-2 border-transparent hover:border-blue-500 transition shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Library Stacks">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent p-2.5 flex items-end">
+                        <span class="text-xs font-bold text-white">Grand Library</span>
+                    </div>
+                </div>
+
+                <!-- Lofi Study Room Dusk -->
+                <div data-category="cozy" onclick="changeWallpaper('lofi')" class="wallpaper-item cursor-pointer group relative h-28 rounded-2xl overflow-hidden border-2 border-transparent hover:border-blue-500 transition shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Lo-Fi Night Sky">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent p-2.5 flex items-end">
+                        <span class="text-xs font-bold text-white">Lo-Fi Dusk Valley</span>
+                    </div>
+                </div>
+
+                <!-- Neon Rain Alley -->
+                <div data-category="city" onclick="changeWallpaper('cyberpunk')" class="wallpaper-item cursor-pointer group relative h-28 rounded-2xl overflow-hidden border-2 border-transparent hover:border-blue-500 transition shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="Neon Alley">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent p-2.5 flex items-end">
+                        <span class="text-xs font-bold text-white">Rainy Neon Alley</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Background Overlay Opacity Toggle -->
+            <div class="pt-3 border-t border-slate-200">
+                <label class="block text-xs font-bold text-slate-700 mb-1">Background Tint Dimmer</label>
+                <input type="range" id="overlayDimmer" min="0" max="90" value="70" oninput="adjustBgDimmer(this.value)" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600">
+            </div>
+        </div>
+    </div>
+
+    <div id="customMethodModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
+        <div class="glass-card w-full max-w-md rounded-3xl p-6 shadow-2xl border border-white/80">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-extrabold text-slate-900">Create Custom Study Method</h3>
+                <button onclick="closeCustomMethodModal()" class="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Method Name</label>
+                    <input type="text" id="customNameInput" placeholder="e.g. Math Marathon" class="w-full px-3.5 py-2.5 bg-white rounded-xl text-sm border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Focus Time (mins)</label>
+                        <input type="number" id="customFocusInput" value="35" min="5" max="120" class="w-full px-3.5 py-2.5 bg-white rounded-xl text-sm border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Break Time (mins)</label>
+                        <input type="number" id="customBreakInput" value="8" min="1" max="30" class="w-full px-3.5 py-2.5 bg-white rounded-xl text-sm border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Short Description</label>
+                    <input type="text" id="customDescInput" placeholder="e.g. 35 mins deep problem solving + 8 mins chill" class="w-full px-3.5 py-2.5 bg-white rounded-xl text-sm border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                </div>
+
+                <button onclick="saveCustomMethod()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-md transition">
+                    Save & Apply Custom Method
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="authModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
+        <div class="glass-card w-full max-w-md rounded-3xl p-6 shadow-2xl border border-white/80">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-extrabold text-slate-900">Student Profile & Sync</h3>
+                <button onclick="toggleAuthModal()" class="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Social / Quick Auth Buttons -->
+            <div class="space-y-2.5 mb-6">
+                <!-- Apple Sign In -->
+                <button onclick="simulateAuthLogin('Apple Account')" class="w-full py-3 px-4 bg-black hover:bg-slate-900 text-white font-bold text-xs sm:text-sm rounded-2xl flex items-center justify-center space-x-2 transition shadow-md">
+                    <i data-lucide="apple" class="w-4 h-4 fill-current"></i>
+                    <span>Sign in with Apple</span>
+                </button>
+
+                <!-- Phone Number Sign In -->
+                <button onclick="showPhoneAuthInput()" class="w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs sm:text-sm rounded-2xl flex items-center justify-center space-x-2 transition">
+                    <i data-lucide="phone" class="w-4 h-4 text-emerald-600"></i>
+                    <span>Continue with Phone Number</span>
+                </button>
+            </div>
+
+            <div class="relative my-4">
+                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-200"></div></div>
+                <div class="relative flex justify-center text-xs uppercase"><span class="bg-white/80 px-2 text-slate-400 font-bold">Or Email</span></div>
+            </div>
+
+            <!-- Email Login Form -->
+            <form onsubmit="handleEmailAuth(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Email Address</label>
+                    <input type="email" id="authEmailInput" required placeholder="alex.student@school.edu" class="w-full px-3.5 py-2.5 bg-white rounded-xl text-sm border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Password</label>
+                    <input type="password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 bg-white rounded-xl text-sm border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                </div>
+                <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-2xl shadow-md transition">
+                    Sign In / Create Profile
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
+        <div class="glass-card w-full max-w-md rounded-3xl p-6 shadow-2xl border border-white/80">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-extrabold text-slate-900">App Settings</h3>
+                <button onclick="toggleSettingsModal()" class="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4 text-sm">
+                <div class="flex items-center justify-between p-3 rounded-2xl bg-white/70 border border-slate-200">
+                    <div>
+                        <span class="font-bold text-slate-800 block">Strict Anti-Distraction Mode</span>
+                        <span class="text-xs text-slate-500">Auto-fullscreen during focus</span>
+                    </div>
+                    <input type="checkbox" id="strictModeToggle" checked class="w-5 h-5 accent-blue-600 rounded">
+                </div>
+
+                <div class="flex items-center justify-between p-3 rounded-2xl bg-white/70 border border-slate-200">
+                    <div>
+                        <span class="font-bold text-slate-800 block">Sound Chimes</span>
+                        <span class="text-xs text-slate-500">Play chime when session completes</span>
+                    </div>
+                    <input type="checkbox" id="soundChimeToggle" checked class="w-5 h-5 accent-blue-600 rounded">
+                </div>
+
+                <div class="p-3 rounded-2xl bg-blue-50 text-blue-900 border border-blue-100 text-xs leading-relaxed">
+                    💡 <strong>Tip for Parents & Coaches:</strong> Add this app as a Home Screen Widget on your client's phone or bookmark it for instant access right after school.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DATE HOMEWORK / TEST MODAL (POP-OUT) -->
+    <div id="dateHomeworkModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
+        <div class="glass-card w-full max-w-md rounded-3xl p-6 shadow-2xl border border-white/80">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h3 class="text-base font-extrabold text-slate-900" id="dateModalTitle">Homework for Date</h3>
+                    <p class="text-xs text-slate-500 font-medium" id="dateModalSubtitle">Add or manage tasks for this day</p>
+                </div>
+                <button onclick="closeDateHomeworkModal()" class="p-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- List of existing tasks for selected date -->
+            <div class="mb-4">
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Scheduled Items</label>
+                <div id="dateTasksList" class="space-y-2 max-h-40 overflow-y-auto pr-1">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Form to add new homework/test -->
+            <form onsubmit="handleSaveHomework(event)" class="space-y-3 pt-3 border-t border-slate-200/80">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Subject / Title</label>
+                    <input type="text" id="hwTitleInput" required placeholder="e.g. Math Ch. 5 Problems or History Test" class="w-full px-3.5 py-2.5 bg-white rounded-xl text-sm border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Type</label>
+                        <select id="hwTypeInput" class="w-full px-3 py-2.5 bg-white rounded-xl text-sm border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 font-semibold">
+                            <option value="Homework">Homework 📚</option>
+                            <option value="Test">Test / Exam 📝</option>
+                            <option value="Project">Project 🎯</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Estimated Mins</label>
+                        <input type="number" id="hwDurationInput" value="30" min="5" max="180" class="w-full px-3.5 py-2.5 bg-white rounded-xl text-sm border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-md transition flex items-center justify-center space-x-2">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                    <span>Add to Calendar</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="toastNotification" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <div class="glass-dark px-5 py-3 rounded-2xl text-white text-xs font-bold shadow-2xl flex items-center space-x-2 border border-white/20">
+            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
+            <span id="toastMessageText">Settings updated!</span>
+        </div>
+    </div>
+
+    <!-- JS LOGIC ENGINE -->
+    <script>
+        // App State
+        let state = {
+            selectedMethod: 'pomodoro',
+            selectedDurationMinutes: 25,
+            remainingSeconds: 25 * 60,
+            isRunning: false,
+            isPaused: false,
+            timerInterval: null,
+            activeAudio: null,
+            audioContext: null,
+            audioGain: null,
+            audioOscillator: null,
+            selectedTaskFromCal: '',
+            // Fixed state initialization for completed dates and today's session log
+            completedDates: new Set(),
+            hasAccomplishedToday: false,
+            todayLog: [],
+            // Calendar & Homework state
+            calCurrentDate: new Date(),
+            activeModalDateStr: '',
+            // Homework tasks indexed by date string "YYYY-MM-DD"
+            homeworkTasks: (function() {
+                const todayObj = new Date();
+                const tm = new Date(todayObj);
+                tm.setDate(todayObj.getDate() + 1);
+                const da = new Date(todayObj);
+                da.setDate(todayObj.getDate() + 2);
+
+                const fmt = (d) => {
+                    const y = d.getFullYear();
+                    const m = String(d.getMonth() + 1).padStart(2, '0');
+                    const day = String(d.getDate()).padStart(2, '0');
+                    return `${y}-${m}-${day}`;
+                };
+
+                const tasks = {};
+                tasks[fmt(tm)] = [
+                    { id: 'hw-1', title: 'Math Ch. 4 Exercises', type: 'Homework', mins: 30 }
+                ];
+                tasks[fmt(da)] = [
+                    { id: 'hw-2', title: 'Biology Midterm Prep', type: 'Test', mins: 45 }
+                ];
+                return tasks;
+            })(),
+            userProfile: {
+                name: 'Alex M.',
+                avatar: 'A',
+                streak: 4,
+                totalMinutesToday: 0
+            },
+            quotes: [
+                "The hardest part is just starting. Give yourself 5 minutes, put the phone down, and let momentum win.",
+                "Future you will thank you for opening your books right now instead of scrolling social media.",
+                "Action comes BEFORE motivation. Start the timer, then the mood will follow.",
+                "15 minutes of real focus beats 2 hours of fake studying interrupted by phone notifications.",
+                "Discipline is choosing between what you want NOW and what you want MOST.",
+                "Your phone will still be there after you finish your homework. Your future opportunities won't wait.",
+                "Small daily focus efforts lead to massive long-term test results.",
+                "You don't need to feel like doing homework to actually do it. Just launch the timer!"
+            ],
+            wallpapers: {
+                empire: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1920&q=80",
+                sunset: "https://images.unsplash.com/photo-1426604966848-d7adac402bff?auto=format&fit=crop&w=1920&q=80",
+                alpine: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1920&q=80",
+                rainy: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1920&q=80",
+                coffee: "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1920&q=80",
+                galaxy: "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?auto=format&fit=crop&w=1920&q=80",
+                forest: "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1920&q=80",
+                tokyo: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=1920&q=80",
+                minimal: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80",
+                library: "https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=1920&q=80",
+                lofi: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1920&q=80",
+                cyberpunk: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1920&q=80"
+            }
+        };
+
+        function triggerCustomUpload() {
+            const input = document.getElementById('customBgInput');
+            if (input) input.click();
+        }
+
+        function handleCustomBgUpload(e) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                showToast("Please select a valid image file.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const imageUrl = event.target.result;
+                const bgPhoto = document.getElementById('bgPhoto');
+                if (bgPhoto) {
+                    bgPhoto.style.backgroundImage = `url('${imageUrl}')`;
+                }
+
+                // Show preview card in modal
+                const previewCard = document.getElementById('customBgPreviewCard');
+                const previewImg = document.getElementById('customBgPreviewImg');
+                if (previewCard && previewImg) {
+                    previewImg.src = imageUrl;
+                    previewCard.classList.remove('hidden');
+                }
+
+                showToast("Custom background photo applied! 📸");
+                toggleWallpaperModal();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function filterWallpapers(category, tabBtn) {
+            const items = document.querySelectorAll('.wallpaper-item');
+            items.forEach(item => {
+                const itemCat = item.getAttribute('data-category');
+                if (category === 'all' || itemCat === category) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+
+            // Update tab button UI
+            const tabs = document.querySelectorAll('.bg-tab-btn');
+            tabs.forEach(tab => {
+                tab.className = "bg-tab-btn px-3 py-1.5 rounded-xl font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition";
+            });
+            if (tabBtn) {
+                tabBtn.className = "bg-tab-btn px-3 py-1.5 rounded-xl font-bold bg-blue-600 text-white shadow-sm transition";
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCalendar();
+            updateUpcomingHomeworkDisplay();
+            renderHomeworkLog();
+            updateDurationPillsUI();
+            updateTimerDisplays();
+            updateDailyQuoteAndTimer();
+            setInterval(updateDailyQuoteAndTimer, 1000);
+            lucide.createIcons();
+        });
+
+        function getFormattedDateStr(d) {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendarDaysGrid');
+            const monthYearDisplay = document.getElementById('calendarMonthYearDisplay');
+            if (!grid || !monthYearDisplay) return;
+
+            const year = state.calCurrentDate.getFullYear();
+            const month = state.calCurrentDate.getMonth();
+
+            const monthNames = ["January", "February", "March", "April", "May", "June", 
+                                "July", "August", "September", "October", "November", "December"];
+            monthYearDisplay.textContent = `${monthNames[month]} ${year}`;
+
+            const streakDaysEl = document.getElementById('streakDays');
+            if (streakDaysEl) {
+                streakDaysEl.textContent = state.completedDates.size;
+            }
+
+            grid.innerHTML = '';
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const totalDays = new Date(year, month + 1, 0).getDate();
+            const todayStr = getFormattedDateStr(new Date());
+
+            for (let i = 0; i < firstDay; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = "h-9 rounded-xl";
+                grid.appendChild(emptyCell);
+            }
+
+            for (let day = 1; day <= totalDays; day++) {
+                const dateObj = new Date(year, month, day);
+                const dateStr = getFormattedDateStr(dateObj);
+                
+                const hasHomework = state.homeworkTasks[dateStr] && state.homeworkTasks[dateStr].length > 0;
+                const isAccomplished = state.completedDates.has(dateStr);
+                const isToday = (dateStr === todayStr);
+
+                const dayBtn = document.createElement('button');
+                dayBtn.onclick = () => openDateHomeworkModal(dateStr);
+                
+                let bgClass = "bg-white/60 hover:bg-white text-slate-700 border-transparent";
+                if (isAccomplished) {
+                    bgClass = "bg-emerald-500 text-white font-extrabold shadow-sm";
+                } else if (isToday) {
+                    bgClass = "bg-blue-600 text-white font-extrabold ring-2 ring-blue-300";
+                }
+
+                dayBtn.className = `h-9 rounded-xl flex flex-col items-center justify-center text-xs font-semibold relative transition border ${bgClass}`;
+                
+                dayBtn.innerHTML = `
+                    <span>${day}</span>
+                    ${hasHomework ? `<span class="w-1.5 h-1.5 rounded-full ${isAccomplished || isToday ? 'bg-amber-300' : 'bg-blue-600'} absolute bottom-1"></span>` : ''}
+                `;
+
+                grid.appendChild(dayBtn);
+            }
+        }
+
+        function changeCalMonth(offset) {
+            state.calCurrentDate.setMonth(state.calCurrentDate.getMonth() + offset);
+            renderCalendar();
+            lucide.createIcons();
+        }
+
+        function renderHomeworkLog() {
+            const container = document.getElementById('homeworkLogList');
+            if (!container) return;
+
+            if (!state.todayLog || state.todayLog.length === 0) {
+                container.innerHTML = `
+                    <div class="p-3 text-center rounded-xl bg-slate-50 border border-slate-100 text-xs text-slate-400 font-medium">
+                        No focus sessions completed yet today.
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = state.todayLog.map(item => `
+                <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/70 border border-slate-100">
+                    <div class="flex items-center gap-2 truncate pr-2">
+                        <span class="w-2 h-2 rounded-full bg-blue-600 flex-shrink-0"></span>
+                        <span class="font-semibold text-slate-800 truncate">${item.title}</span>
+                    </div>
+                    <span class="font-mono text-slate-500 text-xs flex-shrink-0">${item.mins}m</span>
+                </div>
+            `).join('');
+        }
+
+        function completeTimerSession() {
+            clearInterval(state.timerInterval);
+            state.isRunning = false;
+            playCompletionChime();
+
+            // Mark today accomplished on calendar
+            const todayStr = getFormattedDateStr(new Date());
+            state.completedDates.add(todayStr);
+            state.hasAccomplishedToday = true;
+            renderCalendar();
+            
+            // Add session to dynamic log
+            const taskTitle = document.getElementById('activeFocusTaskTitle').textContent;
+            state.todayLog.unshift({
+                title: taskTitle,
+                mins: state.selectedDurationMinutes
+            });
+            renderHomeworkLog();
+
+            state.userProfile.totalMinutesToday += state.selectedDurationMinutes;
+            document.getElementById('totalStudiedToday').textContent = `${state.userProfile.totalMinutesToday}m Done`;
+
+            document.getElementById('focusOverlayModal').classList.add('hidden');
+            showToast("🎉 Homework session logged & accomplished!");
+            lucide.createIcons();
+        }
+
+        function goToTodayCalendar() {
+            state.calCurrentDate = new Date();
+            renderCalendar();
+            lucide.createIcons();
+        }
+
+        function openDateHomeworkModal(dateStr) {
+            state.activeModalDateStr = dateStr;
+            const modal = document.getElementById('dateHomeworkModal');
+            
+            // Format human friendly date
+            const parts = dateStr.split('-');
+            const dateObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+            const formattedDate = dateObj.toLocaleDateString(undefined, options);
+
+            document.getElementById('dateModalTitle').textContent = formattedDate;
+            
+            const todayStr = getFormattedDateStr(new Date());
+            if (dateStr === todayStr) {
+                document.getElementById('dateModalSubtitle').textContent = "Today's Homework & Tests";
+            } else {
+                document.getElementById('dateModalSubtitle').textContent = "Homework & Tests for this day";
+            }
+
+            renderDateModalTasksList();
+            modal.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeDateHomeworkModal() {
+            document.getElementById('dateHomeworkModal').classList.add('hidden');
+            document.getElementById('hwTitleInput').value = '';
+        }
+
+        function renderDateModalTasksList() {
+            const listEl = document.getElementById('dateTasksList');
+            const tasks = state.homeworkTasks[state.activeModalDateStr] || [];
+
+            if (tasks.length === 0) {
+                listEl.innerHTML = `
+                    <div class="p-3 text-center rounded-xl bg-slate-50 border border-slate-200/60 text-xs text-slate-400 font-medium">
+                        No homework or tests set for this date. Add one below!
+                    </div>
+                `;
+                return;
+            }
+
+            listEl.innerHTML = tasks.map(task => `
+                <div class="flex items-center justify-between p-2.5 rounded-xl bg-white border border-slate-200/80 shadow-2xs group">
+                    <div class="flex items-center space-x-2.5 truncate pr-2">
+                        <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-md ${task.type === 'Test' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'} flex-shrink-0">
+                            ${task.type}
+                        </span>
+                        <div class="truncate">
+                            <p class="text-xs font-bold text-slate-800 truncate">${task.title}</p>
+                            <p class="text-[10px] text-slate-500 font-mono">${task.mins || 25} mins focus</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-1 flex-shrink-0">
+                        <button onclick="setTaskAsActiveForTimer('${task.title}', ${task.mins || 25})" class="px-2 py-1 bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white rounded-lg text-[10px] font-bold transition">
+                            Study
+                        </button>
+                        <button onclick="deleteHomeworkItem('${task.id}')" class="p-1 hover:bg-red-50 text-slate-400 hover:text-red-600 rounded-lg transition" title="Delete Task">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        function handleSaveHomework(e) {
+            e.preventDefault();
+            const titleInput = document.getElementById('hwTitleInput');
+            const typeInput = document.getElementById('hwTypeInput');
+            const durationInput = document.getElementById('hwDurationInput');
+
+            const title = titleInput.value.trim();
+            if (!title) return;
+
+            const dateStr = state.activeModalDateStr;
+            if (!state.homeworkTasks[dateStr]) {
+                state.homeworkTasks[dateStr] = [];
+            }
+
+            const newTask = {
+                id: 'hw-' + Date.now(),
+                title: title,
+                type: typeInput.value,
+                mins: parseInt(durationInput.value) || 25
+            };
+
+            state.homeworkTasks[dateStr].push(newTask);
+            titleInput.value = '';
+
+            renderDateModalTasksList();
+            renderCalendar();
+            updateUpcomingHomeworkDisplay();
+            showToast(`Added ${newTask.type}: "${title}"`);
+        }
+
+        function deleteHomeworkItem(taskId) {
+            const dateStr = state.activeModalDateStr;
+            if (state.homeworkTasks[dateStr]) {
+                state.homeworkTasks[dateStr] = state.homeworkTasks[dateStr].filter(t => t.id !== taskId);
+                if (state.homeworkTasks[dateStr].length === 0) {
+                    delete state.homeworkTasks[dateStr];
+                }
+            }
+
+            renderDateModalTasksList();
+            renderCalendar();
+            updateUpcomingHomeworkDisplay();
+            showToast("Item deleted");
+        }
+
+        function setTaskAsActiveForTimer(title, mins) {
+            state.selectedTaskFromCal = title;
+            setDurationMinutes(mins);
+            closeDateHomeworkModal();
+            showToast(`Target set to "${title}" (${mins}m)`);
+        }
+
+        function updateUpcomingHomeworkDisplay() {
+            const upcomingContainer = document.getElementById('upcomingHomeworkContent');
+            const badgeCount = document.getElementById('upcomingBadgeCount');
+            if (!upcomingContainer) return;
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // Collect all future and today dates with homework
+            const upcomingEntries = [];
+
+            Object.keys(state.homeworkTasks || {}).forEach(dateStr => {
+                const parts = dateStr.split('-');
+                if (parts.length !== 3) return;
+                const taskDate = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+                taskDate.setHours(0, 0, 0, 0);
+
+                // Check if taskDate is today or future
+                const diffDays = Math.round((taskDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                
+                if (diffDays >= 0) {
+                    const tasks = state.homeworkTasks[dateStr];
+                    if (Array.isArray(tasks)) {
+                        tasks.forEach(t => {
+                            upcomingEntries.push({
+                                ...t,
+                                dateStr: dateStr,
+                                diffDays: diffDays,
+                                dateObj: taskDate
+                            });
+                        });
+                    }
+                }
+            });
+
+            // Sort by earliest date
+            upcomingEntries.sort((a, b) => a.diffDays - b.diffDays);
+
+            if (upcomingEntries.length === 0) {
+                upcomingContainer.innerHTML = `
+                    <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/60 text-slate-500 font-semibold flex items-center justify-between">
+                        <span class="text-xs">No upcoming homework</span>
+                        <i data-lucide="sparkles" class="w-4 h-4 text-emerald-500"></i>
+                    </div>
+                `;
+                if (badgeCount) badgeCount.textContent = "Clear";
+                if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+                return;
+            }
+
+            if (badgeCount) badgeCount.textContent = `${upcomingEntries.length} Scheduled`;
+
+            const topUpcoming = upcomingEntries.slice(0, 3);
+
+            upcomingContainer.innerHTML = `
+                <div class="space-y-1.5">
+                    ${topUpcoming.map(item => {
+                        let dayLabel = "";
+                        if (item.diffDays === 0) dayLabel = "Today";
+                        else if (item.diffDays === 1) dayLabel = "Tomorrow";
+                        else dayLabel = `In ${item.diffDays} days (${item.dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })})`;
+
+                        return `
+                            <div class="flex items-center justify-between p-2.5 rounded-2xl bg-white/80 border border-slate-200/70 hover:border-blue-300 transition cursor-pointer" onclick="openDateHomeworkModal('${item.dateStr}')">
+                                <div class="flex items-center space-x-2 truncate pr-2">
+                                    <span class="px-2 py-0.5 text-[10px] font-extrabold rounded-md ${item.type === 'Test' ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'} flex-shrink-0">
+                                        ${item.type}
+                                    </span>
+                                    <div class="truncate">
+                                        <p class="text-xs font-bold text-slate-800 truncate">${item.title}</p>
+                                        <p class="text-[10px] text-slate-500 font-mono">${dayLabel}</p>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] font-bold text-blue-600 hover:text-blue-800 flex-shrink-0">View &rarr;</span>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+
+            if (typeof lucide !== 'undefined' && lucide.createIcons) lucide.createIcons();
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toastNotification');
+            const toastText = document.getElementById('toastMessageText');
+            toastText.textContent = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        function triggerPopAnimation(element) {
+            if (!element) return;
+            element.classList.remove('btn-pop');
+            void element.offsetWidth; // Force reflow
+            element.classList.add('btn-pop');
+        }
+
+        function selectMethod(methodKey) {
+            const activeCard = document.getElementById(`methodCard-${methodKey}`);
+            if (activeCard) triggerPopAnimation(activeCard);
+
+            // Toggle OFF if clicking already selected method
+            if (state.selectedMethod === methodKey) {
+                state.selectedMethod = null;
+                document.querySelectorAll('.method-card').forEach(card => {
+                    card.classList.remove('border-blue-500', 'bg-blue-50/80', 'ring-2', 'ring-blue-400', 'scale-[1.02]');
+                    card.classList.add('border-slate-200', 'bg-white/70');
+                });
+                showToast("Study method unselected");
+                return;
+            }
+
+            state.selectedMethod = methodKey;
+            
+            document.querySelectorAll('.method-card').forEach(card => {
+                card.classList.remove('border-blue-500', 'bg-blue-50/80', 'ring-2', 'ring-blue-400', 'scale-[1.02]');
+                card.classList.add('border-slate-200', 'bg-white/70');
+            });
+
+            if (activeCard) {
+                activeCard.classList.remove('border-slate-200', 'bg-white/70');
+                activeCard.classList.add('border-blue-500', 'bg-blue-50/80', 'ring-2', 'ring-blue-400', 'scale-[1.02]');
+            }
+
+            if (methodKey === 'pomodoro') setDurationMinutes(25);
+            else if (methodKey === 'decreasing') setDurationMinutes(50);
+            else if (methodKey === 'rule52') setDurationMinutes(52);
+            else if (methodKey === 'sprint') setDurationMinutes(15);
+        }
+
+        function toggleDurationMinutes(mins, btnElement) {
+            if (btnElement) triggerPopAnimation(btnElement);
+
+            // Toggle off if clicking the currently active pill duration
+            if (state.selectedDurationMinutes === mins) {
+                state.selectedDurationMinutes = null;
+                state.remainingSeconds = 0;
+                document.getElementById('selectedDurationDisplay').textContent = "None (Stopwatch Mode)";
+                updateDurationPillsUI();
+                showToast("Session duration unclicked — Free study mode");
+                return;
+            }
+
+            setDurationMinutes(mins);
+        }
+
+        function setDurationMinutes(mins) {
+            state.selectedDurationMinutes = parseInt(mins);
+            state.remainingSeconds = state.selectedDurationMinutes * 60;
+            
+            document.getElementById('selectedDurationDisplay').textContent = `${state.selectedDurationMinutes} Minutes`;
+            document.getElementById('durationSlider').value = state.selectedDurationMinutes;
+            
+            updateDurationPillsUI();
+            updateTimerDisplays();
+        }
+
+        function updateDurationPillsUI() {
+            const pills = document.querySelectorAll('.duration-btn');
+            pills.forEach(pill => {
+                const pillMins = parseInt(pill.getAttribute('data-mins'));
+                if (state.selectedDurationMinutes && pillMins === state.selectedDurationMinutes) {
+                    pill.className = "duration-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-md ring-2 ring-blue-300 active:scale-90 transition-all duration-200 btn-pop";
+                } else {
+                    pill.className = "duration-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 active:scale-90 transition-all duration-200";
+                }
+            });
+        }
+
+        function onSliderChange(val) {
+            setDurationMinutes(val);
+        }
+
+        function updateTimerDisplays() {
+            if (!state.selectedDurationMinutes || state.remainingSeconds <= 0) {
+                document.getElementById('fullscreenTimerDisplay').textContent = "00:00";
+                return;
+            }
+            const mins = Math.floor(state.remainingSeconds / 60);
+            const secs = state.remainingSeconds % 60;
+            const timeStr = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+            document.getElementById('fullscreenTimerDisplay').textContent = timeStr;
+        }
+
+        function startFocusTimerSession() {
+            const activeTaskTitle = state.selectedTaskFromCal || "After-School Homework Session";
+            document.getElementById('activeFocusTaskTitle').textContent = activeTaskTitle;
+
+            state.isRunning = true;
+            state.isPaused = false;
+            
+            document.getElementById('focusOverlayModal').classList.remove('hidden');
+            
+            const methodNameMap = {
+                'pomodoro': 'Classic Pomodoro',
+                'decreasing': '50-40-30-20-10 Method',
+                'rule52': '52 / 17 Rule',
+                'sprint': '15m Homework Sprint'
+            };
+            document.getElementById('activeMethodNameDisplay').textContent = state.selectedMethod ? (methodNameMap[state.selectedMethod] || 'Custom Method') : 'Open Focus Session';
+
+            // If no specific duration preset was selected, default to 25 mins or continuous
+            if (!state.selectedDurationMinutes) {
+                state.selectedDurationMinutes = 25;
+                state.remainingSeconds = 25 * 60;
+            }
+
+            clearInterval(state.timerInterval);
+            state.timerInterval = setInterval(() => {
+                if (!state.isPaused && state.remainingSeconds > 0) {
+                    state.remainingSeconds--;
+                    updateTimerDisplays();
+                    if (state.remainingSeconds === 0) {
+                        completeTimerSession();
+                    }
+                }
+            }, 1000);
+
+            showToast("Focus mode activated! Lock your phone.");
+        }
+
+        function togglePauseTimer() {
+            state.isPaused = !state.isPaused;
+            const pauseBtnText = document.getElementById('pauseBtnText');
+            if (state.isPaused) {
+                pauseBtnText.textContent = "Resume";
+            } else {
+                pauseBtnText.textContent = "Pause";
+            }
+        }
+
+        function confirmStopTimer() {
+            clearInterval(state.timerInterval);
+            state.isRunning = false;
+            document.getElementById('focusOverlayModal').classList.add('hidden');
+            showToast("Session ended.");
+        }
+
+        function toggleAudioTrack(trackType) {
+            if (state.activeAudio === trackType) {
+                stopAmbientAudio();
+                state.activeAudio = null;
+                updateAudioButtonsUI();
+                showToast("Ambient sound muted");
+                return;
+            }
+
+            stopAmbientAudio();
+            state.activeAudio = trackType;
+            updateAudioButtonsUI();
+
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                state.audioContext = new AudioCtx();
+                const ctx = state.audioContext;
+                
+                state.masterGain = ctx.createGain();
+                state.masterGain.gain.setValueAtTime(0.15, ctx.currentTime);
+                state.masterGain.connect(ctx.destination);
+
+                if (trackType === 'rain') {
+                    // REALISTIC COZY RAIN SYNTHESIZER (Filtered Pink Noise + High-frequency Raindrop Patter & Wind LFO)
+                    const bufferSize = ctx.sampleRate * 3;
+                    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                    const output = noiseBuffer.getChannelData(0);
+                    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+                    for (let i = 0; i < bufferSize; i++) {
+                        const white = Math.random() * 2 - 1;
+                        b0 = 0.99886 * b0 + white * 0.0555179;
+                        b1 = 0.99332 * b1 + white * 0.0750759;
+                        b2 = 0.96900 * b2 + white * 0.1538520;
+                        b3 = 0.86650 * b3 + white * 0.3104856;
+                        b4 = 0.55000 * b4 + white * 0.5329522;
+                        b5 = -0.7616 * b5 - white * 0.0168980;
+                        output[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+                        output[i] *= 0.11;
+                        b6 = white * 0.115926;
+                    }
+
+                    const rainSource = ctx.createBufferSource();
+                    rainSource.buffer = noiseBuffer;
+                    rainSource.loop = true;
+
+                    // Lowpass filter for soft rain body
+                    const lowpass = ctx.createBiquadFilter();
+                    lowpass.type = 'lowpass';
+                    lowpass.frequency.setValueAtTime(1200, ctx.currentTime);
+
+                    // Highpass filter to strip low rumble
+                    const highpass = ctx.createBiquadFilter();
+                    highpass.type = 'highpass';
+                    highpass.frequency.setValueAtTime(280, ctx.currentTime);
+
+                    // Raindrop patter bandpass filter
+                    const patterFilter = ctx.createBiquadFilter();
+                    patterFilter.type = 'bandpass';
+                    patterFilter.frequency.setValueAtTime(4200, ctx.currentTime);
+                    patterFilter.Q.setValueAtTime(1.8, ctx.currentTime);
+
+                    // Soft gust LFO
+                    const rainLfo = ctx.createOscillator();
+                    rainLfo.frequency.setValueAtTime(0.1, ctx.currentTime);
+                    const lfoGain = ctx.createGain();
+                    lfoGain.gain.setValueAtTime(0.03, ctx.currentTime);
+                    rainLfo.connect(lfoGain);
+                    lfoGain.connect(state.masterGain.gain);
+                    rainLfo.start();
+
+                    rainSource.connect(lowpass);
+                    lowpass.connect(highpass);
+                    highpass.connect(state.masterGain);
+
+                    rainSource.connect(patterFilter);
+                    patterFilter.connect(state.masterGain);
+
+                    rainSource.start();
+                    state.audioNodes = [rainSource, rainLfo];
+                    showToast("Playing Realistic Cozy Rain 🌧️");
+
+                } else if (trackType === 'white') {
+                    // PURE UNFILTERED WHITE NOISE
+                    const bufferSize = ctx.sampleRate * 2;
+                    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                    const output = noiseBuffer.getChannelData(0);
+                    for (let i = 0; i < bufferSize; i++) {
+                        output[i] = Math.random() * 2 - 1;
+                    }
+
+                    const whiteNoise = ctx.createBufferSource();
+                    whiteNoise.buffer = noiseBuffer;
+                    whiteNoise.loop = true;
+
+                    const hp = ctx.createBiquadFilter();
+                    hp.type = 'highpass';
+                    hp.frequency.setValueAtTime(100, ctx.currentTime);
+
+                    whiteNoise.connect(hp);
+                    hp.connect(state.masterGain);
+                    whiteNoise.start();
+
+                    state.audioNodes = [whiteNoise];
+                    showToast("Playing Pure White Noise 📻");
+
+                } else if (trackType === 'ocean') {
+                    // OCEAN WAVES SYNTHESIZER
+                    const bufferSize = ctx.sampleRate * 3;
+                    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                    const output = noiseBuffer.getChannelData(0);
+                    let lastOut = 0.0;
+                    for (let i = 0; i < bufferSize; i++) {
+                        let white = Math.random() * 2 - 1;
+                        output[i] = (lastOut + (0.02 * white)) / 1.02;
+                        lastOut = output[i];
+                        output[i] *= 3.0;
+                    }
+
+                    const surfSource = ctx.createBufferSource();
+                    surfSource.buffer = noiseBuffer;
+                    surfSource.loop = true;
+
+                    const filter = ctx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(250, ctx.currentTime);
+
+                    // Wave swell modulation (8-second cycle)
+                    const lfo = ctx.createOscillator();
+                    lfo.frequency.setValueAtTime(0.125, ctx.currentTime);
+                    
+                    const lfoGain = ctx.createGain();
+                    lfoGain.gain.setValueAtTime(550, ctx.currentTime);
+
+                    lfo.connect(lfoGain);
+                    lfoGain.connect(filter.frequency);
+
+                    surfSource.connect(filter);
+                    filter.connect(state.masterGain);
+
+                    surfSource.start();
+                    lfo.start();
+
+                    state.audioNodes = [surfSource, lfo];
+                    showToast("Playing Ocean Waves 🌊");
+
+                } else if (trackType === 'drone') {
+                    // 10Hz BINAURAL ALPHA WAVE
+                    const osc1 = ctx.createOscillator();
+                    const osc2 = ctx.createOscillator();
+                    osc1.type = 'sine';
+                    osc2.type = 'sine';
+                    osc1.frequency.setValueAtTime(150, ctx.currentTime);
+                    osc2.frequency.setValueAtTime(160, ctx.currentTime);
+
+                    const gain = ctx.createGain();
+                    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+
+                    osc1.connect(gain);
+                    osc2.connect(gain);
+                    gain.connect(state.masterGain);
+
+                    osc1.start();
+                    osc2.start();
+
+                    state.audioNodes = [osc1, osc2];
+                    showToast("Playing 10Hz Alpha Focus Waves 🧠");
+                }
+            } catch(e) {
+                console.error("Audio API Error", e);
+            }
+        }
+
+        function stopAmbientAudio() {
+            if (state.audioNodes) {
+                state.audioNodes.forEach(node => {
+                    try { node.stop(); } catch(e) {}
+                    try { node.disconnect(); } catch(e) {}
+                });
+                state.audioNodes = [];
+            }
+            if (state.audioContext) {
+                state.audioContext.close();
+                state.audioContext = null;
+            }
+        }
+
+        function updateAudioButtonsUI() {
+            const tracks = ['rain', 'white', 'ocean', 'drone'];
+            tracks.forEach(track => {
+                const btn = document.getElementById(`audioBtn-${track}`);
+                if (btn) {
+                    if (state.activeAudio === track) {
+                        btn.classList.add('ring-2', 'ring-indigo-500', 'bg-indigo-100', 'border-indigo-400');
+                        btn.classList.remove('bg-white/80', 'border-slate-200');
+                    } else {
+                        btn.classList.remove('ring-2', 'ring-indigo-500', 'bg-indigo-100', 'border-indigo-400');
+                        btn.classList.add('bg-white/80', 'border-slate-200');
+                    }
+                }
+            });
+
+            const overlayText = document.getElementById('overlayAudioText');
+            if (overlayText) {
+                const names = {
+                    rain: 'Sound: Rain 🌧️',
+                    white: 'Sound: White Noise 📻',
+                    ocean: 'Sound: Ocean Waves 🌊',
+                    drone: 'Sound: Alpha Wave 🧠'
+                };
+                overlayText.textContent = state.activeAudio ? (names[state.activeAudio] || 'Sound On') : 'Sound: Muted';
+            }
+        }
+
+        function playCompletionChime() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                const ctx = new AudioCtx();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+                osc.frequency.exponentialRampToValueAtTime(659.25, ctx.currentTime + 0.3); // E5
+                gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.8);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.8);
+            } catch(e) {}
+        }
+
+        function toggleWidgetModal() {
+            showToast("Interactive Widget preview active on screen.");
+        }
+
+        function toggleWallpaperModal() {
+            const modal = document.getElementById('wallpaperModal');
+            modal.classList.toggle('hidden');
+        }
+
+        function changeWallpaper(key) {
+            const url = state.wallpapers[key];
+            if (url) {
+                document.getElementById('bgPhoto').style.backgroundImage = `url('${url}')`;
+                showToast("Background wallpaper updated!");
+            }
+            toggleWallpaperModal();
+        }
+
+        function adjustBgDimmer(val) {
+            const opacity = val / 100;
+            document.getElementById('bgOverlay').style.opacity = opacity;
+        }
+
+        function toggleAuthModal() {
+            document.getElementById('authModal').classList.toggle('hidden');
+        }
+
+        function simulateAuthLogin(provider) {
+            state.userProfile.name = "Alex M.";
+            document.getElementById('userNameText').textContent = state.userProfile.name;
+            document.getElementById('userAvatarText').textContent = "A";
+            toggleAuthModal();
+            showToast(`Signed in with ${provider}`);
+        }
+
+        function handleEmailAuth(e) {
+            e.preventDefault();
+            const email = document.getElementById('authEmailInput').value;
+            const namePart = email.split('@')[0];
+            state.userProfile.name = namePart.charAt(0).toUpperCase() + namePart.slice(1);
+            document.getElementById('userNameText').textContent = state.userProfile.name;
+            document.getElementById('userAvatarText').textContent = namePart.charAt(0).toUpperCase();
+            toggleAuthModal();
+            showToast("Successfully signed in!");
+        }
+
+        function showPhoneAuthInput() {
+            const phone = prompt("Enter phone number for SMS code:");
+            if (phone) {
+                simulateAuthLogin("Phone Verification");
+            }
+        }
+
+        function toggleSettingsModal() {
+            document.getElementById('settingsModal').classList.toggle('hidden');
+        }
+
+        function openCustomMethodModal() {
+            document.getElementById('customMethodModal').classList.remove('hidden');
+        }
+
+        function closeCustomMethodModal() {
+            document.getElementById('customMethodModal').classList.add('hidden');
+        }
+
+        function saveCustomMethod() {
+            const name = document.getElementById('customNameInput').value.trim() || "Custom Session";
+            const focusMins = parseInt(document.getElementById('customFocusInput').value) || 30;
+            
+            setDurationMinutes(focusMins);
+            closeCustomMethodModal();
+            showToast(`Custom method '${name}' applied!`);
+        }
+
+        function updateDailyQuoteAndTimer() {
+            const now = new Date();
+            
+            // Calculate Day Index for deterministic daily quote rotation
+            const startOfYear = new Date(now.getFullYear(), 0, 0);
+            const diffDays = Math.floor((now - startOfYear) / (1000 * 60 * 60 * 24));
+            const quoteIndex = diffDays % state.quotes.length;
+            const todayQuote = state.quotes[quoteIndex];
+
+            // Display today's quote
+            const dashQuote = document.getElementById('dashboardQuoteText');
+            if (dashQuote && dashQuote.textContent !== `"${todayQuote}"`) {
+                dashQuote.textContent = `"${todayQuote}"`;
+            }
+            const fullQuote = document.getElementById('fullscreenQuote');
+            if (fullQuote && fullQuote.textContent !== `"${todayQuote}"`) {
+                fullQuote.textContent = `"${todayQuote}"`;
+            }
+
+            // Calculate remaining time until next midnight (24h quote refresh)
+            const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+            const msRemaining = tomorrow - now;
+
+            const hours = Math.floor(msRemaining / (1000 * 60 * 60));
+            const mins = Math.floor((msRemaining % (1000 * 60 * 60)) / (1000 * 60));
+            const secs = Math.floor((msRemaining % (1000 * 60)) / 1000);
+
+            const timerFormatted = `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            
+            const countdownEl = document.getElementById('quoteCountdownText');
+            if (countdownEl) {
+                countdownEl.textContent = timerFormatted;
+            }
+        }
+    </script>
+</body>
+</html>

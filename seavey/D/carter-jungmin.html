@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FocusTab V1.0 - Homework Companion & SMART Goal Hub</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Canvas Confetti for task achievement -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom CSS for Tab styling & smooth transitions */
+    .chrome-tab {
+      transition: all 0.2s ease-in-out;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+    }
+    .chrome-tab.active-tab-light {
+      background-color: #ffffff;
+      color: #1d4ed8;
+      box-shadow: 0 -2px 10px rgba(29, 78, 216, 0.08);
+      border-bottom-color: #ffffff;
+    }
+    .chrome-tab:not(.active-tab-light):hover {
+      background-color: rgba(239, 246, 255, 0.8);
+    }
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #bfdbfe;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="bg-blue-50/40 text-slate-800 min-h-screen font-sans flex flex-col transition-colors duration-200 selection:bg-blue-200">
+
+  <!-- TOP BROWSER BAR (Strict Blue & White Design) -->
+  <header class="bg-blue-100/70 pt-3 px-3 border-b border-blue-200 flex-none select-none">
+    <div class="flex items-center justify-between mb-2 px-2">
+      <!-- App Identity & Greeting -->
+      <div class="flex items-center space-x-3">
+        <div class="flex space-x-1.5">
+          <span class="w-3 h-3 bg-blue-400 rounded-full inline-block"></span>
+          <span class="w-3 h-3 bg-blue-500 rounded-full inline-block"></span>
+          <span class="w-3 h-3 bg-blue-600 rounded-full inline-block"></span>
+        </div>
+        <div class="h-4 w-[1px] bg-blue-300"></div>
+        <span id="version-tag" class="text-xs font-semibold px-2 py-0.5 rounded bg-blue-600 text-white">V1.0</span>
+        <h1 id="user-greeting-header" class="text-sm font-medium text-blue-950 truncate">
+          Hello, Student!
+        </h1>
+      </div>
+
+      <!-- Quick SMART Goal Badge & Profile Thumbnail -->
+      <div class="flex items-center space-x-4">
+        <div class="hidden md:flex items-center space-x-2 bg-white px-3 py-1 rounded-full shadow-sm border border-blue-200 text-xs text-blue-900">
+          <i class="fa-solid font-bold fa-bullseye text-blue-600"></i>
+          <span class="font-medium" id="streak-count">3 Day Streak</span>
+        </div>
+        <div id="profile-avatar-small" class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm overflow-hidden border-2 border-white shadow-sm cursor-pointer" onclick="switchTab('settings')">
+          <i class="fa-solid fa-user"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABS ROW (P.A.L. Removed) -->
+    <nav class="flex items-end space-x-1 overflow-x-auto no-scrollbar pt-1">
+      <!-- Tab 1: Organization -->
+      <button onclick="switchTab('organization')" id="tab-btn-organization" class="chrome-tab active-tab-light px-4 py-2 text-xs md:text-sm font-medium flex items-center space-x-2 border-t border-x border-blue-200">
+        <i class="fa-solid fa-list-check text-blue-600"></i>
+        <span>Organization</span>
+      </button>
+
+      <!-- Tab 2: Sound & Focus -->
+      <button onclick="switchTab('sound')" id="tab-btn-sound" class="chrome-tab px-4 py-2 text-xs md:text-sm font-medium flex items-center space-x-2 text-blue-800 border-t border-x border-transparent">
+        <i class="fa-solid fa-headphones text-blue-600"></i>
+        <span>Sound & Focus</span>
+      </button>
+
+      <!-- Tab 3: Settings -->
+      <button onclick="switchTab('settings')" id="tab-btn-settings" class="chrome-tab px-4 py-2 text-xs md:text-sm font-medium flex items-center space-x-2 text-blue-800 border-t border-x border-transparent">
+        <i class="fa-solid fa-gear text-blue-600"></i>
+        <span>Settings</span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- MAIN CONTENT AREA -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6">
+
+    <!-- TAB 1: ORGANIZATION & TO-DO PLANNER -->
+    <section id="view-organization" class="space-y-6">
+      
+      <!-- SMART Goal Banner & ICS Calendar Sync Bar -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <!-- SMART Goal Progress Card -->
+        <div class="lg:col-span-2 bg-white p-5 rounded-xl border border-blue-100 shadow-sm relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none"></div>
+          <div class="flex items-start justify-between">
+            <div>
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 mb-2">
+                <i class="fa-solid fa-bullseye mr-1.5"></i> SMART Goal
+              </span>
+              <h2 id="smart-goal-display" class="text-base md:text-lg font-bold text-blue-950">
+                Complete homework within 30 minutes of getting home, 4 days a week.
+              </h2>
+            </div>
+            <button onclick="openSmartGoalModal()" class="text-xs text-blue-600 hover:text-blue-800 font-medium underline">
+              Edit
+            </button>
+          </div>
+
+          <div class="mt-4">
+            <div class="flex justify-between text-xs text-blue-700 mb-1">
+              <span>Weekly Progress</span>
+              <span id="goal-progress-text">3 of 4 days completed</span>
+            </div>
+            <div class="w-full bg-blue-100 h-2.5 rounded-full overflow-hidden">
+              <div id="goal-progress-bar" class="bg-blue-600 h-2.5 rounded-full transition-all duration-500" style="width: 75%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- iCalendar (.ics) Sync Card -->
+        <div class="bg-white p-5 rounded-xl border border-blue-100 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center space-x-2">
+                <div class="w-7 h-7 rounded bg-blue-600 text-white flex items-center justify-center font-bold text-xs">
+                  <i class="fa-solid fa-calendar-days"></i>
+                </div>
+                <h3 class="font-bold text-sm text-blue-950">ICS Calendar Sync</h3>
+              </div>
+              <span id="ics-status-badge" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                <span class="w-1.5 h-1.5 bg-blue-600 rounded-full mr-1.5"></span> Ready
+              </span>
+            </div>
+            <p class="text-xs text-slate-600">
+              Import assignments from your school or personal calendar using a <code class="bg-blue-50 text-blue-700 px-1 rounded">.ics</code> file.
+            </p>
+          </div>
+
+          <div class="mt-4 space-y-2">
+            <label class="w-full py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold transition flex items-center justify-center space-x-2 cursor-pointer shadow-sm">
+              <i class="fa-solid fa-file-import text-xs"></i>
+              <span>Upload .ics Calendar File</span>
+              <input type="file" id="ics-file-input" accept=".ics,text/calendar" class="hidden" onchange="handleICSFileUpload(event)">
+            </label>
+            <button onclick="loadSampleICSData()" class="w-full py-1.5 px-3 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg text-[11px] font-medium transition text-center border border-blue-200">
+              <i class="fa-solid fa-cloud-arrow-down mr-1"></i> Load Sample ICS Calendar
+            </button>
+
+            <!-- Dropdown Help Menu for Schoology ICS Export -->
+            <details class="group border-t border-blue-100 pt-2 text-xs">
+              <summary class="cursor-pointer font-semibold text-blue-600 hover:text-blue-800 flex items-center justify-between py-1 list-none select-none">
+                <span class="flex items-center space-x-1.5">
+                  <i class="fa-solid fa-circle-question text-blue-500"></i>
+                  <span>Need some help?</span>
+                </span>
+                <i class="fa-solid fa-chevron-down text-blue-400 group-open:rotate-180 transition-transform"></i>
+              </summary>
+              <div class="mt-2 p-2.5 bg-blue-50/70 rounded-lg border border-blue-100 text-slate-700 space-y-1.5 text-[11px] leading-relaxed">
+                <p><strong>Step One:</strong> Open Schoology.</p>
+                <p><strong>Step Two:</strong> Go to the calendar icon in the top right corner of the screen.</p>
+                <p><strong>Step Three:</strong> Scroll to the bottom of the calendar and press 'Export'.</p>
+                <p><strong>Step Four:</strong> Return to the app and upload the file you just downloaded.</p>
+                <p class="pt-1 font-semibold text-blue-900">Now your assignments should be fully loaded and synced!</p>
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+
+      <!-- TASK LIST HEADER & FILTERS -->
+      <div class="bg-white p-5 rounded-xl border border-blue-100 shadow-sm space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-blue-100 pb-4">
+          <div>
+            <h2 class="text-lg font-bold text-blue-950">
+              Assignments & Tasks
+            </h2>
+            <p class="text-xs text-slate-500">
+              Organized chronologically by due date so you always know what to work on first.
+            </p>
+          </div>
+          
+          <div class="flex items-center space-x-2">
+            <button onclick="openAddTaskModal()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold shadow-sm transition flex items-center space-x-1.5">
+              <i class="fa-solid fa-plus"></i>
+              <span>Add Assignment</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Micro-Action Helper Banner -->
+        <div class="bg-blue-50/80 p-3.5 rounded-lg border border-blue-200 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center flex-shrink-0">
+              <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
+            </div>
+            <div>
+              <p class="text-xs font-semibold text-blue-950">Feeling Overwhelmed or Stuck?</p>
+              <p class="text-[11px] text-blue-800">Click "Break It Down" on any task to generate bite-sized 5-minute action steps.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task List Container -->
+        <div id="task-list-container" class="space-y-3">
+          <!-- Dynamic tasks rendered here -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: SOUND & FOCUS TAB (WHITE NOISE & TIMER ONLY) -->
+    <section id="view-sound" class="hidden space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-blue-100 shadow-sm max-w-4xl mx-auto">
+        <div class="mb-6">
+          <h2 class="text-xl font-bold text-blue-950 mb-1">
+            Focus & Ambient Sound Studio
+          </h2>
+          <p class="text-xs text-slate-600">
+            Customize ambient white noise channels to block out external distractions and maintain deep concentration.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <!-- AMBIENT WHITE NOISE GENERATOR -->
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold flex items-center space-x-2 text-blue-950">
+                <i class="fa-solid fa-sliders text-blue-600"></i>
+                <span>Ambient White Noise Synthesizer</span>
+              </h3>
+              <span class="text-[11px] text-blue-600 font-medium bg-blue-50 px-2 py-0.5 rounded border border-blue-100">Web Audio</span>
+            </div>
+
+            <p class="text-xs text-slate-600">
+              Custom ambient sound waves generated right in your browser.
+            </p>
+
+            <div class="space-y-4 bg-blue-50/50 p-4 rounded-xl border border-blue-200">
+              <!-- Master Noise Toggle -->
+              <div class="flex items-center justify-between pb-3 border-b border-blue-200">
+                <span class="text-xs font-semibold text-blue-950">Master Ambient Sound</span>
+                <button id="master-noise-toggle" onclick="toggleMasterNoise()" class="px-4 py-1.5 rounded-full text-xs font-bold bg-blue-200 text-blue-800 transition">
+                  OFF
+                </button>
+              </div>
+
+              <!-- Channel 1: Brown Noise -->
+              <div class="space-y-1">
+                <div class="flex justify-between text-xs">
+                  <span class="font-medium text-blue-900"><i class="fa-solid fa-water text-blue-600 mr-1.5"></i> Deep Brown Noise</span>
+                  <span id="brown-vol-text" class="text-blue-600 font-semibold text-[11px]">30%</span>
+                </div>
+                <input type="range" id="brown-noise-slider" min="0" max="100" value="30" oninput="updateNoiseVolume('brown', this.value)" class="w-full accent-blue-600">
+              </div>
+
+              <!-- Channel 2: Pink Noise -->
+              <div class="space-y-1">
+                <div class="flex justify-between text-xs">
+                  <span class="font-medium text-blue-900"><i class="fa-solid fa-cloud-showers-heavy text-blue-500 mr-1.5"></i> Gentle Pink Noise</span>
+                  <span id="pink-vol-text" class="text-blue-600 font-semibold text-[11px]">0%</span>
+                </div>
+                <input type="range" id="pink-noise-slider" min="0" max="100" value="0" oninput="updateNoiseVolume('pink', this.value)" class="w-full accent-blue-600">
+              </div>
+
+              <!-- Channel 3: Pure White Noise -->
+              <div class="space-y-1">
+                <div class="flex justify-between text-xs">
+                  <span class="font-medium text-blue-900"><i class="fa-solid fa-wind text-blue-400 mr-1.5"></i> Crisp White Noise</span>
+                  <span id="white-vol-text" class="text-blue-600 font-semibold text-[11px]">0%</span>
+                </div>
+                <input type="range" id="white-noise-slider" min="0" max="100" value="0" oninput="updateNoiseVolume('white', this.value)" class="w-full accent-blue-600">
+              </div>
+            </div>
+          </div>
+
+          <!-- FOCUS TIMER & TIPS CARD -->
+          <div class="space-y-4 flex flex-col justify-between">
+            <div class="space-y-3">
+              <h3 class="text-sm font-bold flex items-center space-x-2 text-blue-950">
+                <i class="fa-solid fa-stopwatch text-blue-600"></i>
+                <span>Focus Boost Tools</span>
+              </h3>
+
+              <!-- POMODORO TIMER -->
+              <div class="bg-blue-600 text-white p-5 rounded-xl shadow-sm space-y-3">
+                <div class="flex justify-between items-start">
+                  <div>
+                    <p class="text-sm font-bold text-white">5-Minute Friction Buster</p>
+                    <p class="text-[11px] text-blue-100 mt-0.5">Commit to just 5 minutes. Overcoming initial friction is the key!</p>
+                  </div>
+                  <div class="text-right flex-shrink-0 ml-3">
+                    <div id="timer-display" class="text-2xl font-mono font-bold text-white">05:00</div>
+                  </div>
+                </div>
+                <div class="pt-2 border-t border-blue-500/50 flex justify-end">
+                  <button id="timer-btn" onclick="toggleTimer()" class="w-full py-2 bg-white text-blue-700 rounded-lg text-xs font-bold hover:bg-blue-50 transition shadow-sm">
+                    Start 5m Timer
+                  </button>
+                </div>
+              </div>
+
+              <!-- FOCUS TIP BOX -->
+              <div class="bg-blue-50/80 p-4 rounded-xl border border-blue-200 space-y-2">
+                <h4 class="text-xs font-bold text-blue-900 flex items-center">
+                  <i class="fa-solid fa-lightbulb text-blue-600 mr-2"></i> Why White & Brown Noise Work
+                </h4>
+                <p class="text-[11px] text-slate-600 leading-relaxed">
+                  Deep Brown noise masks harsh low/mid frequencies, while Pink noise relaxes brain wave activity. Using steady ambient noise helps prevent auditory distractions without verbal content pulling your attention away from homework.
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: SETTINGS TAB -->
+    <section id="view-settings" class="hidden space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-blue-100 shadow-sm max-w-3xl mx-auto">
+        <h2 class="text-xl font-bold text-blue-950 mb-6 pb-2 border-b border-blue-100">
+          Preferences & Settings
+        </h2>
+
+        <div class="space-y-6">
+          
+          <!-- User Profile Settings -->
+          <div class="space-y-4">
+            <h3 class="text-xs font-bold text-blue-600 uppercase tracking-wider">User Profile</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+              <!-- Name Input -->
+              <div>
+                <label class="block text-xs font-semibold mb-1 text-slate-700">Your Name</label>
+                <input type="text" id="setting-username" value="Alex" onchange="saveUserSettings()" class="w-full text-sm px-3 py-2 bg-blue-50/50 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-slate-800">
+              </div>
+
+              <!-- Profile Picture Upload -->
+              <div>
+                <label class="block text-xs font-semibold mb-1 text-slate-700">Profile Picture</label>
+                <div class="flex items-center space-x-3">
+                  <div id="setting-avatar-preview" class="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-lg overflow-hidden border-2 border-blue-200 flex-shrink-0 shadow-sm">
+                    <i class="fa-solid fa-user"></i>
+                  </div>
+                  <div class="space-y-1.5 flex-1">
+                    <label class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold cursor-pointer inline-flex items-center space-x-1.5 shadow-sm transition">
+                      <i class="fa-solid fa-upload text-[11px]"></i>
+                      <span>Upload Photo</span>
+                      <input type="file" id="setting-avatar-input" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
+                    </label>
+                    <button id="remove-avatar-btn" onclick="removeCustomAvatar()" class="hidden text-xs text-blue-600 hover:text-blue-800 ml-2 font-medium underline">
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Color Theme Info & Storage -->
+          <div class="space-y-4 pt-4 border-t border-blue-100">
+            <h3 class="text-xs font-bold text-blue-600 uppercase tracking-wider">Appearance & Storage</h3>
+
+            <!-- Clear Local Data -->
+            <div>
+              <button onclick="resetAllData()" class="px-4 py-2 border border-blue-300 text-blue-700 hover:bg-blue-50 rounded-lg text-xs font-semibold transition">
+                Reset App & Local Storage Data
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODALS -->
+
+  <!-- Add/Edit Assignment Modal -->
+  <div id="modal-add-task" class="fixed inset-0 bg-blue-950/40 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-xl shadow-xl border border-blue-200 max-w-md w-full p-6 space-y-4">
+      <div class="flex justify-between items-center pb-2 border-b border-blue-100">
+        <h3 class="text-base font-bold text-blue-950">Add New Homework Task</h3>
+        <button onclick="closeAddTaskModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form onsubmit="handleAddTask(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold mb-1 text-slate-700">Assignment Title *</label>
+          <input type="text" id="task-title" required placeholder="e.g. Chapter 4 Math Exercises #1-15" class="w-full text-xs px-3 py-2 bg-blue-50/50 border border-blue-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold mb-1 text-slate-700">Subject</label>
+            <select id="task-subject" class="w-full text-xs px-3 py-2 bg-blue-50/50 border border-blue-200 rounded-lg outline-none">
+              <option value="Math">Math</option>
+              <option value="Science">Science</option>
+              <option value="English">English / Language Arts</option>
+              <option value="History">History / Social Studies</option>
+              <option value="Foreign Language">Foreign Language</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold mb-1 text-slate-700">Due Date *</label>
+            <input type="date" id="task-duedate" required class="w-full text-xs px-3 py-2 bg-blue-50/50 border border-blue-200 rounded-lg outline-none">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold mb-1 text-slate-700">Est. Time (mins)</label>
+            <input type="number" id="task-time" value="25" min="5" max="300" class="w-full text-xs px-3 py-2 bg-blue-50/50 border border-blue-200 rounded-lg outline-none">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold mb-1 text-slate-700">Difficulty</label>
+            <select id="task-difficulty" class="w-full text-xs px-3 py-2 bg-blue-50/50 border border-blue-200 rounded-lg outline-none">
+              <option value="Easy">Easy (Low Friction)</option>
+              <option value="Medium">Medium</option>
+              <option value="Hard">Hard (Break this down!)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="pt-3 flex justify-end space-x-2">
+          <button type="button" onclick="closeAddTaskModal()" class="px-4 py-2 border border-blue-200 rounded-lg text-xs font-semibold text-slate-700">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700">Save Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit SMART Goal Modal -->
+  <div id="modal-smart-goal" class="fixed inset-0 bg-blue-950/40 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-xl shadow-xl border border-blue-200 max-w-md w-full p-6 space-y-4">
+      <div class="flex justify-between items-center pb-2 border-b border-blue-100">
+        <h3 class="text-base font-bold text-blue-950">Set SMART Homework Goal</h3>
+        <button onclick="closeSmartGoalModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold mb-1 text-slate-700">Your Goal Statement</label>
+          <textarea id="smart-goal-input" rows="3" class="w-full text-xs p-3 bg-blue-50/50 border border-blue-200 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+          <p class="text-[10px] text-slate-500 mt-1">S = Specific, M = Measurable, A = Achievable, R = Relevant, T = Time-Bound.</p>
+        </div>
+
+        <div class="pt-2 flex justify-end space-x-2">
+          <button onclick="closeSmartGoalModal()" class="px-4 py-2 border border-blue-200 rounded-lg text-xs font-semibold text-slate-700">Cancel</button>
+          <button onclick="saveSmartGoal()" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-semibold hover:bg-blue-700">Update Goal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    const APP_STORAGE_KEY = 'focustab_app_state_v2';
+
+    let state = {
+      user: {
+        name: 'Alex',
+        avatar: null
+      },
+      goal: {
+        text: 'Complete homework within 30 minutes of getting home, 4 days a week.',
+        completedDays: 3,
+        targetDays: 4,
+        streak: 3
+      },
+      tasks: [
+        {
+          id: 't1',
+          title: 'Algebra II: Quadratic Equations Practice Sheet',
+          subject: 'Math',
+          dueDate: getFutureDate(0), // Today
+          estimatedMins: 20,
+          difficulty: 'Medium',
+          completed: false,
+          icsSynced: true,
+          breakdown: [
+            'Do problems 1 to 3 to get momentum',
+            'Take a 2-minute stretch break',
+            'Finish problems 4 to 10'
+          ]
+        },
+        {
+          id: 't2',
+          title: 'History: Read Chapter 5 on Industrialization',
+          subject: 'History',
+          dueDate: getFutureDate(1), // Tomorrow
+          estimatedMins: 30,
+          difficulty: 'Hard',
+          completed: false,
+          icsSynced: true,
+          breakdown: [
+            'Read section headings and summary first',
+            'Read pages 102-110 and highlight key terms',
+            'Answer the 3 review questions at the end'
+          ]
+        },
+        {
+          id: 't3',
+          title: 'English: Draft Intro Paragraph for Persuasive Essay',
+          subject: 'English',
+          dueDate: getFutureDate(2),
+          estimatedMins: 15,
+          difficulty: 'Easy',
+          completed: true,
+          icsSynced: false,
+          breakdown: []
+        }
+      ]
+    };
+
+    function getFutureDate(daysAhead) {
+      const d = new Date();
+      d.setDate(d.getDate() + daysAhead);
+      return d.toISOString().split('T')[0];
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {
+        console.error('Could not save state to localStorage', e);
+      }
+    }
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(APP_STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          state = { ...state, ...parsed };
+        }
+      } catch (e) {
+        console.error('Could not load state from localStorage', e);
+      }
+    }
+
+    function switchTab(tabId) {
+      ['organization', 'sound', 'settings'].forEach(id => {
+        const view = document.getElementById(`view-${id}`);
+        const btn = document.getElementById(`tab-btn-${id}`);
+        if (view) view.classList.add('hidden');
+        if (btn) {
+          btn.classList.remove('active-tab-light');
+          btn.classList.add('text-blue-800', 'border-transparent');
+        }
+      });
+
+      const activeView = document.getElementById(`view-${tabId}`);
+      const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+      if (activeView) activeView.classList.remove('hidden');
+      if (activeBtn) {
+        activeBtn.classList.add('active-tab-light');
+        activeBtn.classList.remove('text-blue-800', 'border-transparent');
+      }
+    }
+
+    function renderUserProfile() {
+      const greetingHeader = document.getElementById('user-greeting-header');
+      const avatarContainer = document.getElementById('profile-avatar-small');
+      const avatarPreview = document.getElementById('setting-avatar-preview');
+      const nameInput = document.getElementById('setting-username');
+      const removeAvatarBtn = document.getElementById('remove-avatar-btn');
+
+      if (greetingHeader) greetingHeader.innerText = `Hello, ${state.user.name || 'Student'}!`;
+      if (nameInput) nameInput.value = state.user.name || 'Alex';
+
+      const avatarContent = (state.user.avatar && state.user.avatar.startsWith('data:image')) 
+        ? `<img src="${state.user.avatar}" alt="Profile" class="w-full h-full object-cover">`
+        : `<i class="fa-solid fa-user"></i>`;
+
+      if (avatarContainer) avatarContainer.innerHTML = avatarContent;
+      if (avatarPreview) avatarPreview.innerHTML = avatarContent;
+
+      if (removeAvatarBtn) {
+        if (state.user.avatar && state.user.avatar.startsWith('data:image')) {
+          removeAvatarBtn.classList.remove('hidden');
+        } else {
+          removeAvatarBtn.classList.add('hidden');
+        }
+      }
+    }
+
+    function saveUserSettings() {
+      const nameInput = document.getElementById('setting-username');
+      if (nameInput) state.user.name = nameInput.value.trim() || 'Alex';
+      
+      saveState();
+      renderUserProfile();
+    }
+
+    function handleAvatarUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        state.user.avatar = e.target.result;
+        saveState();
+        renderUserProfile();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeCustomAvatar() {
+      state.user.avatar = null;
+      const avatarInput = document.getElementById('setting-avatar-input');
+      if (avatarInput) avatarInput.value = '';
+      saveState();
+      renderUserProfile();
+    }
+
+    function renderSmartGoalCard() {
+      const goalDisplay = document.getElementById('smart-goal-display');
+      const progressText = document.getElementById('goal-progress-text');
+      const progressBar = document.getElementById('goal-progress-bar');
+      const streakCount = document.getElementById('streak-count');
+
+      if (goalDisplay) goalDisplay.innerText = state.goal.text;
+      if (progressText) progressText.innerText = `${state.goal.completedDays} of ${state.goal.targetDays} days completed`;
+      if (progressBar) {
+        const pct = Math.min(100, Math.round((state.goal.completedDays / state.goal.targetDays) * 100));
+        progressBar.style.width = `${pct}%`;
+      }
+      if (streakCount) streakCount.innerText = `${state.goal.streak} Day Streak`;
+    }
+
+    function openSmartGoalModal() {
+      const input = document.getElementById('smart-goal-input');
+      if (input) input.value = state.goal.text;
+      const modal = document.getElementById('modal-smart-goal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closeSmartGoalModal() {
+      const modal = document.getElementById('modal-smart-goal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function saveSmartGoal() {
+      const input = document.getElementById('smart-goal-input');
+      if (input && input.value.trim()) {
+        state.goal.text = input.value.trim();
+        saveState();
+        renderSmartGoalCard();
+        closeSmartGoalModal();
+      }
+    }
+
+    function renderTaskList() {
+      const container = document.getElementById('task-list-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const sorted = [...state.tasks].sort((a, b) => {
+        const dateA = a.dueDate ? new Date(a.dueDate + 'T00:00:00').getTime() : 0;
+        const dateB = b.dueDate ? new Date(b.dueDate + 'T00:00:00').getTime() : 0;
+        
+        if (dateA !== dateB) return dateA - dateB;
+        if (a.completed !== b.completed) return a.completed ? 1 : -1;
+        return 0;
+      });
+
+      if (sorted.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-12 border-2 border-dashed border-blue-200 rounded-xl bg-blue-50/30">
+            <i class="fa-solid fa-circle-check text-4xl text-blue-500 mb-2"></i>
+            <p class="text-sm font-semibold text-blue-950">All caught up! No homework tasks pending.</p>
+            <p class="text-xs text-blue-600 mt-1">Enjoy your free time, import an .ics calendar file, or add a task above.</p>
+          </div>
+        `;
+        return;
+      }
+
+      sorted.forEach((task, index) => {
+        const isPastDue = new Date(task.dueDate + 'T00:00:00') < new Date(getFutureDate(0) + 'T00:00:00') && !task.completed;
+        const isToday = task.dueDate === getFutureDate(0);
+        const dueText = getFormattedDueDate(task.dueDate);
+
+        let dateBadgeClass = "bg-slate-100 text-slate-700 border-slate-200";
+        let dateIcon = "fa-calendar";
+        
+        if (isPastDue) {
+          dateBadgeClass = "bg-blue-100 text-blue-900 border-blue-300 font-bold";
+          dateIcon = "fa-triangle-exclamation";
+        } else if (isToday) {
+          dateBadgeClass = "bg-blue-600 text-white border-blue-600 font-semibold";
+          dateIcon = "fa-clock";
+        }
+
+        const card = document.createElement('div');
+        card.className = `p-4 rounded-xl border transition-all ${
+          task.completed 
+            ? 'bg-blue-50/40 border-blue-100 opacity-75' 
+            : 'bg-white border-blue-100 hover:border-blue-300 shadow-sm'
+        }`;
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-start space-x-3 flex-1">
+              <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTaskComplete('${task.id}')" class="mt-1 w-4 h-4 text-blue-600 rounded border-blue-300 focus:ring-blue-500 cursor-pointer">
+              
+              <div class="flex-1 space-y-1">
+                <div class="flex items-center space-x-2 flex-wrap gap-y-1">
+                  <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
+                    #${index + 1}
+                  </span>
+                  
+                  <span class="text-xs font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-200">
+                    ${task.subject}
+                  </span>
+                  
+                  <span class="text-[11px] px-2 py-0.5 rounded border flex items-center space-x-1 ${dateBadgeClass}">
+                    <i class="fa-solid ${dateIcon} text-[10px]"></i>
+                    <span>Due: ${dueText}</span>
+                  </span>
+
+                  ${task.icsSynced ? '<span class="text-[10px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded font-medium border border-blue-200"><i class="fa-solid fa-calendar-check mr-1"></i>ICS Sync</span>' : ''}
+                  <span class="text-[10px] text-slate-500"><i class="fa-regular fa-clock mr-1"></i>${task.estimatedMins}m</span>
+                </div>
+
+                <h3 class="text-sm font-semibold text-blue-950 ${task.completed ? 'line-through text-slate-400' : ''}">
+                  ${task.title}
+                </h3>
+
+                ${task.breakdown && task.breakdown.length > 0 ? `
+                  <div class="mt-3 bg-blue-50/70 p-2.5 rounded-lg border border-blue-200 space-y-1.5">
+                    <p class="text-[11px] font-bold text-blue-900 flex items-center">
+                      <i class="fa-solid fa-list-ol mr-1.5 text-xs text-blue-600"></i> 5-Minute Action Steps:
+                    </p>
+                    <ul class="text-xs space-y-1 text-slate-700 pl-2">
+                      ${task.breakdown.map((step, idx) => `
+                        <li class="flex items-center space-x-2">
+                          <span class="w-4 h-4 rounded-full bg-blue-200 text-blue-800 flex items-center justify-center text-[10px] font-bold">${idx + 1}</span>
+                          <span>${step}</span>
+                        </li>
+                      `).join('')}
+                    </ul>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-2">
+              <button onclick="breakDownTaskWithAI('${task.id}')" class="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-semibold border border-blue-200 transition flex items-center space-x-1" title="Get bite-sized action steps">
+                <i class="fa-solid fa-wand-magic-sparkles text-[10px]"></i>
+                <span class="hidden sm:inline">Break It Down</span>
+              </button>
+              <button onclick="deleteTask('${task.id}')" class="text-slate-400 hover:text-blue-700 p-1.5 rounded transition">
+                <i class="fa-solid fa-trash-can text-xs"></i>
+              </button>
+            </div>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    function getFormattedDueDate(dateStr) {
+      const today = getFutureDate(0);
+      const tomorrow = getFutureDate(1);
+
+      if (dateStr === today) return 'Today';
+      if (dateStr === tomorrow) return 'Tomorrow';
+      
+      const d = new Date(dateStr + 'T00:00:00');
+      return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    }
+
+    function toggleTaskComplete(taskId) {
+      const task = state.tasks.find(t => t.id === taskId);
+      if (task) {
+        task.completed = !task.completed;
+        if (task.completed && typeof confetti === 'function') {
+          confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
+          state.goal.completedDays = Math.min(state.goal.targetDays, state.goal.completedDays + 1);
+        }
+        saveState();
+        renderTaskList();
+        renderSmartGoalCard();
+      }
+    }
+
+    function deleteTask(taskId) {
+      state.tasks = state.tasks.filter(t => t.id !== taskId);
+      saveState();
+      renderTaskList();
+    }
+
+    function openAddTaskModal() {
+      const modal = document.getElementById('modal-add-task');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closeAddTaskModal() {
+      const modal = document.getElementById('modal-add-task');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function handleAddTask(e) {
+      e.preventDefault();
+      const title = document.getElementById('task-title').value.trim();
+      const subject = document.getElementById('task-subject').value;
+      const dueDate = document.getElementById('task-duedate').value;
+      const time = parseInt(document.getElementById('task-time').value) || 20;
+      const difficulty = document.getElementById('task-difficulty').value;
+
+      if (title && dueDate) {
+        state.tasks.push({
+          id: 't_' + Date.now(),
+          title: title,
+          subject: subject,
+          dueDate: dueDate,
+          estimatedMins: time,
+          difficulty: difficulty,
+          completed: false,
+          icsSynced: false,
+          breakdown: []
+        });
+
+        saveState();
+        renderTaskList();
+        closeAddTaskModal();
+        document.getElementById('task-title').value = '';
+      }
+    }
+
+    function handleICSFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const content = e.target.result;
+        parseAndAddICSContent(content);
+      };
+      reader.readAsText(file);
+    }
+
+    function parseAndAddICSContent(icsText) {
+      const events = parseICS(icsText);
+      if (events.length === 0) {
+        return;
+      }
+
+      let addedCount = 0;
+      events.forEach((item, index) => {
+        state.tasks.push({
+          id: 'ics_' + Date.now() + '_' + index,
+          title: item.title || 'Calendar Assignment',
+          subject: determineSubjectFromText(item.title),
+          dueDate: item.dueDate || getFutureDate(1),
+          estimatedMins: 30,
+          difficulty: 'Medium',
+          completed: false,
+          icsSynced: true,
+          breakdown: [
+            'Review instructions from calendar event',
+            'Spend 15 minutes working on key requirements',
+            'Final proofreading or review'
+          ]
+        });
+        addedCount++;
+      });
+
+      saveState();
+      renderTaskList();
+      if (typeof confetti === 'function') confetti({ particleCount: 40, spread: 50 });
+      
+      const badge = document.getElementById('ics-status-badge');
+      if (badge) {
+        badge.innerHTML = `<span class="w-1.5 h-1.5 bg-blue-600 rounded-full mr-1.5"></span> Imported ${addedCount} Tasks`;
+      }
+    }
+
+    function parseICS(icsData) {
+      const events = [];
+      const lines = icsData.split(/\r\n|\n|\r/);
+      let currentEvent = null;
+
+      for (let i = 0; i < lines.length; i++) {
+        let line = lines[i].trim();
+        if (line.startsWith('BEGIN:VEVENT')) {
+          currentEvent = {};
+        } else if (line.startsWith('END:VEVENT')) {
+          if (currentEvent && currentEvent.title) {
+            events.push(currentEvent);
+          }
+          currentEvent = null;
+        } else if (currentEvent) {
+          if (line.startsWith('SUMMARY:')) {
+            currentEvent.title = line.substring(8).replace(/\\,/g, ',');
+          } else if (line.startsWith('DTSTART') || line.startsWith('DUE')) {
+            const dateMatch = line.match(/(\d{4})(\d{2})(\d{2})/);
+            if (dateMatch) {
+              currentEvent.dueDate = `${dateMatch[1]}-${dateMatch[2]}-${dateMatch[3]}`;
+            }
+          }
+        }
+      }
+      return events;
+    }
+
+    function determineSubjectFromText(text) {
+      if (!text) return 'Other';
+      const lower = text.toLowerCase();
+      if (lower.includes('math') || lower.includes('alg') || lower.includes('geom') || lower.includes('calc')) return 'Math';
+      if (lower.includes('bio') || lower.includes('chem') || lower.includes('phys') || lower.includes('sci')) return 'Science';
+      if (lower.includes('eng') || lower.includes('read') || lower.includes('lit') || lower.includes('essay')) return 'English';
+      if (lower.includes('hist') || lower.includes('gov') || lower.includes('geog') || lower.includes('civics')) return 'History';
+      if (lower.includes('span') || lower.includes('fren') || lower.includes('latin') || lower.includes('german')) return 'Foreign Language';
+      return 'Other';
+    }
+
+    function loadSampleICSData() {
+      const sampleICS = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//School Calendar//EN
+BEGIN:VEVENT
+SUMMARY:Biology Chapter 8 Quiz Preparation
+DTSTART:${getFutureDate(0).replace(/-/g, '')}T090000Z
+DESCRIPTION:Study cell division and mitosis diagrams.
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Spanish Vocabulary Flashcards
+DTSTART:${getFutureDate(2).replace(/-/g, '')}T100000Z
+DESCRIPTION:Complete unit 4 vocabulary.
+END:VEVENT
+END:VCALENDAR`;
+
+      parseAndAddICSContent(sampleICS);
+    }
+
+    function breakDownTaskWithAI(taskId) {
+      const task = state.tasks.find(t => t.id === taskId);
+      if (!task) return;
+
+      task.breakdown = [
+        `Gather materials and open textbook/assignment for ${task.title}`,
+        `Focus for 10 minutes on solving the first half without distractions`,
+        `Take a quick breather and finish the remaining questions`
+      ];
+
+      saveState();
+      renderTaskList();
+    }
+
+    // Audio Synthesizers (Web Audio API)
+    let audioCtx = null;
+    let isMasterNoiseOn = false;
+    let noiseNodes = { brown: null, pink: null, white: null };
+    let gainNodes = { brown: null, pink: null, white: null };
+
+    function initAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    function createNoiseBuffer(type) {
+      const bufferSize = audioCtx.sampleRate * 2;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+
+      let lastOut = 0.0;
+      let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+
+      for (let i = 0; i < bufferSize; i++) {
+        const white = Math.random() * 2 - 1;
+
+        if (type === 'white') {
+          data[i] = white;
+        } else if (type === 'brown') {
+          data[i] = (lastOut + (0.02 * white)) / 1.02;
+          lastOut = data[i];
+          data[i] *= 3.5;
+        } else if (type === 'pink') {
+          b0 = 0.99886 * b0 + white * 0.0555179;
+          b1 = 0.99332 * b1 + white * 0.0750759;
+          b2 = 0.96900 * b2 + white * 0.1538520;
+          b3 = 0.86650 * b3 + white * 0.3104856;
+          b4 = 0.55000 * b4 + white * 0.5329522;
+          b5 = -0.7616 * b5 - white * 0.0168980;
+          data[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+          data[i] *= 0.11;
+          b6 = white * 0.115926;
+        }
+      }
+      return buffer;
+    }
+
+    function toggleMasterNoise() {
+      initAudioContext();
+      isMasterNoiseOn = !isMasterNoiseOn;
+
+      const toggleBtn = document.getElementById('master-noise-toggle');
+
+      if (isMasterNoiseOn) {
+        if (toggleBtn) {
+          toggleBtn.innerText = "ON";
+          toggleBtn.className = "px-4 py-1.5 rounded-full text-xs font-bold bg-blue-600 text-white transition";
+        }
+        startNoiseChannels();
+      } else {
+        if (toggleBtn) {
+          toggleBtn.innerText = "OFF";
+          toggleBtn.className = "px-4 py-1.5 rounded-full text-xs font-bold bg-blue-200 text-blue-800 transition";
+        }
+        stopNoiseChannels();
+      }
+    }
+
+    function startNoiseChannels() {
+      ['brown', 'pink', 'white'].forEach(type => {
+        if (!noiseNodes[type]) {
+          const src = audioCtx.createBufferSource();
+          src.buffer = createNoiseBuffer(type);
+          src.loop = true;
+
+          const gain = audioCtx.createGain();
+          const slider = document.getElementById(`${type}-noise-slider`);
+          const sliderVal = slider ? slider.value : 0;
+          gain.gain.value = (sliderVal / 100) * 0.3;
+
+          src.connect(gain);
+          gain.connect(audioCtx.destination);
+          src.start();
+
+          noiseNodes[type] = src;
+          gainNodes[type] = gain;
+        }
+      });
+    }
+
+    function stopNoiseChannels() {
+      ['brown', 'pink', 'white'].forEach(type => {
+        if (noiseNodes[type]) {
+          try { noiseNodes[type].stop(); } catch(e) {}
+          noiseNodes[type] = null;
+          gainNodes[type] = null;
+        }
+      });
+    }
+
+    function updateNoiseVolume(type, val) {
+      const volText = document.getElementById(`${type}-vol-text`);
+      if (volText) volText.innerText = `${val}%`;
+      if (gainNodes[type] && audioCtx) {
+        gainNodes[type].gain.setValueAtTime((val / 100) * 0.3, audioCtx.currentTime);
+      }
+    }
+
+    let timerSeconds = 300;
+    let timerInterval = null;
+
+    function toggleTimer() {
+      const btn = document.getElementById('timer-btn');
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        if (btn) btn.innerText = "Start 5m";
+      } else {
+        if (btn) btn.innerText = "Pause";
+        timerInterval = setInterval(() => {
+          if (timerSeconds > 0) {
+            timerSeconds--;
+            updateTimerDisplay();
+          } else {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            if (typeof confetti === 'function') confetti({ particleCount: 70, spread: 80 });
+            if (btn) btn.innerText = "Start 5m";
+            timerSeconds = 300;
+            updateTimerDisplay();
+          }
+        }, 1000);
+      }
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(timerSeconds / 60);
+      const secs = timerSeconds % 60;
+      const display = document.getElementById('timer-display');
+      if (display) {
+        display.innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      }
+    }
+
+    function resetAllData() {
+      localStorage.removeItem(APP_STORAGE_KEY);
+      location.reload();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      renderUserProfile();
+      renderSmartGoalCard();
+      renderTaskList();
+      updateTimerDisplay();
+    });
+  </script>
+</body>
+</html>

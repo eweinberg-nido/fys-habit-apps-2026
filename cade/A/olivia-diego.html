@@ -1,0 +1,1772 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SlumberQuest | Sleep & Study Routine Tracker</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        night: {
+                            50: '#f0f4ff',
+                            100: '#e0e7ff',
+                            800: '#1e1b4b',
+                            900: '#0f172a',
+                            950: '#030712',
+                        },
+                        accent: {
+                            purple: '#a855f7',
+                            cyan: '#06b6d4',
+                            emerald: '#10b981',
+                            amber: '#f59e0b',
+                            rose: '#f43f5e'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tone.js for Web Audio Synthesis -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* Seamless Theme Blending */
+        body.theme-midnight {
+            background: linear-gradient(135deg, #030712 0%, #0f172a 100%);
+            color: #f8fafc;
+        }
+
+        body.theme-neon {
+            background: linear-gradient(135deg, #09090b 0%, #18181b 50%, #09090b 100%);
+            color: #fafafa;
+        }
+        body.theme-neon .bg-slate-900\/90,
+        body.theme-neon .bg-slate-900\/80,
+        body.theme-neon .bg-slate-900 {
+            background-color: rgba(24, 24, 27, 0.85) !important;
+            border-color: #3f3f46 !important;
+            box-shadow: 0 8px 32px 0 rgba(168, 85, 247, 0.15);
+        }
+
+        body.theme-forest {
+            background: linear-gradient(135deg, #022c22 0%, #064e3b 50%, #022c22 100%);
+            color: #ecfdf5;
+        }
+        body.theme-forest .bg-slate-900\/90,
+        body.theme-forest .bg-slate-900\/80,
+        body.theme-forest .bg-slate-900 {
+            background-color: rgba(6, 78, 59, 0.6) !important;
+            border-color: rgba(16, 185, 129, 0.3) !important;
+            backdrop-filter: blur(12px);
+        }
+
+        body.theme-sunset {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 50%, #fed7aa 100%);
+            color: #431407;
+        }
+        body.theme-sunset .bg-slate-900\/90,
+        body.theme-sunset .bg-slate-900\/80,
+        body.theme-sunset header,
+        body.theme-sunset .bg-slate-900 {
+            background-color: rgba(255, 255, 255, 0.85) !important;
+            border-color: #fdba74 !important;
+            box-shadow: 0 10px 30px -5px rgba(249, 115, 22, 0.15);
+        }
+        body.theme-sunset .text-slate-100, 
+        body.theme-sunset .text-slate-200 {
+            color: #431407 !important;
+        }
+        body.theme-sunset .text-slate-300,
+        body.theme-sunset .text-slate-400 {
+            color: #9a3412 !important;
+        }
+        body.theme-sunset .bg-slate-950 {
+            background-color: rgba(255, 237, 213, 0.8) !important;
+            color: #431407 !important;
+        }
+        body.theme-sunset .border-slate-800 {
+            border-color: #fed7aa !important;
+        }
+
+        body.theme-cloud {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: #0f172a;
+        }
+        body.theme-cloud .bg-slate-900\/90,
+        body.theme-cloud .bg-slate-900\/80,
+        body.theme-cloud header,
+        body.theme-cloud .bg-slate-900 {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: #cbd5e1 !important;
+            box-shadow: 0 10px 30px -5px rgba(148, 163, 184, 0.2);
+        }
+        body.theme-cloud .text-slate-100, 
+        body.theme-cloud .text-slate-200 {
+            color: #0f172a !important;
+        }
+        body.theme-cloud .text-slate-300,
+        body.theme-cloud .text-slate-400 {
+            color: #475569 !important;
+        }
+        body.theme-cloud .bg-slate-950 {
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+        }
+        body.theme-cloud .border-slate-800 {
+            border-color: #cbd5e1 !important;
+        }
+
+        body.theme-pastel {
+            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 50%, #e9d5ff 100%);
+            color: #3b0764;
+        }
+        body.theme-pastel .bg-slate-900\/90,
+        body.theme-pastel .bg-slate-900\/80,
+        body.theme-pastel header,
+        body.theme-pastel .bg-slate-900 {
+            background-color: rgba(255, 255, 255, 0.88) !important;
+            border-color: #d8b4fe !important;
+            box-shadow: 0 10px 30px -5px rgba(168, 85, 247, 0.15);
+        }
+        body.theme-pastel .text-slate-100, 
+        body.theme-pastel .text-slate-200 {
+            color: #3b0764 !important;
+        }
+        body.theme-pastel .text-slate-300,
+        body.theme-pastel .text-slate-400 {
+            color: #7e22ce !important;
+        }
+        body.theme-pastel .bg-slate-950 {
+            background-color: rgba(243, 232, 255, 0.8) !important;
+            color: #3b0764 !important;
+        }
+        body.theme-pastel .border-slate-800 {
+            border-color: #e9d5ff !important;
+        }
+
+        /* Tactile Dopamine Button Animations */
+        button, .mood-btn, .tab-btn {
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        button:active, .mood-btn:active, .tab-btn:active {
+            transform: scale(0.95) translateY(1px);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(168, 85, 247, 0.3);
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="theme-midnight text-slate-100 min-h-screen flex flex-col justify-between selection:bg-purple-500 selection:text-white">
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed top-20 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+    <!-- Top Navigation Header -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-cyan-400 flex items-center justify-center text-white shadow-lg shadow-purple-500/30">
+                    <i class="fa-solid font-bold fa-moon text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg sm:text-xl bg-gradient-to-r from-purple-400 via-cyan-300 to-emerald-400 bg-clip-text text-transparent">
+                        SlumberQuest
+                    </h1>
+                    <p class="text-xs text-slate-400 hidden sm:block">Grade 9 Sleep & Routine Master</p>
+                </div>
+            </div>
+
+            <!-- Stats, Sound & Theme Switcher Widget -->
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <div class="flex items-center space-x-2 bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700/60">
+                    <i class="fa-solid fa-fire text-amber-400 text-sm"></i>
+                    <span class="text-xs font-semibold text-slate-300">Streak:</span>
+                    <span id="headerStreak" class="text-sm font-bold text-amber-400">0 Days</span>
+                </div>
+
+                <!-- Calm Background Ambient Audio Player Dropdown -->
+                <div class="relative">
+                    <button id="ambientToggleBtn" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors flex items-center gap-1 text-xs font-bold" title="Calm Background Sound Generator">
+                        <i id="ambientIcon" class="fa-solid fa-water text-cyan-400"></i>
+                        <span class="hidden sm:inline">Calm Audio</span>
+                    </button>
+                    <div id="ambientMenu" class="absolute right-0 mt-2 w-64 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl p-3 hidden z-50 text-xs space-y-3">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                            <span class="font-bold text-slate-200 flex items-center gap-1.5">
+                                <i class="fa-solid fa-headphones text-purple-400"></i> Calm Ambient Generator
+                            </span>
+                            <button id="toggleAudioStateBtn" class="px-2.5 py-1 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-bold text-[11px] transition">
+                                Play 
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] font-bold uppercase text-slate-400">Soundscape</label>
+                            <select id="ambientSoundSelect" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-purple-500">
+                                <option value="ocean">🌊 Gentle Ocean Waves</option>
+                                <option value="rain">🌧️ Cozy Rainfall</option>
+                                <option value="river">🪵 Forest River Stream</option>
+                                <option value="brown">🤎 Deep Brown Noise (Focus)</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[10px] text-slate-400">
+                                <span>Volume</span>
+                                <span id="ambientVolLabel">50%</span>
+                            </div>
+                            <input type="range" id="ambientVolume" min="0" max="1" step="0.05" value="0.5" class="w-full accent-purple-500 bg-slate-950 rounded-lg cursor-pointer">
+                        </div>
+
+                        <div class="pt-1 border-t border-slate-800 flex items-center justify-between">
+                            <span class="text-[10px] text-slate-400 flex items-center gap-1">
+                                <i class="fa-solid fa-volume-high text-amber-400"></i> Dopamine SFX
+                            </span>
+                            <button id="toggleSfxBtn" class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold">
+                                Enabled ✓
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Theme Switcher Dropdown -->
+                <div class="relative">
+                    <button id="themeToggleBtn" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors flex items-center gap-1 text-xs font-bold" title="Change App Color Theme">
+                        <i class="fa-solid fa-palette text-purple-400"></i>
+                        <span class="hidden sm:inline">Theme</span>
+                    </button>
+                    <div id="themeMenu" class="absolute right-0 mt-2 w-48 bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl p-2 hidden z-50 text-xs space-y-1">
+                        <div class="px-2 py-1 text-[10px] uppercase font-bold text-slate-400 border-b border-slate-800">Dark Themes</div>
+                        <button data-theme-id="theme-midnight" class="theme-select-btn w-full text-left px-2.5 py-1.5 rounded-xl hover:bg-slate-800 flex items-center justify-between text-slate-200">
+                            <span>🌌 Midnight Dark</span>
+                        </button>
+                        <button data-theme-id="theme-neon" class="theme-select-btn w-full text-left px-2.5 py-1.5 rounded-xl hover:bg-slate-800 flex items-center justify-between text-slate-200">
+                            <span>⚡ Neon Cyber</span>
+                        </button>
+                        <button data-theme-id="theme-forest" class="theme-select-btn w-full text-left px-2.5 py-1.5 rounded-xl hover:bg-slate-800 flex items-center justify-between text-slate-200">
+                            <span>🌲 Emerald Forest</span>
+                        </button>
+
+                        <div class="px-2 py-1 text-[10px] uppercase font-bold text-slate-400 border-b border-slate-800 pt-2">Bright / Light Themes</div>
+                        <button data-theme-id="theme-sunset" class="theme-select-btn w-full text-left px-2.5 py-1.5 rounded-xl hover:bg-slate-800 flex items-center justify-between text-slate-200">
+                            <span>☀️ Sunset Glow</span>
+                        </button>
+                        <button data-theme-id="theme-cloud" class="theme-select-btn w-full text-left px-2.5 py-1.5 rounded-xl hover:bg-slate-800 flex items-center justify-between text-slate-200">
+                            <span>☁️ Minimal Cloud</span>
+                        </button>
+                        <button data-theme-id="theme-pastel" class="theme-select-btn w-full text-left px-2.5 py-1.5 rounded-xl hover:bg-slate-800 flex items-center justify-between text-slate-200">
+                            <span>🌸 Pastel Lavender</span>
+                        </button>
+                    </div>
+                </div>
+
+                <button id="openSettingsBtn" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full space-y-6">
+
+        <!-- Anti-Doomscroll Motivation Banner -->
+        <div class="bg-gradient-to-r from-purple-900/40 via-indigo-900/30 to-slate-900 border border-purple-500/30 rounded-2xl p-4 sm:p-5 relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl">
+            <div class="space-y-1 z-10">
+                <div class="flex items-center space-x-2">
+                    <span class="bg-purple-500/20 text-purple-300 text-xs font-bold px-2.5 py-0.5 rounded-full border border-purple-500/30">
+                        <i class="fa-solid fa-shield-halved mr-1"></i> Doomscroll Detox
+                    </span>
+                    <span id="currentDateDisplay" class="text-xs text-slate-400"></span>
+                </div>
+                <h2 class="text-base sm:text-lg font-bold text-slate-100">Beat After-School Friction & Win Your Evening</h2>
+                <p class="text-xs sm:text-sm text-slate-300 max-w-2xl">
+                    Coming home after 9th grade classes is exhausting! It’s normal to want to scroll TikTok/Reels immediately, but 15 minutes of early homework gives you total freedom later!
+                </p>
+            </div>
+            <button id="quickWindDownBtn" class="z-10 shrink-0 text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white transition shadow-lg shadow-purple-600/30 flex items-center space-x-2">
+                <i class="fa-solid fa-bolt"></i>
+                <span>5-Min Reset Protocol</span>
+            </button>
+            <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="flex space-x-2 border-b border-slate-800 pb-2 overflow-x-auto custom-scrollbar">
+            <button id="tabTodayBtn" class="tab-btn active-tab px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center space-x-2 bg-purple-600 text-white shadow-md">
+                <i class="fa-solid fa-calendar-day"></i>
+                <span>Today's Routine</span>
+            </button>
+            <button id="tabAnalyticsBtn" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 transition-all flex items-center space-x-2">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Sleep Analytics</span>
+            </button>
+            <button id="tabRewardsBtn" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 transition-all flex items-center space-x-2">
+                <i class="fa-solid fa-box-open"></i>
+                <span>Reward Vault</span>
+            </button>
+            <button id="tabHistoryBtn" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 transition-all flex items-center space-x-2">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <span>Past Logs</span>
+            </button>
+        </div>
+
+        <!-- ==================== VIEW 1: TODAY'S ROUTINE ==================== -->
+        <div id="viewToday" class="space-y-6">
+
+            <!-- SMART Goal Summary Bar -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400 font-medium">Bedtime SMART Goal</div>
+                        <div id="targetBedtimeDisplay" class="text-lg font-bold text-slate-100">10:00 PM</div>
+                        <div class="text-[11px] text-purple-400">Early bed OK! Warning if &gt;30m late</div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-sun"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400 font-medium">Wake Up Target</div>
+                        <div id="targetWakeDisplay" class="text-lg font-bold text-slate-100">06:30 AM</div>
+                        <div class="text-[11px] text-cyan-400">Target Sleep: 8.5 Hours</div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl shrink-0">
+                        <i class="fa-solid fa-gift"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400 font-medium">Today's Reward Status</div>
+                        <div id="rewardQualificationStatus" class="text-sm font-bold text-amber-400 flex items-center gap-1.5 mt-0.5">
+                            <i class="fa-solid fa-circle-notch fa-spin text-xs"></i> Checking Eligibility...
+                        </div>
+                        <div class="text-[11px] text-slate-400">Finish work + No more than 30m late</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                <!-- 🌙 EVENING & NIGHT SECTION -->
+                <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-purple-600/10 rounded-full blur-2xl pointer-events-none"></div>
+
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <div class="flex items-center space-x-3">
+                            <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold">1</span>
+                            <div>
+                                <h3 class="font-bold text-slate-100 text-lg flex items-center gap-2">
+                                    <i class="fa-solid fa-moon text-indigo-400"></i> Night Section
+                                </h3>
+                                <p class="text-xs text-slate-400">Evening homework & bedtime goal</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-indigo-300 border border-slate-700">Evening Protocol</span>
+                    </div>
+
+                    <!-- Homework & Study Task Checklist -->
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+                                <i class="fa-solid fa-book-open text-purple-400"></i> Schoolwork & Homework Tracker
+                            </label>
+                            <span id="tasksCompletedCounter" class="text-xs text-slate-400">0/0 completed</span>
+                        </div>
+
+                        <!-- Homework Input Box -->
+                        <div class="flex gap-2">
+                            <input type="text" id="newTaskInput" placeholder="Add assignment (e.g. Math p.42, Bio study)..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-purple-500">
+                            <button id="addTaskBtn" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs px-3 py-2 rounded-xl transition font-semibold">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+
+                        <div id="taskList" class="space-y-2 max-h-40 overflow-y-auto custom-scrollbar pr-1">
+                            <!-- Tasks injected dynamically -->
+                        </div>
+
+                        <!-- Mandatory SMART Goal requirement toggle -->
+                        <div class="p-3 bg-slate-950/70 border border-slate-800/80 rounded-xl flex items-center justify-between mt-3">
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+                                <div>
+                                    <div class="text-xs font-bold text-slate-200">All Homework / Study Completed?</div>
+                                    <div class="text-[11px] text-slate-400">Required to unlock random reward privilege</div>
+                                </div>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="allWorkDoneToggle" class="sr-only peer">
+                                <div class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Wind Down Checklist -->
+                    <div class="space-y-2 pt-2">
+                        <label class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+                            <i class="fa-solid fa-mobile-screen-button text-amber-400"></i> Pre-Bed Wind-Down (Detox)
+                        </label>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <label class="flex items-center space-x-2 bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/60 cursor-pointer hover:border-slate-700">
+                                <input type="checkbox" id="windDown1" class="rounded border-slate-700 text-purple-600 focus:ring-0 bg-slate-900">
+                                <span class="text-slate-300 text-[11px]">Phone across room</span>
+                            </label>
+                            <label class="flex items-center space-x-2 bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/60 cursor-pointer hover:border-slate-700">
+                                <input type="checkbox" id="windDown2" class="rounded border-slate-700 text-purple-600 focus:ring-0 bg-slate-900">
+                                <span class="text-slate-300 text-[11px]">Bag packed for tomorrow</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Actual Bedtime Log Input -->
+                    <div class="space-y-2 pt-2 border-t border-slate-800">
+                        <label class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+                            <i class="fa-solid fa-bed text-purple-400"></i> Actual Bedtime Logged
+                        </label>
+                        <div class="flex items-center space-x-3">
+                            <input type="time" id="actualBedtimeInput" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm font-semibold text-slate-100 focus:outline-none focus:border-purple-500 flex-1">
+                            <button id="setCurrentBedtimeBtn" class="bg-purple-950/60 border border-purple-500/30 text-purple-300 hover:bg-purple-900/60 text-xs px-3 py-2 rounded-xl font-medium transition">
+                                Set Now
+                            </button>
+                        </div>
+                        <p id="bedtimeDeltaMessage" class="text-[11px] text-slate-400 italic min-h-[18px]"></p>
+                    </div>
+
+                </div>
+
+                <!-- ☀️ MORNING SECTION -->
+                <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 sm:p-6 space-y-5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <div class="flex items-center space-x-3">
+                            <span class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">2</span>
+                            <div>
+                                <h3 class="font-bold text-slate-100 text-lg flex items-center gap-2">
+                                    <i class="fa-solid fa-sun text-amber-400"></i> Morning Section
+                                </h3>
+                                <p class="text-xs text-slate-400">Wake time, snooze counter & mood</p>
+                            </div>
+                        </div>
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-800 text-amber-300 border border-slate-700">Rise & Shine</span>
+                    </div>
+
+                    <!-- Actual Wake-Up Time -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+                            <i class="fa-solid fa-clock text-amber-400"></i> Actual Wake-Up Time
+                        </label>
+                        <div class="flex items-center space-x-3">
+                            <input type="time" id="actualWakeInput" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm font-semibold text-slate-100 focus:outline-none focus:border-amber-500 flex-1">
+                            <button id="setCurrentWakeBtn" class="bg-amber-950/60 border border-amber-500/30 text-amber-300 hover:bg-amber-900/60 text-xs px-3 py-2 rounded-xl font-medium transition">
+                                Set Now
+                            </button>
+                        </div>
+                        <p id="wakeDeltaMessage" class="text-[11px] text-slate-400 italic min-h-[18px]"></p>
+                    </div>
+
+                    <!-- Snooze Counter -->
+                    <div class="p-4 bg-slate-950/70 border border-slate-800/80 rounded-2xl space-y-2">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-xs font-bold text-slate-200 flex items-center gap-2">
+                                    <i class="fa-solid fa-bell-slash text-rose-400"></i> Snooze Count
+                                </div>
+                                <div class="text-[11px] text-slate-400">How many times did you hit snooze?</div>
+                            </div>
+                            <div class="flex items-center space-x-3 bg-slate-900 border border-slate-800 rounded-xl p-1">
+                                <button id="snoozeMinusBtn" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center font-bold text-sm transition">
+                                    <i class="fa-solid fa-minus"></i>
+                                </button>
+                                <span id="snoozeCountDisplay" class="text-base font-extrabold text-amber-400 w-6 text-center">0</span>
+                                <button id="snoozePlusBtn" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 flex items-center justify-center font-bold text-sm transition">
+                                    <i class="fa-solid fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Morning Mood / Energy Level -->
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold uppercase tracking-wider text-slate-300">
+                            Morning Energy Level
+                        </label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button data-mood="drowsy" class="mood-btn p-3 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-800 text-center transition">
+                                <div class="text-xl">😴</div>
+                                <div class="text-[11px] font-medium text-slate-400 mt-1">Exhausted</div>
+                            </button>
+                            <button data-mood="ok" class="mood-btn p-3 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-800 text-center transition border-purple-500/50 bg-purple-950/20">
+                                <div class="text-xl">😐</div>
+                                <div class="text-[11px] font-medium text-slate-300 mt-1">Okay</div>
+                            </button>
+                            <button data-mood="refreshed" class="mood-btn p-3 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-800 text-center transition">
+                                <div class="text-xl">⚡</div>
+                                <div class="text-[11px] font-medium text-emerald-400 mt-1">Energized</div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Calculated Total Sleep Duration Box -->
+                    <div class="p-3.5 bg-gradient-to-r from-slate-950 to-indigo-950/40 border border-indigo-500/20 rounded-xl flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <i class="fa-solid fa-hourglass-half text-cyan-400 text-lg"></i>
+                            <div>
+                                <div class="text-xs font-semibold text-slate-300">Calculated Sleep Time</div>
+                                <div id="calculatedSleepDuration" class="text-base font-bold text-cyan-300">-- hrs -- mins</div>
+                            </div>
+                        </div>
+                        <span id="sleepQualityBadge" class="text-xs px-2.5 py-1 rounded-full bg-slate-800 text-slate-400 border border-slate-700">Pending</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Save Entry & Claim Reward Action Box -->
+            <div class="bg-gradient-to-r from-slate-900 via-purple-950/40 to-slate-900 border border-purple-500/30 rounded-3xl p-6 text-center space-y-4 shadow-2xl">
+                <div class="max-w-xl mx-auto space-y-1">
+                    <h3 class="text-lg font-extrabold text-slate-100">Ready to Lock in Today's Log?</h3>
+                    <p class="text-xs text-slate-300">
+                        If bedtime is <strong class="text-purple-300">on time, early, or less than 30 mins late</strong> AND <strong class="text-emerald-400">all work is done</strong>, you'll instantly unlock a random privilege pass!
+                    </p>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-center gap-4">
+                    <button id="saveDailyLogBtn" class="px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-bold text-sm shadow-xl shadow-purple-600/30 transition transform hover:-translate-y-0.5 active:translate-y-0 flex items-center space-x-2">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Save Day & Claim Reward Check</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ==================== VIEW 2: ANALYTICS ==================== -->
+        <div id="viewAnalytics" class="space-y-6 hidden">
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 text-center">
+                    <div class="text-xs text-slate-400 mb-1">Avg Sleep Duration</div>
+                    <div id="statAvgSleep" class="text-2xl font-black text-cyan-400">0.0 hrs</div>
+                    <div class="text-[11px] text-slate-500 mt-1">Target: 8 - 9 hours</div>
+                </div>
+                <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 text-center">
+                    <div class="text-xs text-slate-400 mb-1">Bedtime Accuracy</div>
+                    <div id="statBedtimeAccuracy" class="text-2xl font-black text-purple-400">0%</div>
+                    <div class="text-[11px] text-slate-500 mt-1">Within 30m of goal</div>
+                </div>
+                <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 text-center">
+                    <div class="text-xs text-slate-400 mb-1">Avg Snooze Count</div>
+                    <div id="statAvgSnooze" class="text-2xl font-black text-amber-400">0</div>
+                    <div class="text-[11px] text-slate-500 mt-1">Goal: 0 snoozes</div>
+                </div>
+                <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 text-center">
+                    <div class="text-xs text-slate-400 mb-1">Work Completion Rate</div>
+                    <div id="statWorkRate" class="text-2xl font-black text-emerald-400">0%</div>
+                    <div class="text-[11px] text-slate-500 mt-1">Homework finished</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Sleep Duration Chart -->
+                <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-slate-200 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-chart-simple text-purple-400"></i> Sleep Hours (Last 7 Days)
+                        </h3>
+                        <span class="text-[11px] text-slate-400">Hours per night</span>
+                    </div>
+                    <div class="h-64">
+                        <canvas id="sleepDurationChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Bedtime Consistency Chart -->
+                <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-slate-200 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-bullseye text-cyan-400"></i> Bedtime Goal Variance
+                        </h3>
+                        <span class="text-[11px] text-slate-400">Minutes off goal</span>
+                    </div>
+                    <div class="h-64">
+                        <canvas id="bedtimeVarianceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ==================== VIEW 3: REWARD VAULT ==================== -->
+        <div id="viewRewards" class="space-y-6 hidden">
+
+            <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                    <div>
+                        <h3 class="text-xl font-extrabold text-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-box-open text-amber-400"></i> Unlocked Privilege Certificates
+                        </h3>
+                        <p class="text-xs text-slate-400">Earned by keeping bedtime within 30 mins & finishing all schoolwork!</p>
+                    </div>
+                    <div class="text-xs px-3 py-1.5 rounded-xl bg-purple-950/60 text-purple-300 border border-purple-500/30 font-semibold self-start sm:self-auto">
+                        <span id="unclaimedRewardsCount">0</span> Unclaimed Passes
+                    </div>
+                </div>
+
+                <!-- Reward Cards Container -->
+                <div id="rewardsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Cards will be populated here -->
+                </div>
+
+                <div id="emptyRewardsState" class="text-center py-12 space-y-3 hidden">
+                    <div class="w-16 h-16 rounded-2xl bg-slate-800 text-slate-600 flex items-center justify-center text-3xl mx-auto">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <h4 class="text-base font-bold text-slate-400">No Rewards Unlocked Yet</h4>
+                    <p class="text-xs text-slate-500 max-w-sm mx-auto">
+                        Complete your evening study list and log your bedtime within 30 minutes of your goal to earn your first pass!
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ==================== VIEW 4: PAST LOGS ==================== -->
+        <div id="viewHistory" class="space-y-6 hidden">
+            <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                    <h3 class="text-lg font-bold text-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left text-cyan-400"></i> Sleep & Routine History
+                    </h3>
+                    <button id="clearHistoryBtn" class="text-xs text-rose-400 hover:text-rose-300 bg-rose-950/30 px-3 py-1.5 rounded-xl border border-rose-900/50 transition">
+                        Clear All History
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-950 text-slate-400 border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">Date</th>
+                                <th class="p-3">Target Bedtime</th>
+                                <th class="p-3">Actual Bedtime</th>
+                                <th class="p-3">Wake Time</th>
+                                <th class="p-3">Sleep Hours</th>
+                                <th class="p-3">Snoozes</th>
+                                <th class="p-3">Work Done?</th>
+                                <th class="p-3">Reward Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody" class="divide-y divide-slate-800/60 text-slate-300">
+                            <!-- Rows injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 bg-slate-900/50 py-4 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div>
+                <span>SlumberQuest &copy; Built for 9th Grade Routine & Sleep Success</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="text-slate-400"><i class="fa-solid fa-database mr-1"></i> Stores locally on device</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- REWARD CERTIFICATE POPUP MODAL -->
+    <div id="rewardModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border-2 border-amber-500/50 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 text-center shadow-2xl relative">
+
+            <button id="closeRewardModalBtn" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="w-20 h-20 bg-gradient-to-tr from-amber-500 to-purple-600 rounded-3xl mx-auto flex items-center justify-center text-white text-4xl shadow-xl shadow-amber-500/30">
+                <i id="modalRewardIcon" class="fa-solid fa-gamepad"></i>
+            </div>
+
+            <div class="space-y-2">
+                <span class="text-xs font-black uppercase tracking-widest px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    🎉 SMART Goal Achieved!
+                </span>
+                <h3 class="text-2xl font-black text-slate-100" id="modalRewardTitle">30-Min Game Privilege Pass</h3>
+                <p id="modalRewardDescription" class="text-xs text-slate-300">
+                    You hit your bedtime goal within 30 minutes AND finished all schoolwork today!
+                </p>
+            </div>
+
+            <!-- Certificate Card Box -->
+            <div class="bg-slate-950 border border-amber-500/30 rounded-2xl p-4 text-left space-y-3 relative overflow-hidden">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <span class="text-[10px] uppercase font-bold text-slate-400">Official Pass Certificate</span>
+                    <span id="modalRewardCode" class="text-[10px] font-mono text-purple-400">#SQ-8832</span>
+                </div>
+                <div class="text-sm font-extrabold text-amber-400" id="modalCertificateName">
+                    🎮 30 Minutes Extra Gaming Time
+                </div>
+                <div class="text-[11px] text-slate-300 leading-relaxed" id="modalCertificateTerms">
+                    Valid for 30 minutes of video game or screen leisure time today! Present to parents or self-redeem.
+                </div>
+                <div class="text-[10px] text-slate-500 flex justify-between pt-1">
+                    <span id="modalRewardDate">Issued: Today</span>
+                    <span class="text-emerald-400 font-semibold"><i class="fa-solid fa-check mr-1"></i> Verified Goal</span>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button id="saveToVaultBtn" class="flex-1 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold rounded-xl text-xs transition shadow-lg shadow-amber-500/20">
+                    Claim & Save to Vault
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5-MIN RESET MODAL (Doomscroll Blocker) -->
+    <div id="resetModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-purple-500/40 rounded-3xl max-w-md w-full p-6 space-y-5 text-center shadow-2xl relative">
+            <button id="closeResetModalBtn" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="w-16 h-16 bg-purple-500/20 text-purple-400 rounded-2xl mx-auto flex items-center justify-center text-3xl">
+                <i class="fa-solid fa-brain"></i>
+            </div>
+
+            <div class="space-y-1">
+                <h3 class="text-lg font-bold text-slate-100">5-Minute After-School Reset</h3>
+                <p class="text-xs text-slate-400">Stuck in a scroll loop? Follow these 3 fast steps to break the spell:</p>
+            </div>
+
+            <div class="space-y-3 text-left text-xs">
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-start space-x-3">
+                    <span class="w-5 h-5 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0">1</span>
+                    <div>
+                        <div class="font-bold text-slate-200">Drink a cold glass of water</div>
+                        <div class="text-[11px] text-slate-400">Rehydrates your brain after 7 hours of class.</div>
+                    </div>
+                </div>
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-start space-x-3">
+                    <span class="w-5 h-5 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0">2</span>
+                    <div>
+                        <div class="font-bold text-slate-200">The 5-Minute Timer Method</div>
+                        <div class="text-[11px] text-slate-400">Set a timer and commit to just 5 minutes of study. Action creates motivation!</div>
+                    </div>
+                </div>
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-start space-x-3">
+                    <span class="w-5 h-5 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0">3</span>
+                    <div>
+                        <div class="font-bold text-slate-200">Out of Sight Phone Rule</div>
+                        <div class="text-[11px] text-slate-400">Put phone in another room or inside your backpack while studying.</div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="closeResetModalBtn2" class="w-full py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs transition">
+                Got It! Let's Crush Today
+            </button>
+        </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div id="settingsModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl relative">
+            <button id="closeSettingsBtn" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2 text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center space-x-3 border-b border-slate-800 pb-3">
+                <i class="fa-solid fa-sliders text-purple-400 text-xl"></i>
+                <div>
+                    <h3 class="text-base font-bold text-slate-100">SMART Goal & Color Settings</h3>
+                    <p class="text-xs text-slate-400">Configure bedtime target & app appearance</p>
+                </div>
+            </div>
+
+            <div class="space-y-4 text-xs">
+                <div class="space-y-1">
+                    <label class="font-semibold text-slate-300">Target Bedtime Goal</label>
+                    <input type="time" id="settingBedtime" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 text-sm focus:border-purple-500">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="font-semibold text-slate-300">Target Wake Up Time</label>
+                    <input type="time" id="settingWake" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 text-sm focus:border-cyan-500">
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="font-semibold text-slate-300">Select Theme Color Palette</label>
+                    <select id="settingThemeSelect" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 text-xs focus:border-purple-500">
+                        <option value="theme-midnight">🌌 Midnight Dark (Default)</option>
+                        <option value="theme-neon">⚡ Neon Cyber Dark</option>
+                        <option value="theme-forest">🌲 Emerald Forest Dark</option>
+                        <option value="theme-sunset">☀️ Sunset Glow Light</option>
+                        <option value="theme-cloud">☁️ Minimal Cloud Light</option>
+                        <option value="theme-pastel">🌸 Pastel Lavender Light</option>
+                    </select>
+                </div>
+
+                <div class="p-3 bg-purple-950/30 border border-purple-500/20 rounded-xl text-[11px] text-purple-300 leading-relaxed">
+                    💡 <strong>SMART Goal Rule:</strong> Bedtime qualifies as achieved whenever you sleep early or within <strong>30 minutes after</strong> your target. A warning only appears if bedtime is 30+ minutes late!
+                </div>
+            </div>
+
+            <button id="saveSettingsBtn" class="w-full py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs transition">
+                Save Settings
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Storage Keys
+        const STORAGE_KEY_SETTINGS = 'slumberquest_settings';
+        const STORAGE_KEY_TODAY = 'slumberquest_today';
+        const STORAGE_KEY_LOGS = 'slumberquest_logs';
+        const STORAGE_KEY_REWARDS = 'slumberquest_rewards';
+        const STORAGE_KEY_TASKS = 'slumberquest_tasks';
+
+        // Default State Objects
+        let settings = {
+            targetBedtime: '22:00',
+            targetWake: '06:30',
+            theme: 'theme-midnight'
+        };
+
+        let todayData = {
+            date: new Date().toISOString().split('T')[0],
+            actualBedtime: '22:00',
+            actualWake: '06:30',
+            snoozeCount: 0,
+            mood: 'ok',
+            allWorkDone: false,
+            windDown1: false,
+            windDown2: false,
+            rewardClaimed: false
+        };
+
+        let pastLogs = [];
+        let unlockedRewards = [];
+        let homeworkTasks = [];
+
+        // Dynamic Chart Objects
+        let durationChart = null;
+        let varianceChart = null;
+
+        // Reward Pool options
+        const PRIVILEGE_REWARDS = [
+            {
+                type: 'game',
+                title: '🎮 30-Min Game Privilege Pass',
+                description: 'Valid for 30 minutes of video games, computer, or console leisure time today!',
+                icon: 'fa-gamepad'
+            },
+            {
+                type: 'food',
+                title: '🍿 VIP Food & Snack Access Pass',
+                description: 'Valid for choosing your favorite evening snack or dessert treat!',
+                icon: 'fa-utensils'
+            },
+            {
+                type: 'relax',
+                title: '🎧 1-Hour Relax & Unwind Pass',
+                description: 'Valid for 1 hour of zero-guilt music, show streaming, or casual reading!',
+                icon: 'fa-couch'
+            },
+            {
+                type: 'free',
+                title: '👑 Free Choice Privilege Pass',
+                description: 'Valid for 30 minutes of any personal hobby, creative art, or leisure activity!',
+                icon: 'fa-crown'
+            }
+        ];
+
+        function timeToMinutes(timeStr) {
+            if (!timeStr) return 0;
+            const [hrs, mins] = timeStr.split(':').map(Number);
+            return hrs * 60 + mins;
+        }
+
+        function formatTime12H(timeStr) {
+            if (!timeStr) return '--:--';
+            const [hrs, mins] = timeStr.split(':').map(Number);
+            const period = hrs >= 12 ? 'PM' : 'AM';
+            const displayHrs = hrs % 12 === 0 ? 12 : hrs % 12;
+            return `${displayHrs.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')} ${period}`;
+        }
+
+        // Returns minutes late (positive) or minutes early (negative)
+        function getTimeDeltaMinutes(targetTime, actualTime) {
+            if (!targetTime || !actualTime) return 0;
+            let targetMins = timeToMinutes(targetTime);
+            let actualMins = timeToMinutes(actualTime);
+
+            // Handle overnight wraparound (e.g., target 22:00 [1320m], actual 01:00 [60m])
+            if (targetMins >= 18 * 60 && actualMins < 6 * 60) {
+                actualMins += 24 * 60;
+            }
+            if (actualMins >= 18 * 60 && targetMins < 6 * 60) {
+                targetMins += 24 * 60;
+            }
+
+            return actualMins - targetMins;
+        }
+
+        function calculateSleepHours(bedtimeStr, wakeTimeStr) {
+            if (!bedtimeStr || !wakeTimeStr) return 0;
+            let bedMins = timeToMinutes(bedtimeStr);
+            let wakeMins = timeToMinutes(wakeTimeStr);
+
+            if (wakeMins <= bedMins) {
+                wakeMins += 24 * 60;
+            }
+
+            const diffMins = wakeMins - bedMins;
+            return (diffMins / 60).toFixed(1);
+        }
+
+        let audioCtx = null;
+        let soundEnabled = true;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playPopSound() {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(520, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.07);
+                
+                gain.gain.setValueAtTime(0.18, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.07);
+                
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                
+                osc.start();
+                osc.stop(ctx.currentTime + 0.07);
+            } catch(e) {}
+        }
+
+        function playSuccessChime() {
+            if (!soundEnabled) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                
+                notes.forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, now + i * 0.07);
+                    
+                    gain.gain.setValueAtTime(0.12, now + i * 0.07);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.07 + 0.3);
+                    
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    
+                    osc.start(now + i * 0.07);
+                    osc.stop(now + i * 0.07 + 0.3);
+                });
+            } catch(e) {}
+        }
+
+        let ambientSource = null;
+        let ambientGainNode = null;
+        let ambientLFO = null;
+        let isAmbientPlaying = false;
+
+        function stopAmbientSound() {
+            if (ambientSource) {
+                try { ambientSource.stop(); } catch(e){}
+                ambientSource = null;
+            }
+            if (ambientLFO) {
+                try { ambientLFO.stop(); } catch(e){}
+                ambientLFO = null;
+            }
+            isAmbientPlaying = false;
+            const toggleAudioStateBtn = document.getElementById('toggleAudioStateBtn');
+            if (toggleAudioStateBtn) toggleAudioStateBtn.textContent = 'Play';
+        }
+
+        function startAmbientSound(type) {
+            stopAmbientSound();
+            const ctx = getAudioContext();
+            const bufferSize = ctx.sampleRate * 5;
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+
+            let b0 = 0;
+            for (let i = 0; i < bufferSize; i++) {
+                let white = Math.random() * 2 - 1;
+                if (type === 'brown' || type === 'ocean') {
+                    b0 = (b0 + (0.02 * white)) / 1.02;
+                    data[i] = b0 * 2.5;
+                } else if (type === 'rain') {
+                    b0 = 0.99 * b0 + white * 0.05;
+                    data[i] = b0 * 0.6;
+                } else if (type === 'river') {
+                    b0 = 0.95 * b0 + white * 0.1;
+                    data[i] = b0 * 0.8;
+                } else {
+                    data[i] = white * 0.2;
+                }
+            }
+
+            ambientSource = ctx.createBufferSource();
+            ambientSource.buffer = buffer;
+            ambientSource.loop = true;
+
+            const filter = ctx.createBiquadFilter();
+            ambientGainNode = ctx.createGain();
+            const vol = parseFloat(document.getElementById('ambientVolume').value || 0.5);
+            ambientGainNode.gain.value = vol;
+
+            if (type === 'ocean') {
+                filter.type = 'lowpass';
+                filter.frequency.value = 350;
+                
+                ambientLFO = ctx.createOscillator();
+                ambientLFO.frequency.value = 0.15;
+                const lfoGain = ctx.createGain();
+                lfoGain.gain.value = 300;
+                
+                ambientLFO.connect(lfoGain);
+                lfoGain.connect(filter.frequency);
+                ambientLFO.start();
+            } else if (type === 'rain') {
+                filter.type = 'bandpass';
+                filter.frequency.value = 1100;
+                filter.Q.value = 0.9;
+            } else if (type === 'river') {
+                filter.type = 'bandpass';
+                filter.frequency.value = 850;
+                filter.Q.value = 0.7;
+            } else {
+                filter.type = 'lowpass';
+                filter.frequency.value = 400;
+            }
+
+            ambientSource.connect(filter);
+            filter.connect(ambientGainNode);
+            ambientGainNode.connect(ctx.destination);
+
+            ambientSource.start();
+            isAmbientPlaying = true;
+            
+            const toggleAudioStateBtn = document.getElementById('toggleAudioStateBtn');
+            if (toggleAudioStateBtn) toggleAudioStateBtn.textContent = 'Pause';
+        }
+
+        function alertMessage(msg, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            const bgClass = type === 'success' ? 'bg-emerald-900/90 border-emerald-500 text-emerald-100' :
+                            type === 'error' ? 'bg-rose-900/90 border-rose-500 text-rose-100' :
+                            'bg-slate-800/95 border-purple-500 text-slate-100';
+
+            toast.className = `px-4 py-3 rounded-xl border shadow-xl text-xs font-semibold flex items-center gap-2 transform transition-all duration-300 pointer-events-auto ${bgClass}`;
+            toast.innerHTML = `<i class="fa-solid ${type==='success'?'fa-circle-check':type==='error'?'fa-circle-exclamation':'fa-circle-info'}"></i> <span>${msg}</span>`;
+
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-x-4');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        function triggerRewardEvaluation() {
+            const bedtimeDelta = getTimeDeltaMinutes(settings.targetBedtime, todayData.actualBedtime);
+            const rewardStatusEl = document.getElementById('rewardQualificationStatus');
+            const bedtimeDeltaMsg = document.getElementById('bedtimeDeltaMessage');
+
+            // SMART Goal Rule: Early is OK! Warning ONLY if bedtime is 30+ minutes late!
+            if (bedtimeDelta <= 0) {
+                const minsEarly = Math.abs(bedtimeDelta);
+                bedtimeDeltaMsg.innerHTML = `<span class="text-emerald-400 font-semibold"><i class="fa-solid fa-circle-check mr-1"></i> ${minsEarly === 0 ? 'On exact target bedtime!' : minsEarly + 'm early! Excellent bedtime discipline.'}</span>`;
+            } else if (bedtimeDelta <= 30) {
+                bedtimeDeltaMsg.innerHTML = `<span class="text-amber-400 font-semibold"><i class="fa-solid fa-clock mr-1"></i> ${bedtimeDelta}m late (Within acceptable 30m SMART goal window)</span>`;
+            } else {
+                bedtimeDeltaMsg.innerHTML = `<span class="text-rose-400 font-semibold"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ${bedtimeDelta}m late (Exceeds 30m goal window! Reward locked)</span>`;
+            }
+
+            const wakeDelta = getTimeDeltaMinutes(settings.targetWake, todayData.actualWake);
+            const wakeDeltaMsg = document.getElementById('wakeDeltaMessage');
+            if (wakeDelta === 0) {
+                wakeDeltaMsg.innerHTML = `<span class="text-emerald-400 font-semibold"><i class="fa-solid fa-circle-check mr-1"></i> On target wake time!</span>`;
+            } else if (wakeDelta < 0) {
+                wakeDeltaMsg.innerHTML = `<span class="text-cyan-400 font-semibold"><i class="fa-solid fa-sun mr-1"></i> ${Math.abs(wakeDelta)}m earlier than alarm target</span>`;
+            } else {
+                wakeDeltaMsg.innerHTML = `<span class="text-amber-400 font-semibold"><i class="fa-solid fa-bed mr-1"></i> Woke up ${wakeDelta}m after target</span>`;
+            }
+
+            // Calculate Sleep Duration
+            const sleepHrs = calculateSleepHours(todayData.actualBedtime, todayData.actualWake);
+            document.getElementById('calculatedSleepDuration').textContent = `${sleepHrs} hours`;
+
+            const qualityBadge = document.getElementById('sleepQualityBadge');
+            if (parseFloat(sleepHrs) >= 8.0) {
+                qualityBadge.textContent = 'Optimal ⚡';
+                qualityBadge.className = 'text-xs px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+            } else if (parseFloat(sleepHrs) >= 7.0) {
+                qualityBadge.textContent = 'Fair 👍';
+                qualityBadge.className = 'text-xs px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30';
+            } else {
+                qualityBadge.textContent = 'Low Sleep 😴';
+                qualityBadge.className = 'text-xs px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30';
+            }
+
+            // Qualification Check
+            const isBedtimeQualified = bedtimeDelta <= 30;
+            const isWorkDone = todayData.allWorkDone;
+
+            if (isBedtimeQualified && isWorkDone) {
+                rewardStatusEl.innerHTML = `<span class="text-emerald-400 flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> Qualified for Privilege Reward!</span>`;
+            } else {
+                let reason = [];
+                if (!isBedtimeQualified) reason.push('Bedtime >30m late');
+                if (!isWorkDone) reason.push('Work incomplete');
+                rewardStatusEl.innerHTML = `<span class="text-amber-400 flex items-center gap-1.5"><i class="fa-solid fa-lock"></i> Locked (${reason.join(', ')})</span>`;
+            }
+        }
+
+        function renderTasks() {
+            const listEl = document.getElementById('taskList');
+            const counterEl = document.getElementById('tasksCompletedCounter');
+            listEl.innerHTML = '';
+
+            const completedCount = homeworkTasks.filter(t => t.completed).length;
+            counterEl.textContent = `${completedCount}/${homeworkTasks.length} completed`;
+
+            if (homeworkTasks.length === 0) {
+                listEl.innerHTML = `<p class="text-[11px] text-slate-500 italic py-2 text-center">No assignments added yet. Add one above!</p>`;
+                return;
+            }
+
+            homeworkTasks.forEach((task, index) => {
+                const item = document.createElement('div');
+                item.className = 'flex items-center justify-between p-2 rounded-xl bg-slate-950/60 border border-slate-800 text-xs';
+                item.innerHTML = `
+                    <label class="flex items-center space-x-2 cursor-pointer flex-1 overflow-hidden pr-2">
+                        <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${index})" class="rounded border-slate-700 text-purple-600 focus:ring-0 bg-slate-900">
+                        <span class="${task.completed ? 'line-through text-slate-500' : 'text-slate-200'} truncate">${task.text}</span>
+                    </label>
+                    <button onclick="removeTask(${index})" class="text-slate-500 hover:text-rose-400 p-1">
+                        <i class="fa-solid fa-trash-can text-xs"></i>
+                    </button>
+                `;
+                listEl.appendChild(item);
+            });
+        }
+
+        function toggleTask(index) {
+            homeworkTasks[index].completed = !homeworkTasks[index].completed;
+            saveData();
+            renderTasks();
+            playPopSound();
+        }
+
+        function removeTask(index) {
+            homeworkTasks.splice(index, 1);
+            saveData();
+            renderTasks();
+            playPopSound();
+        }
+
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(settings));
+            localStorage.setItem(STORAGE_KEY_TODAY, JSON.stringify(todayData));
+            localStorage.setItem(STORAGE_KEY_LOGS, JSON.stringify(pastLogs));
+            localStorage.setItem(STORAGE_KEY_REWARDS, JSON.stringify(unlockedRewards));
+            localStorage.setItem(STORAGE_KEY_TASKS, JSON.stringify(homeworkTasks));
+        }
+
+        function loadData() {
+            try {
+                const savedSettings = localStorage.getItem(STORAGE_KEY_SETTINGS);
+                if (savedSettings) settings = Object.assign(settings, JSON.parse(savedSettings));
+
+                const savedToday = localStorage.getItem(STORAGE_KEY_TODAY);
+                if (savedToday) {
+                    const parsed = JSON.parse(savedToday);
+                    if (parsed.date === new Date().toISOString().split('T')[0]) {
+                        todayData = Object.assign(todayData, parsed);
+                    }
+                }
+
+                const savedLogs = localStorage.getItem(STORAGE_KEY_LOGS);
+                if (savedLogs) pastLogs = JSON.parse(savedLogs);
+
+                const savedRewards = localStorage.getItem(STORAGE_KEY_REWARDS);
+                if (savedRewards) unlockedRewards = JSON.parse(savedRewards);
+
+                const savedTasks = localStorage.getItem(STORAGE_KEY_TASKS);
+                if (savedTasks) homeworkTasks = JSON.parse(savedTasks);
+            } catch(e) {
+                console.error("Local storage load error", e);
+            }
+        }
+
+        function applyTheme(themeId) {
+            settings.theme = themeId;
+            document.body.className = `${themeId} text-slate-100 min-h-screen flex flex-col justify-between selection:bg-purple-500 selection:text-white`;
+            document.getElementById('settingThemeSelect').value = themeId;
+            saveData();
+        }
+
+        function updateUIFromState() {
+            document.getElementById('targetBedtimeDisplay').textContent = formatTime12H(settings.targetBedtime);
+            document.getElementById('targetWakeDisplay').textContent = formatTime12H(settings.targetWake);
+            
+            document.getElementById('actualBedtimeInput').value = todayData.actualBedtime;
+            document.getElementById('actualWakeInput').value = todayData.actualWake;
+            document.getElementById('snoozeCountDisplay').textContent = todayData.snoozeCount;
+            document.getElementById('allWorkDoneToggle').checked = todayData.allWorkDone;
+            document.getElementById('windDown1').checked = todayData.windDown1;
+            document.getElementById('windDown2').checked = todayData.windDown2;
+
+            document.getElementById('settingBedtime').value = settings.targetBedtime;
+            document.getElementById('settingWake').value = settings.targetWake;
+
+            // Mood buttons
+            document.querySelectorAll('.mood-btn').forEach(btn => {
+                if (btn.dataset.mood === todayData.mood) {
+                    btn.classList.add('border-purple-500/50', 'bg-purple-950/20');
+                } else {
+                    btn.classList.remove('border-purple-500/50', 'bg-purple-950/20');
+                }
+            });
+
+            // Streak calculation
+            document.getElementById('headerStreak').textContent = `${pastLogs.length} Days`;
+            document.getElementById('currentDateDisplay').textContent = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+            applyTheme(settings.theme);
+            renderTasks();
+            triggerRewardEvaluation();
+            renderRewardsVault();
+            renderHistoryTable();
+            updateAnalytics();
+        }
+
+        function claimRandomReward() {
+            const randomReward = PRIVILEGE_REWARDS[Math.floor(Math.random() * PRIVILEGE_REWARDS.length)];
+            const code = `#SQ-${Math.floor(1000 + Math.random() * 9000)}`;
+
+            const newPass = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                code: code,
+                reward: randomReward,
+                redeemed: false
+            };
+
+            unlockedRewards.unshift(newPass);
+            todayData.rewardClaimed = true;
+            saveData();
+
+            // Modal Popup Setup
+            document.getElementById('modalRewardIcon').className = `fa-solid ${randomReward.icon}`;
+            document.getElementById('modalRewardTitle').textContent = randomReward.title;
+            document.getElementById('modalRewardDescription').textContent = 'You hit your bedtime goal within 30 minutes AND finished all schoolwork today!';
+            document.getElementById('modalRewardCode').textContent = code;
+            document.getElementById('modalCertificateName').textContent = randomReward.title;
+            document.getElementById('modalCertificateTerms').textContent = randomReward.description;
+            document.getElementById('modalRewardDate').textContent = `Issued: ${newPass.date}`;
+
+            document.getElementById('rewardModal').classList.remove('hidden');
+
+            // Trigger celebration confetti & chime
+            try {
+                confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+            } catch(e){}
+            playSuccessChime();
+            renderRewardsVault();
+        }
+
+        function renderRewardsVault() {
+            const gridEl = document.getElementById('rewardsGrid');
+            const emptyEl = document.getElementById('emptyRewardsState');
+            const countEl = document.getElementById('unclaimedRewardsCount');
+
+            gridEl.innerHTML = '';
+            const unclaimed = unlockedRewards.filter(r => !r.redeemed).length;
+            countEl.textContent = unclaimed;
+
+            if (unlockedRewards.length === 0) {
+                emptyEl.classList.remove('hidden');
+                return;
+            }
+            emptyEl.classList.add('hidden');
+
+            unlockedRewards.forEach(pass => {
+                const card = document.createElement('div');
+                card.className = `p-4 rounded-2xl border transition relative overflow-hidden ${pass.redeemed ? 'bg-slate-950/40 border-slate-800 opacity-60' : 'bg-slate-950 border-amber-500/30 shadow-lg'}`;
+                card.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-slate-800/80 pb-2 mb-3">
+                        <span class="text-[10px] font-mono text-purple-400">${pass.code}</span>
+                        <span class="text-[10px] text-slate-400">${pass.date}</span>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg shrink-0">
+                            <i class="fa-solid ${pass.reward.icon}"></i>
+                        </div>
+                        <div class="space-y-1 flex-1">
+                            <h4 class="text-sm font-bold text-slate-100">${pass.reward.title}</h4>
+                            <p class="text-[11px] text-slate-400 leading-snug">${pass.reward.description}</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex justify-between items-center pt-2 border-t border-slate-800/60">
+                        <span class="text-[10px] ${pass.redeemed ? 'text-slate-500' : 'text-emerald-400 font-bold'}">
+                            ${pass.redeemed ? 'Redeemed' : 'Ready to Use'}
+                        </span>
+                        <button onclick="toggleRedeemPass(${pass.id})" class="px-3 py-1 rounded-lg text-xs font-bold transition ${pass.redeemed ? 'bg-slate-800 text-slate-400' : 'bg-amber-500 hover:bg-amber-400 text-slate-950'}">
+                            ${pass.redeemed ? 'Mark Unused' : 'Redeem Pass'}
+                        </button>
+                    </div>
+                `;
+                gridEl.appendChild(card);
+            });
+        }
+
+        function toggleRedeemPass(id) {
+            const pass = unlockedRewards.find(r => r.id === id);
+            if (pass) {
+                pass.redeemed = !pass.redeemed;
+                saveData();
+                renderRewardsVault();
+                playPopSound();
+            }
+        }
+
+        function renderHistoryTable() {
+            const tbody = document.getElementById('historyTableBody');
+            tbody.innerHTML = '';
+
+            if (pastLogs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-slate-500 italic">No past logs saved yet. Save today's log to get started!</td></tr>`;
+                return;
+            }
+
+            pastLogs.slice().reverse().forEach(log => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-slate-800/30 transition';
+                row.innerHTML = `
+                    <td class="p-3 font-semibold text-slate-200">${log.date}</td>
+                    <td class="p-3">${formatTime12H(log.targetBedtime)}</td>
+                    <td class="p-3">${formatTime12H(log.actualBedtime)}</td>
+                    <td class="p-3">${formatTime12H(log.actualWake)}</td>
+                    <td class="p-3 font-bold text-cyan-400">${log.sleepHrs} hrs</td>
+                    <td class="p-3">${log.snoozeCount}</td>
+                    <td class="p-3">${log.allWorkDone ? '<span class="text-emerald-400">Yes ✓</span>' : '<span class="text-slate-500">No</span>'}</td>
+                    <td class="p-3">${log.rewardEarned ? '<span class="text-amber-400 font-bold">Earned Pass 🎁</span>' : '<span class="text-slate-500">None</span>'}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateAnalytics() {
+            if (pastLogs.length === 0) {
+                document.getElementById('statAvgSleep').textContent = '0.0 hrs';
+                document.getElementById('statBedtimeAccuracy').textContent = '0%';
+                document.getElementById('statAvgSnooze').textContent = '0';
+                document.getElementById('statWorkRate').textContent = '0%';
+                return;
+            }
+
+            const totalSleep = pastLogs.reduce((acc, l) => acc + parseFloat(l.sleepHrs || 0), 0);
+            const avgSleep = (totalSleep / pastLogs.length).toFixed(1);
+
+            const accurateBedtimes = pastLogs.filter(l => getTimeDeltaMinutes(l.targetBedtime, l.actualBedtime) <= 30).length;
+            const accuracyPct = Math.round((accurateBedtimes / pastLogs.length) * 100);
+
+            const totalSnoozes = pastLogs.reduce((acc, l) => acc + (l.snoozeCount || 0), 0);
+            const avgSnooze = (totalSnoozes / pastLogs.length).toFixed(1);
+
+            const completedWorkDays = pastLogs.filter(l => l.allWorkDone).length;
+            const workPct = Math.round((completedWorkDays / pastLogs.length) * 100);
+
+            document.getElementById('statAvgSleep').textContent = `${avgSleep} hrs`;
+            document.getElementById('statBedtimeAccuracy').textContent = `${accuracyPct}%`;
+            document.getElementById('statAvgSnooze').textContent = avgSnooze;
+            document.getElementById('statWorkRate').textContent = `${workPct}%`;
+
+            renderAnalyticsCharts();
+        }
+
+        function renderAnalyticsCharts() {
+            const recentLogs = pastLogs.slice(-7);
+            const labels = recentLogs.map(l => l.date);
+            const sleepData = recentLogs.map(l => parseFloat(l.sleepHrs));
+            const varianceData = recentLogs.map(l => getTimeDeltaMinutes(l.targetBedtime, l.actualBedtime));
+
+            // Chart 1: Sleep Duration
+            const ctx1 = document.getElementById('sleepDurationChart').getContext('2d');
+            if (durationChart) durationChart.destroy();
+            durationChart = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: labels.length ? labels : ['No Data'],
+                    datasets: [{
+                        label: 'Sleep Hours',
+                        data: sleepData.length ? sleepData : [0],
+                        backgroundColor: 'rgba(6, 182, 212, 0.6)',
+                        borderColor: '#06b6d4',
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // Chart 2: Bedtime Variance
+            const ctx2 = document.getElementById('bedtimeVarianceChart').getContext('2d');
+            if (varianceChart) varianceChart.destroy();
+            varianceChart = new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: labels.length ? labels : ['No Data'],
+                    datasets: [{
+                        label: 'Minutes Off Goal (+ Late / - Early)',
+                        data: varianceData.length ? varianceData : [0],
+                        borderColor: '#a855f7',
+                        backgroundColor: 'rgba(168, 85, 247, 0.2)',
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            updateUIFromState();
+
+            // Tactile dopamine button click sound handler
+            document.addEventListener('click', (e) => {
+                const btn = e.target.closest('button, .mood-btn, .tab-btn, input[type="checkbox"], select');
+                if (btn) playPopSound();
+            });
+
+            // View Navigation Tabs
+            const tabs = [
+                { btn: 'tabTodayBtn', view: 'viewToday' },
+                { btn: 'tabAnalyticsBtn', view: 'viewAnalytics' },
+                { btn: 'tabRewardsBtn', view: 'viewRewards' },
+                { btn: 'tabHistoryBtn', view: 'viewHistory' }
+            ];
+
+            tabs.forEach(t => {
+                document.getElementById(t.btn).addEventListener('click', () => {
+                    tabs.forEach(o => {
+                        document.getElementById(o.btn).className = 'tab-btn px-4 py-2 rounded-xl text-sm font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 transition-all flex items-center space-x-2';
+                        document.getElementById(o.view).classList.add('hidden');
+                    });
+                    document.getElementById(t.btn).className = 'tab-btn active-tab px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center space-x-2 bg-purple-600 text-white shadow-md';
+                    document.getElementById(t.view).classList.remove('hidden');
+                    if (t.view === 'viewAnalytics') updateAnalytics();
+                });
+            });
+
+            // Add Task
+            document.getElementById('addTaskBtn').addEventListener('click', () => {
+                const input = document.getElementById('newTaskInput');
+                if (input.value.trim()) {
+                    homeworkTasks.push({ text: input.value.trim(), completed: false });
+                    input.value = '';
+                    saveData();
+                    renderTasks();
+                }
+            });
+
+            document.getElementById('newTaskInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') document.getElementById('addTaskBtn').click();
+            });
+
+            // Homework Toggle
+            document.getElementById('allWorkDoneToggle').addEventListener('change', (e) => {
+                todayData.allWorkDone = e.target.checked;
+                saveData();
+                triggerRewardEvaluation();
+            });
+
+            // Time set inputs
+            document.getElementById('actualBedtimeInput').addEventListener('change', (e) => {
+                todayData.actualBedtime = e.target.value;
+                saveData();
+                triggerRewardEvaluation();
+            });
+
+            document.getElementById('actualWakeInput').addEventListener('change', (e) => {
+                todayData.actualWake = e.target.value;
+                saveData();
+                triggerRewardEvaluation();
+            });
+
+            document.getElementById('setCurrentBedtimeBtn').addEventListener('click', () => {
+                const now = new Date();
+                const time = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+                todayData.actualBedtime = time;
+                document.getElementById('actualBedtimeInput').value = time;
+                saveData();
+                triggerRewardEvaluation();
+            });
+
+            document.getElementById('setCurrentWakeBtn').addEventListener('click', () => {
+                const now = new Date();
+                const time = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+                todayData.actualWake = time;
+                document.getElementById('actualWakeInput').value = time;
+                saveData();
+                triggerRewardEvaluation();
+            });
+
+            // Snooze Buttons
+            document.getElementById('snoozeMinusBtn').addEventListener('click', () => {
+                if (todayData.snoozeCount > 0) {
+                    todayData.snoozeCount--;
+                    document.getElementById('snoozeCountDisplay').textContent = todayData.snoozeCount;
+                    saveData();
+                }
+            });
+
+            document.getElementById('snoozePlusBtn').addEventListener('click', () => {
+                todayData.snoozeCount++;
+                document.getElementById('snoozeCountDisplay').textContent = todayData.snoozeCount;
+                saveData();
+            });
+
+            // Mood Selection
+            document.querySelectorAll('.mood-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    todayData.mood = btn.dataset.mood;
+                    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('border-purple-500/50', 'bg-purple-950/20'));
+                    btn.classList.add('border-purple-500/50', 'bg-purple-950/20');
+                    saveData();
+                });
+            });
+
+            // Save Daily Log Button
+            document.getElementById('saveDailyLogBtn').addEventListener('click', () => {
+                const bedtimeDelta = getTimeDeltaMinutes(settings.targetBedtime, todayData.actualBedtime);
+                const isQualified = bedtimeDelta <= 30 && todayData.allWorkDone;
+                const sleepHrs = calculateSleepHours(todayData.actualBedtime, todayData.actualWake);
+
+                const logEntry = {
+                    date: todayData.date,
+                    targetBedtime: settings.targetBedtime,
+                    actualBedtime: todayData.actualBedtime,
+                    actualWake: todayData.actualWake,
+                    sleepHrs: sleepHrs,
+                    snoozeCount: todayData.snoozeCount,
+                    allWorkDone: todayData.allWorkDone,
+                    rewardEarned: isQualified
+                };
+
+                // Avoid duplicate logs for same date
+                pastLogs = pastLogs.filter(l => l.date !== todayData.date);
+                pastLogs.push(logEntry);
+                saveData();
+
+                alertMessage('Daily Log successfully saved!', 'success');
+                renderHistoryTable();
+
+                if (isQualified && !todayData.rewardClaimed) {
+                    claimRandomReward();
+                } else if (todayData.rewardClaimed) {
+                    alertMessage('Log saved! You already claimed today\'s reward pass.', 'info');
+                } else {
+                    alertMessage('Log saved! Keep working on bedtime & homework to unlock passes.', 'info');
+                }
+            });
+
+            // Clear History
+            document.getElementById('clearHistoryBtn').addEventListener('click', () => {
+                pastLogs = [];
+                saveData();
+                renderHistoryTable();
+                updateAnalytics();
+                alertMessage('All historical logs cleared.', 'info');
+            });
+
+            // Modals Logic
+            document.getElementById('quickWindDownBtn').addEventListener('click', () => {
+                document.getElementById('resetModal').classList.remove('hidden');
+            });
+            document.getElementById('closeResetModalBtn').addEventListener('click', () => {
+                document.getElementById('resetModal').classList.add('hidden');
+            });
+            document.getElementById('closeResetModalBtn2').addEventListener('click', () => {
+                document.getElementById('resetModal').classList.add('hidden');
+            });
+
+            document.getElementById('closeRewardModalBtn').addEventListener('click', () => {
+                document.getElementById('rewardModal').classList.add('hidden');
+            });
+            document.getElementById('saveToVaultBtn').addEventListener('click', () => {
+                document.getElementById('rewardModal').classList.add('hidden');
+                document.getElementById('tabRewardsBtn').click();
+            });
+
+            // Settings Modal & Theme Selection
+            document.getElementById('openSettingsBtn').addEventListener('click', () => {
+                document.getElementById('settingsModal').classList.remove('hidden');
+            });
+            document.getElementById('closeSettingsBtn').addEventListener('click', () => {
+                document.getElementById('settingsModal').classList.add('hidden');
+            });
+
+            document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+                settings.targetBedtime = document.getElementById('settingBedtime').value;
+                settings.targetWake = document.getElementById('settingWake').value;
+                applyTheme(document.getElementById('settingThemeSelect').value);
+                saveData();
+                updateUIFromState();
+                document.getElementById('settingsModal').classList.add('hidden');
+                alertMessage('Settings saved successfully!', 'success');
+            });
+
+            // Theme Dropdown Header
+            const themeToggleBtn = document.getElementById('themeToggleBtn');
+            const themeMenu = document.getElementById('themeMenu');
+            themeToggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                themeMenu.classList.toggle('hidden');
+            });
+
+            document.querySelectorAll('.theme-select-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    applyTheme(btn.dataset.themeId);
+                    themeMenu.classList.add('hidden');
+                });
+            });
+
+            document.addEventListener('click', (e) => {
+                if (themeMenu && !themeMenu.contains(e.target)) themeMenu.classList.add('hidden');
+            });
+
+            // Ambient Sound Controls
+            const ambientToggleBtn = document.getElementById('ambientToggleBtn');
+            const ambientMenu = document.getElementById('ambientMenu');
+            const toggleAudioStateBtn = document.getElementById('toggleAudioStateBtn');
+            const ambientSoundSelect = document.getElementById('ambientSoundSelect');
+            const ambientVolume = document.getElementById('ambientVolume');
+            const ambientVolLabel = document.getElementById('ambientVolLabel');
+            const toggleSfxBtn = document.getElementById('toggleSfxBtn');
+
+            ambientToggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                ambientMenu.classList.toggle('hidden');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (ambientMenu && !ambientMenu.contains(e.target)) ambientMenu.classList.add('hidden');
+            });
+
+            toggleAudioStateBtn.addEventListener('click', () => {
+                if (isAmbientPlaying) {
+                    stopAmbientSound();
+                } else {
+                    startAmbientSound(ambientSoundSelect.value);
+                }
+            });
+
+            ambientSoundSelect.addEventListener('change', () => {
+                if (isAmbientPlaying) startAmbientSound(ambientSoundSelect.value);
+            });
+
+            ambientVolume.addEventListener('input', (e) => {
+                const val = parseFloat(e.target.value);
+                if (ambientGainNode) ambientGainNode.gain.value = val;
+                ambientVolLabel.textContent = `${Math.round(val * 100)}%`;
+            });
+
+            toggleSfxBtn.addEventListener('click', () => {
+                soundEnabled = !soundEnabled;
+                if (soundEnabled) {
+                    toggleSfxBtn.textContent = 'Enabled ✓';
+                    toggleSfxBtn.className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold';
+                    playPopSound();
+                } else {
+                    toggleSfxBtn.textContent = 'Muted 🔇';
+                    toggleSfxBtn.className = 'text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700 font-bold';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

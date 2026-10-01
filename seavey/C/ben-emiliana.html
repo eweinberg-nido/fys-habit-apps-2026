@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100 font-sans">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusShield | Ultimate Screen Time & Accountability System</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        },
+                        accent: {
+                            500: '#10b981',
+                            600: '#059669',
+                        },
+                        alert: {
+                            500: '#ef4444',
+                            600: '#dc2626',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        /* Custom animations & scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .phone-mockup {
+            width: 320px;
+            height: 640px;
+            border-radius: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 12px #1e293b;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+            50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.8); }
+        }
+
+        .lock-active-glow {
+            animation: pulse-glow 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col bg-slate-950 text-slate-100 selection:bg-brand-500 selection:text-white">
+
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-brand-500/20">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg tracking-tight text-white flex items-center gap-2">
+                        FocusShield
+                        <span class="text-xs bg-brand-500/20 text-brand-400 border border-brand-500/30 px-2 py-0.5 rounded-full font-medium">Ema & Enklen Edition</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 hidden sm:block">Unbypassable Anti-Distraction & Accountability Guard</p>
+                </div>
+            </div>
+
+            <!-- Quick Info & Presets -->
+            <div class="flex items-center space-x-3">
+                <button id="presetBtn" onclick="loadPresetData()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
+                    <span>Load Seminar Preset</span>
+                </button>
+                
+                <!-- Free Time Reclaimed Display Banner -->
+                <div class="flex items-center gap-2 bg-brand-500/10 border border-brand-500/30 px-3.5 py-1.5 rounded-xl text-xs font-semibold shadow-sm">
+                    <i class="fa-solid fa-hourglass-half text-brand-400 text-sm"></i>
+                    <span>Free Time Saved: <span id="navHoursSaved" class="text-brand-300 font-extrabold text-sm">0</span> hrs</span>
+                </div>
+
+                <div class="hidden md:flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg text-xs font-semibold">
+                    <i class="fa-solid fa-fire text-amber-500 text-sm"></i>
+                    <span>Streak: <span id="navStreakCount" class="text-amber-400">0</span> Days</span>
+                </div>
+
+                <!-- Simulation Toggle -->
+                <button onclick="toggleDeviceSimulatorModal()" class="bg-brand-600 hover:bg-brand-500 text-white font-medium text-xs px-3.5 py-2 rounded-lg flex items-center gap-2 shadow-lg shadow-brand-600/30 transition">
+                    <i class="fa-solid fa-lock"></i>
+                    <span>Lockdown Mode</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex-1 flex max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 gap-6">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 flex-shrink-0 hidden md:block">
+            <div class="glass-panel rounded-2xl p-4 sticky top-22 flex flex-col gap-1">
+                <div class="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Navigation</div>
+
+                <button onclick="switchTab('blocker')" id="tabNav-blocker" class="tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-brand-400 bg-brand-500/10 border border-brand-500/20">
+                    <i class="fa-solid fa-eye-slash w-5 text-center text-red-400"></i>
+                    <span>Display & App Blocklist</span>
+                </button>
+
+                <button onclick="switchTab('schedule')" id="tabNav-schedule" class="tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/60">
+                    <i class="fa-solid fa-clock w-5 text-center text-indigo-400"></i>
+                    <span>Focus Schedule</span>
+                </button>
+
+                <button onclick="switchTab('accountability')" id="tabNav-accountability" class="tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/60">
+                    <i class="fa-solid fa-award w-5 text-center text-emerald-400"></i>
+                    <span>Daily Focus Certificate</span>
+                </button>
+
+                <button onclick="switchTab('medals')" id="tabNav-medals" class="tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/60">
+                    <i class="fa-solid fa-medal w-5 text-center text-amber-400"></i>
+                    <span>Streaks & Badges</span>
+                </button>
+
+                <button onclick="switchTab('logs')" id="tabNav-logs" class="tab-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/60">
+                    <i class="fa-solid fa-bell w-5 text-center text-purple-400"></i>
+                    <span>Alert History</span>
+                </button>
+
+                <hr class="border-slate-800 my-2">
+
+                <div class="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Security Test Lab</div>
+                
+                <button onclick="triggerDeleteAttemptModal()" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-red-400 hover:bg-red-500/10 hover:border hover:border-red-500/30">
+                    <i class="fa-solid fa-trash-can w-5 text-center"></i>
+                    <span>Simulate App Deletion</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Mobile Header Navigation Tabs -->
+        <div class="md:hidden flex overflow-x-auto gap-2 pb-2 w-full border-b border-slate-800 mb-4 text-xs">
+            <button onclick="switchTab('blocker')" class="px-3 py-2 rounded-lg bg-slate-800 text-slate-200 whitespace-nowrap">Display Locks</button>
+            <button onclick="switchTab('schedule')" class="px-3 py-2 rounded-lg bg-slate-800 text-slate-200 whitespace-nowrap">Schedule</button>
+            <button onclick="switchTab('accountability')" class="px-3 py-2 rounded-lg bg-slate-800 text-slate-200 whitespace-nowrap">Daily Certificate</button>
+            <button onclick="switchTab('medals')" class="px-3 py-2 rounded-lg bg-slate-800 text-slate-200 whitespace-nowrap">Medals</button>
+            <button onclick="switchTab('logs')" class="px-3 py-2 rounded-lg bg-slate-800 text-slate-200 whitespace-nowrap">Alerts</button>
+        </div>
+
+        <main class="flex-1 min-w-0">
+            
+            <!-- TAB 1: BLOCKED APPS & WEBSITES -->
+            <section id="view-blocker" class="tab-view space-y-6">
+                <div class="glass-panel rounded-2xl p-6 border border-slate-800">
+
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Target Apps & Website Feeds</h2>
+                            <p class="text-xs text-slate-400 mt-1">Select apps and domain names to auto-block during study hours.</p>
+                        </div>
+                        <button onclick="openAddBlockModal()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-medium text-xs px-4 py-2.5 rounded-xl flex items-center gap-2 transition self-start sm:self-auto">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add Custom Target</span>
+                        </button>
+                    </div>
+
+                    <!-- Preset Quick Select Grid -->
+                    <div class="mb-6">
+                        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Popular High-Dopamine Feeds</div>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3" id="quickBlockGrid">
+                            <!-- Populated via JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Current Active List -->
+                    <div class="border-t border-slate-800 pt-6">
+                        <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Currently Enforced Target Items</div>
+                        <div class="space-y-2" id="blocklistItemsContainer">
+                            <!-- Items inserted dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-schedule" class="tab-view hidden space-y-6">
+                <div class="glass-panel rounded-2xl p-6 border border-slate-800">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Daily Post-School Schedule</h2>
+                            <p class="text-xs text-slate-400 mt-1">Edits made during active lock hours will trigger an immediate alert to your accountability partner!</p>
+                        </div>
+                        <div class="text-xs bg-amber-500/10 border border-amber-500/30 text-amber-300 px-3 py-2 rounded-xl flex items-center gap-2">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <span>Protected by Accountability Lock</span>
+                        </div>
+                    </div>
+
+                    <!-- Timeline Visualizer -->
+                    <div class="space-y-4 mb-8" id="scheduleTimeline">
+                        <!-- Rendered by JS -->
+                    </div>
+
+                    <!-- Edit Schedule Inputs -->
+                    <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-5">
+                        <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-brand-400"></i>
+                            Adjust Post-School Decompress & Study Blocks
+                        </h3>
+                        <form id="scheduleForm" onsubmit="handleScheduleSave(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1 font-medium">Decompress Start (School Ends)</label>
+                                <input type="time" id="schedDecompressStart" value="15:30" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1 font-medium">Decompress End (Max 30 min recommended)</label>
+                                <input type="time" id="schedDecompressEnd" value="16:00" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-slate-400 mb-1 font-medium">Homework Focus End Time</label>
+                                <input type="time" id="schedFocusEnd" value="18:30" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-brand-500">
+                            </div>
+                            <div class="sm:col-span-2 lg:col-span-3 flex justify-end gap-3 mt-2">
+                                <button type="submit" class="bg-brand-600 hover:bg-brand-500 text-white font-medium text-xs px-5 py-2.5 rounded-xl transition">
+                                    Save Schedule Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-accountability" class="tab-view hidden space-y-6">
+                <div class="glass-panel rounded-2xl p-6 border border-slate-800">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xl">
+                                <i class="fa-solid fa-certificate"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold text-white">Daily Focus Certificate</h2>
+                                <p class="text-xs text-slate-400">Earned by completing school homework without opening distracting apps or bypassing locks.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <button onclick="copyCertificateText()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-semibold px-4 py-2.5 rounded-xl flex items-center gap-2 transition">
+                                <i class="fa-solid fa-copy text-amber-400"></i>
+                                <span>Copy Text to Share</span>
+                            </button>
+                            <button onclick="shareCertificateWithFriends()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2 transition shadow-lg shadow-emerald-600/20">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span>Send to Friends</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Customize Student Name -->
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 mb-6">
+                        <label class="block text-xs font-medium text-slate-300 mb-1.5">Certificate Holder Name</label>
+                        <div class="flex gap-3">
+                            <input type="text" id="certStudentName" value="Ema & Enklen" oninput="updateCertificatePreview()" placeholder="Enter your name" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+                            <button onclick="claimDailyCertificate()" class="bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs px-4 py-2 rounded-xl transition">
+                                Claim Today's Badge
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Visual Certificate Card -->
+                    <div id="certificateCard" class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-950 to-amber-950/40 border-2 border-amber-500/40 p-8 text-center shadow-2xl">
+                        <!-- Decorative Seal & Glows -->
+                        <div class="absolute -top-12 -right-12 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                        <div class="absolute -bottom-12 -left-12 w-40 h-40 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                        <div class="max-w-xl mx-auto space-y-4">
+                            <!-- Certificate Header -->
+                            <div class="flex justify-center items-center gap-2">
+                                <div class="h-0.5 w-12 bg-amber-500/50"></div>
+                                <span class="text-amber-400 font-extrabold uppercase text-xs tracking-widest">Official FocusShield Award</span>
+                                <div class="h-0.5 w-12 bg-amber-500/50"></div>
+                            </div>
+
+                            <h3 class="text-2xl sm:text-3xl font-black text-white tracking-tight">CERTIFICATE OF FOCUS</h3>
+                            <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Distraction-Free Homework Achievement</p>
+
+                            <div class="py-2">
+                                <p class="text-xs text-slate-400">This certificate certifies that</p>
+                                <div id="certDisplayName" class="text-2xl font-extrabold text-amber-300 my-1 underline decoration-amber-500/40 underline-offset-8">
+                                    Ema & Enklen
+                                </div>
+                                <p class="text-xs text-slate-300 max-w-md mx-auto leading-relaxed mt-2">
+                                    successfully completed their post-school homework session with <strong class="text-emerald-400">ZERO distracting feeds or app lock bypasses</strong>!
+                                </p>
+                            </div>
+
+                            <!-- Certificate Stats Badge Grid -->
+                            <div class="grid grid-cols-3 gap-3 pt-3 border-t border-slate-800 max-w-md mx-auto text-center">
+                                <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5">
+                                    <div class="text-[10px] text-slate-400 uppercase font-bold">Focus Streak</div>
+                                    <div class="text-sm font-black text-amber-400 flex items-center justify-center gap-1 mt-0.5">
+                                        <i class="fa-solid fa-fire text-xs"></i>
+                                        <span id="certStreakVal">3 Days</span>
+                                    </div>
+                                </div>
+                                <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5">
+                                    <div class="text-[10px] text-slate-400 uppercase font-bold">Free Time Saved</div>
+                                    <div class="text-sm font-black text-brand-300 flex items-center justify-center gap-1 mt-0.5">
+                                        <i class="fa-solid fa-hourglass-half text-xs"></i>
+                                        <span id="certHoursVal">12.5 hrs</span>
+                                    </div>
+                                </div>
+                                <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5">
+                                    <div class="text-[10px] text-slate-400 uppercase font-bold">Date Issued</div>
+                                    <div id="certDateVal" class="text-[11px] font-bold text-slate-200 mt-1">Today</div>
+                                </div>
+                            </div>
+
+                            <!-- Official Stamp Footer -->
+                            <div class="pt-4 flex items-center justify-between text-[10px] text-slate-400 border-t border-slate-800/80">
+                                <div class="flex items-center gap-1.5 text-emerald-400 font-bold">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    <span>Verified Clean Record</span>
+                                </div>
+                                <div class="font-mono text-slate-500">ID: FS-CERT-2026</div>
+                                <div class="text-amber-400 font-extrabold flex items-center gap-1">
+                                    <i class="fa-solid fa-shield-halved"></i>
+                                    <span>FocusShield Official</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-medals" class="tab-view hidden space-y-6">
+                <div class="glass-panel rounded-2xl p-6 border border-slate-800">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Focus Trophies & Achievements</h2>
+                            <p class="text-xs text-slate-400 mt-1">Maintain your daily post-school routine without bypassing to unlock medals.</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-2xl font-black text-amber-400" id="medalsUnlockedCount">0 / 6</span>
+                            <span class="block text-xs text-slate-400">Medals Earned</span>
+                        </div>
+                    </div>
+
+                    <!-- Medals Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="medalsGrid">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 6: ALERT HISTORY & LOGS -->
+            <section id="view-logs" class="tab-view hidden space-y-6">
+                <div class="glass-panel rounded-2xl p-6 border border-slate-800">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Accountability Alert Dispatch History</h2>
+                            <p class="text-xs text-slate-400">Log of all emergency notifications sent to your designated guardian.</p>
+                        </div>
+                        <button onclick="clearLogs()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 px-3 py-1.5 rounded-lg">
+                            Clear Log History
+                        </button>
+                    </div>
+
+                    <div id="logsContainer" class="space-y-3">
+                        <!-- Log items dynamically inserted -->
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <div id="addBlockModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-panel max-w-md w-full rounded-2xl p-6 border border-slate-800 shadow-2xl">
+            <h3 class="text-lg font-bold text-white mb-2">Add App or Website to Blocklist</h3>
+            <p class="text-xs text-slate-400 mb-4">Enter app name or site domain (e.g., tiktok.com, Roblox, Instagram).</p>
+
+            <form onsubmit="handleAddBlockItem(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Name / Domain</label>
+                    <input type="text" id="blockItemName" required placeholder="e.g. reddit.com or Snapchat" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Category</label>
+                    <select id="blockItemCategory" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-brand-500">
+                        <option value="Social Media">Social Media</option>
+                        <option value="Gaming">Gaming</option>
+                        <option value="Streaming Video">Streaming Video</option>
+                        <option value="Shopping & Entertainment">Shopping & Entertainment</option>
+                    </select>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-2">
+                    <button type="button" onclick="closeAddBlockModal()" class="px-4 py-2 rounded-xl text-xs text-slate-400 hover:text-white">Cancel</button>
+                    <button type="submit" class="px-4 py-2 rounded-xl text-xs font-semibold bg-brand-600 hover:bg-brand-500 text-white">Add to Blocklist</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: ATTEMPT DELETE APP WARNING & ACCOUNTABILITY TRIGGER -->
+    <div id="deleteAttemptModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-panel max-w-lg w-full rounded-3xl p-6 sm:p-8 border border-red-500/30 shadow-2xl relative overflow-hidden">
+            <div class="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-500 flex items-center justify-center text-2xl mb-4 mx-auto">
+                <i class="fa-solid fa-triangle-exclamation animate-bounce"></i>
+            </div>
+
+            <h3 class="text-xl font-extrabold text-white text-center mb-2">Uninstallation / Deletion Protection Active</h3>
+            <p class="text-xs text-slate-300 text-center leading-relaxed mb-6">
+                FocusShield is locked! Deleting or uninstallation during a scheduled focus block is <span class="text-red-400 font-bold">non-bypassable</span>. Proceeding will trigger an immediate emergency alert.
+            </p>
+
+            <div class="bg-red-950/30 border border-red-500/20 rounded-2xl p-4 mb-6 text-xs space-y-2">
+                <div class="font-bold text-red-400 flex items-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Automated Guardian Action:
+                </div>
+                <div class="text-slate-300" id="deleteModalMessage">
+                    An SMS & Email broadcast will instantly be dispatched to <strong id="deletePartnerName" class="text-white">Sarah (Parent)</strong> with time log & GPS location tag.
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button onclick="closeDeleteAttemptModal()" class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition">
+                    Cancel & Stay Focused
+                </button>
+                <button onclick="confirmAppDeletionBypass()" class="w-full py-3 bg-red-600 hover:bg-red-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-red-600/30 transition">
+                    Force Uninstall & Alert Guardian
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="deviceSimulatorModal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-xl z-50 flex items-center justify-center p-4 hidden">
+        
+        <!-- Close Button -->
+        <button onclick="toggleDeviceSimulatorModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs flex items-center gap-2 z-50">
+            <i class="fa-solid fa-xmark text-sm"></i>
+            <span>Exit Test Mode</span>
+        </button>
+
+        <div class="flex flex-col items-center">
+            
+            <!-- Phone & Browser Mockup -->
+            <div class="phone-mockup bg-slate-900 border-4 border-slate-800 relative flex flex-col overflow-hidden shadow-2xl">
+                
+                <!-- Top Camera Notch -->
+                <div class="w-36 h-5 bg-slate-950 mx-auto rounded-b-2xl absolute top-0 left-1/2 -translate-x-1/2 z-30 flex items-center justify-center">
+                    <div class="w-10 h-1 bg-slate-800 rounded-full"></div>
+                </div>
+
+                <!-- Simulator Address Bar Header -->
+                <div class="pt-7 px-3 pb-2 bg-slate-950 border-b border-slate-800 z-20 flex items-center gap-2">
+                    <button onclick="resetSimScreen()" class="text-slate-400 hover:text-white p-1 text-xs" title="Simulator Home">
+                        <i class="fa-solid fa-house"></i>
+                    </button>
+                    <form onsubmit="handleSimUrlSubmit(event)" class="flex-1 flex items-center bg-slate-900 border border-slate-800 rounded-lg px-2 py-1">
+                        <i class="fa-solid fa-lock text-[10px] text-amber-400 mr-1.5" id="simLockIcon"></i>
+                        <input type="text" id="simAddressBar" value="https://www.tiktok.com" class="w-full bg-transparent text-[11px] text-slate-200 focus:outline-none font-mono">
+                        <button type="submit" class="text-brand-400 text-[10px] ml-1 font-bold">GO</button>
+                    </form>
+                </div>
+
+                <!-- Dynamic Phone Screen Container -->
+                <div id="simScreenContainer" class="flex-1 flex flex-col relative z-20 overflow-y-auto">
+                    <!-- Default Screen View (Populated by JS) -->
+                </div>
+
+                <!-- Phone Navigation Bar -->
+                <div class="h-6 bg-slate-950 border-t border-slate-900/80 flex items-center justify-around z-30 px-6">
+                    <button onclick="resetSimScreen()" class="text-slate-500 hover:text-white text-xs"><i class="fa-solid fa-arrow-left"></i></button>
+                    <button onclick="resetSimScreen()" class="w-16 h-1 bg-slate-700 rounded-full hover:bg-slate-500 transition"></button>
+                    <button onclick="resetSimScreen()" class="text-slate-500 hover:text-white text-xs"><i class="fa-solid fa-square"></i></button>
+                </div>
+            </div>
+
+            <!-- Feedback Toast inside simulator -->
+            <div id="simToast" class="mt-4 px-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-amber-300 hidden flex items-center gap-2 shadow-lg">
+                <i class="fa-solid fa-lock"></i>
+                <span id="simToastMsg">App blocked by FocusShield!</span>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Default initial state for Ema and Enklen's Seminar Client Profile
+        const DEFAULT_STATE = {
+            partner: {
+                name: "Sarah Enklen",
+                relation: "Parent / Guardian",
+                phone: "+1 (555) 019-2834",
+                email: "guardian@enklen-family.org"
+            },
+            schedule: {
+                decompressStart: "15:30", // 3:30 PM
+                decompressEnd: "16:00",   // 4:00 PM
+                focusEnd: "18:30"        // 6:30 PM
+            },
+            blocklist: [
+                { id: '1', name: 'TikTok', category: 'Social Media', icon: 'fa-brands fa-tiktok', default: true },
+                { id: '2', name: 'Instagram', category: 'Social Media', icon: 'fa-brands fa-instagram', default: true },
+                { id: '3', name: 'YouTube', category: 'Streaming Video', icon: 'fa-brands fa-youtube', default: true },
+                { id: '4', name: 'Roblox / Discord', category: 'Gaming', icon: 'fa-solid fa-gamepad', default: true },
+                { id: '5', name: 'Snapchat', category: 'Social Media', icon: 'fa-brands fa-snapchat', default: true },
+                { id: '6', name: 'Netflix', category: 'Streaming Video', icon: 'fa-solid fa-tv', default: true }
+            ],
+            streak: 3,
+            hoursSaved: 12.5,
+            logs: [
+                {
+                    id: 101,
+                    timestamp: new Date(Date.now() - 86400000 * 2).toLocaleString(),
+                    type: "System Activated",
+                    details: "FocusShield enforcement activated for 4:00 PM study block.",
+                    severity: "info"
+                },
+                {
+                    id: 102,
+                    timestamp: new Date(Date.now() - 86400000).toLocaleString(),
+                    type: "Blocked Attempt",
+                    details: "Attempted to access TikTok feed. Access restricted screen displayed.",
+                    severity: "warning"
+                }
+            ],
+            medals: [
+                { id: 'm1', name: 'First Decompress', desc: 'Completed 30-min relaxation without oversleeping', icon: 'fa-solid fa-couch', unlocked: true },
+                { id: 'm2', name: '3-Day Focus Champ', desc: 'Maintained 3 consecutive days without bypasses', icon: 'fa-solid fa-shield-cat', unlocked: true },
+                { id: 'm3', name: 'Homework Hero', desc: 'Finished homework before 6:30 PM 5 times', icon: 'fa-solid fa-book-bookmark', unlocked: false },
+                { id: 'm4', name: 'Iron Discipline', desc: 'Reached a 7-day focus streak', icon: 'fa-solid fa-medal', unlocked: false },
+                { id: 'm5', name: 'Accountability Master', desc: 'Verified contact with Guardian Partner', icon: 'fa-solid fa-user-check', unlocked: true },
+                { id: 'm6', name: 'Unstoppable Scholar', desc: 'Reclaimed over 20 total study hours', icon: 'fa-solid fa-trophy', unlocked: false }
+            ]
+        };
+
+        // App state variable
+        let appState = {};
+
+        // On Load Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            loadStateFromStorage();
+            updateTopStats();
+            renderBlocklist();
+            renderSchedule();
+            updateCertificatePreview();
+            renderMedals();
+            renderLogs();
+            startLiveClock();
+            switchTab('blocker');
+        });
+
+        function loadStateFromStorage() {
+            const saved = localStorage.getItem('focusShield_data');
+            if (saved) {
+                try {
+                    appState = JSON.parse(saved);
+                } catch (e) {
+                    appState = { ...DEFAULT_STATE };
+                }
+            } else {
+                appState = { ...DEFAULT_STATE };
+                saveStateToStorage();
+            }
+        }
+
+        function saveStateToStorage() {
+            localStorage.setItem('focusShield_data', JSON.stringify(appState));
+        }
+
+        function loadPresetData() {
+            appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
+            saveStateToStorage();
+            updateTopStats();
+            renderBlocklist();
+            renderSchedule();
+            renderPartnerForm();
+            renderMedals();
+            renderLogs();
+            showTemporaryToast('Loaded Ema & Enklen Seminar Preset Profile!');
+        }
+
+        function updateTopStats() {
+            const hoursElem = document.getElementById('navHoursSaved');
+            const streakElem = document.getElementById('navStreakCount');
+            if (hoursElem) hoursElem.innerText = appState.hoursSaved || 0;
+            if (streakElem) streakElem.innerText = appState.streak || 0;
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
+            const targetView = document.getElementById(`view-${tabId}`);
+            if (targetView) targetView.classList.remove('hidden');
+
+            // Update desktop active tab styling
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('text-brand-400', 'bg-brand-500/10', 'border', 'border-brand-500/20');
+                btn.classList.add('text-slate-400');
+            });
+
+            const activeBtn = document.getElementById(`tabNav-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-400');
+                activeBtn.classList.add('text-brand-400', 'bg-brand-500/10', 'border', 'border-brand-500/20');
+            }
+        }
+
+        const PRESET_APPS = [
+            { name: 'TikTok', category: 'Social Media', icon: 'fa-brands fa-tiktok' },
+            { name: 'Instagram', category: 'Social Media', icon: 'fa-brands fa-instagram' },
+            { name: 'YouTube', category: 'Streaming Video', icon: 'fa-brands fa-youtube' },
+            { name: 'Roblox / Discord', category: 'Gaming', icon: 'fa-solid fa-gamepad' },
+            { name: 'Snapchat', category: 'Social Media', icon: 'fa-brands fa-snapchat' },
+            { name: 'Twitch', category: 'Streaming Video', icon: 'fa-brands fa-twitch' },
+            { name: 'Reddit', category: 'Social Media', icon: 'fa-brands fa-reddit' },
+            { name: 'Steam / Epic', category: 'Gaming', icon: 'fa-solid fa-desktop' }
+        ];
+
+        function renderBlocklist() {
+            // Render preset grid
+            const presetContainer = document.getElementById('quickBlockGrid');
+            presetContainer.innerHTML = PRESET_APPS.map(app => {
+                const isAlreadyAdded = appState.blocklist.some(b => b.name.toLowerCase() === app.name.toLowerCase());
+                return `
+                    <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-2 truncate">
+                            <i class="${app.icon} text-brand-400 text-sm"></i>
+                            <span class="text-slate-200 font-medium truncate">${app.name}</span>
+                        </div>
+                        <button onclick="toggleQuickBlock('${app.name}', '${app.category}', '${app.icon}')" class="px-2 py-1 rounded-lg ${isAlreadyAdded ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-slate-800 hover:bg-slate-700 text-slate-300'} font-semibold text-[10px]">
+                            ${isAlreadyAdded ? '<i class="fa-solid fa-check"></i> Added' : '+ Add'}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            // Render current active list
+            const listContainer = document.getElementById('blocklistItemsContainer');
+            if (appState.blocklist.length === 0) {
+                listContainer.innerHTML = `<div class="text-xs text-slate-500 italic p-4 text-center">No apps currently blocked. Add items above!</div>`;
+                return;
+            }
+
+            listContainer.innerHTML = appState.blocklist.map(item => `
+                <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-brand-400 text-sm">
+                            <i class="${item.icon || 'fa-solid fa-globe'}"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-white">${item.name}</div>
+                            <div class="text-[10px] text-slate-400">${item.category}</div>
+                        </div>
+                    </div>
+                    <button onclick="removeBlockItem('${item.id}')" class="text-slate-500 hover:text-red-400 text-xs px-2 py-1 transition">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function toggleQuickBlock(name, category, icon) {
+            const index = appState.blocklist.findIndex(b => b.name.toLowerCase() === name.toLowerCase());
+            if (index >= 0) {
+                appState.blocklist.splice(index, 1);
+            } else {
+                appState.blocklist.push({ id: Date.now().toString(), name, category, icon });
+            }
+            saveStateToStorage();
+            renderBlocklist();
+            updateTopStats();
+        }
+
+        function openAddBlockModal() {
+            document.getElementById('addBlockModal').classList.remove('hidden');
+        }
+
+        function closeAddBlockModal() {
+            document.getElementById('addBlockModal').classList.add('hidden');
+        }
+
+        function handleAddBlockItem(e) {
+            e.preventDefault();
+            const name = document.getElementById('blockItemName').value.trim();
+            const category = document.getElementById('blockItemCategory').value;
+            if (!name) return;
+
+            appState.blocklist.push({
+                id: Date.now().toString(),
+                name,
+                category,
+                icon: 'fa-solid fa-ban'
+            });
+
+            saveStateToStorage();
+            renderBlocklist();
+            updateTopStats();
+            closeAddBlockModal();
+            document.getElementById('blockItemName').value = '';
+        }
+
+        function removeBlockItem(id) {
+            appState.blocklist = appState.blocklist.filter(item => item.id !== id);
+            saveStateToStorage();
+            renderBlocklist();
+            updateTopStats();
+        }
+
+        function renderSchedule() {
+            const sched = appState.schedule || { decompressStart: '15:30', decompressEnd: '16:00', focusEnd: '18:30' };
+            document.getElementById('schedDecompressStart').value = sched.decompressStart;
+            document.getElementById('schedDecompressEnd').value = sched.decompressEnd;
+            document.getElementById('schedFocusEnd').value = sched.focusEnd;
+
+            const timeline = document.getElementById('scheduleTimeline');
+            timeline.innerHTML = `
+                <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-bold text-amber-400 flex items-center gap-2">
+                            <i class="fa-solid fa-mug-hot"></i> Decompress Break
+                        </span>
+                        <span class="text-slate-300 font-mono">${sched.decompressStart} - ${sched.decompressEnd}</span>
+                    </div>
+                    <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                        <div class="bg-amber-400 h-full w-1/4"></div>
+                    </div>
+                    <p class="text-[11px] text-slate-400">Relax, grab a snack, check messages for 30 minutes. Strict locking begins right after.</p>
+                </div>
+
+                <div class="p-4 rounded-xl bg-slate-900 border border-indigo-500/20 space-y-3">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-bold text-indigo-400 flex items-center gap-2">
+                            <i class="fa-solid fa-lock"></i> Strict Homework Focus Block
+                        </span>
+                        <span class="text-slate-300 font-mono">${sched.decompressEnd} - ${sched.focusEnd}</span>
+                    </div>
+                    <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                        <div class="bg-indigo-500 h-full w-3/4"></div>
+                    </div>
+                    <p class="text-[11px] text-slate-400">All distracting apps blocked automatically on phone and computer. Editing schedule during this window sends notification to partner!</p>
+                </div>
+            `;
+        }
+
+        function handleScheduleSave(e) {
+            e.preventDefault();
+            appState.schedule = {
+                decompressStart: document.getElementById('schedDecompressStart').value,
+                decompressEnd: document.getElementById('schedDecompressEnd').value,
+                focusEnd: document.getElementById('schedFocusEnd').value
+            };
+
+            addLogEvent("Schedule Updated", `Focus schedule modified to Decompress (${appState.schedule.decompressStart}-${appState.schedule.decompressEnd}) & Study (${appState.schedule.decompressEnd}-${appState.schedule.focusEnd}). Notification logged.`, "info");
+            
+            saveStateToStorage();
+            renderSchedule();
+            showTemporaryToast('Focus schedule updated and saved!');
+        }
+
+        function updateCertificatePreview() {
+            const input = document.getElementById('certStudentName');
+            const displayName = document.getElementById('certDisplayName');
+            const streakVal = document.getElementById('certStreakVal');
+            const hoursVal = document.getElementById('certHoursVal');
+            const dateVal = document.getElementById('certDateVal');
+
+            const name = (input && input.value.trim()) ? input.value.trim() : "Ema & Enklen";
+            if (displayName) displayName.innerText = name;
+            if (streakVal) streakVal.innerText = `${appState.streak || 0} Days`;
+            if (hoursVal) hoursVal.innerText = `${appState.hoursSaved || 0} hrs`;
+            if (dateVal) dateVal.innerText = new Date().toLocaleDateString();
+        }
+
+        function claimDailyCertificate() {
+            updateCertificatePreview();
+            confetti({ particleCount: 70, spread: 80, origin: { y: 0.6 } });
+            addLogEvent("Certificate Claimed", `Focus Certificate claimed for zero distraction usage today!`, "info");
+            showTemporaryToast("Daily Focus Certificate Claimed! Ready to share.");
+        }
+
+        function copyCertificateText() {
+            const name = document.getElementById('certStudentName')?.value.trim() || "Ema & Enklen";
+            const text = `🏆 FOCUSSHIELD DAILY CERTIFICATE 🏆\nName: ${name}\nStatus: 100% Distraction-Free Homework Session!\nStreak: ${appState.streak || 0} Days\nFree Time Reclaimed: ${appState.hoursSaved || 0} Hours\nIssued: ${new Date().toLocaleDateString()}\n\nVerified by FocusShield Screen Time Guard!`;
+
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = text;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            showTemporaryToast("Certificate summary copied to clipboard! Paste it to send to friends.");
+        }
+
+        function shareCertificateWithFriends() {
+            confetti({ particleCount: 90, spread: 100, origin: { y: 0.5 } });
+            copyCertificateText();
+            addLogEvent("Certificate Shared", "Daily Focus Certificate text copied & shared with friends.", "info");
+            showTemporaryToast("Certificate ready! Text copied & notification logged.");
+        }
+
+        function renderMedals() {
+            const grid = document.getElementById('medalsGrid');
+            const unlockedCount = appState.medals.filter(m => m.unlocked).length;
+            document.getElementById('medalsUnlockedCount').innerText = `${unlockedCount} / ${appState.medals.length}`;
+
+            grid.innerHTML = appState.medals.map(m => `
+                <div class="p-4 rounded-xl border ${m.unlocked ? 'bg-gradient-to-b from-slate-900 to-amber-950/20 border-amber-500/30' : 'bg-slate-900/40 border-slate-800 opacity-60'} flex items-start gap-4">
+                    <div class="w-12 h-12 rounded-2xl ${m.unlocked ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40' : 'bg-slate-800 text-slate-600'} flex items-center justify-center text-xl flex-shrink-0">
+                        <i class="${m.icon}"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-extrabold text-white">${m.name}</span>
+                            ${m.unlocked ? '<span class="text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-bold">Unlocked</span>' : '<span class="text-[10px] text-slate-500">Locked</span>'}
+                        </div>
+                        <p class="text-[11px] text-slate-400 mt-1 leading-normal">${m.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderLogs() {
+            const container = document.getElementById('logsContainer');
+            if (!appState.logs || appState.logs.length === 0) {
+                container.innerHTML = `<div class="text-xs text-slate-500 italic p-6 text-center">No alert dispatches logged yet.</div>`;
+                return;
+            }
+
+            container.innerHTML = appState.logs.map(log => {
+                let badgeClass = "bg-slate-800 text-slate-300";
+                if (log.severity === "danger") badgeClass = "bg-red-500/20 text-red-400 border border-red-500/30";
+                if (log.severity === "warning") badgeClass = "bg-amber-500/20 text-amber-300 border border-amber-500/30";
+                if (log.severity === "info") badgeClass = "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30";
+
+                return `
+                    <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${badgeClass}">${log.type}</span>
+                                <span class="text-slate-400 text-[10px]">${log.timestamp}</span>
+                            </div>
+                            <div class="text-slate-200">${log.details}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function addLogEvent(type, details, severity = "info") {
+            if (!appState.logs) appState.logs = [];
+            appState.logs.unshift({
+                id: Date.now(),
+                timestamp: new Date().toLocaleString(),
+                type,
+                details,
+                severity
+            });
+            saveStateToStorage();
+            renderLogs();
+        }
+
+        function clearLogs() {
+            appState.logs = [];
+            saveStateToStorage();
+            renderLogs();
+        }
+
+        function toggleDeviceSimulatorModal() {
+            const modal = document.getElementById('deviceSimulatorModal');
+            modal.classList.toggle('hidden');
+            if (!modal.classList.contains('hidden')) {
+                resetSimScreen();
+            }
+        }
+
+        function resetSimScreen() {
+            const addressInput = document.getElementById('simAddressBar');
+            if (addressInput) addressInput.value = "https://www.google.com";
+
+            const container = document.getElementById('simScreenContainer');
+            if (!container) return;
+
+            container.className = "flex-1 flex flex-col justify-between p-5 text-center bg-gradient-to-b from-slate-950 via-slate-900 to-indigo-950";
+            container.innerHTML = `
+                <div>
+                    <div class="text-[9px] text-slate-400 font-medium uppercase tracking-widest mb-1">FocusShield Device Test</div>
+                    <div class="text-2xl font-black text-white" id="mockClock">16:15</div>
+                    <div class="text-[10px] text-brand-300 font-semibold mt-0.5">Post-School Homework Block Active</div>
+                </div>
+
+                <div class="my-auto py-3">
+                    <div class="w-16 h-16 mx-auto rounded-2xl bg-brand-600/20 border border-brand-500/40 flex items-center justify-center text-brand-400 text-2xl shadow-xl shadow-brand-500/10 mb-3 animate-pulse">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <h4 class="text-base font-extrabold text-white">Focus Mode Enforced</h4>
+                    <p class="text-[11px] text-slate-300 mt-1 px-1 leading-relaxed">
+                        Try tapping a blocked shortcut below or type any URL into the browser bar to test the site blocker graphic!
+                    </p>
+                </div>
+
+                <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3 text-left">
+                    <div class="text-[9px] text-slate-400 uppercase font-bold mb-2">Simulate Accessing Blocked Site / App:</div>
+                    <div class="grid grid-cols-4 gap-1.5">
+                        <button onclick="simAppClick('TikTok')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-center flex flex-col items-center transition">
+                            <i class="fa-brands fa-tiktok text-pink-500 text-base"></i>
+                            <span class="text-[8px] text-slate-300 mt-1 truncate w-full">TikTok</span>
+                        </button>
+                        <button onclick="simAppClick('Instagram')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-center flex flex-col items-center transition">
+                            <i class="fa-brands fa-instagram text-purple-400 text-base"></i>
+                            <span class="text-[8px] text-slate-300 mt-1 truncate w-full">Instagram</span>
+                        </button>
+                        <button onclick="simAppClick('YouTube')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-center flex flex-col items-center transition">
+                            <i class="fa-brands fa-youtube text-red-500 text-base"></i>
+                            <span class="text-[8px] text-slate-300 mt-1 truncate w-full">YouTube</span>
+                        </button>
+                        <button onclick="simAppClick('Roblox')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-center flex flex-col items-center transition">
+                            <i class="fa-solid fa-gamepad text-emerald-400 text-base"></i>
+                            <span class="text-[8px] text-slate-300 mt-1 truncate w-full">Roblox</span>
+                        </button>
+                    </div>
+                </div>
+
+                <button onclick="triggerDeleteAttemptModal()" class="w-full py-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 font-bold text-[11px] rounded-xl mt-2 transition flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>Simulate App Uninstall Attempt</span>
+                </button>
+            `;
+        }
+
+        function handleSimUrlSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('simAddressBar');
+            if (!input) return;
+            const url = input.value.trim().toLowerCase();
+
+            const isBlocked = appState.blocklist.some(b => url.includes(b.name.toLowerCase().replace(/[^a-z0-9]/g, '')) || b.name.toLowerCase().includes(url.replace(/https?:\/\/(www\.)?/, '').split('.')[0]));
+
+            if (isBlocked || url.includes('tiktok') || url.includes('instagram') || url.includes('youtube') || url.includes('roblox') || url.includes('snapchat') || url.includes('twitch') || url.includes('reddit')) {
+                showGraphicBlockedScreen(input.value);
+            } else {
+                showGraphicAllowedScreen(input.value);
+            }
+        }
+
+        function simAppClick(appName) {
+            const domainMap = {
+                'TikTok': 'https://www.tiktok.com',
+                'Instagram': 'https://www.instagram.com',
+                'YouTube': 'https://www.youtube.com',
+                'Roblox': 'https://www.roblox.com'
+            };
+            const targetUrl = domainMap[appName] || `https://www.${appName.toLowerCase()}.com`;
+            showGraphicBlockedScreen(targetUrl, appName);
+        }
+
+        function showGraphicBlockedScreen(url, appName = "") {
+            const addressInput = document.getElementById('simAddressBar');
+            if (addressInput) addressInput.value = url;
+
+            const name = appName || url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0];
+            const container = document.getElementById('simScreenContainer');
+            if (!container) return;
+
+            addLogEvent("Access Blocked", `User attempted to open ${name} during scheduled focus block.`, "warning");
+
+            container.className = "flex-1 flex flex-col justify-between relative overflow-hidden bg-slate-950 p-4 text-center shadow-2xl";
+            
+            container.innerHTML = `
+                <div class="flex items-center justify-between border-b border-red-500/30 pb-2">
+                    <span class="text-[9px] font-mono font-bold text-red-400 bg-red-500/10 px-2 py-0.5 rounded border border-red-500/30 flex items-center gap-1">
+                        <i class="fa-solid fa-ban"></i> ACCESS RESTRICTED
+                    </span>
+                    <span class="text-[9px] text-slate-400 font-mono">ERR_FOCUSSHIELD_BLOCKED</span>
+                </div>
+
+                <div class="my-auto py-3">
+                    <div class="w-16 h-16 mx-auto rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 text-3xl shadow-xl shadow-red-500/10 mb-3">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+
+                    <h3 class="text-lg font-extrabold text-white uppercase tracking-tight">${name} is Blocked</h3>
+                    <div class="mt-1 inline-block bg-slate-900 border border-slate-800 text-red-400 text-[11px] font-mono px-3 py-1 rounded-lg break-all">
+                        ${url}
+                    </div>
+
+                    <p class="text-[11px] text-slate-300 mt-3 px-2 leading-relaxed">
+                        FocusShield is enforcing your post-school study session (${appState.schedule?.decompressEnd || '16:00'} - ${appState.schedule?.focusEnd || '18:30'}). Access is strictly blocked to keep your streak active!
+                    </p>
+                </div>
+
+                <div class="space-y-2 pt-2 border-t border-slate-800">
+                    <button onclick="resetSimScreen()" class="w-full py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs rounded-xl transition shadow-md shadow-brand-600/30 flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Return to Focus Session</span>
+                    </button>
+                    <button onclick="triggerDeleteAttemptModal()" class="w-full py-1 text-red-400 hover:text-red-300 text-[10px] font-semibold flex items-center justify-center gap-1">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <span>Bypass Block / Alert Guardian</span>
+                    </button>
+                </div>
+            `;
+        }
+
+        function showGraphicAllowedScreen(url) {
+            const container = document.getElementById('simScreenContainer');
+            if (!container) return;
+
+            container.className = "flex-1 flex flex-col justify-between p-5 text-center bg-gradient-to-b from-emerald-950/40 via-slate-950 to-slate-950 relative";
+            container.innerHTML = `
+                <div class="flex items-center justify-between border-b border-emerald-500/20 pb-2">
+                    <span class="text-[9px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/30">
+                        CLEAR_DISPLAY_FEED
+                    </span>
+                    <span class="text-[9px] text-slate-400 font-mono">NORMAL VIEW</span>
+                </div>
+
+                <div class="my-auto py-4">
+                    <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-2xl shadow-xl mb-3">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <h3 class="text-base font-extrabold text-white">Full Color Permitted</h3>
+                    <div class="mt-1 inline-block bg-slate-900 text-slate-300 text-xs font-mono px-3 py-1 rounded-lg">
+                        ${url}
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-2 px-2">
+                        Educational material / safe site. Display filter remains inactive for productive tasks!
+                    </p>
+                </div>
+
+                <button onclick="resetSimScreen()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl transition">
+                    Back to Simulator Home
+                </button>
+            `;
+        }
+
+        function triggerDeleteAttemptModal() {
+            const partner = appState.partner || { name: 'Accountability Guardian' };
+            document.getElementById('deletePartnerName').innerText = `${partner.name} (${partner.relation || 'Guardian'})`;
+            document.getElementById('deleteAttemptModal').classList.remove('hidden');
+        }
+
+        function closeDeleteAttemptModal() {
+            document.getElementById('deleteAttemptModal').classList.add('hidden');
+        }
+
+        function confirmAppDeletionBypass() {
+            const partner = appState.partner || { name: 'Guardian' };
+            closeDeleteAttemptModal();
+
+            addLogEvent(
+                "UNINSTALL ALERT DISPATCHED", 
+                `CRITICAL: Force uninstall / app deletion attempted! Instant SMS broadcast sent to ${partner.name} (${partner.phone || 'N/A'}) & Email (${partner.email || 'N/A'}).`,
+                "danger"
+            );
+
+            appState.streak = 0;
+            saveStateToStorage();
+            updateTopStats();
+
+            showTemporaryToast(`EMERGENCY ALERT DISPATCHED to ${partner.name}! Streak reset to 0.`);
+            switchTab('logs');
+        }
+
+        function startLiveClock() {
+            setInterval(() => {
+                const now = new Date();
+                const clockElem = document.getElementById('mockClock');
+                if (clockElem) {
+                    clockElem.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                }
+            }, 1000);
+        }
+
+        function showTemporaryToast(message) {
+            const existing = document.getElementById('appGlobalToast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'appGlobalToast';
+            toast.className = 'fixed bottom-6 right-6 z-50 bg-brand-600 text-white px-4 py-3 rounded-xl shadow-2xl text-xs font-semibold flex items-center gap-2 border border-brand-400 animate-bounce';
+            toast.innerHTML = `<i class="fa-solid fa-circle-info"></i> <span>${message}</span>`;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                if (toast) toast.remove();
+            }, 3500);
+        }
+    </script>
+</body>
+</html>

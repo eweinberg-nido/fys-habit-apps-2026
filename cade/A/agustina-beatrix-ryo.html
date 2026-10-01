@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gradient-to-br from-pink-100 via-purple-50 to-cyan-100 text-slate-800">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FocusPulse - Bright Rainbow & Unicorn Edition</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            dark: {
+              bg: '#fdf4ff',
+              card: '#ffffff',
+              border: '#f472b6',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Google Fonts & FontAwesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* Custom monochrome scrollbars and vibrant rainbow styles */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #fbcfe8;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #ff2a85, #8a2be2, #00f2fe);
+      border-radius: 9999px;
+    }
+    
+    /* Rainbow Animated Gradients */
+    .rainbow-text {
+      background: linear-gradient(90deg, #d946ef, #7c3aed, #0284c7, #2563eb, #d946ef);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: rainbow-shift 6s ease infinite;
+    }
+
+    .rainbow-border {
+      position: relative;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 1rem;
+    }
+    .rainbow-border::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 1.05rem;
+      background: linear-gradient(90deg, #ff007f, #7928ca, #00dfd8, #00f2fe, #ff007f);
+      background-size: 300% 300%;
+      z-index: -1;
+      animation: rainbow-shift 6s ease infinite;
+      opacity: 0.8;
+    }
+
+    .rainbow-glow {
+      box-shadow: 0 10px 25px -5px rgba(217, 70, 239, 0.3), 0 8px 15px rgba(6, 182, 212, 0.2);
+    }
+
+    .rainbow-btn {
+      background: linear-gradient(90deg, #ec4899, #8b5cf6, #06b6d4);
+      background-size: 200% 200%;
+      animation: rainbow-shift 4s ease infinite;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .rainbow-btn:hover {
+      transform: translateY(-1px) scale(1.02);
+      box-shadow: 0 0 15px rgba(236, 72, 153, 0.5);
+    }
+
+    @keyframes rainbow-shift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(244, 114, 182, 0.25);
+      box-shadow: 0 10px 25px -5px rgba(236, 72, 153, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Unicorn Animation & Glitter Effects */
+    @keyframes unicorn-walk {
+      0% { transform: translateX(-100px) scaleX(1); }
+      48% { transform: translateX(calc(100vw - 120px)) scaleX(1); }
+      50% { transform: translateX(calc(100vw - 120px)) scaleX(-1); }
+      98% { transform: translateX(-100px) scaleX(-1); }
+      100% { transform: translateX(-100px) scaleX(1); }
+    }
+
+    @keyframes unicorn-bounce {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
+    }
+
+    .unicorn-walker {
+      position: fixed;
+      bottom: 12px;
+      left: 0;
+      z-index: 45;
+      pointer-events: auto;
+      animation: unicorn-walk 22s linear infinite;
+    }
+
+    .unicorn-body {
+      animation: unicorn-bounce 0.6s ease-in-out infinite alternate;
+      cursor: pointer;
+    }
+
+    .glitter-particle {
+      position: fixed;
+      z-index: 50;
+      pointer-events: none;
+      border-radius: 50%;
+      animation: glitter-fade 1.2s forwards ease-out;
+    }
+
+    @keyframes glitter-fade {
+      0% { opacity: 1; transform: translate(0, 0) scale(1) rotate(0deg); }
+      100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.2) rotate(360deg); }
+    }
+
+    .xp-pop {
+      position: fixed;
+      z-index: 55;
+      font-weight: 900;
+      color: #ec4899;
+      text-shadow: 0 0 8px rgba(255,255,255,0.9), 0 2px 4px rgba(0,0,0,0.1);
+      pointer-events: none;
+      animation: float-up 1.2s forwards ease-out;
+    }
+
+    @keyframes float-up {
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-40px) scale(1.3); }
+    }
+  </style>
+</head>
+<body class="h-full font-sans antialiased flex flex-col bg-gradient-to-br from-pink-100 via-purple-50 to-cyan-100 text-slate-800 selection:bg-pink-500 selection:text-white">
+
+  <!-- Walking Cute Unicorn Overlay Widget -->
+  <div id="unicorn-container" class="unicorn-walker flex items-center group">
+    <div class="relative">
+      <!-- Unicorn Interactive Tooltip -->
+      <div onclick="app.unicornFart()" class="absolute -top-10 left-1/2 -translate-x-1/2 bg-white/95 border-2 border-pink-400 text-pink-600 font-black text-[10px] px-2.5 py-1 rounded-full shadow-lg whitespace-nowrap cursor-pointer hover:scale-110 transition flex items-center gap-1">
+        <span>✨ Click to Fart Glitter (+3 XP)</span>
+      </div>
+
+      <!-- Cute SVG Unicorn -->
+      <div onclick="app.unicornFart()" class="unicorn-body w-20 h-20 transition hover:scale-110 active:scale-95" title="Click me to fart glitter and gain +3 XP!">
+        <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-md">
+          <!-- Horn -->
+          <polygon points="58,12 65,30 52,30" fill="#facc15" stroke="#eab308" stroke-width="1.5" />
+          <path d="M55 20 L62 21" stroke="#ffffff" stroke-width="1.5" />
+          <!-- Ears -->
+          <polygon points="45,25 50,38 40,38" fill="#f472b6" />
+          <!-- Head -->
+          <ellipse cx="60" cy="40" rx="16" ry="14" fill="#ffffff" stroke="#f472b6" stroke-width="2" />
+          <!-- Snout -->
+          <ellipse cx="70" cy="45" rx="8" ry="7" fill="#fbcfe8" />
+          <circle cx="72" cy="44" r="1" fill="#db2777" />
+          <!-- Eye -->
+          <circle cx="62" cy="38" r="2.5" fill="#1e1b4b" />
+          <circle cx="63" cy="37" r="0.8" fill="#ffffff" />
+          <!-- Rainbow Mane -->
+          <path d="M44 32 Q35 30 38 45 Q30 45 35 60" fill="none" stroke="#f43f5e" stroke-width="4" stroke-linecap="round" />
+          <path d="M41 32 Q32 30 35 45 Q27 45 32 60" fill="none" stroke="#a855f7" stroke-width="4" stroke-linecap="round" />
+          <path d="M38 32 Q29 30 32 45 Q24 45 29 60" fill="none" stroke="#06b6d4" stroke-width="4" stroke-linecap="round" />
+          <!-- Body -->
+          <ellipse cx="42" cy="62" rx="22" ry="16" fill="#ffffff" stroke="#f472b6" stroke-width="2" />
+          <!-- Rainbow Tail -->
+          <path d="M21 58 Q10 52 12 70" fill="none" stroke="#ec4899" stroke-width="3.5" stroke-linecap="round" />
+          <path d="M20 62 Q8 58 10 74" fill="none" stroke="#3b82f6" stroke-width="3.5" stroke-linecap="round" />
+          <path d="M21 66 Q11 64 12 78" fill="none" stroke="#10b981" stroke-width="3.5" stroke-linecap="round" />
+          <!-- Legs -->
+          <rect x="30" y="74" width="5" height="16" rx="2" fill="#ffffff" stroke="#f472b6" stroke-width="1.5" />
+          <rect x="38" y="74" width="5" height="16" rx="2" fill="#ffffff" stroke="#f472b6" stroke-width="1.5" />
+          <rect x="46" y="74" width="5" height="16" rx="2" fill="#ffffff" stroke="#f472b6" stroke-width="1.5" />
+          <rect x="52" y="74" width="5" height="16" rx="2" fill="#ffffff" stroke="#f472b6" stroke-width="1.5" />
+          <!-- Hooves -->
+          <rect x="30" y="86" width="5" height="4" fill="#a855f7" />
+          <rect x="38" y="86" width="5" height="4" fill="#a855f7" />
+          <rect x="46" y="86" width="5" height="4" fill="#a855f7" />
+          <rect x="52" y="86" width="5" height="4" fill="#a855f7" />
+          <!-- Sparkles on body -->
+          <path d="M42 55 L44 58 L41 58 Z" fill="#facc15" />
+          <path d="M48 64 L50 67 L47 67 Z" fill="#38bdf8" />
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header with Player Level & XP Progress -->
+  <header class="border-b border-pink-200/80 bg-white/80 sticky top-0 z-30 backdrop-blur-xl shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Brand & Player Rank Badge -->
+      <div class="flex items-center space-x-3 sm:space-x-4">
+        <div class="w-11 h-11 rounded-2xl rainbow-btn flex items-center justify-center text-xl text-white shadow-lg">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-xl font-black tracking-tight rainbow-text uppercase">FocusPulse</h1>
+            <span id="rank-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-pink-100 text-pink-700 border border-pink-300">Rookie</span>
+          </div>
+          <p class="text-xs text-slate-500 font-medium">9th Grade Quest & Unicorn Rainbow Companion</p>
+        </div>
+      </div>
+
+      <!-- XP Bar & Daily Stats -->
+      <div class="flex items-center space-x-3 sm:space-x-6">
+        <!-- Snake Break Quick Launch Button -->
+        <button onclick="app.openSnakeBreakModal()" class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-white hover:bg-pink-50 border border-purple-300 text-xs font-bold text-pink-600 transition hover:scale-105 shadow-sm">
+          <i class="fa-solid fa-staff-snake text-cyan-500 animate-bounce"></i>
+          <span>5m Snake Break</span>
+        </button>
+
+        <!-- Analytics & History Button -->
+        <button onclick="app.openAnalyticsModal()" class="flex items-center space-x-2 px-3 py-1.5 rounded-xl rainbow-btn text-xs font-bold text-white transition hover:scale-105 shadow-md">
+          <i class="fa-solid fa-chart-column"></i>
+          <span>Stats & History</span>
+        </button>
+
+        <!-- Level & XP HUD -->
+        <div class="hidden md:flex flex-col items-end min-w-[150px]">
+          <div class="flex items-center space-x-2 text-xs font-bold mb-1">
+            <span class="text-slate-500">LEVEL <span id="level-num" class="text-pink-600 font-extrabold">1</span></span>
+            <span class="text-slate-300">•</span>
+            <span id="xp-text" class="text-purple-600 font-mono">0 / 100 XP</span>
+          </div>
+          <div class="w-full bg-pink-100 border border-pink-200 h-2.5 rounded-full overflow-hidden">
+            <div id="xp-progress-bar" class="rainbow-btn h-full transition-all duration-500" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <!-- Streak Badge -->
+        <div class="flex items-center space-x-2 bg-white px-3 py-1.5 rounded-xl border border-pink-200 text-xs shadow-sm">
+          <i class="fa-solid fa-fire text-amber-500 animate-pulse"></i>
+          <span id="streak-count" class="font-extrabold text-slate-700">1 Day</span>
+        </div>
+
+        <!-- Reset Button -->
+        <button onclick="app.showResetConfirmModal()" class="w-9 h-9 rounded-xl bg-white border border-pink-200 hover:border-pink-400 text-slate-500 hover:text-slate-800 transition flex items-center justify-center shadow-sm" title="Reset Today">
+          <i class="fa-solid fa-rotate-right text-xs"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Grid Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- Screen Time & Bedtime Status Panel -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      
+      <!-- Screen Time Allowance Status -->
+      <div class="rainbow-border p-5 flex flex-col justify-between space-y-3 glass-card">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center space-x-2 text-xs font-bold text-pink-400 uppercase tracking-wider">
+            <i class="fa-solid fa-mobile-screen"></i>
+            <span>Screen Time Shield</span>
+          </div>
+          <span id="screen-status-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700">1h Default</span>
+        </div>
+
+        <div>
+          <div class="flex items-baseline justify-between mb-1">
+            <span id="screentime-display" class="text-3xl font-black text-white font-mono rainbow-text">60m</span>
+            <span id="screentime-subtext" class="text-xs text-slate-400">Available Today</span>
+          </div>
+          <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
+            <div id="screentime-bar" class="rainbow-btn h-full transition-all duration-500" style="width: 50%;"></div>
+          </div>
+        </div>
+
+        <p id="screentime-explanation" class="text-[11px] text-slate-400 leading-tight">
+          Finish all homework quests to unlock unlimited scrolling until bedtime!
+        </p>
+      </div>
+
+      <!-- 30-Min Homework App Blocker Trigger -->
+      <div class="rainbow-border p-5 flex flex-col justify-between space-y-3 glass-card">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center space-x-2 text-xs font-bold text-cyan-400 uppercase tracking-wider">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>30m Focus Lock</span>
+          </div>
+          <span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-pink-500/20 text-pink-300 border border-pink-500/40 uppercase">+50 XP</span>
+        </div>
+
+        <p class="text-xs text-slate-300">
+          Locks out social apps. Complete 30 minutes of homework without distraction.
+        </p>
+
+        <button onclick="app.startFocusSession(30)" class="w-full py-2.5 rainbow-btn text-white font-black text-xs rounded-xl shadow-lg transition flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-bolt"></i>
+          <span>LAUNCH 30-MIN LOCK SESSION</span>
+        </button>
+      </div>
+
+      <!-- Sleep Guard & Snake Break Card -->
+      <div class="rainbow-border p-5 flex flex-col justify-between space-y-3 glass-card">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center space-x-2 text-xs font-bold text-purple-400 uppercase tracking-wider">
+            <i class="fa-solid fa-moon"></i>
+            <span>Sleep Guard (8.5 hrs)</span>
+          </div>
+          <button onclick="app.toggleSleepModal()" class="text-xs text-slate-400 hover:text-cyan-300 transition">
+            <i class="fa-solid fa-gear"></i> Edit
+          </button>
+        </div>
+
+        <div class="flex justify-between items-center bg-slate-900/90 p-2.5 rounded-xl border border-slate-800 text-xs">
+          <div>
+            <span class="text-slate-500 block text-[10px]">TARGET BEDTIME</span>
+            <span id="bedtime-time-display" class="font-extrabold text-pink-300 text-sm">10:00 PM</span>
+          </div>
+          <div class="text-right">
+            <span class="text-slate-500 block text-[10px]">WAKE UP TIME</span>
+            <span id="waketime-time-display" class="font-extrabold text-cyan-300 text-sm">6:30 AM</span>
+          </div>
+        </div>
+
+        <button onclick="app.openSnakeBreakModal()" class="w-full py-2 bg-slate-900 hover:bg-slate-800 border border-purple-500/50 rounded-xl text-xs font-bold text-pink-300 flex items-center justify-center space-x-2 transition">
+          <i class="fa-solid fa-gamepad text-cyan-400"></i>
+          <span>PLAY 5m SNAKE BREAK GAME</span>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Content Section: Homework Quests & Daily Routine -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- LEFT COLUMN: Homework Quests & Rewards Engine (7 Cols) -->
+      <section class="lg:col-span-7 space-y-4">
+        <div class="glass-card rounded-2xl p-5 space-y-4 border border-slate-800">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-sm font-black uppercase tracking-wider text-white flex items-center space-x-2">
+                <i class="fa-solid fa-crosshairs text-pink-400"></i>
+                <span>Homework Quests</span>
+              </h2>
+              <p class="text-xs text-slate-400">Complete quests for +20m screen time & +50 XP</p>
+            </div>
+            <button onclick="app.openAddHomeworkModal()" class="px-3 py-1.5 rainbow-btn text-white text-xs font-black rounded-xl transition flex items-center space-x-1">
+              <i class="fa-solid fa-plus text-[10px]"></i>
+              <span>Add Quest</span>
+            </button>
+          </div>
+
+          <!-- Homework Quest List -->
+          <div id="homework-quest-list" class="space-y-2.5 min-h-[180px]">
+            <!-- Dynamic Quests rendered here -->
+          </div>
+
+          <!-- Screen Time Rules Summary -->
+          <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 text-xs text-slate-400 space-y-1">
+            <span class="font-bold text-cyan-300 block mb-1"><i class="fa-solid fa-circle-info mr-1"></i> Screen Time Rules:</span>
+            <p>1. Default phone limit is 1 hour.</p>
+            <p>2. Each finished assignment adds <strong>+20 mins</strong>.</p>
+            <p>3. Finishing ALL homework unlocks phone access until <strong>10:00 PM bedtime</strong>!</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT COLUMN: Daily Routine Checklist (5 Cols) -->
+      <section class="lg:col-span-5 space-y-4">
+        <div class="glass-card rounded-2xl p-5 space-y-4 border border-slate-800">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-sm font-black uppercase tracking-wider text-white flex items-center space-x-2">
+                <i class="fa-solid fa-list-check text-cyan-400"></i>
+                <span>Daily Routine</span>
+              </h2>
+              <p class="text-xs text-slate-400">Check off your daily tasks</p>
+            </div>
+            <span id="routine-pct" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-purple-950 text-pink-300 border border-pink-500/30">0%</span>
+          </div>
+
+          <!-- Routine Checklist -->
+          <div id="routine-checklist" class="space-y-2">
+            <!-- Dynamic Items -->
+          </div>
+
+          <button onclick="app.openAddHabitModal()" class="w-full py-2 border border-dashed border-slate-800 hover:border-purple-500/50 text-slate-400 hover:text-white text-xs font-bold rounded-xl transition flex items-center justify-center space-x-1">
+            <i class="fa-solid fa-plus text-[10px]"></i>
+            <span>Add Custom Habit</span>
+          </button>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Guilt-Free Hanging Out Banner -->
+    <div class="rainbow-border p-5 glass-card flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="space-y-1">
+        <h3 class="text-xs font-black uppercase tracking-wider text-white flex items-center space-x-2">
+          <i class="fa-solid fa-user-group text-pink-400"></i>
+          <span>Guilt-Free Free Time & Friends</span>
+        </h3>
+        <p class="text-xs text-slate-300 max-w-2xl">
+          Complete your <strong>30-minute homework focus block</strong> right after eating dinner. Once your homework is done, play Snake or hang out with friends guilt-free!
+        </p>
+      </div>
+      <div class="px-4 py-2 bg-slate-900 rounded-xl border border-slate-800 text-xs font-bold text-cyan-300 shrink-0">
+        <i class="fa-solid fa-check text-pink-400 mr-1.5"></i>School → Gym → Homework → Friends & Chill
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL 1: Fullscreen 30-Min App Blocker / Cyber Focus Overlay -->
+  <div id="focus-modal" class="fixed inset-0 z-50 bg-[#090a0f]/95 backdrop-blur-2xl flex flex-col items-center justify-center p-4 hidden">
+    <div class="max-w-md w-full text-center space-y-6">
+      
+      <!-- Lock Icon HUD -->
+      <div class="inline-flex items-center justify-center w-20 h-20 rounded-3xl rainbow-btn text-white text-3xl shadow-2xl rainbow-glow animate-pulse">
+        <i class="fa-solid fa-shield-halved"></i>
+      </div>
+
+      <div class="space-y-1">
+        <h2 class="text-2xl font-black uppercase tracking-wider rainbow-text">APP BLOCKER ACTIVE</h2>
+        <p class="text-xs text-slate-400">Social apps locked. Focus on your homework!</p>
+      </div>
+
+      <!-- Main Focus Timer Display -->
+      <div class="rainbow-border p-6 glass-card space-y-4">
+        <div class="text-6xl font-black tracking-tight rainbow-text font-mono" id="focus-timer-clock">30:00</div>
+        <p class="text-xs font-extrabold text-cyan-300" id="focus-task-target">Homework Focus Session</p>
+        
+        <!-- Progress bar -->
+        <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden border border-slate-800">
+          <div id="focus-progress-bar" class="rainbow-btn h-full transition-all duration-300" style="width: 100%;"></div>
+        </div>
+      </div>
+
+      <!-- Quote -->
+      <div class="p-3 bg-slate-900/80 rounded-2xl border border-slate-800 text-xs text-slate-300 italic">
+        "<span id="focus-quote">Procrastination is just resistance. Start for 5 minutes and you win.</span>"
+      </div>
+
+      <div class="flex items-center justify-center gap-3">
+        <button onclick="app.pauseResumeFocusTimer()" id="focus-pause-btn" class="px-5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 hover:bg-slate-800 text-white text-xs font-extrabold transition">
+          <i class="fa-solid fa-pause mr-1"></i> Pause
+        </button>
+        <button onclick="app.finishFocusSession()" class="px-5 py-2.5 rounded-xl rainbow-btn text-white text-xs font-black shadow-lg transition">
+          <i class="fa-solid fa-check mr-1"></i> Complete (+50 XP)
+        </button>
+        <button onclick="app.cancelFocusSession()" class="px-4 py-2.5 rounded-xl bg-slate-950 text-slate-500 hover:text-white text-xs font-bold border border-slate-800 transition">
+          Exit
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: 5-MIN SNAKE GAME BREAK MODAL -->
+  <div id="snake-modal" class="fixed inset-0 z-50 bg-[#090a0f]/95 backdrop-blur-2xl flex flex-col items-center justify-center p-4 hidden">
+    <div class="max-w-md w-full glass-card p-6 rounded-3xl border border-purple-500/40 space-y-4 text-center rainbow-glow">
+      
+      <div class="flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <i class="fa-solid fa-gamepad text-pink-400 text-lg"></i>
+          <h3 class="text-base font-black uppercase tracking-wider text-white">5m Snake Break</h3>
+        </div>
+        <button onclick="app.closeSnakeBreakModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <!-- Break Timer HUD & Score -->
+      <div class="flex justify-between items-center bg-slate-900/90 px-4 py-2 rounded-2xl border border-slate-800 text-xs font-mono">
+        <div>
+          <span class="text-slate-500 block text-[9px]">BREAK TIMER</span>
+          <span id="snake-break-clock" class="text-pink-400 font-extrabold text-sm">05:00</span>
+        </div>
+        <div>
+          <span class="text-slate-500 block text-[9px]">SNAKE SCORE</span>
+          <span id="snake-score" class="text-cyan-300 font-extrabold text-sm">0</span>
+        </div>
+        <div>
+          <span class="text-slate-500 block text-[9px]">HIGH SCORE</span>
+          <span id="snake-highscore" class="text-amber-300 font-extrabold text-sm">0</span>
+        </div>
+      </div>
+
+      <!-- Game Canvas Container -->
+      <div class="relative bg-black rounded-2xl overflow-hidden border border-slate-800 flex items-center justify-center aspect-square max-w-[320px] mx-auto">
+        <canvas id="snake-canvas" width="300" height="300" class="w-full h-full block"></canvas>
+        <div id="snake-game-over" class="absolute inset-0 bg-black/85 flex flex-col items-center justify-center space-y-3 hidden">
+          <p class="text-xl font-black text-pink-500">GAME OVER!</p>
+          <button onclick="app.startSnakeGame()" class="px-4 py-2 rainbow-btn text-white font-extrabold text-xs rounded-xl">Play Again</button>
+        </div>
+      </div>
+
+      <!-- Mobile D-Pad Controls -->
+      <div class="grid grid-cols-3 gap-1 max-w-[180px] mx-auto text-xs sm:hidden">
+        <div></div>
+        <button onclick="app.setSnakeDir('UP')" class="p-3 bg-slate-900 border border-slate-800 rounded-xl font-bold text-slate-300 active:bg-pink-500"><i class="fa-solid fa-arrow-up"></i></button>
+        <div></div>
+        <button onclick="app.setSnakeDir('LEFT')" class="p-3 bg-slate-900 border border-slate-800 rounded-xl font-bold text-slate-300 active:bg-pink-500"><i class="fa-solid fa-arrow-left"></i></button>
+        <button onclick="app.setSnakeDir('DOWN')" class="p-3 bg-slate-900 border border-slate-800 rounded-xl font-bold text-slate-300 active:bg-pink-500"><i class="fa-solid fa-arrow-down"></i></button>
+        <button onclick="app.setSnakeDir('RIGHT')" class="p-3 bg-slate-900 border border-slate-800 rounded-xl font-bold text-slate-300 active:bg-pink-500"><i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+
+      <p class="text-[11px] text-slate-400">Use <strong>Arrow Keys / WASD</strong> to control the snake. Eat rainbow apples for +5 XP!</p>
+
+      <div class="pt-1">
+        <button onclick="app.closeSnakeBreakModal()" class="w-full py-2.5 rounded-xl bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 font-bold text-xs">
+          Done with Break (Back to Study)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Add Homework Assignment Quest -->
+  <div id="add-hw-modal" class="fixed inset-0 z-40 bg-[#090a0f]/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="glass-card max-w-md w-full rounded-2xl p-6 space-y-4 border border-slate-700">
+      <div class="flex justify-between items-center">
+        <h3 class="text-sm font-black uppercase tracking-wider text-white"><i class="fa-solid fa-plus mr-2 text-pink-400"></i>Add Homework Quest</h3>
+        <button onclick="app.closeAddHomeworkModal()" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark text-base"></i></button>
+      </div>
+
+      <form id="add-hw-form" onsubmit="app.saveNewHomework(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block text-slate-300 font-bold mb-1">Subject</label>
+          <input type="text" id="hw-subject" required placeholder="e.g. Math, History, English, Science" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-pink-500">
+        </div>
+        <div>
+          <label class="block text-slate-300 font-bold mb-1">Assignment Title</label>
+          <input type="text" id="hw-title" required placeholder="e.g. Algebra Ch 4 Exercises" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-pink-500">
+        </div>
+        <div>
+          <label class="block text-slate-300 font-bold mb-1">Est. Minutes</label>
+          <input type="number" id="hw-est-time" min="5" max="180" value="25" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-pink-500">
+        </div>
+
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="app.closeAddHomeworkModal()" class="px-4 py-2 rounded-xl bg-slate-900 text-slate-400 font-bold">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded-xl rainbow-btn text-white font-black">Create Quest</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 4: Add Custom Routine Task -->
+  <div id="add-habit-modal" class="fixed inset-0 z-40 bg-[#090a0f]/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="glass-card max-w-md w-full rounded-2xl p-6 space-y-4 border border-slate-700">
+      <div class="flex justify-between items-center">
+        <h3 class="text-sm font-black uppercase tracking-wider text-white"><i class="fa-solid fa-list-check mr-2 text-cyan-400"></i>Add Habit</h3>
+        <button onclick="app.closeAddHabitModal()" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark text-base"></i></button>
+      </div>
+
+      <form id="add-habit-form" onsubmit="app.saveNewHabit(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block text-slate-300 font-bold mb-1">Habit Title</label>
+          <input type="text" id="habit-title" required placeholder="e.g. Drink protein shake, Pack backpack" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-cyan-400">
+        </div>
+        <div>
+          <label class="block text-slate-300 font-bold mb-1">Time Block</label>
+          <select id="habit-time" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-cyan-400">
+            <option value="Morning">Morning (School)</option>
+            <option value="Afternoon">Afternoon (Gym/Eat)</option>
+            <option value="Evening">Evening (Homework)</option>
+            <option value="Night">Night (Sleep Prep)</option>
+          </select>
+        </div>
+
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="app.closeAddHabitModal()" class="px-4 py-2 rounded-xl bg-slate-900 text-slate-400 font-bold">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded-xl rainbow-btn text-white font-black">Add Habit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 5: Sleep Schedule Configuration -->
+  <div id="sleep-modal" class="fixed inset-0 z-40 bg-[#090a0f]/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="glass-card max-w-md w-full rounded-2xl p-6 space-y-4 border border-slate-700">
+      <div class="flex justify-between items-center">
+        <h3 class="text-sm font-black uppercase tracking-wider text-white"><i class="fa-solid fa-moon mr-2 text-purple-400"></i>Bedtime Guard</h3>
+        <button onclick="app.toggleSleepModal()" class="text-slate-500 hover:text-white"><i class="fa-solid fa-xmark text-base"></i></button>
+      </div>
+
+      <form onsubmit="app.saveSleepSchedule(event)" class="space-y-4 text-xs">
+        <div>
+          <label class="block text-slate-300 font-bold mb-1">Target Bedtime</label>
+          <input type="time" id="bedtime-input" value="22:00" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-purple-400">
+        </div>
+        <div>
+          <label class="block text-slate-300 font-bold mb-1">Wake Up Time</label>
+          <input type="time" id="waketime-input" value="06:30" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-purple-400">
+        </div>
+
+        <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-slate-400 space-y-1">
+          <p class="font-bold text-pink-300"><i class="fa-solid fa-bell mr-1"></i> Wind-Down Reminder:</p>
+          <p>Triggers 30 minutes before bedtime so you can put your phone away and sleep on time.</p>
+        </div>
+
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="app.toggleSleepModal()" class="px-4 py-2 rounded-xl bg-slate-900 text-slate-400 font-bold">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded-xl rainbow-btn text-white font-black">Save Schedule</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 6: Custom Confirmation Modal (No alert/confirm) -->
+  <div id="confirm-modal" class="fixed inset-0 z-50 bg-[#090a0f]/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="glass-card max-w-sm w-full rounded-2xl p-6 space-y-4 border border-slate-700 text-center">
+      <div class="w-12 h-12 rounded-2xl rainbow-btn text-white flex items-center justify-center mx-auto text-xl">
+        <i class="fa-solid fa-rotate-right"></i>
+      </div>
+      <div class="space-y-1">
+        <h3 class="text-base font-black text-white">Reset Today's Progress?</h3>
+        <p class="text-xs text-slate-400">This will reset your daily homework and routine checkmarks for today.</p>
+      </div>
+      <div class="flex justify-center space-x-2 pt-2">
+        <button onclick="app.closeResetConfirmModal()" class="px-4 py-2 rounded-xl bg-slate-900 text-slate-400 font-bold text-xs">Cancel</button>
+        <button onclick="app.executeResetDailyData()" class="px-4 py-2 rounded-xl rainbow-btn text-white font-black text-xs">Yes, Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 7: Analytics & History Tracker (Weekly / Monthly / Yearly) -->
+  <div id="analytics-modal" class="fixed inset-0 z-50 bg-[#090a0f]/95 backdrop-blur-2xl flex flex-col items-center justify-center p-4 hidden overflow-y-auto">
+    <div class="max-w-2xl w-full glass-card p-6 rounded-3xl border border-cyan-500/40 space-y-6 rainbow-glow my-auto max-h-[90vh] overflow-y-auto">
+      
+      <!-- Modal Header & Period Toggle Tabs -->
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-4">
+        <div>
+          <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-chart-line text-cyan-400 text-lg"></i>
+            <h3 class="text-base font-black uppercase tracking-wider text-white">Performance Analytics</h3>
+          </div>
+          <p class="text-xs text-slate-400">Track your focus time, homework completion, and routine streak over time.</p>
+        </div>
+
+        <div class="flex items-center space-x-1 bg-slate-900 p-1 rounded-xl border border-slate-800 self-stretch sm:self-auto justify-center">
+          <button id="tab-weekly" onclick="app.setAnalyticsPeriod('weekly')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition bg-pink-500 text-white">Weekly</button>
+          <button id="tab-monthly" onclick="app.setAnalyticsPeriod('monthly')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-400 hover:text-white">Monthly</button>
+          <button id="tab-yearly" onclick="app.setAnalyticsPeriod('yearly')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-400 hover:text-white">Yearly</button>
+        </div>
+
+        <button onclick="app.closeAnalyticsModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <!-- KPI Overview Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 text-center space-y-1">
+          <span class="text-[10px] text-slate-400 font-extrabold uppercase">Focus Minutes</span>
+          <p id="stat-focus-time" class="text-xl font-black text-cyan-300 font-mono">0m</p>
+        </div>
+        <div class="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 text-center space-y-1">
+          <span class="text-[10px] text-slate-400 font-extrabold uppercase">Quests Done</span>
+          <p id="stat-quests-done" class="text-xl font-black text-pink-400 font-mono">0</p>
+        </div>
+        <div class="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 text-center space-y-1">
+          <span class="text-[10px] text-slate-400 font-extrabold uppercase">Habit Rate</span>
+          <p id="stat-habit-rate" class="text-xl font-black text-purple-300 font-mono">0%</p>
+        </div>
+        <div class="bg-slate-900/90 p-3.5 rounded-2xl border border-slate-800 text-center space-y-1">
+          <span class="text-[10px] text-slate-400 font-extrabold uppercase">Total XP</span>
+          <p id="stat-total-xp" class="text-xl font-black text-amber-300 font-mono">0 XP</p>
+        </div>
+      </div>
+
+      <!-- Visual Activity Bar Graph -->
+      <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-3">
+        <div class="flex justify-between items-center">
+          <h4 id="chart-title" class="text-xs font-black uppercase text-slate-300 flex items-center space-x-1.5">
+            <i class="fa-solid fa-barcode text-pink-400"></i>
+            <span>Focus & Study Time Visualizer</span>
+          </h4>
+          <span id="chart-subtitle" class="text-[10px] text-slate-500 font-bold">Past 7 Days</span>
+        </div>
+
+        <!-- Dynamic Chart Container -->
+        <div id="analytics-chart-bars" class="h-40 flex items-end justify-between gap-1 sm:gap-2 pt-6 px-2 border-b border-slate-800">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Detail Summary Box -->
+      <div class="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 flex items-center justify-between text-xs">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl rainbow-btn flex items-center justify-center text-white font-black text-lg">
+            <i class="fa-solid fa-award"></i>
+          </div>
+          <div>
+            <h5 id="grade-rank-title" class="font-extrabold text-white">S-Tier Focus Mode</h5>
+            <p id="grade-rank-desc" class="text-[11px] text-slate-400">Consistently locking in for homework and hitting sleep targets.</p>
+          </div>
+        </div>
+        <button onclick="app.closeAnalyticsModal()" class="px-4 py-2 rainbow-btn text-white font-bold rounded-xl text-xs">Close</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification Bar -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+  <script>
+    var app = null;
+
+    class RoutineApp {
+      constructor() {
+        this.STORAGE_KEY = 'focuspulse_rainbow_snake_data_v1';
+        this.data = this.loadData();
+        this.analyticsPeriod = 'weekly';
+
+        // Focus Timer state
+        this.focusTimerInterval = null;
+        this.focusSecondsLeft = 1800;
+        this.focusTotalSeconds = 1800;
+        this.focusIsPaused = false;
+
+        // Snake Break state
+        this.snakeBreakInterval = null;
+        this.snakeBreakSecondsLeft = 300;
+        this.snakeGameInterval = null;
+        this.snakeScore = 0;
+        this.snakeHighScore = this.data.snakeHighScore || 0;
+        this.snake = [];
+        this.snakeDir = 'RIGHT';
+        this.nextSnakeDir = 'RIGHT';
+        this.snakeFood = { x: 0, y: 0 };
+        this.gridSize = 15;
+        this.tileCount = 20;
+
+        this.quotes = [
+          "Procrastination is just resistance. Start for 5 minutes and you win.",
+          "Finish your homework early so you can play Snake and hang out guilt-free!",
+          "Sleeping by 10:00 PM gives you the energy to crush school tomorrow.",
+          "High school success comes down to simple daily habits.",
+          "Stay locked in. Future you will thank you."
+        ];
+
+        this.ranks = [
+          { minXP: 0, title: "ROOKIE" },
+          { minXP: 100, title: "GRINDER" },
+          { minXP: 250, title: "FOCUS BEAST" },
+          { minXP: 500, title: "APEX LEGEND" }
+        ];
+
+        this.init();
+      }
+
+      playFartSound() {
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+
+          osc.type = 'triangle';
+          const now = ctx.currentTime;
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.exponentialRampToValueAtTime(55, now + 0.28);
+
+          gain.gain.setValueAtTime(0.3, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.28);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + 0.28);
+        } catch (e) {
+          console.log("Audio contextual trigger notice", e);
+        }
+      }
+
+      playXpSound() {
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          const now = ctx.currentTime;
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.15);
+          gain.gain.setValueAtTime(0.15, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now);
+          osc.stop(now + 0.15);
+        } catch (e) {}
+      }
+
+      playLevelUpSound() {
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)();
+          const now = ctx.currentTime;
+          [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+            gain.gain.setValueAtTime(0.2, now + idx * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.08 + 0.12);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + idx * 0.08);
+            osc.stop(now + idx * 0.08 + 0.12);
+          });
+        } catch (e) {}
+      }
+
+      unicornFart() {
+        this.playFartSound();
+
+        const unicornContainer = document.getElementById('unicorn-container');
+        if (unicornContainer) {
+          const rect = unicornContainer.getBoundingClientRect();
+          const startX = rect.left + 20;
+          const startY = rect.top + rect.height * 0.5;
+          const colors = ['#ec4899', '#a855f7', '#06b6d4', '#facc15', '#10b981', '#f43f5e'];
+
+          for (let i = 0; i < 18; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'glitter-particle';
+            const size = Math.random() * 10 + 6;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const dx = (Math.random() - 0.7) * 120 + 'px';
+            const dy = (Math.random() - 0.5) * 100 - 30 + 'px';
+
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.backgroundColor = color;
+            particle.style.boxShadow = `0 0 10px ${color}`;
+            particle.style.left = `${startX}px`;
+            particle.style.top = `${startY}px`;
+            particle.style.setProperty('--dx', dx);
+            particle.style.setProperty('--dy', dy);
+
+            document.body.appendChild(particle);
+            setTimeout(() => particle.remove(), 1200);
+          }
+
+          const xpPop = document.createElement('div');
+          xpPop.className = 'xp-pop text-sm font-black';
+          xpPop.innerText = '+3 XP ✨';
+          xpPop.style.left = `${startX - 20}px`;
+          xpPop.style.top = `${startY - 25}px`;
+          document.body.appendChild(xpPop);
+          setTimeout(() => xpPop.remove(), 1200);
+        }
+
+        this.addXP(3);
+        this.showToast('✨ Unicorn farted glitter! +3 XP!', 'success');
+      }
+
+      getDefaultData() {
+        return {
+          xp: 0,
+          level: 1,
+          streak: 1,
+          snakeHighScore: 0,
+          bedtime: "22:00",
+          waketime: "06:30",
+          lastActiveDate: new Date().toLocaleDateString(),
+          dailyHistory: {},
+          homework: [
+            { id: 1, subject: "Math", title: "Algebra Chapter 3 Exercises", estMinutes: 25, completed: false },
+            { id: 2, subject: "English", title: "Read Chapter 4 & answer 3 questions", estMinutes: 20, completed: false }
+          ],
+          routine: [
+            { id: 101, title: "Morning School & Focus Classes", timeOfDay: "Morning", completed: false },
+            { id: 102, title: "Gym Workout & Training", timeOfDay: "Afternoon", completed: false },
+            { id: 103, title: "Eat Dinner & Hydrate", timeOfDay: "Afternoon", completed: false },
+            { id: 104, title: "30-Min Focus Homework Block", timeOfDay: "Evening", completed: false },
+            { id: 105, title: "Put Phone Away at 9:30 PM", timeOfDay: "Night", completed: false },
+            { id: 106, title: "Sleep at 10:00 PM (8.5 hrs)", timeOfDay: "Night", completed: false }
+          ]
+        };
+      }
+
+      loadData() {
+        const stored = localStorage.getItem(this.STORAGE_KEY);
+        if (stored) {
+          try {
+            const parsed = JSON.parse(stored);
+            if (!parsed.dailyHistory) parsed.dailyHistory = {};
+            const today = new Date().toLocaleDateString();
+            if (parsed.lastActiveDate !== today) {
+              parsed.lastActiveDate = today;
+              parsed.homework.forEach(h => h.completed = false);
+              parsed.routine.forEach(r => r.completed = false);
+            }
+            return parsed;
+          } catch (e) {
+            console.error("Storage error", e);
+          }
+        }
+        return this.getDefaultData();
+      }
+
+      getTodayKey() {
+        const d = new Date();
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+
+      recordActivity(type, value = 1) {
+        const key = this.getTodayKey();
+        if (!this.data.dailyHistory[key]) {
+          this.data.dailyHistory[key] = {
+            focusMins: 0,
+            hwDone: 0,
+            habitsDone: 0,
+            totalHabits: this.data.routine.length,
+            xp: 0
+          };
+        }
+
+        const todayLog = this.data.dailyHistory[key];
+        if (type === 'focusMins') todayLog.focusMins += value;
+        if (type === 'hwDone') todayLog.hwDone += value;
+        if (type === 'habitsDone') todayLog.habitsDone += value;
+        if (type === 'xp') todayLog.xp += value;
+        todayLog.totalHabits = this.data.routine.length;
+      }
+
+      saveData() {
+        this.data.snakeHighScore = this.snakeHighScore;
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(this.data));
+        this.render();
+      }
+
+      init() {
+        this.setupBedtimeCheckInterval();
+        this.setupSnakeControls();
+        this.render();
+      }
+
+      addXP(amount) {
+        this.data.xp += amount;
+        this.recordActivity('xp', amount);
+        
+        const newLevel = Math.floor(this.data.xp / 100) + 1;
+        if (newLevel > this.data.level) {
+          this.data.level = newLevel;
+          this.playLevelUpSound();
+          this.showToast(`🏆 LEVEL UP! You reached Level ${newLevel}!`, 'success');
+        } else {
+          this.playXpSound();
+        }
+
+        this.saveData();
+      }
+
+      getRankTitle() {
+        let currentRank = "ROOKIE";
+        for (let r of this.ranks) {
+          if (this.data.xp >= r.minXP) {
+            currentRank = r.title;
+          }
+        }
+        return currentRank;
+      }
+
+      calculateScreenTime() {
+        const totalHW = this.data.homework.length;
+        const completedHW = this.data.homework.filter(h => h.completed).length;
+
+        let baseMinutes = 60;
+        let bonusMinutes = completedHW * 20;
+        let totalAvailable = baseMinutes + bonusMinutes;
+        const allCompleted = totalHW > 0 && completedHW === totalHW;
+
+        return { totalAvailable, completedHW, totalHW, allCompleted };
+      }
+
+      formatTimeString(timeStr) {
+        if (!timeStr) return "10:00 PM";
+        const [h, m] = timeStr.split(':').map(Number);
+        const period = h >= 12 ? 'PM' : 'AM';
+        const displayH = h % 12 === 0 ? 12 : h % 12;
+        return `${displayH}:${String(m).padStart(2, '0')} ${period}`;
+      }
+
+      render() {
+        document.getElementById('level-num').innerText = this.data.level;
+        const currentLevelXP = this.data.xp % 100;
+        document.getElementById('xp-text').innerText = `${currentLevelXP} / 100 XP`;
+        document.getElementById('xp-progress-bar').style.width = `${currentLevelXP}%`;
+        document.getElementById('rank-badge').innerText = this.getRankTitle();
+        document.getElementById('streak-count').innerText = `${this.data.streak} Day${this.data.streak > 1 ? 's' : ''}`;
+
+        const formattedBedtime = this.formatTimeString(this.data.bedtime);
+        const formattedWaketime = this.formatTimeString(this.data.waketime);
+        document.getElementById('bedtime-time-display').innerText = formattedBedtime;
+        document.getElementById('waketime-time-display').innerText = formattedWaketime;
+
+        const st = this.calculateScreenTime();
+        const displayElem = document.getElementById('screentime-display');
+        const badgeElem = document.getElementById('screen-status-badge');
+        const barElem = document.getElementById('screentime-bar');
+        const subtextElem = document.getElementById('screentime-subtext');
+
+        if (st.allCompleted) {
+          displayElem.innerText = "UNLOCKED";
+          displayElem.className = "text-2xl font-black text-white font-mono rainbow-text";
+          badgeElem.innerText = "ALL QUESTS DONE!";
+          badgeElem.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-pink-500/20 text-pink-300 border border-pink-500/40";
+          subtextElem.innerText = `Unlocked until ${formattedBedtime}!`;
+          barElem.style.width = "100%";
+        } else {
+          displayElem.innerText = `${st.totalAvailable}m`;
+          displayElem.className = "text-3xl font-black text-white font-mono rainbow-text";
+          badgeElem.innerText = `${st.completedHW}/${st.totalHW} Quests`;
+          badgeElem.className = "px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700";
+          subtextElem.innerText = "Available Today";
+          const pct = Math.min(100, (st.totalAvailable / 180) * 100);
+          barElem.style.width = `${pct}%`;
+        }
+
+        this.renderHomeworkQuests();
+        this.renderRoutineChecklist();
+      }
+
+      renderHomeworkQuests() {
+        const container = document.getElementById('homework-quest-list');
+        if (this.data.homework.length === 0) {
+          container.innerHTML = `
+            <div class="p-6 text-center border border-dashed border-slate-800 rounded-xl text-slate-500 text-xs">
+              <i class="fa-solid fa-check-double text-2xl mb-1 text-pink-500/50"></i>
+              <p>No active homework quests!</p>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = this.data.homework.map(hw => `
+          <div class="p-3 rounded-xl transition ${hw.completed ? 'bg-slate-900/40 border border-slate-800' : 'bg-slate-900/90 border border-slate-800 hover:border-purple-500/50'} flex items-center justify-between gap-3">
+            <div class="flex items-center space-x-3 overflow-hidden">
+              <button onclick="app.toggleHomework(${hw.id})" class="w-6 h-6 rounded-lg border ${hw.completed ? 'rainbow-btn text-white border-transparent' : 'border-slate-700 hover:border-pink-500'} flex items-center justify-center transition shrink-0">
+                ${hw.completed ? '<i class="fa-solid fa-check text-xs"></i>' : ''}
+              </button>
+              <div class="truncate">
+                <div class="flex items-center space-x-2">
+                  <span class="px-2 py-0.5 rounded text-[9px] font-bold uppercase ${hw.completed ? 'bg-slate-800 text-slate-500' : 'bg-pink-500/20 text-pink-300'}">${hw.subject}</span>
+                  <span class="text-xs font-bold ${hw.completed ? 'line-through text-slate-500' : 'text-white'} truncate">${hw.title}</span>
+                </div>
+                <div class="text-[10px] text-slate-400 mt-0.5 flex items-center space-x-2">
+                  <span>~${hw.estMinutes} mins</span>
+                  <span>•</span>
+                  <span class="text-cyan-300">+20m Screen Time</span>
+                  <span>•</span>
+                  <span class="text-pink-400">+50 XP</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-1 shrink-0">
+              ${!hw.completed ? `
+                <button onclick="app.startFocusForHomework('${hw.title.replace(/'/g, "\\'")}')" class="px-2.5 py-1 rainbow-btn text-white rounded-lg text-xs font-bold transition flex items-center space-x-1">
+                  <i class="fa-solid fa-lock text-[10px]"></i>
+                  <span>Focus</span>
+                </button>
+              ` : ''}
+              <button onclick="app.deleteHomework(${hw.id})" class="text-slate-600 hover:text-white p-1.5 transition">
+                <i class="fa-solid fa-trash text-xs"></i>
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      renderRoutineChecklist() {
+        const container = document.getElementById('routine-checklist');
+        const total = this.data.routine.length;
+        const completed = this.data.routine.filter(r => r.completed).length;
+        const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+        document.getElementById('routine-pct').innerText = `${pct}%`;
+
+        container.innerHTML = this.data.routine.map(item => `
+          <div class="p-2.5 rounded-xl ${item.completed ? 'bg-slate-900/40 border border-slate-800' : 'bg-slate-900/90 border border-slate-800'} flex items-center justify-between text-xs transition">
+            <label class="flex items-center space-x-2.5 cursor-pointer flex-1 overflow-hidden">
+              <input type="checkbox" ${item.completed ? 'checked' : ''} onchange="app.toggleHabit(${item.id})" class="w-4 h-4 rounded border-slate-700 text-pink-500 focus:ring-0 bg-black">
+              <span class="${item.completed ? 'line-through text-slate-500' : 'text-slate-200'} font-bold truncate">${item.title}</span>
+            </label>
+            <span class="text-[9px] text-slate-500 font-bold uppercase ml-2 px-1.5 py-0.5 rounded bg-slate-950 shrink-0">${item.timeOfDay}</span>
+          </div>
+        `).join('');
+      }
+
+      toggleHomework(id) {
+        const hw = this.data.homework.find(h => h.id === id);
+        if (hw) {
+          hw.completed = !hw.completed;
+          if (hw.completed) {
+            this.recordActivity('hwDone', 1);
+            this.addXP(50);
+            this.showToast(`Quest completed! +20m Screen Time & +50 XP! 🎯`, 'success');
+            const focusHabit = this.data.routine.find(r => r.id === 104);
+            if (focusHabit) focusHabit.completed = true;
+          } else {
+            this.saveData();
+          }
+        }
+      }
+
+      deleteHomework(id) {
+        this.data.homework = this.data.homework.filter(h => h.id !== id);
+        this.saveData();
+      }
+
+      toggleHabit(id) {
+        const habit = this.data.routine.find(r => r.id === id);
+        if (habit) {
+          habit.completed = !habit.completed;
+          if (habit.completed) {
+            this.recordActivity('habitsDone', 1);
+            this.addXP(20);
+            this.showToast(`Habit checked! +20 XP`, 'success');
+          } else {
+            this.saveData();
+          }
+        }
+      }
+
+      openAddHomeworkModal() { document.getElementById('add-hw-modal').classList.remove('hidden'); }
+      closeAddHomeworkModal() { document.getElementById('add-hw-modal').classList.add('hidden'); }
+      saveNewHomework(e) {
+        e.preventDefault();
+        const subject = document.getElementById('hw-subject').value.trim();
+        const title = document.getElementById('hw-title').value.trim();
+        const estMinutes = parseInt(document.getElementById('hw-est-time').value) || 20;
+
+        if (subject && title) {
+          this.data.homework.push({ id: Date.now(), subject, title, estMinutes, completed: false });
+          this.closeAddHomeworkModal();
+          document.getElementById('add-hw-form').reset();
+          this.saveData();
+          this.showToast('Quest added!', 'success');
+        }
+      }
+
+      openAddHabitModal() { document.getElementById('add-habit-modal').classList.remove('hidden'); }
+      closeAddHabitModal() { document.getElementById('add-habit-modal').classList.add('hidden'); }
+      saveNewHabit(e) {
+        e.preventDefault();
+        const title = document.getElementById('habit-title').value.trim();
+        const timeOfDay = document.getElementById('habit-time').value;
+
+        if (title) {
+          this.data.routine.push({ id: Date.now(), title, timeOfDay, completed: false });
+          this.closeAddHabitModal();
+          document.getElementById('add-habit-form').reset();
+          this.saveData();
+          this.showToast('Habit added!', 'success');
+        }
+      }
+
+      toggleSleepModal() { document.getElementById('sleep-modal').classList.toggle('hidden'); }
+      saveSleepSchedule(e) {
+        e.preventDefault();
+        this.data.bedtime = document.getElementById('bedtime-input').value;
+        this.data.waketime = document.getElementById('waketime-input').value;
+        this.toggleSleepModal();
+        this.saveData();
+        this.showToast('Sleep schedule updated!', 'success');
+      }
+
+      setupBedtimeCheckInterval() {
+        setInterval(() => {
+          const now = new Date();
+          const currentMins = now.getHours() * 60 + now.getMinutes();
+          if (this.data.bedtime) {
+            const [bH, bM] = this.data.bedtime.split(':').map(Number);
+            const bedtimeMins = bH * 60 + bM;
+            if (bedtimeMins - currentMins === 30 && now.getSeconds() === 0) {
+              this.showToast('🌙 Wind-Down Reminder: 30 minutes until bedtime! Put phone away soon.', 'info');
+            }
+          }
+        }, 10000);
+      }
+
+      startFocusSession(minutes = 30) {
+        this.focusTotalSeconds = minutes * 60;
+        this.focusSecondsLeft = this.focusTotalSeconds;
+        this.focusIsPaused = false;
+        
+        document.getElementById('focus-task-target').innerText = "30-Min App Blocker Active";
+        this.updateFocusClockDisplay();
+        
+        const randomQuote = this.quotes[Math.floor(Math.random() * this.quotes.length)];
+        document.getElementById('focus-quote').innerText = randomQuote;
+
+        document.getElementById('focus-modal').classList.remove('hidden');
+
+        if (this.focusTimerInterval) clearInterval(this.focusTimerInterval);
+        this.focusTimerInterval = setInterval(() => this.tickFocusTimer(), 1000);
+      }
+
+      startFocusForHomework(title) {
+        this.startFocusSession(30);
+        document.getElementById('focus-task-target').innerText = `Focusing on: ${title}`;
+      }
+
+      tickFocusTimer() {
+        if (this.focusIsPaused) return;
+
+        if (this.focusSecondsLeft > 0) {
+          this.focusSecondsLeft--;
+          this.updateFocusClockDisplay();
+        } else {
+          clearInterval(this.focusTimerInterval);
+          this.finishFocusSession();
+        }
+      }
+
+      updateFocusClockDisplay() {
+        const mins = Math.floor(this.focusSecondsLeft / 60);
+        const secs = this.focusSecondsLeft % 60;
+        document.getElementById('focus-timer-clock').innerText = 
+          `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        
+        const pct = (this.focusSecondsLeft / this.focusTotalSeconds) * 100;
+        document.getElementById('focus-progress-bar').style.width = `${pct}%`;
+      }
+
+      pauseResumeFocusTimer() {
+        this.focusIsPaused = !this.focusIsPaused;
+        const btn = document.getElementById('focus-pause-btn');
+        btn.innerHTML = this.focusIsPaused ? 
+          '<i class="fa-solid fa-play mr-1"></i> Resume' : 
+          '<i class="fa-solid fa-pause mr-1"></i> Pause';
+      }
+
+      finishFocusSession() {
+        if (this.focusTimerInterval) clearInterval(this.focusTimerInterval);
+        document.getElementById('focus-modal').classList.add('hidden');
+        
+        const focusMinsLogged = Math.round(this.focusTotalSeconds / 60);
+        this.recordActivity('focusMins', focusMinsLogged);
+        this.addXP(50);
+
+        const focusHabit = this.data.routine.find(r => r.id === 104);
+        if (focusHabit) focusHabit.completed = true;
+
+        this.saveData();
+        this.showToast('Great job! Focus session completed! +50 XP 🎉', 'success');
+
+        setTimeout(() => {
+          this.openSnakeBreakModal();
+        }, 500);
+      }
+
+      cancelFocusSession() {
+        if (this.focusTimerInterval) clearInterval(this.focusTimerInterval);
+        document.getElementById('focus-modal').classList.add('hidden');
+        this.showToast('Focus session cancelled', 'info');
+      }
+
+      openSnakeBreakModal() {
+        document.getElementById('snake-modal').classList.remove('hidden');
+        this.snakeBreakSecondsLeft = 300;
+        document.getElementById('snake-break-clock').innerText = "05:00";
+        
+        if (this.snakeBreakInterval) clearInterval(this.snakeBreakInterval);
+        this.snakeBreakInterval = setInterval(() => {
+          if (this.snakeBreakSecondsLeft > 0) {
+            this.snakeBreakSecondsLeft--;
+            const m = Math.floor(this.snakeBreakSecondsLeft / 60);
+            const s = this.snakeBreakSecondsLeft % 60;
+            document.getElementById('snake-break-clock').innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+          } else {
+            clearInterval(this.snakeBreakInterval);
+            this.showToast('⏰ Break time over! Back to focus mode!', 'info');
+          }
+        }, 1000);
+
+        this.startSnakeGame();
+      }
+
+      closeSnakeBreakModal() {
+        document.getElementById('snake-modal').classList.add('hidden');
+        if (this.snakeBreakInterval) clearInterval(this.snakeBreakInterval);
+        if (this.snakeGameInterval) clearInterval(this.snakeGameInterval);
+      }
+
+      setupSnakeControls() {
+        window.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') this.setSnakeDir('UP');
+          if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') this.setSnakeDir('DOWN');
+          if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') this.setSnakeDir('LEFT');
+          if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') this.setSnakeDir('RIGHT');
+        });
+      }
+
+      startSnakeGame() {
+        document.getElementById('snake-game-over').classList.add('hidden');
+        this.snakeScore = 0;
+        document.getElementById('snake-score').innerText = '0';
+        document.getElementById('snake-highscore').innerText = this.snakeHighScore;
+
+        this.snake = [
+          { x: 10, y: 10 },
+          { x: 9, y: 10 },
+          { x: 8, y: 10 }
+        ];
+        this.snakeDir = 'RIGHT';
+        this.nextSnakeDir = 'RIGHT';
+        this.spawnSnakeFood();
+
+        if (this.snakeGameInterval) clearInterval(this.snakeGameInterval);
+        this.snakeGameInterval = setInterval(() => this.tickSnakeGame(), 120);
+      }
+
+      setSnakeDir(dir) {
+        if (dir === 'UP' && this.snakeDir !== 'DOWN') this.nextSnakeDir = 'UP';
+        if (dir === 'DOWN' && this.snakeDir !== 'UP') this.nextSnakeDir = 'DOWN';
+        if (dir === 'LEFT' && this.snakeDir !== 'RIGHT') this.nextSnakeDir = 'LEFT';
+        if (dir === 'RIGHT' && this.snakeDir !== 'LEFT') this.nextSnakeDir = 'RIGHT';
+      }
+
+      spawnSnakeFood() {
+        this.snakeFood = {
+          x: Math.floor(Math.random() * this.tileCount),
+          y: Math.floor(Math.random() * this.tileCount)
+        };
+      }
+
+      tickSnakeGame() {
+        this.snakeDir = this.nextSnakeDir;
+        const head = { ...this.snake[0] };
+
+        if (this.snakeDir === 'UP') head.y--;
+        if (this.snakeDir === 'DOWN') head.y++;
+        if (this.snakeDir === 'LEFT') head.x--;
+        if (this.snakeDir === 'RIGHT') head.x++;
+
+        if (head.x < 0 || head.x >= this.tileCount || head.y < 0 || head.y >= this.tileCount) {
+          this.endSnakeGame();
+          return;
+        }
+
+        for (let segment of this.snake) {
+          if (head.x === segment.x && head.y === segment.y) {
+            this.endSnakeGame();
+            return;
+          }
+        }
+
+        this.snake.unshift(head);
+
+        if (head.x === this.snakeFood.x && head.y === this.snakeFood.y) {
+          this.snakeScore += 10;
+          document.getElementById('snake-score').innerText = this.snakeScore;
+          if (this.snakeScore > this.snakeHighScore) {
+            this.snakeHighScore = this.snakeScore;
+            document.getElementById('snake-highscore').innerText = this.snakeHighScore;
+          }
+          this.addXP(5);
+          this.spawnSnakeFood();
+        } else {
+          this.snake.pop();
+        }
+
+        this.drawSnakeGame();
+      }
+
+      endSnakeGame() {
+        if (this.snakeGameInterval) clearInterval(this.snakeGameInterval);
+        document.getElementById('snake-game-over').classList.remove('hidden');
+      }
+
+      drawSnakeGame() {
+        const canvas = document.getElementById('snake-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+
+        ctx.fillStyle = '#090a0f';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+        for (let i = 0; i < this.tileCount; i++) {
+          ctx.beginPath();
+          ctx.moveTo(i * this.gridSize, 0);
+          ctx.lineTo(i * this.gridSize, canvas.height);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(0, i * this.gridSize);
+          ctx.lineTo(canvas.width, i * this.gridSize);
+          ctx.stroke();
+        }
+
+        ctx.fillStyle = '#ec4899';
+        ctx.beginPath();
+        ctx.arc(
+          this.snakeFood.x * this.gridSize + this.gridSize / 2,
+          this.snakeFood.y * this.gridSize + this.gridSize / 2,
+          this.gridSize / 2 - 1,
+          0,
+          Math.PI * 2
+        );
+        ctx.fill();
+
+        this.snake.forEach((seg, i) => {
+          ctx.fillStyle = i === 0 ? '#06b6d4' : '#a855f7';
+          ctx.fillRect(
+            seg.x * this.gridSize + 1,
+            seg.y * this.gridSize + 1,
+            this.gridSize - 2,
+            this.gridSize - 2
+          );
+        });
+      }
+
+      openAnalyticsModal() {
+        document.getElementById('analytics-modal').classList.remove('hidden');
+        this.renderAnalytics();
+      }
+
+      closeAnalyticsModal() {
+        document.getElementById('analytics-modal').classList.add('hidden');
+      }
+
+      setAnalyticsPeriod(period) {
+        this.analyticsPeriod = period;
+        ['weekly', 'monthly', 'yearly'].forEach(p => {
+          const btn = document.getElementById(`tab-${p}`);
+          if (btn) {
+            if (p === period) {
+              btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition bg-pink-500 text-white shadow";
+            } else {
+              btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition text-slate-400 hover:text-white";
+            }
+          }
+        });
+        this.renderAnalytics();
+      }
+
+      renderAnalytics() {
+        const history = this.data.dailyHistory || {};
+        let totalFocusMins = 0;
+        let totalHwDone = 0;
+        let totalHabitsDone = 0;
+        let totalHabitsPossible = 0;
+        let periodXP = 0;
+
+        let chartData = [];
+        const now = new Date();
+
+        if (this.analyticsPeriod === 'weekly') {
+          document.getElementById('chart-subtitle').innerText = "Past 7 Days";
+          const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+          
+          for (let i = 6; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(now.getDate() - i);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            const key = `${year}-${month}-${day}`;
+
+            const entry = history[key] || { focusMins: 0, hwDone: 0, habitsDone: 0, totalHabits: 6, xp: 0 };
+            totalFocusMins += entry.focusMins;
+            totalHwDone += entry.hwDone;
+            totalHabitsDone += entry.habitsDone;
+            totalHabitsPossible += (entry.totalHabits || 6);
+            periodXP += entry.xp;
+
+            chartData.push({
+              label: daysOfWeek[d.getDay()],
+              value: entry.focusMins,
+              hw: entry.hwDone
+            });
+          }
+        } else if (this.analyticsPeriod === 'monthly') {
+          document.getElementById('chart-subtitle').innerText = "Past 30 Days (4 Weeks)";
+          
+          for (let w = 3; w >= 0; w--) {
+            let weekMins = 0;
+            let weekHw = 0;
+            for (let dayOffset = 0; dayOffset < 7; dayOffset++) {
+              const d = new Date();
+              d.setDate(now.getDate() - (w * 7 + dayOffset));
+              const year = d.getFullYear();
+              const month = String(d.getMonth() + 1).padStart(2, '0');
+              const day = String(d.getDate()).padStart(2, '0');
+              const key = `${year}-${month}-${day}`;
+
+              const entry = history[key] || { focusMins: 0, hwDone: 0, habitsDone: 0, totalHabits: 6, xp: 0 };
+              weekMins += entry.focusMins;
+              weekHw += entry.hwDone;
+              totalFocusMins += entry.focusMins;
+              totalHwDone += entry.hwDone;
+              totalHabitsDone += entry.habitsDone;
+              totalHabitsPossible += (entry.totalHabits || 6);
+              periodXP += entry.xp;
+            }
+            chartData.push({
+              label: `Wk ${4 - w}`,
+              value: weekMins,
+              hw: weekHw
+            });
+          }
+        } else if (this.analyticsPeriod === 'yearly') {
+          document.getElementById('chart-subtitle').innerText = "Past 12 Months";
+          const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          
+          for (let m = 11; m >= 0; m--) {
+            const targetDate = new Date(now.getFullYear(), now.getMonth() - m, 1);
+            const year = targetDate.getFullYear();
+            const month = targetDate.getMonth();
+            let monthMins = 0;
+            let monthHw = 0;
+
+            Object.keys(history).forEach(key => {
+              const [kYear, kMonth] = key.split('-').map(Number);
+              if (kYear === year && (kMonth - 1) === month) {
+                const entry = history[key];
+                monthMins += entry.focusMins;
+                monthHw += entry.hwDone;
+                totalFocusMins += entry.focusMins;
+                totalHwDone += entry.hwDone;
+                totalHabitsDone += entry.habitsDone;
+                totalHabitsPossible += (entry.totalHabits || 6);
+                periodXP += entry.xp;
+              }
+            });
+
+            chartData.push({
+              label: monthNames[month],
+              value: monthMins,
+              hw: monthHw
+            });
+          }
+        }
+
+        document.getElementById('stat-focus-time').innerText = totalFocusMins >= 60 ? `${(totalFocusMins/60).toFixed(1)}h` : `${totalFocusMins}m`;
+        document.getElementById('stat-quests-done').innerText = totalHwDone;
+        
+        const habitRate = totalHabitsPossible > 0 ? Math.round((totalHabitsDone / totalHabitsPossible) * 100) : 0;
+        document.getElementById('stat-habit-rate').innerText = `${habitRate}%`;
+        document.getElementById('stat-total-xp').innerText = `${periodXP} XP`;
+
+        const chartContainer = document.getElementById('analytics-chart-bars');
+        const maxVal = Math.max(...chartData.map(d => d.value), 30);
+
+        chartContainer.innerHTML = chartData.map(d => {
+          const heightPct = Math.min(100, Math.max(8, (d.value / maxVal) * 100));
+          return `
+            <div class="flex flex-col items-center flex-1 h-full justify-end group relative">
+              <div class="absolute -top-7 opacity-0 group-hover:opacity-100 transition bg-slate-950 border border-slate-700 text-[10px] text-pink-300 font-bold px-1.5 py-0.5 rounded pointer-events-none whitespace-nowrap z-10">
+                ${d.value}m focus (${d.hw} quests)
+              </div>
+              <div class="w-full max-w-[28px] rounded-t-lg rainbow-btn transition-all duration-500" style="height: ${heightPct}%;"></div>
+              <span class="text-[10px] text-slate-400 font-bold mt-2 truncate w-full text-center">${d.label}</span>
+            </div>
+          `;
+        }).join('');
+
+        const rankTitle = document.getElementById('grade-rank-title');
+        const rankDesc = document.getElementById('grade-rank-desc');
+
+        if (totalFocusMins > 120 || totalHwDone >= 5) {
+          rankTitle.innerText = "🔥 S-Tier Focus Champion";
+          rankDesc.innerText = "Crushing homework quests and building unstoppable consistency!";
+        } else if (totalFocusMins > 30 || totalHwDone >= 2) {
+          rankTitle.innerText = "⚡ A-Tier Quest Grinder";
+          rankDesc.innerText = "Good steady focus! Complete all daily homework to hit S-Tier.";
+        } else {
+          rankTitle.innerText = "🌱 Rookie Focus Trainee";
+          rankDesc.innerText = "Start a 30-min App Blocker block to begin logging your streak!";
+        }
+      }
+
+      showResetConfirmModal() { document.getElementById('confirm-modal').classList.remove('hidden'); }
+      closeResetConfirmModal() { document.getElementById('confirm-modal').classList.add('hidden'); }
+      executeResetDailyData() {
+        this.data.homework.forEach(h => h.completed = false);
+        this.data.routine.forEach(r => r.completed = false);
+        this.closeResetConfirmModal();
+        this.saveData();
+        this.showToast('Day reset successfully!', 'success');
+      }
+
+      showToast(msg, type = 'info') {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        const toast = document.createElement('div');
+        
+        let bg = 'bg-slate-900 border-slate-700 text-white';
+        if (type === 'success') bg = 'rainbow-btn text-white font-extrabold shadow-xl';
+
+        toast.className = `px-4 py-2.5 rounded-xl border text-xs flex items-center space-x-2 transition-all duration-300 transform translate-y-2 opacity-0 pointer-events-auto ${bg}`;
+        toast.innerHTML = `<span>${msg}</span>`;
+
+        container.appendChild(toast);
+
+        setTimeout(() => toast.classList.remove('translate-y-2', 'opacity-0'), 10);
+        setTimeout(() => {
+          toast.classList.add('opacity-0', 'translate-y-2');
+          setTimeout(() => toast.remove(), 300);
+        }, 3500);
+      }
+    }
+
+    function initApp() {
+      try {
+        app = window.app = new RoutineApp();
+      } catch (e) {
+        console.error("Initialization error:", e);
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+      initApp();
+    }
+  </script>
+</body>
+</html>

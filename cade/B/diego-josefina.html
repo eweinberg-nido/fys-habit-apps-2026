@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Polo Homework & Focus Hub</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=Teko:wght@600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0e0714',
+                        darkCard: '#1a0d28',
+                        darkCardBorder: '#2e1845',
+                        brandPurple: '#a855f7',
+                        brandPurpleDark: '#2d1847',
+                        brandPurpleLight: '#c084fc',
+                        waterCyan: '#38bdf8',
+                        waterBlue: '#0284c7',
+                        waterGold: '#f59e0b',
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        sports: ['Teko', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbars and styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0e0714;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2e1845;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a855f7;
+        }
+        .glow-purple {
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.25);
+        }
+        .glow-cyan {
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+        }
+        .water-pattern {
+            background-color: #0e0714;
+            background-image: radial-gradient(circle at 50% 50%, rgba(56, 189, 248, 0.05) 0%, transparent 60%),
+                              radial-gradient(circle at 20% 20%, rgba(168, 85, 247, 0.08) 0%, transparent 40%);
+        }
+        .glass-panel {
+            background: rgba(26, 13, 40, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-darkBg text-gray-100 font-sans min-h-screen flex flex-col water-pattern">
+
+    <!-- Navigation Bar -->
+    <header class="sticky top-0 z-50 glass-panel border-b border-brandPurpleDark px-4 py-3">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <!-- Brand / Logo -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-brandPurple to-waterCyan flex items-center justify-center text-darkBg font-bold text-xl shadow-lg">
+                    <i class="fa-solid fa-water-ladder"></i>
+                </div>
+                <div>
+                    <h1 class="font-sports text-2xl tracking-wide text-white uppercase leading-none">Splash & Study</h1>
+                    <p class="text-xs text-waterCyan font-medium">Water Polo Focus & Faith Hub</p>
+                </div>
+            </div>
+
+            <!-- Relief Points & Bedtime Countdown Header Widget -->
+            <div class="flex items-center gap-4 bg-darkBg/60 px-4 py-2 rounded-xl border border-brandPurpleDark">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-bolt text-amber-400 text-lg"></i>
+                    <div>
+                        <div class="text-[10px] text-gray-400 uppercase tracking-wider">Relief Points</div>
+                        <div id="reliefPointsDisplay" class="font-bold text-white text-sm">0 PTS</div>
+                    </div>
+                </div>
+                <div class="h-6 w-px bg-brandPurpleDark"></div>
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-bed text-brandPurpleLight text-lg"></i>
+                    <div>
+                        <div class="text-[10px] text-gray-400 uppercase tracking-wider">Time to 9:30 PM Bedtime</div>
+                        <div id="bedtimeCountdown" class="font-bold text-waterCyan text-sm">--h --m</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Buttons -->
+            <nav class="flex items-center gap-1 bg-darkBg/80 p-1 rounded-xl border border-brandPurpleDark">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 bg-brandPurple text-white">
+                    <i class="fa-solid fa-list-check"></i> Planner
+                </button>
+                <button onclick="switchTab('focus')" id="nav-focus" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 text-gray-300 hover:text-white">
+                    <i class="fa-solid fa-stopwatch"></i> Focus & Screen Time
+                </button>
+                <button onclick="switchTab('faith')" id="nav-faith" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 text-gray-300 hover:text-white">
+                    <i class="fa-solid fa-book-bible"></i> Faith Hub
+                </button>
+                <button onclick="switchTab('game')" id="nav-game" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 text-gray-300 hover:text-white">
+                    <i class="fa-solid fa-volleyball"></i> Water Polo Game
+                </button>
+                <button onclick="switchTab('club')" id="nav-club" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 text-gray-300 hover:text-white">
+                    <i class="fa-solid fa-users"></i> Club & Locker Room
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto w-full px-4 py-6 flex-grow">
+
+        <!-- TAB 1: DASHBOARD & HOMEWORK PLANNER -->
+        <section id="tab-dashboard" class="tab-content space-y-6">
+            <!-- Alert Banner for SMART Goal -->
+            <div class="glass-panel p-4 rounded-2xl border-l-4 border-l-waterCyan flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="p-3 bg-waterCyan/10 text-waterCyan rounded-xl">
+                        <i class="fa-solid fa-bullseye text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-white text-base">SMART Strategy: Get It Over With Early!</h2>
+                        <p class="text-xs text-gray-300">Finish homework right after school or during break blocks to eliminate stress and earn game break passes before 9:30 PM bedtime!</p>
+                    </div>
+                </div>
+                <button onclick="openAddHomeworkModal()" class="shrink-0 bg-gradient-to-r from-brandPurple to-brandPurpleLight text-white font-bold text-xs px-4 py-2.5 rounded-xl hover:opacity-90 transition shadow-lg">
+                    <i class="fa-solid fa-plus mr-1"></i> Add Homework
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Homework List (2 Cols) -->
+                <div class="lg:col-span-2 glass-panel p-5 rounded-2xl space-y-4">
+                    <div class="flex items-center justify-between border-b border-brandPurpleDark/50 pb-3">
+                        <h3 class="font-sports text-xl text-white tracking-wide flex items-center gap-2">
+                            <i class="fa-solid fa-clipboard-list text-brandPurple"></i> Homework & Assignment Planner
+                        </h3>
+                        <span id="taskCountBadge" class="bg-brandPurple/20 text-brandPurpleLight text-xs px-2.5 py-1 rounded-full font-bold">0 Pending</span>
+                    </div>
+
+                    <div id="homeworkList" class="space-y-3 min-h-[250px]">
+                        <!-- Tasks dynamically populated -->
+                    </div>
+                </div>
+
+                <!-- Daily Strategy & Quick Wins Panel -->
+                <div class="space-y-6">
+                    <!-- Quick Win Strategies -->
+                    <div class="glass-panel p-5 rounded-2xl space-y-4">
+                        <h3 class="font-sports text-xl text-white tracking-wide flex items-center gap-2">
+                            <i class="fa-solid fa-bolt text-amber-400"></i> Anti-Procrastination Tactics
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="bg-darkBg/60 p-3 rounded-xl border border-brandPurpleDark flex gap-3">
+                                <div class="text-waterCyan text-lg mt-0.5"><i class="fa-solid fa-school"></i></div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-white">Study During School Break</h4>
+                                    <p class="text-[11px] text-gray-400 mt-0.5">Finish 15-20 min during recess or lunch. Reduces homework weight by 40% before stepping home.</p>
+                                </div>
+                            </div>
+                            <div class="bg-darkBg/60 p-3 rounded-xl border border-brandPurpleDark flex gap-3">
+                                <div class="text-brandPurpleLight text-lg mt-0.5"><i class="fa-solid fa-stopwatch-20"></i></div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-white">2-Hour Break / 1-Hour Power Block</h4>
+                                    <p class="text-[11px] text-gray-400 mt-0.5">Take a dedicated rest after club/sports, then lock in for 60 uninterrupted focus minutes.</p>
+                                </div>
+                            </div>
+                            <div class="bg-darkBg/60 p-3 rounded-xl border border-brandPurpleDark flex gap-3">
+                                <div class="text-emerald-400 text-lg mt-0.5"><i class="fa-solid fa-face-smile-beam"></i></div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-white">Relief Guaranteed</h4>
+                                    <p class="text-[11px] text-gray-400 mt-0.5">Remember: finishing work gives instant relief and lets you enjoy video games and TV guilt-free!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Daily Motivation Quote -->
+                    <div class="glass-panel p-5 rounded-2xl bg-gradient-to-br from-brandPurpleDark/40 to-darkCard">
+                        <div class="text-xs text-brandPurpleLight font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                            <i class="fa-solid fa-quote-left"></i> Verse of the Day
+                        </div>
+                        <p id="dashboardVerseText" class="italic text-sm text-gray-200">"Whatever you do, work at it with all your heart, as working for the Lord, not for human masters..."</p>
+                        <div id="dashboardVerseRef" class="text-right text-xs font-bold text-waterCyan mt-2">— Colossians 3:23</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: FOCUS TIMER & DISTRACTION CONTROL -->
+        <section id="tab-focus" class="tab-content space-y-6 hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Focus Timer Card -->
+                <div class="glass-panel p-6 rounded-2xl flex flex-col items-center justify-between space-y-6">
+                    <div class="w-full flex items-center justify-between border-b border-brandPurpleDark/50 pb-3">
+                        <h3 class="font-sports text-xl text-white tracking-wide flex items-center gap-2">
+                            <i class="fa-solid fa-stopwatch text-waterCyan"></i> Match Timer / Focus Block
+                        </h3>
+                        <select id="timerModeSelect" onchange="setTimerMode(this.value)" class="bg-darkBg border border-brandPurpleDark text-xs text-brandPurpleLight rounded-lg px-3 py-1.5 outline-none focus:border-brandPurple">
+                            <option value="60">1 Hour Power Focus</option>
+                            <option value="25">25 Min Pomodoro</option>
+                            <option value="15">15 Min Break Study</option>
+                            <option value="5">5 Min Short Rest</option>
+                        </select>
+                    </div>
+
+                    <!-- Circular Progress Timer -->
+                    <div class="relative w-64 h-64 flex items-center justify-center my-4">
+                        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="8" class="text-darkBg"></circle>
+                            <circle id="timerProgressCircle" cx="50" cy="50" r="42" stroke="currentColor" stroke-width="8" stroke-dasharray="264" stroke-dashoffset="0" stroke-linecap="round" class="text-brandPurple transition-all duration-1000"></circle>
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span id="timerDisplay" class="font-sports text-6xl text-white tracking-wider">60:00</span>
+                            <span id="timerLabel" class="text-xs text-waterCyan font-semibold uppercase tracking-wider mt-1">Ready for Focus</span>
+                        </div>
+                    </div>
+
+                    <!-- Timer Controls -->
+                    <div class="flex items-center gap-4 w-full max-w-xs">
+                        <button id="startTimerBtn" onclick="toggleTimer()" class="flex-1 bg-gradient-to-r from-brandPurple to-brandPurpleLight text-white font-bold py-3 px-6 rounded-xl shadow-lg hover:opacity-90 transition">
+                            <i class="fa-solid fa-play mr-1.5"></i> Start Session
+                        </button>
+                        <button onclick="resetTimer()" class="bg-darkBg border border-brandPurpleDark text-gray-300 font-bold p-3 rounded-xl hover:bg-brandPurpleDark transition">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Screen Time & Distraction Tracker -->
+                <div class="glass-panel p-6 rounded-2xl space-y-6">
+                    <div class="border-b border-brandPurpleDark/50 pb-3">
+                        <h3 class="font-sports text-xl text-white tracking-wide flex items-center gap-2">
+                            <i class="fa-solid fa-mobile-screen-button text-brandPurpleLight"></i> Anti-Doomscroll Log
+                        </h3>
+                        <p class="text-xs text-gray-400">Track study focus vs distraction hours (TikTok, Video Games, TV)</p>
+                    </div>
+
+                    <!-- Time Distribution Visual Bars -->
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-emerald-400 font-semibold"><i class="fa-solid fa-book-open mr-1"></i> Productive Study Time</span>
+                                <span id="studyTimeText" class="text-gray-300">0 hrs</span>
+                            </div>
+                            <div class="w-full bg-darkBg h-3 rounded-full overflow-hidden border border-brandPurpleDark">
+                                <div id="studyBar" class="bg-emerald-500 h-full w-0 transition-all duration-500"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-rose-400 font-semibold"><i class="fa-solid fa-display mr-1"></i> Doomscrolling & TV Time</span>
+                                <span id="screenTimeText" class="text-gray-300">0 hrs</span>
+                            </div>
+                            <div class="w-full bg-darkBg h-3 rounded-full overflow-hidden border border-brandPurpleDark">
+                                <div id="screenBar" class="bg-rose-500 h-full w-0 transition-all duration-500"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Log Distraction or Study Form -->
+                    <div class="bg-darkBg/60 p-4 rounded-xl border border-brandPurpleDark space-y-3">
+                        <h4 class="text-xs font-bold text-white uppercase tracking-wider">Log Activity Hours Today</h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-[10px] text-gray-400 block mb-1">Study Hours</label>
+                                <input id="logStudyInput" type="number" step="0.5" min="0" placeholder="e.g. 1.5" class="w-full bg-darkCard border border-brandPurpleDark text-xs text-white rounded-lg p-2 focus:border-brandPurple outline-none">
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-gray-400 block mb-1">Screen / Distraction Hrs</label>
+                                <input id="logScreenInput" type="number" step="0.5" min="0" placeholder="e.g. 2.0" class="w-full bg-darkCard border border-brandPurpleDark text-xs text-white rounded-lg p-2 focus:border-brandPurple outline-none">
+                            </div>
+                        </div>
+                        <button onclick="saveActivityLogs()" class="w-full bg-waterBlue hover:bg-waterBlue/80 text-white font-bold text-xs py-2 rounded-lg transition">
+                            <i class="fa-solid fa-floppy-disk mr-1"></i> Update Activity Stats
+                        </button>
+                    </div>
+
+                    <div id="distractionWarning" class="hidden p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-300 text-xs flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation text-base"></i>
+                        <span>Caution: High doomscroll hours detected. Lock in your homework block now to save free time before 9:30 PM!</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: FAITH-BASED MOTIVATION HUB -->
+        <section id="tab-faith" class="tab-content space-y-6 hidden">
+            <div class="glass-panel p-6 rounded-2xl border-t-4 border-t-brandPurple">
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-brandPurpleDark/50 pb-4">
+                    <div>
+                        <h2 class="font-sports text-2xl text-white tracking-wide flex items-center gap-2">
+                            <i class="fa-solid fa-cross text-amber-400"></i> Bible-Grounded Faith Hub
+                        </h2>
+                        <p class="text-xs text-gray-300">Scripture guidance and reflection for overcoming laziness, resisting distraction, and staying diligent.</p>
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="filterVerses('all')" class="verse-filter-btn px-3 py-1 rounded-lg text-xs font-semibold bg-brandPurple text-white">All</button>
+                        <button onclick="filterVerses('discipline')" class="verse-filter-btn px-3 py-1 rounded-lg text-xs font-semibold bg-darkBg text-gray-300 border border-brandPurpleDark">Discipline</button>
+                        <button onclick="filterVerses('distraction')" class="verse-filter-btn px-3 py-1 rounded-lg text-xs font-semibold bg-darkBg text-gray-300 border border-brandPurpleDark">Overcoming Distraction</button>
+                        <button onclick="filterVerses('peace')" class="verse-filter-btn px-3 py-1 rounded-lg text-xs font-semibold bg-darkBg text-gray-300 border border-brandPurpleDark">Peace & Relief</button>
+                    </div>
+                </div>
+
+                <!-- Verse Grid -->
+                <div id="verseGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+                    <!-- Dynamic Verses inserted here -->
+                </div>
+            </div>
+
+            <!-- Faith Reflection Journal -->
+            <div class="glass-panel p-6 rounded-2xl space-y-4">
+                <h3 class="font-sports text-xl text-white tracking-wide flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square text-waterCyan"></i> Daily Spiritual Focus Journal
+                </h3>
+                <p class="text-xs text-gray-400">Reflect on your struggles with distraction today and state your commitment before God.</p>
+                <textarea id="reflectionJournal" rows="3" placeholder="Write today's reflection or prayer for discipline..." class="w-full bg-darkBg border border-brandPurpleDark rounded-xl p-3 text-xs text-white focus:border-brandPurple outline-none"></textarea>
+                <div class="flex justify-between items-center">
+                    <span id="journalStatus" class="text-xs text-emerald-400"></span>
+                    <button onclick="saveReflection()" class="bg-gradient-to-r from-brandPurple to-brandPurpleLight text-white font-bold text-xs px-5 py-2.5 rounded-xl">
+                        <i class="fa-solid fa-bookmark mr-1"></i> Save Reflection
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: WATER POLO GAME -->
+        <section id="tab-game" class="tab-content space-y-6 hidden">
+            <div class="glass-panel p-6 rounded-2xl space-y-4">
+                <div class="flex flex-wrap items-center justify-between gap-4 border-b border-brandPurpleDark/50 pb-3">
+                    <div>
+                        <h2 class="font-sports text-2xl text-white tracking-wide flex items-center gap-2">
+                            <i class="fa-solid fa-trophy text-amber-400"></i> Water Polo Championship Mini-Game
+                        </h2>
+                        <p class="text-xs text-gray-300">Swim, dodge the defender, align your shot, and score past the goalie!</p>
+                    </div>
+                    <div class="flex items-center gap-4 bg-darkBg/80 px-4 py-2 rounded-xl border border-brandPurpleDark">
+                        <div class="text-xs"><span class="text-gray-400">Score:</span> <span id="gameScore" class="font-bold text-waterCyan text-base">0</span></div>
+                        <div class="h-4 w-px bg-brandPurpleDark"></div>
+                        <div class="text-xs"><span class="text-gray-400">Shot Clock:</span> <span id="shotClock" class="font-bold text-amber-400 text-base">20s</span></div>
+                        <div class="h-4 w-px bg-brandPurpleDark"></div>
+                        <div class="text-xs"><span class="text-gray-400">High Score:</span> <span id="gameHighScore" class="font-bold text-brandPurpleLight text-base">0</span></div>
+                    </div>
+                </div>
+
+                <!-- Game Canvas Box -->
+                <div class="relative w-full overflow-hidden rounded-xl bg-darkBg border-2 border-brandPurpleDark flex justify-center items-center shadow-2xl">
+                    <canvas id="gameCanvas" width="800" height="450" class="w-full max-w-4xl h-auto block cursor-crosshair"></canvas>
+
+                    <!-- Game Overlay Start / Game Over -->
+                    <div id="gameOverlay" class="absolute inset-0 bg-darkBg/90 backdrop-blur-sm flex flex-col items-center justify-center text-center p-6 space-y-4 z-10">
+                        <i class="fa-solid fa-water-ladder text-5xl text-waterCyan animate-bounce"></i>
+                        <h3 id="overlayTitle" class="font-sports text-4xl text-white">Water Polo Arcade</h3>
+                        <p id="overlaySub" class="text-xs text-gray-300 max-w-md">
+                            Use <strong class="text-waterCyan">WASD or Arrow Keys</strong> to swim player. Aim with your <strong class="text-waterCyan">Mouse Cursor</strong> and click or press <strong class="text-waterCyan">SPACE</strong> to shoot the ball!
+                        </p>
+                        <button id="startGameBtn" onclick="initAndStartGame()" class="bg-gradient-to-r from-brandPurple to-brandPurpleLight text-white font-bold px-8 py-3 rounded-xl shadow-lg hover:scale-105 transition">
+                            <i class="fa-solid fa-play mr-2"></i> Play Match
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Game Controls Instructions -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                    <div class="bg-darkBg/60 p-3 rounded-xl border border-brandPurpleDark flex items-center gap-3">
+                        <i class="fa-solid fa-keyboard text-brandPurple text-xl"></i>
+                        <div><strong class="text-white">WASD / Arrows:</strong> Swim around the pool</div>
+                    </div>
+                    <div class="bg-darkBg/60 p-3 rounded-xl border border-brandPurpleDark flex items-center gap-3">
+                        <i class="fa-solid fa-computer-mouse text-waterCyan text-xl"></i>
+                        <div><strong class="text-white">Mouse Aim & Click:</strong> Target & Shoot at Goal</div>
+                    </div>
+                    <div class="bg-darkBg/60 p-3 rounded-xl border border-brandPurpleDark flex items-center gap-3">
+                        <i class="fa-solid fa-gauge-high text-amber-400 text-xl"></i>
+                        <div><strong class="text-white">Hold Shoot:</strong> Charge Power Throw</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: LOCKER ROOM & CUSTOMIZATION -->
+        <section id="tab-club" class="tab-content space-y-6 hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Customization Panel -->
+                <div class="glass-panel p-6 rounded-2xl space-y-5">
+                    <div class="border-b border-brandPurpleDark/50 pb-3">
+                        <h3 class="font-sports text-xl text-white tracking-wide flex items-center gap-2">
+                            <i class="fa-solid fa-palette text-brandPurpleLight"></i> Water Polo Gear Customizer
+                        </h3>
+                        <p class="text-xs text-gray-400">Personalize your player cap and ball appearance in the game.</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-xs font-semibold text-gray-300 block mb-2">Water Polo Cap Color</label>
+                            <div class="flex items-center gap-3">
+                                <button onclick="setCapColor('#a855f7')" class="w-8 h-8 rounded-full bg-purple-500 border-2 border-white focus:ring-2 ring-purple-400"></button>
+                                <button onclick="setCapColor('#38bdf8')" class="w-8 h-8 rounded-full bg-sky-400 border-2 border-white focus:ring-2 ring-sky-400"></button>
+                                <button onclick="setCapColor('#f59e0b')" class="w-8 h-8 rounded-full bg-amber-500 border-2 border-white focus:ring-2 ring-amber-400"></button>
+                                <button onclick="setCapColor('#10b981')" class="w-8 h-8 rounded-full bg-emerald-500 border-2 border-white focus:ring-2 ring-emerald-400"></button>
+                                <button onclick="setCapColor('#ef4444')" class="w-8 h-8 rounded-full bg-rose-500 border-2 border-white focus:ring-2 ring-rose-400"></button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-semibold text-gray-300 block mb-2">Cap Number</label>
+                            <input id="capNumberInput" type="number" min="1" max="15" value="7" onchange="setCapNumber(this.value)" class="bg-darkBg border border-brandPurpleDark text-white text-xs rounded-xl p-2.5 w-24 outline-none focus:border-brandPurple">
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-semibold text-gray-300 block mb-2">Water Polo Ball Color</label>
+                            <div class="flex items-center gap-3">
+                                <button onclick="setBallColor('#f59e0b')" class="w-8 h-8 rounded-full bg-amber-500 border-2 border-white"></button>
+                                <button onclick="setBallColor('#a855f7')" class="w-8 h-8 rounded-full bg-purple-500 border-2 border-white"></button>
+                                <button onclick="setBallColor('#38bdf8')" class="w-8 h-8 rounded-full bg-sky-400 border-2 border-white"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- After-School Club & Sports Friends Schedule -->
+                <div class="glass-panel p-6 rounded-2xl space-y-5">
+                    <div class="border-b border-brandPurpleDark/50 pb-3 flex justify-between items-center">
+                        <div>
+                            <h3 class="font-sports text-xl text-white tracking-wide flex items-center gap-2">
+                                <i class="fa-solid fa-people-group text-waterCyan"></i> Friends & Sports Club Schedule
+                            </h3>
+                            <p class="text-xs text-gray-400">Balance after-school practice with study sessions</p>
+                        </div>
+                        <button onclick="addClubActivity()" class="bg-waterBlue text-white text-xs font-bold px-3 py-1.5 rounded-lg">
+                            <i class="fa-solid fa-plus"></i> Add Event
+                        </button>
+                    </div>
+
+                    <div id="clubList" class="space-y-3">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal: Add Homework Task -->
+    <div id="addModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="glass-panel max-w-md w-full p-6 rounded-2xl space-y-4 border border-brandPurple">
+            <div class="flex justify-between items-center border-b border-brandPurpleDark pb-2">
+                <h3 class="font-sports text-xl text-white"><i class="fa-solid fa-plus text-brandPurpleLight mr-1"></i> Add Homework Task</h3>
+                <button onclick="closeAddHomeworkModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="text-xs text-gray-300 block mb-1">Subject / Assignment</label>
+                    <input id="modalTaskTitle" type="text" placeholder="e.g. Math Practice Ch. 4" class="w-full bg-darkBg border border-brandPurpleDark text-xs text-white p-2.5 rounded-xl outline-none focus:border-brandPurple">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-300 block mb-1">Strategy Block</label>
+                    <select id="modalTaskStrategy" class="w-full bg-darkBg border border-brandPurpleDark text-xs text-white p-2.5 rounded-xl outline-none focus:border-brandPurple">
+                        <option value="School Break Study">Study during School Break</option>
+                        <option value="Get It Over With Early">Get It Over With Early (After School)</option>
+                        <option value="1 Hour Focused Block">1 Hour Focused Block</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-300 block mb-1">Estimated Minutes</label>
+                    <input id="modalTaskMins" type="number" min="5" step="5" value="30" class="w-full bg-darkBg border border-brandPurpleDark text-xs text-white p-2.5 rounded-xl outline-none focus:border-brandPurple">
+                </div>
+            </div>
+            <button onclick="saveHomeworkTask()" class="w-full bg-gradient-to-r from-brandPurple to-brandPurpleLight text-white font-bold py-2.5 rounded-xl text-xs hover:opacity-90">
+                Save Task to List
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let state = {
+            reliefPoints: 0,
+            tasks: [],
+            studyHours: 0,
+            screenHours: 0,
+            reflection: '',
+            capColor: '#a855f7',
+            capNumber: 7,
+            ballColor: '#f59e0b',
+            highScore: 0,
+            clubs: [
+                { id: 1, title: 'Water Polo Practice', time: '4:00 PM - 5:30 PM', days: 'Mon, Wed, Fri' },
+                { id: 2, title: 'Study Group with Friends', time: '12:15 PM (Lunch Break)', days: 'Tue, Thu' }
+            ]
+        };
+
+        const BIBLE_VERSES = [
+            { verse: "Whatever you do, work at it with all your heart, as working for the Lord, not for human masters.", ref: "Colossians 3:23", category: "discipline" },
+            { verse: "Commit to the LORD whatever you do, and he will establish your plans.", ref: "Proverbs 16:3", category: "discipline" },
+            { verse: "Let us not become weary in doing good, for at the proper time we will reap a harvest if we do not give up.", ref: "Galatians 6:9", category: "discipline" },
+            { verse: "I can do all this through him who gives me strength.", ref: "Philippians 4:13", category: "peace" },
+            { verse: "Go to the ant, you sluggard; consider its ways and be wise!", ref: "Proverbs 6:6", category: "distraction" },
+            { verse: "No temptation has overtaken you except what is common to mankind. And God is faithful; he will not let you be tempted beyond what you can bear.", ref: "1 Corinthians 10:13", category: "distraction" },
+            { verse: "Peace I leave with you; my peace I give you. I do not give to you as the world gives. Do not let your hearts be troubled.", ref: "John 14:27", category: "peace" }
+        ];
+
+        window.onload = function() {
+            loadLocalStorage();
+            initCountdown();
+            renderTasks();
+            renderVerses('all');
+            renderClubs();
+            updateStatsUI();
+            
+            // Set random daily verse
+            const randomVerse = BIBLE_VERSES[Math.floor(Math.random() * BIBLE_VERSES.length)];
+            document.getElementById('dashboardVerseText').textContent = `"${randomVerse.verse}"`;
+            document.getElementById('dashboardVerseRef').textContent = `— ${randomVerse.ref}`;
+
+            // Initialize game canvas setup
+            setupGameCanvas();
+        };
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            // Style nav buttons
+            ['dashboard', 'focus', 'faith', 'game', 'club'].forEach(id => {
+                const btn = document.getElementById(`nav-${id}`);
+                if (id === tabId) {
+                    btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 bg-brandPurple text-white";
+                } else {
+                    btn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 text-gray-300 hover:text-white";
+                }
+            });
+
+            if (tabId === 'game') {
+                resizeCanvas();
+            }
+        }
+
+        // Bedtime Countdown Logic
+        function initCountdown() {
+            function updateCountdown() {
+                const now = new Date();
+                const bedtime = new Date();
+                bedtime.setHours(21, 30, 0, 0); // 9:30 PM
+
+                if (now > bedtime) {
+                    bedtime.setDate(bedtime.getDate() + 1);
+                }
+
+                const diff = bedtime - now;
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+                document.getElementById('bedtimeCountdown').textContent = `${hours}h ${mins}m`;
+            }
+            updateCountdown();
+            setInterval(updateCountdown, 30000);
+        }
+
+        function loadLocalStorage() {
+            const saved = localStorage.getItem('splash_study_data');
+            if (saved) {
+                try {
+                    state = { ...state, ...JSON.parse(saved) };
+                } catch(e) { console.error(e); }
+            }
+        }
+
+        function saveLocalStorage() {
+            localStorage.setItem('splash_study_data', JSON.stringify(state));
+            updateStatsUI();
+        }
+
+        function updateStatsUI() {
+            document.getElementById('reliefPointsDisplay').textContent = `${state.reliefPoints} PTS`;
+            document.getElementById('gameHighScore').textContent = state.highScore;
+
+            // Update Study/Screen time bars
+            document.getElementById('studyTimeText').textContent = `${state.studyHours} hrs`;
+            document.getElementById('screenTimeText').textContent = `${state.screenHours} hrs`;
+
+            const maxHrs = Math.max(state.studyHours + state.screenHours, 1);
+            document.getElementById('studyBar').style.width = `${(state.studyHours / maxHrs) * 100}%`;
+            document.getElementById('screenBar').style.width = `${(state.screenHours / maxHrs) * 100}%`;
+
+            const warning = document.getElementById('distractionWarning');
+            if (state.screenHours > 2) {
+                warning.classList.remove('hidden');
+            } else {
+                warning.classList.add('hidden');
+            }
+
+            if (state.reflection) {
+                document.getElementById('reflectionJournal').value = state.reflection;
+            }
+        }
+
+        function openAddHomeworkModal() {
+            document.getElementById('addModal').classList.remove('hidden');
+            document.getElementById('addModal').classList.add('flex');
+        }
+
+        function closeAddHomeworkModal() {
+            document.getElementById('addModal').classList.add('hidden');
+            document.getElementById('addModal').classList.remove('flex');
+        }
+
+        function saveHomeworkTask() {
+            const title = document.getElementById('modalTaskTitle').value.trim();
+            const strategy = document.getElementById('modalTaskStrategy').value;
+            const mins = parseInt(document.getElementById('modalTaskMins').value) || 30;
+
+            if (!title) return;
+
+            const newTask = {
+                id: Date.now(),
+                title,
+                strategy,
+                mins,
+                completed: false
+            };
+
+            state.tasks.push(newTask);
+            saveLocalStorage();
+            renderTasks();
+            closeAddHomeworkModal();
+            document.getElementById('modalTaskTitle').value = '';
+        }
+
+        function toggleTask(id) {
+            const task = state.tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                if (task.completed) {
+                    state.reliefPoints += 25; // Award relief points!
+                } else {
+                    state.reliefPoints = Math.max(0, state.reliefPoints - 25);
+                }
+                saveLocalStorage();
+                renderTasks();
+            }
+        }
+
+        function deleteTask(id) {
+            state.tasks = state.tasks.filter(t => t.id !== id);
+            saveLocalStorage();
+            renderTasks();
+        }
+
+        function renderTasks() {
+            const list = document.getElementById('homeworkList');
+            const pending = state.tasks.filter(t => !t.completed).length;
+            document.getElementById('taskCountBadge').textContent = `${pending} Pending`;
+
+            if (state.tasks.length === 0) {
+                list.innerHTML = `
+                    <div class="text-center py-12 text-gray-400">
+                        <i class="fa-solid fa-circle-check text-4xl text-brandPurpleDark mb-2 block"></i>
+                        <p class="text-xs">No homework added yet! Click <strong>"Add Homework"</strong> to get organized.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = state.tasks.map(t => `
+                <div class="p-3.5 rounded-xl border transition-all flex items-center justify-between gap-3 ${t.completed ? 'bg-darkBg/30 border-brandPurpleDark/40 opacity-60' : 'bg-darkBg/80 border-brandPurpleDark hover:border-brandPurple'}">
+                    <div class="flex items-center gap-3">
+                        <button onclick="toggleTask(${t.id})" class="w-6 h-6 rounded-lg border flex items-center justify-center transition ${t.completed ? 'bg-emerald-500 border-emerald-500 text-darkBg' : 'border-gray-500 hover:border-brandPurple'}">
+                            ${t.completed ? '<i class="fa-solid fa-check text-xs"></i>' : ''}
+                        </button>
+                        <div>
+                            <h4 class="text-xs font-semibold ${t.completed ? 'line-through text-gray-400' : 'text-white'}">${t.title}</h4>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="text-[10px] bg-brandPurple/20 text-brandPurpleLight px-2 py-0.5 rounded-md font-medium"><i class="fa-solid fa-bullseye mr-1"></i>${t.strategy}</span>
+                                <span class="text-[10px] text-gray-400"><i class="fa-regular fa-clock mr-1"></i>${t.mins} min</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="deleteTask(${t.id})" class="text-gray-500 hover:text-rose-400 text-xs px-2 py-1">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        let timerInterval = null;
+        let timerSecondsLeft = 3600;
+        let timerTotalSeconds = 3600;
+        let isTimerRunning = false;
+
+        function setTimerMode(mins) {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            timerTotalSeconds = parseInt(mins) * 60;
+            timerSecondsLeft = timerTotalSeconds;
+            updateTimerDisplay();
+            document.getElementById('startTimerBtn').innerHTML = '<i class="fa-solid fa-play mr-1.5"></i> Start Session';
+        }
+
+        function toggleTimer() {
+            if (isTimerRunning) {
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+                document.getElementById('startTimerBtn').innerHTML = '<i class="fa-solid fa-play mr-1.5"></i> Resume';
+            } else {
+                isTimerRunning = true;
+                document.getElementById('startTimerBtn').innerHTML = '<i class="fa-solid fa-pause mr-1.5"></i> Pause';
+                timerInterval = setInterval(() => {
+                    if (timerSecondsLeft > 0) {
+                        timerSecondsLeft--;
+                        updateTimerDisplay();
+                    } else {
+                        clearInterval(timerInterval);
+                        isTimerRunning = false;
+                        state.reliefPoints += 50;
+                        state.studyHours += Math.round((timerTotalSeconds / 3600) * 10) / 10;
+                        saveLocalStorage();
+                        document.getElementById('timerLabel').textContent = "Session Complete! +50 PTS";
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            timerSecondsLeft = timerTotalSeconds;
+            updateTimerDisplay();
+            document.getElementById('startTimerBtn').innerHTML = '<i class="fa-solid fa-play mr-1.5"></i> Start Session';
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timerSecondsLeft / 60);
+            const s = timerSecondsLeft % 60;
+            document.getElementById('timerDisplay').textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            
+            // Progress circle
+            const dash = 264;
+            const offset = dash - (timerSecondsLeft / timerTotalSeconds) * dash;
+            document.getElementById('timerProgressCircle').style.strokeDashoffset = offset;
+        }
+
+        function saveActivityLogs() {
+            const study = parseFloat(document.getElementById('logStudyInput').value) || 0;
+            const screen = parseFloat(document.getElementById('logScreenInput').value) || 0;
+
+            state.studyHours += study;
+            state.screenHours += screen;
+            saveLocalStorage();
+
+            document.getElementById('logStudyInput').value = '';
+            document.getElementById('logScreenInput').value = '';
+        }
+
+        function renderVerses(category) {
+            const grid = document.getElementById('verseGrid');
+            const filtered = category === 'all' ? BIBLE_VERSES : BIBLE_VERSES.filter(v => v.category === category);
+
+            grid.innerHTML = filtered.map(v => `
+                <div class="glass-panel p-4 rounded-xl border border-brandPurpleDark flex flex-col justify-between space-y-3">
+                    <p class="text-xs text-gray-200 italic leading-relaxed">"${v.verse}"</p>
+                    <div class="flex justify-between items-center text-[11px]">
+                        <span class="font-bold text-waterCyan">${v.ref}</span>
+                        <span class="uppercase tracking-wider text-[9px] bg-brandPurple/20 text-brandPurpleLight px-2 py-0.5 rounded-full">${v.category}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterVerses(cat) {
+            renderVerses(cat);
+            document.querySelectorAll('.verse-filter-btn').forEach(btn => {
+                if (btn.textContent.toLowerCase().includes(cat)) {
+                    btn.className = "verse-filter-btn px-3 py-1 rounded-lg text-xs font-semibold bg-brandPurple text-white";
+                } else {
+                    btn.className = "verse-filter-btn px-3 py-1 rounded-lg text-xs font-semibold bg-darkBg text-gray-300 border border-brandPurpleDark";
+                }
+            });
+        }
+
+        function saveReflection() {
+            const text = document.getElementById('reflectionJournal').value.trim();
+            state.reflection = text;
+            saveLocalStorage();
+            const status = document.getElementById('journalStatus');
+            status.textContent = "Saved to local storage!";
+            setTimeout(() => status.textContent = '', 3000);
+        }
+
+        function setCapColor(color) {
+            state.capColor = color;
+            saveLocalStorage();
+        }
+        function setCapNumber(num) {
+            state.capNumber = parseInt(num) || 7;
+            saveLocalStorage();
+        }
+        function setBallColor(color) {
+            state.ballColor = color;
+            saveLocalStorage();
+        }
+
+        function renderClubs() {
+            const container = document.getElementById('clubList');
+            container.innerHTML = state.clubs.map(c => `
+                <div class="bg-darkBg/60 p-3 rounded-xl border border-brandPurpleDark flex items-center justify-between">
+                    <div>
+                        <h4 class="text-xs font-bold text-white">${c.title}</h4>
+                        <div class="text-[11px] text-gray-400 mt-0.5"><i class="fa-regular fa-clock mr-1"></i>${c.time} • ${c.days}</div>
+                    </div>
+                    <span class="text-xs text-brandPurpleLight"><i class="fa-solid fa-water-ladder"></i></span>
+                </div>
+            `).join('');
+        }
+
+        function addClubActivity() {
+            const title = prompt("Enter Sports or Club Activity Name:");
+            if (!title) return;
+            const time = prompt("Enter Schedule Time (e.g. 3:30 PM - 5:00 PM):") || "After School";
+            state.clubs.push({ id: Date.now(), title, time, days: 'Mon-Fri' });
+            saveLocalStorage();
+            renderClubs();
+        }
+
+        let canvas, ctx;
+        let gameActive = false;
+        let score = 0;
+        let shotClockSeconds = 20;
+        let shotClockTimer = null;
+
+        // Player & Game Entities
+        let player = { x: 400, y: 350, radius: 18, vx: 0, vy: 0, speed: 4 };
+        let ball = { x: 400, y: 330, radius: 8, vx: 0, vy: 0, isShot: false };
+        let goalie = { x: 400, y: 90, radius: 18, vx: 2.5, goalWidth: 200 };
+        let defender = { x: 300, y: 220, radius: 18, vx: 1.8 };
+        let particles = [];
+        let keys = {};
+        let mousePos = { x: 400, y: 200 };
+
+        function setupGameCanvas() {
+            canvas = document.getElementById('gameCanvas');
+            ctx = canvas.getContext('2d');
+
+            window.addEventListener('keydown', e => keys[e.code] = true);
+            window.addEventListener('keyup', e => keys[e.code] = false);
+
+            canvas.addEventListener('mousemove', e => {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                mousePos.x = (e.clientX - rect.left) * scaleX;
+                mousePos.y = (e.clientY - rect.top) * scaleY;
+            });
+
+            canvas.addEventListener('click', shootBall);
+        }
+
+        function resizeCanvas() {
+            if (!canvas) return;
+            // Draw static background frame if game inactive
+            if (!gameActive) renderGame();
+        }
+
+        function initAndStartGame() {
+            document.getElementById('gameOverlay').classList.add('hidden');
+            score = 0;
+            document.getElementById('gameScore').textContent = score;
+            resetRound();
+            gameActive = true;
+            
+            clearInterval(shotClockTimer);
+            shotClockSeconds = 20;
+            shotClockTimer = setInterval(() => {
+                if (gameActive) {
+                    shotClockSeconds--;
+                    document.getElementById('shotClock').textContent = `${shotClockSeconds}s`;
+                    if (shotClockSeconds <= 0) {
+                        endGame("Shot Clock Expired!");
+                    }
+                }
+            }, 1000);
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function resetRound() {
+            player.x = canvas.width / 2;
+            player.y = canvas.height - 80;
+            ball.x = player.x;
+            ball.y = player.y - 15;
+            ball.vx = 0;
+            ball.vy = 0;
+            ball.isShot = false;
+            shotClockSeconds = 20;
+            document.getElementById('shotClock').textContent = `${shotClockSeconds}s`;
+        }
+
+        function shootBall() {
+            if (!gameActive || ball.isShot) return;
+
+            const dx = mousePos.x - ball.x;
+            const dy = mousePos.y - ball.y;
+            const dist = Math.hypot(dx, dy);
+
+            const speed = 12;
+            ball.vx = (dx / dist) * speed;
+            ball.vy = (dy / dist) * speed;
+            ball.isShot = true;
+
+            // Water Ripple Particles
+            createRipples(ball.x, ball.y);
+        }
+
+        function createRipples(x, y) {
+            for (let i = 0; i < 12; i++) {
+                particles.push({
+                    x, y,
+                    radius: Math.random() * 4 + 2,
+                    vx: (Math.random() - 0.5) * 4,
+                    vy: (Math.random() - 0.5) * 4,
+                    alpha: 1
+                });
+            }
+        }
+
+        function updateGame() {
+            if (!gameActive) return;
+
+            // Player Movement
+            if (keys['KeyW'] || keys['ArrowUp']) player.y = Math.max(160, player.y - player.speed);
+            if (keys['KeyS'] || keys['ArrowDown']) player.y = Math.min(canvas.height - 30, player.y + player.speed);
+            if (keys['KeyA'] || keys['ArrowLeft']) player.x = Math.max(30, player.x - player.speed);
+            if (keys['KeyD'] || keys['ArrowRight']) player.x = Math.min(canvas.width - 30, player.x + player.speed);
+
+            // Ball attached to player if not shot
+            if (!ball.isShot) {
+                ball.x = player.x;
+                ball.y = player.y - 15;
+            } else {
+                ball.x += ball.vx;
+                ball.y += ball.vy;
+
+                // Check Goalie Collision
+                const distG = Math.hypot(ball.x - goalie.x, ball.y - goalie.y);
+                if (distG < ball.radius + goalie.radius) {
+                    createRipples(ball.x, ball.y);
+                    resetRound(); // Blocked!
+                }
+
+                // Check Defender Collision
+                const distD = Math.hypot(ball.x - defender.x, ball.y - defender.y);
+                if (distD < ball.radius + defender.radius) {
+                    createRipples(ball.x, ball.y);
+                    resetRound(); // Intercepted!
+                }
+
+                // Goal Net Scoring Check
+                const goalMinX = (canvas.width - goalie.goalWidth) / 2;
+                const goalMaxX = (canvas.width + goalie.goalWidth) / 2;
+
+                if (ball.y <= 70) {
+                    if (ball.x >= goalMinX && ball.x <= goalMaxX) {
+                        // GOAL SCORED!
+                        score += 100;
+                        document.getElementById('gameScore').textContent = score;
+                        if (score > state.highScore) {
+                            state.highScore = score;
+                            saveLocalStorage();
+                        }
+                        createRipples(ball.x, ball.y);
+                        resetRound();
+                    } else {
+                        // Out of bounds
+                        resetRound();
+                    }
+                }
+            }
+
+            // Goalie AI Movement
+            goalie.x += goalie.vx;
+            const goalMinX = (canvas.width - goalie.goalWidth) / 2 + 20;
+            const goalMaxX = (canvas.width + goalie.goalWidth) / 2 - 20;
+            if (goalie.x <= goalMinX || goalie.x >= goalMaxX) goalie.vx *= -1;
+
+            // Defender AI Movement
+            defender.x += defender.vx;
+            if (defender.x <= 150 || defender.x >= canvas.width - 150) defender.vx *= -1;
+
+            // Update Particles
+            particles.forEach((p, idx) => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha -= 0.03;
+                if (p.alpha <= 0) particles.splice(idx, 1);
+            });
+        }
+
+        function renderGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Water Pool Background
+            ctx.fillStyle = '#0284c7';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Pool Lane Lines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.setLineDash([10, 10]);
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(100, 0); ctx.lineTo(100, canvas.height);
+            ctx.moveTo(canvas.width - 100, 0); ctx.lineTo(canvas.width - 100, canvas.height);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Goal Net Structure
+            const goalW = goalie.goalWidth;
+            const goalX = (canvas.width - goalW) / 2;
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(goalX, 30, goalW, 40);
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(goalX, 30, goalW, 40);
+
+            // Render Goalie
+            ctx.fillStyle = '#ef4444'; // Red goalie cap
+            ctx.beginPath();
+            ctx.arc(goalie.x, goalie.y, goalie.radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 10px sans-serif';
+            ctx.fillText('GK', goalie.x - 7, goalie.y + 4);
+
+            // Render Defender
+            ctx.fillStyle = '#334155';
+            ctx.beginPath();
+            ctx.arc(defender.x, defender.y, defender.radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Aim Line from Player to Mouse
+            if (gameActive && !ball.isShot) {
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath();
+                ctx.moveTo(player.x, player.y);
+                ctx.lineTo(mousePos.x, mousePos.y);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+
+            // Render Player
+            ctx.fillStyle = state.capColor || '#a855f7';
+            ctx.beginPath();
+            ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 11px sans-serif';
+            ctx.fillText(`#${state.capNumber}`, player.x - 6, player.y + 4);
+
+            // Render Ball
+            ctx.fillStyle = state.ballColor || '#f59e0b';
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // Render Water Ripples Particles
+            particles.forEach(p => {
+                ctx.fillStyle = `rgba(56, 189, 248, ${p.alpha})`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        function gameLoop() {
+            if (gameActive) {
+                updateGame();
+                renderGame();
+                requestAnimationFrame(gameLoop);
+            }
+        }
+
+        function endGame(reason) {
+            gameActive = false;
+            clearInterval(shotClockTimer);
+            document.getElementById('overlayTitle').textContent = "Match Finished!";
+            document.getElementById('overlaySub').textContent = `${reason} Final Score: ${score}`;
+            document.getElementById('startGameBtn').textContent = "Play Again";
+            document.getElementById('gameOverlay').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

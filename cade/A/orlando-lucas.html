@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full theme-midnight">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NightShift & Focus - Teen Night Routine & Homework Assistant</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Google Fonts: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+    /* Dynamic Theme CSS Custom Properties */
+    :root, .theme-midnight {
+      --bg-main: #0b0f19;
+      --bg-card: #131b2e;
+      --bg-input: #090d16;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border-color: #1e293b;
+      --accent-primary: #818cf8;
+      --accent-secondary: #c084fc;
+      --accent-gradient: linear-gradient(135deg, #6366f1, #8b5cf6);
+      --success: #34d399;
+      --badge-bg: #1e1b4b;
+    }
+
+    .theme-matcha {
+      --bg-main: #0d1612;
+      --bg-card: #16241d;
+      --bg-input: #09100d;
+      --text-main: #f0fdf4;
+      --text-muted: #86efac;
+      --border-color: #23372c;
+      --accent-primary: #4ade80;
+      --accent-secondary: #2dd4bf;
+      --accent-gradient: linear-gradient(135deg, #22c55e, #14b8a6);
+      --success: #4ade80;
+      --badge-bg: #052e16;
+    }
+
+    .theme-sunset {
+      --bg-main: #1a0f15;
+      --bg-card: #281822;
+      --bg-input: #12090e;
+      --text-main: #fff1f2;
+      --text-muted: #fda4af;
+      --border-color: #3d2235;
+      --accent-primary: #fb7185;
+      --accent-secondary: #fb923c;
+      --accent-gradient: linear-gradient(135deg, #f43f5e, #fb923c);
+      --success: #34d399;
+      --badge-bg: #4c0519;
+    }
+
+    .theme-cyberpunk {
+      --bg-main: #090d16;
+      --bg-card: #101726;
+      --bg-input: #05080f;
+      --text-main: #f0f9ff;
+      --text-muted: #7dd3fc;
+      --border-color: #1e293b;
+      --accent-primary: #06b6d4;
+      --accent-secondary: #f43f5e;
+      --accent-gradient: linear-gradient(135deg, #06b6d4, #ec4899);
+      --success: #22d3ee;
+      --badge-bg: #164e63;
+    }
+
+    .theme-boba {
+      --bg-main: #181310;
+      --bg-card: #261e19;
+      --bg-input: #100c0a;
+      --text-main: #fef3c7;
+      --text-muted: #d97706;
+      --border-color: #3b2e27;
+      --accent-primary: #f59e0b;
+      --accent-secondary: #d97706;
+      --accent-gradient: linear-gradient(135deg, #d97706, #b45309);
+      --success: #10b981;
+      --badge-bg: #451a03;
+    }
+
+    .theme-lavender {
+      --bg-main: #11101d;
+      --bg-card: #1d1b30;
+      --bg-input: #0b0a14;
+      --text-main: #f3e8ff;
+      --text-muted: #c084fc;
+      --border-color: #2e2b4d;
+      --accent-primary: #c084fc;
+      --accent-secondary: #38bdf8;
+      --accent-gradient: linear-gradient(135deg, #a855f7, #38bdf8);
+      --success: #34d399;
+      --badge-bg: #3b0764;
+    }
+
+    .theme-oled {
+      --bg-main: #000000;
+      --bg-card: #121212;
+      --bg-input: #050505;
+      --text-main: #ffffff;
+      --text-muted: #a3a3a3;
+      --border-color: #262626;
+      --accent-primary: #eab308;
+      --accent-secondary: #f59e0b;
+      --accent-gradient: linear-gradient(135deg, #eab308, #ca8a04);
+      --success: #22c55e;
+      --badge-bg: #262626;
+    }
+
+    .theme-autumn {
+      --bg-main: #1a0c0a;
+      --bg-card: #2c1713;
+      --bg-input: #100706;
+      --text-main: #fef2f2;
+      --text-muted: #f97316;
+      --border-color: #42231d;
+      --accent-primary: #ea580c;
+      --accent-secondary: #d97706;
+      --accent-gradient: linear-gradient(135deg, #ea580c, #b45309);
+      --success: #10b981;
+      --badge-bg: #431407;
+    }
+
+    .theme-nordic {
+      --bg-main: #0f171e;
+      --bg-card: #18232c;
+      --bg-input: #090f14;
+      --text-main: #f0f9ff;
+      --text-muted: #2dd4bf;
+      --border-color: #263645;
+      --accent-primary: #14b8a6;
+      --accent-secondary: #38bdf8;
+      --accent-gradient: linear-gradient(135deg, #0d9488, #0284c7);
+      --success: #2dd4bf;
+      --badge-bg: #134e4a;
+    }
+
+    .theme-vaporwave {
+      --bg-main: #160a24;
+      --bg-card: #26123d;
+      --bg-input: #0d0517;
+      --text-main: #fdf4ff;
+      --text-muted: #f472b6;
+      --border-color: #3e1d63;
+      --accent-primary: #ec4899;
+      --accent-secondary: #06b6d4;
+      --accent-gradient: linear-gradient(135deg, #ec4899, #06b6d4);
+      --success: #22d3ee;
+      --badge-bg: #701a75;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: 'Outfit', sans-serif;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .app-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      transition: all 0.3s ease;
+    }
+
+    .app-input {
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+
+    .btn-accent {
+      background: var(--accent-gradient);
+      color: #ffffff;
+    }
+
+    .text-accent {
+      color: var(--accent-primary);
+    }
+
+    .text-muted-custom {
+      color: var(--text-muted);
+    }
+
+    .border-theme {
+      border-color: var(--border-color);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-main);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 9999px;
+    }
+
+    /* Breathing Visualizer Animation Box */
+    .breathing-box {
+      transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.5s ease;
+    }
+
+    /* Hide scrollbars for pill navigation */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
+
+  <!-- Top Header & Theme Selector Bar -->
+  <header class="sticky top-0 z-40 bg-[var(--bg-main)]/90 backdrop-blur-md border-b border-theme">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-3">
+      
+      <!-- Brand Logo & Name -->
+      <div class="flex items-center space-x-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center shadow-lg">
+          <i class="fa-solid fa-moon text-white text-base"></i>
+        </div>
+        <div>
+          <h1 class="text-base font-black tracking-tight flex items-center space-x-2">
+            <span>NightShift & Focus</span>
+            <span class="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full text-accent" style="background-color: var(--badge-bg);">9th Grade Assistant</span>
+          </h1>
+        </div>
+      </div>
+
+      <!-- Streak Counter Badge -->
+      <div class="flex items-center space-x-2">
+        <div class="flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-950/50 border border-amber-800/60 text-amber-400">
+          <i class="fa-solid fa-fire text-amber-500 animate-bounce"></i>
+          <span><span id="headerStreakCount">0</span> Day Streak</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Theme Bar Switcher (10 Themes) -->
+    <div class="border-t border-theme bg-[var(--bg-card)]/50 py-2">
+      <div class="max-w-6xl mx-auto px-4 overflow-x-auto flex items-center space-x-2 no-scrollbar">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-muted-custom shrink-0 mr-1">
+          <i class="fa-solid fa-palette mr-1"></i> Themes:
+        </span>
+
+        <button onclick="setTheme('theme-midnight')" class="theme-pill px-3 py-1 rounded-full text-xs font-semibold flex items-center space-x-1.5 border border-theme bg-slate-900 text-slate-200 shrink-0 hover:scale-105 transition-transform">
+          <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+          <span>Midnight</span>
+        </button>
+
+        <button onclick="setTheme('theme-matcha')" class="theme-pill px-3 py-1 rounded-full text-xs font-semibold flex items-center space-x-1.5 border border-theme bg-emerald-950 text-emerald-200 shrink-0 hover:scale-105 transition-transform">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+          <span>Matcha</span>
+        </button>
+
+        <button onclick="setTheme('theme-sunset')" class="theme-pill px-3 py-1 rounded-full text-xs font-semibold flex items-center space-x-1.5 border border-theme bg-rose-950 text-rose-200 shrink-0 hover:scale-105 transition-transform">
+          <span class="w-2.5 h-2.5 rounded-full bg-rose-400"></span>
+          <span>Sunset</span>
+        </button>
+
+        <button onclick="setTheme('theme-cyberpunk')" class="theme-pill px-3 py-1 rounded-full text-xs font-semibold flex items-center space-x-1.5 border border-theme bg-cyan-950 text-cyan-200 shrink-0 hover:scale-105 transition-transform">
+          <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+          <span>Cyberpunk</span>
+        </button>
+
+        <button onclick="setTheme('theme-boba')" class="theme-pill px-3 py-1 rounded-full text-xs font-semibold flex items-center space-x-1.5 border border-theme bg-amber-950 text-amber-200 shrink-0 hover:scale-105 transition-transform">
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+          <span>Boba Tea</span>
+        </button>
+
+        <button onclick="setTheme('theme-lavender')" class="theme-pill px-3 py-1 rounded-full text-xs font-semibold flex items-center space-x-1.5 border border-theme bg-purple-950 text-purple-200 shrink-0 hover:scale-105 transition-transform">
+          <span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span>
+          <span>Lavender</span>
+        </button>
+
+        <button onclick="setTheme('theme-oled')" class="theme-pill px-3 py-1 rounded-full text-xs font-semibold flex items-center space-x-1.5 border border-neutral-800 bg-black text-amber-400 shrink-0 hover:scale-105 transition-transform">
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+          <span>OLED Gold</span>
+        </button>
+
+        <button onclick="setTheme('theme-autumn')" class="theme-pill px-3 py-1 rounded-full text-xs font-semibold flex items-center space-x-1.5 border border-theme bg-orange-950 text-orange-200 shrink-0 hover:scale-105 transition-transform">
+          <span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span>
+          <span>Autumn</span>
+        </button>
+
+        <button onclick="setTheme('theme-nordic')" class="theme-pill px-3 py-1 rounded-full text-xs font-semibold flex items-center space-x-1.5 border border-theme bg-teal-950 text-teal-200 shrink-0 hover:scale-105 transition-transform">
+          <span class="w-2.5 h-2.5 rounded-full bg-teal-400"></span>
+          <span>Nordic</span>
+        </button>
+
+        <button onclick="setTheme('theme-vaporwave')" class="theme-pill px-3 py-1 rounded-full text-xs font-semibold flex items-center space-x-1.5 border border-theme bg-fuchsia-950 text-fuchsia-200 shrink-0 hover:scale-105 transition-transform">
+          <span class="w-2.5 h-2.5 rounded-full bg-fuchsia-400"></span>
+          <span>Vaporwave</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tab Buttons -->
+  <main class="max-w-6xl mx-auto px-4 mt-4 w-full flex-1 mb-8">
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-6">
+      <button onclick="switchTab('focus')" id="tab-btn-focus" class="nav-tab p-3 rounded-2xl text-xs sm:text-sm font-bold border border-theme flex items-center justify-center space-x-2 btn-accent transition-all shadow-md">
+        <i class="fa-solid fa-bullseye"></i>
+        <span>1. Homework Focus</span>
+      </button>
+
+      <button onclick="switchTab('winddown')" id="tab-btn-winddown" class="nav-tab p-3 rounded-2xl text-xs sm:text-sm font-bold border border-theme flex items-center justify-center space-x-2 app-card text-muted-custom transition-all hover:text-white">
+        <i class="fa-solid fa-phone-slash"></i>
+        <span>2. Unplug & Relax</span>
+      </button>
+
+      <button onclick="switchTab('sleep')" id="tab-btn-sleep" class="nav-tab p-3 rounded-2xl text-xs sm:text-sm font-bold border border-theme flex items-center justify-center space-x-2 app-card text-muted-custom transition-all hover:text-white">
+        <i class="fa-solid fa-bed"></i>
+        <span>3. Sleep & Audio</span>
+      </button>
+
+      <button onclick="switchTab('braindump')" id="tab-btn-braindump" class="nav-tab p-3 rounded-2xl text-xs sm:text-sm font-bold border border-theme flex items-center justify-center space-x-2 app-card text-muted-custom transition-all hover:text-white">
+        <i class="fa-solid fa-brain"></i>
+        <span>4. Mind Dump & Streaks</span>
+      </button>
+    </div>
+
+    <!-- TAB 1: HOMEWORK FOCUS -->
+    <section id="tab-content-focus" class="tab-page space-y-6">
+      
+      <!-- Homework Grid Layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Pomodoro Timer Box -->
+        <div class="lg:col-span-5 app-card rounded-3xl p-6 flex flex-col justify-between relative overflow-hidden shadow-xl">
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-xs font-bold uppercase tracking-widest text-accent flex items-center space-x-1.5">
+              <i class="fa-solid fa-stopwatch"></i>
+              <span>Study Pomodoro</span>
+            </span>
+            <span id="pomoModeBadge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-900/40 text-indigo-300 border border-indigo-700/50">
+              Focus Session
+            </span>
+          </div>
+
+          <!-- Timer Dial Display -->
+          <div class="text-center my-6">
+            <div class="inline-flex flex-col items-center justify-center w-52 h-52 sm:w-60 sm:h-60 rounded-full border-4 border-theme bg-[var(--bg-input)] shadow-2xl relative">
+              <span id="timerDisplay" class="text-5xl sm:text-6xl font-black tracking-tighter text-main font-mono">25:00</span>
+              <p id="timerStatusText" class="text-xs font-medium text-muted-custom mt-2">Get ready to tackle 9th grade work!</p>
+            </div>
+          </div>
+
+          <!-- Timer Mode Switchers -->
+          <div class="grid grid-cols-3 gap-2 mb-4">
+            <button onclick="setTimerMode('focus')" id="mode-btn-focus" class="py-1.5 rounded-xl text-xs font-bold border border-theme bg-indigo-600 text-white">Focus (25m)</button>
+            <button onclick="setTimerMode('shortBreak')" id="mode-btn-shortBreak" class="py-1.5 rounded-xl text-xs font-semibold border border-theme app-card text-muted-custom hover:text-white">Short (5m)</button>
+            <button onclick="setTimerMode('longBreak')" id="mode-btn-longBreak" class="py-1.5 rounded-xl text-xs font-semibold border border-theme app-card text-muted-custom hover:text-white">Long (15m)</button>
+          </div>
+
+          <!-- Control Buttons -->
+          <div class="flex items-center space-x-3">
+            <button id="toggleTimerBtn" onclick="toggleTimer()" class="flex-1 py-3 rounded-2xl font-bold btn-accent text-sm flex items-center justify-center space-x-2 shadow-lg hover:opacity-95 transition-opacity">
+              <i class="fa-solid fa-play" id="timerPlayIcon"></i>
+              <span id="timerPlayText">Start Focus</span>
+            </button>
+            <button onclick="resetTimer()" class="p-3 rounded-2xl border border-theme app-card text-muted-custom hover:text-white transition-colors" title="Reset Timer">
+              <i class="fa-solid fa-rotate-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Homework Checklist Box -->
+        <div class="lg:col-span-7 app-card rounded-3xl p-6 shadow-xl flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h2 class="text-lg font-bold flex items-center space-x-2">
+                  <i class="fa-solid fa-book-open text-accent"></i>
+                  <span>Tonight's Homework Tasks</span>
+                </h2>
+                <p class="text-xs text-muted-custom">Organize your 9th grade subjects & check them off</p>
+              </div>
+              <span id="taskProgressBadge" class="text-xs font-extrabold px-3 py-1 rounded-full bg-emerald-950 border border-emerald-800 text-emerald-400">0 / 0 Done</span>
+            </div>
+
+            <!-- Task Input Form -->
+            <form onsubmit="handleAddTask(event)" class="flex flex-col sm:flex-row gap-2 mb-4">
+              <input type="text" id="taskInput" placeholder="Add assignment (e.g. Algebra pg 142, Bio lab...)" required class="flex-1 px-4 py-2.5 rounded-2xl app-input text-xs sm:text-sm focus:outline-none focus:border-indigo-500">
+              
+              <select id="taskSubject" class="px-3 py-2.5 rounded-2xl app-input text-xs sm:text-sm font-semibold focus:outline-none">
+                <option value="Math">📐 Math</option>
+                <option value="Science">🔬 Science</option>
+                <option value="English">📚 English</option>
+                <option value="History">🌍 History</option>
+                <option value="Language">🌐 Language</option>
+                <option value="Other">✏️ Other</option>
+              </select>
+
+              <button type="submit" class="px-5 py-2.5 rounded-2xl btn-accent font-bold text-xs sm:text-sm shrink-0 flex items-center justify-center space-x-1">
+                <i class="fa-solid fa-plus"></i>
+                <span>Add Task</span>
+              </button>
+            </form>
+
+            <!-- Homework Task List -->
+            <div id="taskList" class="space-y-2.5 max-h-[320px] overflow-y-auto pr-1">
+              <!-- Tasks rendered dynamically via JS -->
+            </div>
+          </div>
+
+          <!-- Bottom Motivational Note -->
+          <div class="mt-4 pt-3 border-t border-theme flex items-center justify-between text-xs text-muted-custom">
+            <span><i class="fa-solid fa-lightbulb text-amber-400 mr-1"></i> Pro Tip: Finish hard subjects first before relaxing!</span>
+            <button onclick="clearCompletedTasks()" class="hover:text-rose-400 transition-colors text-[11px] font-semibold">Clear Completed</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB 2: UNPLUG & RELAX -->
+    <section id="tab-content-winddown" class="tab-page hidden space-y-6">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Guided Breathing Visualizer -->
+        <div class="lg:col-span-6 app-card rounded-3xl p-6 shadow-xl flex flex-col items-center justify-between text-center min-h-[420px]">
+          <div class="w-full text-left">
+            <span class="text-xs font-bold uppercase tracking-widest text-accent flex items-center space-x-1.5">
+              <i class="fa-solid fa-wind"></i>
+              <span>Box Breathing Visualizer</span>
+            </span>
+            <p class="text-xs text-muted-custom">4 Seconds Inhale - 4 Hold - 4 Exhale - 4 Hold to lower evening anxiety</p>
+          </div>
+
+          <!-- Animated Breathing Circle -->
+          <div class="my-8 relative flex items-center justify-center">
+            <div id="breathOuterRing" class="w-48 h-48 sm:w-56 sm:h-56 rounded-full border-2 border-indigo-500/30 flex items-center justify-center">
+              <div id="breathCircle" class="w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center breathing-box shadow-2xl transform scale-100 opacity-90">
+                <span id="breathActionText" class="text-sm sm:text-base font-extrabold text-white uppercase tracking-wider">Get Ready</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Breathing Controls & Timer -->
+          <div class="w-full space-y-3">
+            <p id="breathSubtitle" class="text-xs font-semibold text-accent">Click start to relax your body before bed</p>
+            <button id="breathToggleBtn" onclick="toggleBreathing()" class="w-full py-3 rounded-2xl btn-accent font-bold text-sm shadow-md">
+              Start Breathing Exercise
+            </button>
+          </div>
+        </div>
+
+        <!-- Screen Detox & Night Prep Checklist -->
+        <div class="lg:col-span-6 app-card rounded-3xl p-6 shadow-xl flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h2 class="text-lg font-bold flex items-center space-x-2">
+                  <i class="fa-solid fa-mobile-screen-button text-amber-400"></i>
+                  <span>10-Minute Screen Detox Checklist</span>
+                </h2>
+                <p class="text-xs text-muted-custom">Prepare for a deep sleep by setting boundaries with technology</p>
+              </div>
+              <span id="detoxBadge" class="text-xs font-extrabold px-3 py-1 rounded-full bg-amber-950 border border-amber-800 text-amber-400">0/5 Done</span>
+            </div>
+
+            <!-- Detox Checklist Items -->
+            <div class="space-y-3 mt-4" id="detoxChecklist">
+              <label class="flex items-start space-x-3 p-3 rounded-2xl app-input cursor-pointer hover:border-indigo-500 transition-colors">
+                <input type="checkbox" onchange="updateDetoxProgress()" class="mt-1 w-4 h-4 rounded text-indigo-600 focus:ring-0 cursor-pointer">
+                <div class="text-xs">
+                  <p class="font-bold">Plug Phone Across the Room</p>
+                  <p class="text-muted-custom">Avoid doom-scrolling social media in bed</p>
+                </div>
+              </label>
+
+              <label class="flex items-start space-x-3 p-3 rounded-2xl app-input cursor-pointer hover:border-indigo-500 transition-colors">
+                <input type="checkbox" onchange="updateDetoxProgress()" class="mt-1 w-4 h-4 rounded text-indigo-600 focus:ring-0 cursor-pointer">
+                <div class="text-xs">
+                  <p class="font-bold">Pack Backpack for Tomorrow</p>
+                  <p class="text-muted-custom">Put finished 9th grade homework, notebook, & pens in your bag</p>
+                </div>
+              </label>
+
+              <label class="flex items-start space-x-3 p-3 rounded-2xl app-input cursor-pointer hover:border-indigo-500 transition-colors">
+                <input type="checkbox" onchange="updateDetoxProgress()" class="mt-1 w-4 h-4 rounded text-indigo-600 focus:ring-0 cursor-pointer">
+                <div class="text-xs">
+                  <p class="font-bold">Fill Water Bottle for School</p>
+                  <p class="text-muted-custom">Hydrate now and save morning hassle</p>
+                </div>
+              </label>
+
+              <label class="flex items-start space-x-3 p-3 rounded-2xl app-input cursor-pointer hover:border-indigo-500 transition-colors">
+                <input type="checkbox" onchange="updateDetoxProgress()" class="mt-1 w-4 h-4 rounded text-indigo-600 focus:ring-0 cursor-pointer">
+                <div class="text-xs">
+                  <p class="font-bold">Lay Out Tomorrow's Outfit</p>
+                  <p class="text-muted-custom">Choose clothes now so you don't stress in the morning</p>
+                </div>
+              </label>
+
+              <label class="flex items-start space-x-3 p-3 rounded-2xl app-input cursor-pointer hover:border-indigo-500 transition-colors">
+                <input type="checkbox" onchange="updateDetoxProgress()" class="mt-1 w-4 h-4 rounded text-indigo-600 focus:ring-0 cursor-pointer">
+                <div class="text-xs">
+                  <p class="font-bold">Dim Bedroom Lights</p>
+                  <p class="text-muted-custom">Signals your brain to release melatonin for sleep</p>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-theme text-xs text-muted-custom text-center">
+            <span>🎉 Completing all 5 boosts your daily night streak!</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB 3: SLEEP & AUDIO SOUND MACHINE -->
+    <section id="tab-content-sleep" class="tab-page hidden space-y-6">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Sleep Cycle Calculator -->
+        <div class="lg:col-span-6 app-card rounded-3xl p-6 shadow-xl flex flex-col justify-between">
+          <div>
+            <div class="mb-4">
+              <span class="text-xs font-bold uppercase tracking-widest text-accent flex items-center space-x-1.5">
+                <i class="fa-solid fa-calculator"></i>
+                <span>Sleep Cycle Calculator</span>
+              </span>
+              <h2 class="text-lg font-bold mt-1">Target Wake-Up Time</h2>
+              <p class="text-xs text-muted-custom">Teens need 8-9 hours (5 to 6 full 90-minute sleep cycles) to rest deeply</p>
+            </div>
+
+            <!-- Wake Time Input -->
+            <div class="flex items-center space-x-3 mb-6">
+              <div class="flex-1">
+                <label class="block text-xs font-semibold mb-1 text-muted-custom">When do you wake up for school?</label>
+                <input type="time" id="wakeTimeInput" value="06:30" onchange="calculateSleepTimes()" class="w-full px-4 py-3 rounded-2xl app-input font-bold text-base focus:outline-none focus:border-indigo-500">
+              </div>
+              <button onclick="calculateSleepTimes()" class="mt-5 px-5 py-3 rounded-2xl btn-accent font-bold text-xs sm:text-sm shrink-0">
+                Calculate
+              </button>
+            </div>
+
+            <!-- Calculated Bedtime Options -->
+            <div id="sleepResultsContainer" class="space-y-3">
+              <!-- Bedtime cards generated by JS -->
+            </div>
+          </div>
+
+          <p class="text-[11px] text-muted-custom mt-4 pt-3 border-t border-theme">
+            <i class="fa-solid fa-circle-info mr-1"></i> Calculated with a 15-minute average delay to fall asleep.
+          </p>
+        </div>
+
+        <!-- Relaxing Ambient Sound Machine -->
+        <div class="lg:col-span-6 app-card rounded-3xl p-6 shadow-xl flex flex-col justify-between">
+          <div>
+            <div class="mb-4">
+              <span class="text-xs font-bold uppercase tracking-widest text-accent flex items-center space-x-1.5">
+                <i class="fa-solid fa-sliders"></i>
+                <span>Ambient Sound Machine</span>
+              </span>
+              <h2 class="text-lg font-bold mt-1">Screen-Free Relaxing Audio</h2>
+              <p class="text-xs text-muted-custom">Synthesized soothing sounds to help you focus or fall asleep</p>
+            </div>
+
+            <div class="space-y-4">
+              
+              <!-- Sound 1: Gentle Rain -->
+              <div class="p-3.5 rounded-2xl app-input flex items-center justify-between gap-3">
+                <div class="flex items-center space-x-3">
+                  <div class="w-9 h-9 rounded-xl bg-blue-900/40 text-blue-400 flex items-center justify-center">
+                    <i class="fa-solid fa-cloud-rain"></i>
+                  </div>
+                  <div>
+                    <p class="text-xs font-bold">Gentle Rain</p>
+                    <p class="text-[10px] text-muted-custom">Soft white noise rain drops</p>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                  <input type="range" id="volRain" min="0" max="1" step="0.05" value="0.5" oninput="updateSoundVolume('rain')" class="w-20 accent-indigo-500">
+                  <button id="btnSoundRain" onclick="toggleSound('rain')" class="px-3 py-1.5 rounded-xl border border-theme app-card text-xs font-bold hover:text-white">Start</button>
+                </div>
+              </div>
+
+              <!-- Sound 2: Deep Ocean Waves -->
+              <div class="p-3.5 rounded-2xl app-input flex items-center justify-between gap-3">
+                <div class="flex items-center space-x-3">
+                  <div class="w-9 h-9 rounded-xl bg-teal-900/40 text-teal-400 flex items-center justify-center">
+                    <i class="fa-solid fa-water"></i>
+                  </div>
+                  <div>
+                    <p class="text-xs font-bold">Ocean Waves</p>
+                    <p class="text-[10px] text-muted-custom">Slow rolling tide sounds</p>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                  <input type="range" id="volWaves" min="0" max="1" step="0.05" value="0.5" oninput="updateSoundVolume('waves')" class="w-20 accent-indigo-500">
+                  <button id="btnSoundWaves" onclick="toggleSound('waves')" class="px-3 py-1.5 rounded-xl border border-theme app-card text-xs font-bold hover:text-white">Start</button>
+                </div>
+              </div>
+
+              <!-- Sound 3: Cozy Lo-Fi Synth Drone -->
+              <div class="p-3.5 rounded-2xl app-input flex items-center justify-between gap-3">
+                <div class="flex items-center space-x-3">
+                  <div class="w-9 h-9 rounded-xl bg-purple-900/40 text-purple-400 flex items-center justify-center">
+                    <i class="fa-solid fa-music"></i>
+                  </div>
+                  <div>
+                    <p class="text-xs font-bold">Lo-Fi Chill Synth</p>
+                    <p class="text-[10px] text-muted-custom">Soft ambient background chord</p>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                  <input type="range" id="volSynth" min="0" max="1" step="0.05" value="0.3" oninput="updateSoundVolume('synth')" class="w-20 accent-indigo-500">
+                  <button id="btnSoundSynth" onclick="toggleSound('synth')" class="px-3 py-1.5 rounded-xl border border-theme app-card text-xs font-bold hover:text-white">Start</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-theme text-xs text-muted-custom flex items-center justify-between">
+            <span><i class="fa-solid fa-volume-xmark mr-1"></i> Audio generated natively in browser</span>
+            <button onclick="stopAllSounds()" class="hover:text-rose-400 font-semibold text-[11px]">Stop All Audio</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB 4: MIND DUMP & STREAK TRACKER -->
+    <section id="tab-content-braindump" class="tab-page hidden space-y-6">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Brain Dump Bedtime Notepad -->
+        <div class="lg:col-span-7 app-card rounded-3xl p-6 shadow-xl flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <h2 class="text-lg font-bold flex items-center space-x-2">
+                  <i class="fa-solid fa-pen-to-square text-accent"></i>
+                  <span>Late Night Mind Dump</span>
+                </h2>
+                <p class="text-xs text-muted-custom">Can't sleep because of overthinking? Write down your thoughts to clear your mind</p>
+              </div>
+              <span class="text-[10px] font-bold text-emerald-400 bg-emerald-950 px-2 py-1 rounded-md border border-emerald-800">Auto-Saved</span>
+            </div>
+
+            <textarea id="brainDumpText" oninput="saveBrainDump()" placeholder="Write down any stray thoughts, tomorrow's worries, ideas, or things on your mind so you can sleep peacefully..." class="w-full h-56 p-4 rounded-2xl app-input text-xs sm:text-sm focus:outline-none focus:border-indigo-500 resize-none leading-relaxed"></textarea>
+          </div>
+
+          <div class="flex items-center justify-between mt-4 pt-3 border-t border-theme">
+            <span class="text-xs text-muted-custom">Your notes stay private on your device</span>
+            <button onclick="clearBrainDump()" class="px-3 py-1.5 rounded-xl border border-theme app-card text-xs font-semibold text-rose-400 hover:bg-rose-950/30">Clear Notes</button>
+          </div>
+        </div>
+
+        <!-- Night Routine Streak & Achievements -->
+        <div class="lg:col-span-5 app-card rounded-3xl p-6 shadow-xl flex flex-col justify-between">
+          <div>
+            <div class="mb-4">
+              <span class="text-xs font-bold uppercase tracking-widest text-accent flex items-center space-x-1.5">
+                <i class="fa-solid fa-trophy"></i>
+                <span>Night Routine Tracker</span>
+              </span>
+              <h2 class="text-lg font-bold mt-1">Daily Streak Check-In</h2>
+              <p class="text-xs text-muted-custom">Build consistent night habits for high school success</p>
+            </div>
+
+            <!-- Big Check-In Box -->
+            <div class="p-5 rounded-2xl app-input text-center space-y-3 mb-4">
+              <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-500/10 text-amber-500 text-2xl">
+                <i class="fa-solid fa-fire"></i>
+              </div>
+              <div>
+                <span id="streakDisplayBig" class="text-3xl font-black">0</span>
+                <span class="text-sm font-bold text-muted-custom">Days Streak</span>
+              </div>
+              <p class="text-xs text-muted-custom" id="lastCheckinText">Not checked in today yet</p>
+              
+              <button id="checkInBtn" onclick="performDailyCheckIn()" class="w-full py-3 rounded-2xl btn-accent font-bold text-sm shadow-md">
+                Check In For Tonight!
+              </button>
+            </div>
+
+            <!-- Badges Unlocked Section -->
+            <div class="space-y-2">
+              <p class="text-xs font-bold uppercase tracking-wider text-muted-custom">Night Badges</p>
+              <div class="grid grid-cols-3 gap-2">
+                
+                <div id="badge-1" class="p-2.5 rounded-2xl app-input text-center border border-theme opacity-40">
+                  <i class="fa-solid fa-seedling text-emerald-400 text-lg mb-1"></i>
+                  <p class="text-[10px] font-bold">First Night</p>
+                </div>
+
+                <div id="badge-3" class="p-2.5 rounded-2xl app-input text-center border border-theme opacity-40">
+                  <i class="fa-solid fa-bolt text-amber-400 text-lg mb-1"></i>
+                  <p class="text-[10px] font-bold">3-Day Streak</p>
+                </div>
+
+                <div id="badge-7" class="p-2.5 rounded-2xl app-input text-center border border-theme opacity-40">
+                  <i class="fa-solid fa-crown text-purple-400 text-lg mb-1"></i>
+                  <p class="text-[10px] font-bold">7-Day Master</p>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <p class="text-[11px] text-muted-custom text-center mt-4 pt-3 border-t border-theme">
+            Consistency is key to better grades & better sleep!
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-theme py-4 text-center text-xs text-muted-custom">
+    <p>NightShift & Focus — Built for 9th Graders to manage homework, screen time, and rest.</p>
+  </footer>
+
+  <!-- MAIN JAVASCRIPT APP LOGIC -->
+  <script>
+    // --- APP STATE ---
+    let appState = {
+      theme: 'theme-midnight',
+      activeTab: 'focus',
+      streak: 0,
+      lastCheckin: null,
+      tasks: [
+        { id: 1, text: 'Algebra practice problems pg 142 (#1-15)', subject: 'Math', completed: false },
+        { id: 2, text: 'Read Biology Chapter 4 & take notes', subject: 'Science', completed: false },
+        { id: 3, text: 'Outline English narrative essay', subject: 'English', completed: true }
+      ],
+      timer: {
+        mode: 'focus', // focus, shortBreak, longBreak
+        timeLeft: 25 * 60,
+        totalTime: 25 * 60,
+        isRunning: false,
+        interval: null
+      },
+      breathing: {
+        isRunning: false,
+        interval: null,
+        phase: 0 // 0: inhale, 1: hold, 2: exhale, 3: hold
+      }
+    };
+
+    // --- INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+      loadLocalStorage();
+      applySavedTheme();
+      renderTasks();
+      calculateSleepTimes();
+      updateStreakUI();
+      initAudio();
+    });
+
+    // Theme Switcher Logic
+    function setTheme(themeName) {
+      document.documentElement.className = 'h-full ' + themeName;
+      appState.theme = themeName;
+      localStorage.setItem('ns_theme', themeName);
+    }
+
+    function applySavedTheme() {
+      const saved = localStorage.getItem('ns_theme');
+      if (saved) {
+        setTheme(saved);
+      }
+    }
+
+    // Tab Switcher Logic
+    function switchTab(tabId) {
+      appState.activeTab = tabId;
+      
+      // Hide all tabs
+      document.querySelectorAll('.tab-page').forEach(page => page.classList.add('hidden'));
+      // Show selected tab
+      const target = document.getElementById('tab-content-' + tabId);
+      if (target) target.classList.remove('hidden');
+
+      // Update active tab buttons
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        btn.classList.remove('btn-accent', 'shadow-md');
+        btn.classList.add('app-card', 'text-muted-custom');
+      });
+
+      const activeBtn = document.getElementById('tab-btn-' + tabId);
+      if (activeBtn) {
+        activeBtn.classList.remove('app-card', 'text-muted-custom');
+        activeBtn.classList.add('btn-accent', 'shadow-md');
+      }
+    }
+
+    // --- POMODORO TIMER LOGIC ---
+    function updateTimerDisplay() {
+      const display = document.getElementById('timerDisplay');
+      const minutes = Math.floor(appState.timer.timeLeft / 60);
+      const seconds = appState.timer.timeLeft % 60;
+      display.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    function setTimerMode(mode) {
+      if (appState.timer.isRunning) pauseTimer();
+      appState.timer.mode = mode;
+
+      if (mode === 'focus') appState.timer.totalTime = 25 * 60;
+      else if (mode === 'shortBreak') appState.timer.totalTime = 5 * 60;
+      else if (mode === 'longBreak') appState.timer.totalTime = 15 * 60;
+
+      appState.timer.timeLeft = appState.timer.totalTime;
+      updateTimerDisplay();
+
+      // UI button state update
+      ['focus', 'shortBreak', 'longBreak'].forEach(m => {
+        const btn = document.getElementById(`mode-btn-${m}`);
+        if (m === mode) {
+          btn.className = "py-1.5 rounded-xl text-xs font-bold border border-theme bg-indigo-600 text-white";
+        } else {
+          btn.className = "py-1.5 rounded-xl text-xs font-semibold border border-theme app-card text-muted-custom hover:text-white";
+        }
+      });
+
+      const badge = document.getElementById('pomoModeBadge');
+      const statusText = document.getElementById('timerStatusText');
+
+      if (mode === 'focus') {
+        badge.textContent = "Focus Session";
+        statusText.textContent = "Get ready to tackle 9th grade work!";
+      } else if (mode === 'shortBreak') {
+        badge.textContent = "Short Break";
+        statusText.textContent = "Stretch, grab water, take a breather!";
+      } else {
+        badge.textContent = "Long Break";
+        statusText.textContent = "Relax your mind, step away from screens!";
+      }
+    }
+
+    function toggleTimer() {
+      if (appState.timer.isRunning) {
+        pauseTimer();
+      } else {
+        startTimer();
+      }
+    }
+
+    function startTimer() {
+      appState.timer.isRunning = true;
+      document.getElementById('timerPlayIcon').className = "fa-solid fa-pause";
+      document.getElementById('timerPlayText').textContent = "Pause Focus";
+
+      appState.timer.interval = setInterval(() => {
+        if (appState.timer.timeLeft > 0) {
+          appState.timer.timeLeft--;
+          updateTimerDisplay();
+        } else {
+          // Timer finished
+          pauseTimer();
+          playChimeSound();
+          if (typeof confetti === 'function') {
+            confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
+          }
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      appState.timer.isRunning = false;
+      clearInterval(appState.timer.interval);
+      document.getElementById('timerPlayIcon').className = "fa-solid fa-play";
+      document.getElementById('timerPlayText').textContent = "Start Focus";
+    }
+
+    function resetTimer() {
+      pauseTimer();
+      appState.timer.timeLeft = appState.timer.totalTime;
+      updateTimerDisplay();
+    }
+
+    // --- HOMEWORK TASK MANAGER LOGIC ---
+    function renderTasks() {
+      const container = document.getElementById('taskList');
+      container.innerHTML = '';
+
+      if (appState.tasks.length === 0) {
+        container.innerHTML = `<p class="text-xs text-muted-custom italic text-center py-6">No homework tasks added yet! Add one above.</p>`;
+        updateTaskProgressBadge();
+        return;
+      }
+
+      appState.tasks.forEach(task => {
+        const item = document.createElement('div');
+        item.className = `p-3 rounded-2xl app-input flex items-center justify-between gap-2 border border-theme transition-all ${task.completed ? 'opacity-60' : ''}`;
+        
+        const subjectColor = getSubjectBadgeColor(task.subject);
+
+        item.innerHTML = `
+          <div class="flex items-center space-x-3 overflow-hidden">
+            <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id})" class="w-4 h-4 rounded text-indigo-600 focus:ring-0 cursor-pointer">
+            <div class="truncate">
+              <p class="text-xs font-bold ${task.completed ? 'line-through text-muted-custom' : ''}">${escapeHtml(task.text)}</p>
+              <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-md ${subjectColor}">${task.subject}</span>
+            </div>
+          </div>
+          <button onclick="deleteTask(${task.id})" class="p-1.5 text-muted-custom hover:text-rose-400 transition-colors">
+            <i class="fa-solid fa-trash-can text-xs"></i>
+          </button>
+        `;
+        container.appendChild(item);
+      });
+
+      updateTaskProgressBadge();
+      saveTasksToStorage();
+    }
+
+    function getSubjectBadgeColor(subject) {
+      switch (subject) {
+        case 'Math': return 'bg-blue-950 text-blue-300 border border-blue-800';
+        case 'Science': return 'bg-emerald-950 text-emerald-300 border border-emerald-800';
+        case 'English': return 'bg-purple-950 text-purple-300 border border-purple-800';
+        case 'History': return 'bg-amber-950 text-amber-300 border border-amber-800';
+        case 'Language': return 'bg-rose-950 text-rose-300 border border-rose-800';
+        default: return 'bg-slate-800 text-slate-300 border border-slate-700';
+      }
+    }
+
+    function handleAddTask(e) {
+      e.preventDefault();
+      const input = document.getElementById('taskInput');
+      const subjectSelect = document.getElementById('taskSubject');
+      const text = input.value.trim();
+
+      if (!text) return;
+
+      const newTask = {
+        id: Date.now(),
+        text: text,
+        subject: subjectSelect.value,
+        completed: false
+      };
+
+      appState.tasks.push(newTask);
+      input.value = '';
+      renderTasks();
+    }
+
+    function toggleTask(id) {
+      const task = appState.tasks.find(t => t.id === id);
+      if (task) {
+        task.completed = !task.completed;
+        if (task.completed && typeof confetti === 'function') {
+          confetti({ particleCount: 30, spread: 40, origin: { y: 0.7 } });
+        }
+        renderTasks();
+      }
+    }
+
+    function deleteTask(id) {
+      appState.tasks = appState.tasks.filter(t => t.id !== id);
+      renderTasks();
+    }
+
+    function clearCompletedTasks() {
+      appState.tasks = appState.tasks.filter(t => !t.completed);
+      renderTasks();
+    }
+
+    function updateTaskProgressBadge() {
+      const completedCount = appState.tasks.filter(t => t.completed).length;
+      const total = appState.tasks.length;
+      const badge = document.getElementById('taskProgressBadge');
+      badge.textContent = `${completedCount} / ${total} Done`;
+    }
+
+    // --- GUIDED BREATHING LOGIC ---
+    function toggleBreathing() {
+      const circle = document.getElementById('breathCircle');
+      const text = document.getElementById('breathActionText');
+      const subtitle = document.getElementById('breathSubtitle');
+      const btn = document.getElementById('breathToggleBtn');
+
+      if (appState.breathing.isRunning) {
+        clearInterval(appState.breathing.interval);
+        appState.breathing.isRunning = false;
+        circle.style.transform = "scale(1)";
+        text.textContent = "Get Ready";
+        subtitle.textContent = "Click start to relax your body before bed";
+        btn.textContent = "Start Breathing Exercise";
+      } else {
+        appState.breathing.isRunning = true;
+        btn.textContent = "Stop Breathing Exercise";
+        appState.breathing.phase = 0;
+        runBreathingCycle();
+
+        appState.breathing.interval = setInterval(() => {
+          appState.breathing.phase = (appState.breathing.phase + 1) % 4;
+          runBreathingCycle();
+        }, 4000);
+      }
+    }
+
+    function runBreathingCycle() {
+      const circle = document.getElementById('breathCircle');
+      const text = document.getElementById('breathActionText');
+      const subtitle = document.getElementById('breathSubtitle');
+
+      const phases = [
+        { title: "Inhale", scale: "scale-150", sub: "Breathe in deeply through your nose..." },
+        { title: "Hold", scale: "scale-150", sub: "Hold your breath gently..." },
+        { title: "Exhale", scale: "scale-100", sub: "Release slowly through your mouth..." },
+        { title: "Hold", scale: "scale-100", sub: "Pause and relax before next breath..." }
+      ];
+
+      const current = phases[appState.breathing.phase];
+      text.textContent = current.title;
+      subtitle.textContent = current.sub;
+
+      if (current.title === "Inhale") {
+        circle.className = "w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-gradient-to-tr from-teal-400 to-indigo-500 flex items-center justify-center breathing-box shadow-2xl transform scale-150 transition-all duration-[4000ms]";
+      } else if (current.title === "Exhale") {
+        circle.className = "w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-800 flex items-center justify-center breathing-box shadow-2xl transform scale-100 transition-all duration-[4000ms]";
+      }
+    }
+
+    function updateDetoxProgress() {
+      const checkboxes = document.querySelectorAll('#detoxChecklist input[type="checkbox"]');
+      let count = 0;
+      checkboxes.forEach(cb => { if (cb.checked) count++; });
+      document.getElementById('detoxBadge').textContent = `${count}/${checkboxes.length} Done`;
+      
+      if (count === checkboxes.length && typeof confetti === 'function') {
+        confetti({ particleCount: 50, spread: 50, origin: { y: 0.6 } });
+      }
+    }
+
+    // --- SLEEP CYCLE CALCULATOR LOGIC ---
+    function calculateSleepTimes() {
+      const wakeInput = document.getElementById('wakeTimeInput').value;
+      if (!wakeInput) return;
+
+      const [hours, minutes] = wakeInput.split(':').map(Number);
+      const wakeDate = new Date();
+      wakeDate.setHours(hours, minutes, 0, 0);
+
+      const container = document.getElementById('sleepResultsContainer');
+      container.innerHTML = '';
+
+      // Generate times for 6 cycles (9 hrs), 5 cycles (7.5 hrs), 4 cycles (6 hrs)
+      const cycles = [
+        { count: 6, duration: 9 * 60 + 15, tag: "Optimal (9 Hrs)", desc: "Best for teen growth & academic focus" },
+        { count: 5, duration: 7.5 * 60 + 15, tag: "Good (7.5 Hrs)", desc: "Solid sleep for standard school days" },
+        { count: 4, duration: 6 * 60 + 15, tag: "Minimum (6 Hrs)", desc: "Minimum threshold for teens" }
+      ];
+
+      cycles.forEach(item => {
+        const bedtime = new Date(wakeDate.getTime() - item.duration * 60 * 1000);
+        const timeString = bedtime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+        const card = document.createElement('div');
+        card.className = "p-3.5 rounded-2xl app-input flex items-center justify-between border border-theme";
+        card.innerHTML = `
+          <div>
+            <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-indigo-950 text-indigo-300 border border-indigo-800">${item.tag}</span>
+            <p class="text-xs text-muted-custom mt-1">${item.desc}</p>
+          </div>
+          <div class="text-right">
+            <span class="text-base sm:text-lg font-black text-accent font-mono">${timeString}</span>
+            <p class="text-[10px] text-muted-custom">Bedtime</p>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // --- WEB AUDIO API SOUND GENERATOR ---
+    let audioCtx = null;
+    let activeSounds = {
+      rain: { node: null, gain: null, isPlaying: false },
+      waves: { node: null, gain: null, isPlaying: false },
+      synth: { node: null, gain: null, isPlaying: false }
+    };
+
+    function initAudio() {
+      // Lazy init audio context on user interaction
+    }
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function toggleSound(type) {
+      const ctx = getAudioContext();
+      const sound = activeSounds[type];
+      const btn = document.getElementById(`btnSound${type.charAt(0).toUpperCase() + type.slice(1)}`);
+
+      if (sound.isPlaying) {
+        stopSound(type);
+        btn.textContent = "Start";
+        btn.classList.remove('bg-indigo-600', 'text-white');
+      } else {
+        startSound(type);
+        btn.textContent = "Stop";
+        btn.classList.add('bg-indigo-600', 'text-white');
+      }
+    }
+
+    function startSound(type) {
+      const ctx = getAudioContext();
+      const sound = activeSounds[type];
+      const volInput = document.getElementById(`vol${type.charAt(0).toUpperCase() + type.slice(1)}`);
+      const vol = parseFloat(volInput.value);
+
+      sound.gain = ctx.createGain();
+      sound.gain.gain.setValueAtTime(vol, ctx.currentTime);
+      sound.gain.connect(ctx.destination);
+
+      if (type === 'rain') {
+        // Pink noise buffer generator
+        const bufferSize = ctx.sampleRate * 2;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        let b0=0, b1=0, b2=0, b3=0, b4=0, b5=0, b6=0;
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          b0 = 0.99886 * b0 + white * 0.0555179;
+          b1 = 0.99332 * b1 + white * 0.0750759;
+          b2 = 0.96900 * b2 + white * 0.1538520;
+          b3 = 0.86650 * b3 + white * 0.3104856;
+          b4 = 0.55000 * b4 + white * 0.5329522;
+          b5 = -0.7616 * b5 - white * 0.0168980;
+          data[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+          data[i] *= 0.11;
+          b6 = white * 0.115926;
+        }
+
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+        noise.loop = true;
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 1200;
+
+        noise.connect(filter);
+        filter.connect(sound.gain);
+        noise.start();
+        sound.node = noise;
+
+      } else if (type === 'waves') {
+        const bufferSize = ctx.sampleRate * 3;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * 0.15;
+        }
+
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+        noise.loop = true;
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 300;
+
+        // Modulate filter for wave ocean effect
+        const lfo = ctx.createOscillator();
+        lfo.frequency.value = 0.12; // slow pulse
+        const lfoGain = ctx.createGain();
+        lfoGain.gain.value = 200;
+
+        lfo.connect(lfoGain);
+        lfoGain.connect(filter.frequency);
+        lfo.start();
+
+        noise.connect(filter);
+        filter.connect(sound.gain);
+        noise.start();
+        sound.node = noise;
+
+      } else if (type === 'synth') {
+        // Soft synth chord drone
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        osc1.type = 'sine';
+        osc2.type = 'triangle';
+        osc1.frequency.value = 174; // Solfeggio frequency 174 Hz
+        osc2.frequency.value = 261.63; // C4
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 400;
+
+        osc1.connect(filter);
+        osc2.connect(filter);
+        filter.connect(sound.gain);
+
+        osc1.start();
+        osc2.start();
+        sound.node = { stop: () => { osc1.stop(); osc2.stop(); } };
+      }
+
+      sound.isPlaying = true;
+    }
+
+    function stopSound(type) {
+      const sound = activeSounds[type];
+      if (sound.node && sound.isPlaying) {
+        sound.node.stop();
+        sound.isPlaying = false;
+      }
+    }
+
+    function updateSoundVolume(type) {
+      const sound = activeSounds[type];
+      const volInput = document.getElementById(`vol${type.charAt(0).toUpperCase() + type.slice(1)}`);
+      if (sound.gain) {
+        sound.gain.gain.value = parseFloat(volInput.value);
+      }
+    }
+
+    function stopAllSounds() {
+      ['rain', 'waves', 'synth'].forEach(type => {
+        stopSound(type);
+        const btn = document.getElementById(`btnSound${type.charAt(0).toUpperCase() + type.slice(1)}`);
+        if (btn) {
+          btn.textContent = "Start";
+          btn.classList.remove('bg-indigo-600', 'text-white');
+        }
+      });
+    }
+
+    function playChimeSound() {
+      try {
+        const ctx = getAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+        osc.frequency.exponentialRampToValueAtTime(1046.50, ctx.currentTime + 0.8); // C6
+        gain.gain.setValueAtTime(0.3, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.2);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 1.2);
+      } catch (e) {
+        // Audio error fallback
+      }
+    }
+
+    // --- MIND DUMP & STREAK LOCAL STORAGE LOGIC ---
+    function saveBrainDump() {
+      const text = document.getElementById('brainDumpText').value;
+      localStorage.setItem('ns_braindump', text);
+    }
+
+    function clearBrainDump() {
+      document.getElementById('brainDumpText').value = '';
+      localStorage.removeItem('ns_braindump');
+    }
+
+    function performDailyCheckIn() {
+      const today = new Date().toDateString();
+
+      if (appState.lastCheckin === today) {
+        alert("You have already checked in for tonight! Keep up the great work!");
+        return;
+      }
+
+      appState.streak++;
+      appState.lastCheckin = today;
+      saveStreakToStorage();
+      updateStreakUI();
+
+      if (typeof confetti === 'function') {
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.5 } });
+      }
+    }
+
+    function updateStreakUI() {
+      document.getElementById('headerStreakCount').textContent = appState.streak;
+      document.getElementById('streakDisplayBig').textContent = appState.streak;
+
+      const btn = document.getElementById('checkInBtn');
+      const text = document.getElementById('lastCheckinText');
+      const today = new Date().toDateString();
+
+      if (appState.lastCheckin === today) {
+        btn.textContent = "Checked In For Tonight! 🎉";
+        btn.className = "w-full py-3 rounded-2xl bg-emerald-600 text-white font-bold text-sm shadow-md cursor-default";
+        text.textContent = "Completed for today!";
+      } else {
+        btn.textContent = "Check In For Tonight!";
+        btn.className = "w-full py-3 rounded-2xl btn-accent font-bold text-sm shadow-md";
+        text.textContent = "Not checked in today yet";
+      }
+
+      // Unlock badges
+      if (appState.streak >= 1) document.getElementById('badge-1').classList.remove('opacity-40');
+      if (appState.streak >= 3) document.getElementById('badge-3').classList.remove('opacity-40');
+      if (appState.streak >= 7) document.getElementById('badge-7').classList.remove('opacity-40');
+    }
+
+    function saveTasksToStorage() {
+      localStorage.setItem('ns_tasks', JSON.stringify(appState.tasks));
+    }
+
+    function saveStreakToStorage() {
+      localStorage.setItem('ns_streak', appState.streak.toString());
+      if (appState.lastCheckin) {
+        localStorage.setItem('ns_lastcheckin', appState.lastCheckin);
+      }
+    }
+
+    function loadLocalStorage() {
+      const tasks = localStorage.getItem('ns_tasks');
+      if (tasks) {
+        try { appState.tasks = JSON.parse(tasks); } catch(e){}
+      }
+
+      const streak = localStorage.getItem('ns_streak');
+      if (streak) appState.streak = parseInt(streak, 10) || 0;
+
+      const last = localStorage.getItem('ns_lastcheckin');
+      if (last) appState.lastCheckin = last;
+
+      const dump = localStorage.getItem('ns_braindump');
+      if (dump) document.getElementById('brainDumpText').value = dump;
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+  </script>
+</body>
+</html>

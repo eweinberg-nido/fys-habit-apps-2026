@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FYS Habit Apps Gallery</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="gallery.css">
+</head>
+<body>
+
+<center>
+  <div id="logo-slot"></div>
+  <h1>First Year Seminar<br>Habit App Gallery</h1>
+  <p class="subtitle">
+    Ninth graders interviewed a classmate about their habits and challenges,
+    then designed an app with Gemini to help that classmate reach their goals.
+  </p>
+</center>
+
+<hr>
+
+<center>
+  <p><b>Choose a class:</b></p>
+  <div id="class-picker" class="picker"></div>
+  <p class="topic-label"><b>Filter by topic:</b></p>
+  <div id="topic-picker" class="topics"></div>
+</center>
+
+<hr>
+
+<p id="summary" class="center summary"></p>
+<div id="gallery"></div>
+
+<hr>
+
+<center class="footer">
+  <p>
+    The International School Nido de Aguilas &middot; First Year Seminar
+  </p>
+  <p class="small">Best viewed with Netscape Navigator 3.0 at 800&times;600</p>
+</center>
+
+<script src="apps.js"></script>
+<script>
+(function () {
+  var data = window.GALLERY || { classes: [], topics: [] };
+  var classPicker = document.getElementById("class-picker");
+  var topicPicker = document.getElementById("topic-picker");
+  var summary = document.getElementById("summary");
+  var gallery = document.getElementById("gallery");
+  var topicNames = {};
+  data.topics.forEach(function (t) { topicNames[t.id] = t.name; });
+
+  // Logo
+  var slot = document.getElementById("logo-slot");
+  if (data.logo) {
+    var img = document.createElement("img");
+    img.src = data.logo;
+    img.alt = "The International School Nido de Aguilas";
+    img.className = "logo";
+    slot.appendChild(img);
+  } else {
+    slot.innerHTML = '<div class="logo-text">The International School<br>Nido de Aguilas</div>';
+  }
+
+  function el(tag, attrs, text) {
+    var n = document.createElement(tag);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function plural(n) { return n + (n === 1 ? " app" : " apps"); }
+
+  // ---- State lives in the URL hash: #class=seavey&topic=sleep ----
+  function readState() {
+    var h = location.hash.replace(/^#/, ""), st = { cls: "", topic: "" };
+    if (h && h.indexOf("=") < 0) { st.cls = h; return st; } // old #seavey links
+    h.split("&").forEach(function (pair) {
+      var kv = pair.split("=");
+      if (kv[0] === "class") st.cls = decodeURIComponent(kv[1] || "");
+      if (kv[0] === "topic") st.topic = decodeURIComponent(kv[1] || "");
+    });
+    return st;
+  }
+  function hashFor(st) {
+    var parts = [];
+    if (st.cls) parts.push("class=" + st.cls);
+    if (st.topic) parts.push("topic=" + st.topic);
+    return "#" + parts.join("&");
+  }
+  function go(change) {
+    var st = readState();
+    for (var k in change) st[k] = change[k];
+    location.hash = hashFor(st);
+  }
+
+  function appsIn(classes, topic) {
+    var out = [];
+    classes.forEach(function (c) {
+      c.blocks.forEach(function (b) {
+        b.apps.forEach(function (a) {
+          if (!topic || a.topics.indexOf(topic) >= 0) out.push(a);
+        });
+      });
+    });
+    return out;
+  }
+
+  // ---- Class buttons ----
+  var classButtons = [{ id: "", teacher: "All Classes", blocks: [] }].concat(data.classes);
+  classButtons.forEach(function (c) {
+    var btn = el("button", { type: "button", "data-id": c.id });
+    btn.appendChild(el("span", { "class": "teacher" }, c.teacher));
+    btn.appendChild(el("span", { "class": "count" }, ""));
+    btn.addEventListener("click", function () { go({ cls: c.id }); });
+    classPicker.appendChild(btn);
+  });
+
+  function renderPickers(st, selectedClasses) {
+    Array.prototype.forEach.call(classPicker.children, function (b) {
+      var id = b.getAttribute("data-id");
+      var cs = id ? data.classes.filter(function (c) { return c.id === id; }) : data.classes;
+      b.setAttribute("aria-pressed", id === st.cls ? "true" : "false");
+      b.lastChild.textContent = plural(appsIn(cs, st.topic).length);
+    });
+
+    // Topic bar, 1996 style: [ All Topics | Sleep (5) | ... ]
+    topicPicker.innerHTML = "";
+    var items = [{ id: "", name: "All Topics", n: appsIn(selectedClasses, "").length }];
+    data.topics.forEach(function (t) {
+      items.push({ id: t.id, name: t.name, n: appsIn(selectedClasses, t.id).length });
+    });
+    topicPicker.appendChild(document.createTextNode("[ "));
+    items.forEach(function (t, i) {
+      if (i) topicPicker.appendChild(document.createTextNode(" | "));
+      var label = t.name + " (" + t.n + ")";
+      var node;
+      if (t.id === st.topic) {
+        node = el("b", { "class": "topic-on" }, label);
+      } else if (!t.n) {
+        node = el("span", { "class": "topic-off" }, label);
+      } else {
+        node = el("a", { href: hashFor({ cls: st.cls, topic: t.id }) }, label);
+      }
+      topicPicker.appendChild(node);
+    });
+    topicPicker.appendChild(document.createTextNode(" ]"));
+  }
+
+  function card(a) {
+    var card = el("div", { "class": "card" });
+
+    var link = el("a", { href: a.path, target: "_blank", rel: "noopener", "class": "preview" });
+    link.appendChild(el("iframe", {
+      src: a.path,
+      title: "Preview of " + a.name,
+      loading: "lazy",
+      sandbox: "allow-scripts",
+      tabindex: "-1",
+      "aria-hidden": "true",
+      scrolling: "no"
+    }));
+    link.appendChild(el("span", { "class": "sr" }, "Open " + a.name));
+    card.appendChild(link);
+
+    var info = el("div", { "class": "info" });
+    info.appendChild(el("a", { href: a.path, target: "_blank", rel: "noopener", "class": "app-name" }, a.name));
+    if (a.tagline) info.appendChild(el("div", { "class": "tagline" }, a.tagline));
+    info.appendChild(el("div", { "class": "students" }, "by " + a.students));
+
+    if (a.topics.length) {
+      var tags = el("div", { "class": "tags" });
+      a.topics.forEach(function (t) {
+        tags.appendChild(el("a", { href: hashFor({ cls: readState().cls, topic: t }), "class": "tag" }, topicNames[t]));
+      });
+      info.appendChild(tags);
+    }
+    if (a.studentLabel) {
+      info.appendChild(el("div", { "class": "said" }, "Their words: “" + a.studentLabel + "”"));
+    }
+    card.appendChild(info);
+    return card;
+  }
+
+  function render() {
+    var st = readState();
+    var known = data.classes.some(function (c) { return c.id === st.cls; });
+    if (!known) st.cls = "";
+    if (st.topic && !topicNames[st.topic]) st.topic = "";
+
+    var selected = st.cls ? data.classes.filter(function (c) { return c.id === st.cls; }) : data.classes;
+    renderPickers(st, selected);
+    gallery.innerHTML = "";
+
+    var n = appsIn(selected, st.topic).length;
+    var where = st.cls ? selected[0].teacher + "'s class" : "all classes";
+    summary.textContent = "Showing " + plural(n) +
+      (st.topic ? " about " + topicNames[st.topic] : "") + " from " + where + ".";
+
+    // A single class with nothing in it yet
+    if (st.cls && !selected[0].blocks.length) {
+      gallery.appendChild(el("h2", {}, selected[0].teacher + "'s Class"));
+      var p = el("p", { "class": "center" });
+      p.innerHTML = '<span class="construction">&#9888; UNDER CONSTRUCTION &#9888;</span><br><i>Apps from this class are coming soon!</i>';
+      gallery.appendChild(p);
+      return;
+    }
+    if (!n) {
+      var none = el("p", { "class": "center" });
+      none.innerHTML = "<i>No apps match. Try <a href='" + hashFor({ cls: st.cls }) + "'>All Topics</a>.</i>";
+      gallery.appendChild(none);
+      return;
+    }
+
+    selected.forEach(function (c) {
+      if (!appsIn([c], st.topic).length) return;
+      gallery.appendChild(el("h2", {}, c.teacher + "'s Class"));
+      c.blocks.forEach(function (b) {
+        var apps = appsIn([{ blocks: [b] }], st.topic);
+        if (!apps.length) return;
+        gallery.appendChild(el("h3", { "class": "block-title" }, "Block " + b.block));
+        var grid = el("div", { "class": "grid" });
+        apps.forEach(function (a) { grid.appendChild(card(a)); });
+        gallery.appendChild(grid);
+      });
+    });
+    scalePreviews();
+  }
+
+  // Shrink each 1200px-wide app render to fit its thumbnail box
+  function scalePreviews() {
+    var boxes = gallery.querySelectorAll(".preview");
+    for (var i = 0; i < boxes.length; i++) {
+      boxes[i].firstChild.style.transform = "scale(" + (boxes[i].clientWidth / 1200) + ")";
+    }
+  }
+  window.addEventListener("resize", scalePreviews);
+  window.addEventListener("hashchange", render);
+  render();
+})();
+</script>
+</body>
+</html>

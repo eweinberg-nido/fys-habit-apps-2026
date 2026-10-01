@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cozy Homework Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        vanilla: {
+                            50: '#fdfbf7',
+                            100: '#f7f2e8',
+                            200: '#eedfca',
+                            300: '#e3cba8',
+                            400: '#d5b282',
+                            500: '#c5975d',
+                            600: '#ab7846',
+                            700: '#8c5d37',
+                            800: '#5c3d25',
+                            900: '#382417',
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        .bg-polka {
+            background-image: radial-gradient(#e3cba8 1.2px, transparent 1.2px);
+            background-size: 18px 18px;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f7f2e8;
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d5b282;
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ab7846;
+        }
+
+        @keyframes float-gentle {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+        }
+        .animate-float {
+            animation: float-gentle 4s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-vanilla-50 bg-polka text-vanilla-900 font-sans min-h-screen flex flex-col antialiased selection:bg-vanilla-200">
+
+    <header class="bg-white/90 backdrop-blur-md border-b border-vanilla-200 sticky top-0 z-40 px-4 py-3 shadow-sm">
+        <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-vanilla-800 text-white flex items-center justify-center text-xl shadow-md animate-float">
+                    ☕
+                </div>
+                <div>
+                    <h1 class="font-serif font-bold text-lg leading-tight text-vanilla-900 tracking-tight">Cozy Homework Studio</h1>
+                    <p class="text-[11px] text-vanilla-600 font-medium">Your calm, distraction-free study desk 📖</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 flex-wrap">
+                <!-- Stars Badge -->
+                <div id="streak-badge" class="px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold flex items-center gap-1.5 shadow-sm">
+                    ⭐ 0 Stars
+                </div>
+
+                <!-- Quiet Shield Mode -->
+                <button id="quiet-shield-btn" onclick="toggleQuietShield()" class="px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-1.5 hover:bg-emerald-100 transition shadow-sm">
+                    🛡️ Parent Shield: ON
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 space-y-6">
+        
+        <!-- Navigation Tabs -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-1 border-b border-vanilla-200/80 no-scrollbar">
+            <button id="tab-btn-tasks" onclick="switchTab('tasks')" class="px-4 py-2 rounded-xl text-xs font-bold transition bg-white text-vanilla-900 shadow-sm border border-vanilla-200 flex items-center gap-2 whitespace-nowrap">
+                📋 Daily Checklist & Homework Desk
+            </button>
+            <button id="tab-btn-timer" onclick="switchTab('timer')" class="px-4 py-2 rounded-xl text-xs font-bold transition text-vanilla-700 hover:text-vanilla-900 flex items-center gap-2 whitespace-nowrap">
+                ⏱️ Cozy Focus Timer
+            </button>
+            <button id="tab-btn-coach" onclick="switchTab('coach')" class="px-4 py-2 rounded-xl text-xs font-bold transition text-vanilla-700 hover:text-vanilla-900 flex items-center gap-2 whitespace-nowrap">
+                📂 Desk Folders & Assistant
+            </button>
+            <button id="tab-btn-classroom" onclick="switchTab('classroom')" class="px-4 py-2 rounded-xl text-xs font-bold transition text-vanilla-700 hover:text-vanilla-900 flex items-center gap-2 whitespace-nowrap">
+                🎧 Virtual Class & Friends Call
+            </button>
+        </div>
+
+        <!-- TAB 1: DAILY CHECKLIST & HOMEWORK DESK -->
+        <section id="tab-content-tasks" class="space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Left Panel: Add Task & Priority Legend -->
+                <div class="space-y-4">
+                    <div class="bg-white rounded-3xl p-5 border border-vanilla-200 shadow-sm space-y-4">
+                        <div class="flex items-center gap-2 border-b border-vanilla-100 pb-3">
+                            <span class="text-base">✍️</span>
+                            <h2 class="font-serif font-bold text-sm text-vanilla-900">Add New Homework</h2>
+                        </div>
+
+                        <form id="add-task-form" class="space-y-3">
+                            <div>
+                                <label class="block text-[11px] font-bold text-vanilla-700 uppercase mb-1">Assignment Title</label>
+                                <input type="text" id="task-title" placeholder="e.g. Math Worksheet Pg 42..." required class="w-full px-3 py-2 text-xs rounded-xl border border-vanilla-200 focus:outline-none focus:ring-2 focus:ring-vanilla-400 bg-vanilla-50/50">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[11px] font-bold text-vanilla-700 uppercase mb-1">Subject</label>
+                                    <select id="task-subject" class="w-full px-3 py-2 text-xs rounded-xl border border-vanilla-200 focus:outline-none focus:ring-2 focus:ring-vanilla-400 bg-vanilla-50/50">
+                                        <option value="Math">📐 Math</option>
+                                        <option value="English">📖 English</option>
+                                        <option value="Science">🧪 Science</option>
+                                        <option value="History">🏛️ History</option>
+                                        <option value="Other">✏️ Other</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] font-bold text-vanilla-700 uppercase mb-1">Priority Level</label>
+                                    <select id="task-priority" class="w-full px-3 py-2 text-xs rounded-xl border border-vanilla-200 focus:outline-none focus:ring-2 focus:ring-vanilla-400 bg-vanilla-50/50 font-bold">
+                                        <option value="L4" selected>🔴 L4 - Critical</option>
+                                        <option value="L3">🟠 L3 - High</option>
+                                        <option value="L2">🟡 L2 - Medium</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-vanilla-700 uppercase mb-1">Due Date</label>
+                                <input type="date" id="task-duedate" class="w-full px-3 py-2 text-xs rounded-xl border border-vanilla-200 focus:outline-none focus:ring-2 focus:ring-vanilla-400 bg-vanilla-50/50">
+                            </div>
+
+                            <button type="submit" class="w-full py-2.5 rounded-xl bg-vanilla-800 hover:bg-vanilla-900 text-white font-bold text-xs transition shadow-md flex items-center justify-center gap-1.5">
+                                ➕ Add to Checklist
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Priority Breakdown Info Box -->
+                    <div class="bg-vanilla-100/70 rounded-3xl p-4 border border-vanilla-200/80 text-xs space-y-2">
+                        <h3 class="font-bold text-vanilla-900 flex items-center gap-1.5">
+                            <span>📌</span> Priority System Guide
+                        </h3>
+                        <div class="space-y-1 text-[11px] text-vanilla-800">
+                            <p><strong>🔴 L4 Critical:</strong> Hardest or due today! Do first.</p>
+                            <p><strong>🟠 L3 High:</strong> Important assignment due tomorrow.</p>
+                            <p><strong>🟡 L2 Medium:</strong> Standard reading or practice.</p>
+                        </div>
+                    </div>
+
+                    <!-- Sticky "I'm Stuck" Question Box -->
+                    <div class="bg-amber-50/90 rounded-3xl p-4 border border-amber-200 text-xs space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-amber-900 flex items-center gap-1.5">
+                                <span>💡</span> "I'm Stuck" Note Collector
+                            </h3>
+                            <span class="text-[10px] text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full font-bold">No Stress</span>
+                        </div>
+                        <p class="text-[11px] text-amber-800">Confused by a question? Type it here so you don't stall or give up. You can ask Ms. Maple later!</p>
+                        <div class="flex gap-2">
+                            <input type="text" id="stuck-note-input" placeholder="e.g. Problem #4 on page 12..." class="flex-1 px-3 py-1.5 text-xs rounded-xl border border-amber-200 focus:outline-none bg-white">
+                            <button id="add-stuck-btn" class="px-3 py-1.5 rounded-xl bg-amber-800 text-white font-bold text-xs hover:bg-amber-900 transition">
+                                Save
+                            </button>
+                        </div>
+                        <div id="stuck-notes-list" class="flex flex-wrap gap-2 pt-1"></div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Checklist & Task Cards -->
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="bg-white rounded-3xl p-5 border border-vanilla-200 shadow-sm space-y-4">
+                        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-vanilla-100 pb-3">
+                            <div>
+                                <h2 class="font-serif font-bold text-base text-vanilla-900">Today's Priority Checklist</h2>
+                                <p class="text-[11px] text-vanilla-600"><span id="task-count">0 remaining tasks</span> • <span id="l4-urgent-count" class="text-rose-600 font-bold">0 Urgent L4</span></p>
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <label class="text-[11px] font-bold text-vanilla-600">Sort By:</label>
+                                <select id="sort-select" onchange="renderTasks()" class="px-2.5 py-1 text-xs rounded-xl border border-vanilla-200 bg-vanilla-50 focus:outline-none font-medium">
+                                    <option value="priority">🔴 Priority (L4 → L2)</option>
+                                    <option value="duedate">📅 Due Date</option>
+                                    <option value="subject">📚 Subject</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Task List -->
+                        <div id="tasks-list" class="space-y-3 min-h-[220px]"></div>
+
+                        <!-- Empty State -->
+                        <div id="empty-tasks" class="hidden text-center py-12 space-y-2">
+                            <div class="text-4xl">🎉</div>
+                            <h3 class="font-serif font-bold text-vanilla-800">All Done For Today!</h3>
+                            <p class="text-xs text-vanilla-600 max-w-xs mx-auto">You've completed all your priority assignments. Take a break, enjoy a cozy snack, and relax!</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- TAB 2: COZY FOCUS TIMER -->
+        <section id="tab-content-timer" class="hidden space-y-6">
+            <div class="max-w-2xl mx-auto bg-white rounded-3xl p-6 sm:p-8 border border-vanilla-200 shadow-sm text-center space-y-6">
+                
+                <div>
+                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-vanilla-100 text-vanilla-800">☕ Low-Pressure Focus Block</span>
+                    <h2 class="font-serif font-bold text-2xl text-vanilla-900 mt-2">Gentle Timer</h2>
+                    <p class="text-xs text-vanilla-600 mt-1">Focus in bite-sized chunks. If interrupted, just click pause without guilt!</p>
+                </div>
+
+                <!-- Timer Display -->
+                <div class="py-6 bg-vanilla-50/80 rounded-3xl border border-vanilla-200/80 space-y-2">
+                    <div id="timer-display" class="font-serif font-bold text-6xl tracking-tight text-vanilla-900">15:00</div>
+                    <div id="timer-status" class="text-xs font-bold text-vanilla-600">Ready to begin</div>
+                </div>
+
+                <!-- Timer Controls -->
+                <div class="flex items-center justify-center gap-3 flex-wrap">
+                    <button id="timer-start-btn" class="px-6 py-2.5 rounded-2xl bg-vanilla-800 hover:bg-vanilla-900 text-white font-bold text-xs transition shadow-md">
+                        ▶️ Start Session
+                    </button>
+                    <button id="timer-pause-btn" class="px-5 py-2.5 rounded-2xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-xs transition border border-amber-300">
+                        ⏸️ Pause for Interruption
+                    </button>
+                    <button id="timer-reset-btn" class="px-4 py-2.5 rounded-2xl bg-vanilla-100 hover:bg-vanilla-200 text-vanilla-800 font-bold text-xs transition">
+                        🔄 Reset
+                    </button>
+                </div>
+
+                <!-- Presets -->
+                <div class="flex items-center justify-center gap-2 pt-2">
+                    <span class="text-xs font-bold text-vanilla-600">Presets:</span>
+                    <button class="timer-preset-btn px-3 py-1 rounded-xl bg-vanilla-100 text-vanilla-800 text-xs font-bold hover:bg-vanilla-200" data-time="5">5 Mins</button>
+                    <button class="timer-preset-btn px-3 py-1 rounded-xl bg-vanilla-100 text-vanilla-800 text-xs font-bold hover:bg-vanilla-200" data-time="10">10 Mins</button>
+                    <button class="timer-preset-btn px-3 py-1 rounded-xl bg-vanilla-100 text-vanilla-800 text-xs font-bold hover:bg-vanilla-200" data-time="15">15 Mins</button>
+                    <button class="timer-preset-btn px-3 py-1 rounded-xl bg-vanilla-100 text-vanilla-800 text-xs font-bold hover:bg-vanilla-200" data-time="25">25 Mins</button>
+                </div>
+
+                <!-- Sticker Rewards Collection -->
+                <div class="pt-6 border-t border-vanilla-100 text-left space-y-3">
+                    <h3 class="font-serif font-bold text-xs text-vanilla-900 flex items-center gap-1.5">
+                        <span>🎀</span> Reward Sticker Garden
+                    </h3>
+                    <div class="flex items-center gap-3 flex-wrap text-2xl bg-vanilla-50 p-4 rounded-2xl border border-vanilla-200">
+                        <span title="Pastel Ribbon">🎀</span>
+                        <span title="Cute Flower">🌸</span>
+                        <span title="Butterfly">🦋</span>
+                        <span title="Warm Beverage">☕</span>
+                        <span title="Study Bear">🧸</span>
+                        <span title="Sparkles">✨</span>
+                        <span class="text-xs font-medium text-vanilla-500 ml-auto">+ Earn more stickers by finishing focus blocks!</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- TAB 3: DESK FOLDERS & ASSISTANT -->
+        <section id="tab-content-coach" class="hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Subject Folder Desk -->
+                <div class="bg-white rounded-3xl p-5 border border-vanilla-200 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between border-b border-vanilla-100 pb-3">
+                        <div class="flex items-center gap-2">
+                            <span>📁</span>
+                            <h2 class="font-serif font-bold text-sm text-vanilla-900">Subject Desk Folders</h2>
+                        </div>
+                        <span id="folder-item-count" class="text-[11px] font-bold text-vanilla-600 bg-vanilla-100 px-2 py-0.5 rounded-full">0 items</span>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-vanilla-700 uppercase mb-1">Select Folder</label>
+                        <select id="active-subject-folder" onchange="loadSubjectFolder()" class="w-full px-3 py-2 text-xs rounded-xl border border-vanilla-200 bg-vanilla-50 font-bold focus:outline-none">
+                            <option value="math">📐 Math Desk Folder</option>
+                            <option value="english">📖 English Desk Folder</option>
+                            <option value="science">🧪 Science Desk Folder</option>
+                            <option value="history">🏛️ History Desk Folder</option>
+                        </select>
+                    </div>
+
+                    <!-- Note Saver -->
+                    <div class="space-y-2">
+                        <textarea id="study-text-input" rows="3" placeholder="Paste formula notes, definitions, or study cheat-sheets here..." class="w-full p-3 text-xs rounded-xl border border-vanilla-200 focus:outline-none focus:ring-2 focus:ring-vanilla-400 bg-vanilla-50/50 resize-none"></textarea>
+                        <button onclick="saveTextNote()" class="w-full py-2 rounded-xl bg-vanilla-800 hover:bg-vanilla-900 text-white font-bold text-xs transition shadow-sm">
+                            💾 Save Note to Folder
+                        </button>
+                    </div>
+
+                    <!-- Items Grid -->
+                    <div id="folder-items-grid" class="space-y-2 max-h-[220px] overflow-y-auto pr-1"></div>
+                    <div id="folder-empty-state" class="text-center py-6 text-xs text-vanilla-500">
+                        This subject folder is empty. Save notes above to organize your study materials!
+                    </div>
+                </div>
+
+                <!-- Study Coach Chat -->
+                <div class="lg:col-span-2 bg-white rounded-3xl p-5 border border-vanilla-200 shadow-sm flex flex-col h-[480px]">
+                    <div class="flex items-center gap-2 border-b border-vanilla-100 pb-3 mb-3">
+                        <span class="text-base">☕</span>
+                        <div>
+                            <h2 class="font-serif font-bold text-sm text-vanilla-900">Cozy Study Assistant</h2>
+                            <p class="text-[11px] text-vanilla-600">Ask for quick explanations, homework tips, or study encouragement!</p>
+                        </div>
+                    </div>
+
+                    <div id="coach-messages" class="flex-1 overflow-y-auto space-y-3 p-2 bg-vanilla-50/50 rounded-2xl border border-vanilla-100">
+                        <div class="bg-white border border-vanilla-200 text-vanilla-900 p-3 rounded-2xl text-xs leading-relaxed max-w-[90%] shadow-sm">
+                            ☕ <strong>Assistant:</strong> Welcome to your cozy study studio! If any homework problem feels too hard or overwhelming, paste it here. We can break it down together!
+                        </div>
+                    </div>
+
+                    <div class="mt-3 flex gap-2">
+                        <input type="text" id="coach-user-input" placeholder="Ask a question about your homework..." onkeypress="if(event.key==='Enter') askStudyCoach()" class="flex-1 px-3 py-2 text-xs rounded-xl border border-vanilla-200 focus:outline-none focus:ring-2 focus:ring-vanilla-400 bg-white">
+                        <button onclick="askStudyCoach()" class="px-4 py-2 rounded-xl bg-vanilla-800 hover:bg-vanilla-900 text-white font-bold text-xs transition shadow-sm">
+                            Send
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- TAB 4: VIRTUAL CLASS & FRIENDS CALL -->
+        <section id="tab-content-classroom" class="hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Left: Friends Call & Upload Box -->
+                <div class="space-y-4">
+                    <!-- Study Buddies Call Panel -->
+                    <div class="bg-white rounded-3xl p-5 border border-vanilla-200 shadow-sm space-y-3">
+                        <div class="flex items-center justify-between border-b border-vanilla-100 pb-2">
+                            <h2 class="font-serif font-bold text-sm text-vanilla-900 flex items-center gap-1.5">
+                                🎧 Study Call Buddies
+                            </h2>
+                            <button onclick="toggleAddFriendForm()" class="text-xs font-bold text-vanilla-800 hover:text-vanilla-900 bg-emerald-100 border border-emerald-300 px-2.5 py-1 rounded-xl transition flex items-center gap-1">
+                                💬 + WhatsApp Friend
+                            </button>
+                        </div>
+
+                        <!-- Add Friend Inline Form -->
+                        <div id="add-friend-form-container" class="hidden bg-emerald-50/80 border border-emerald-200 rounded-2xl p-3 space-y-2 text-xs">
+                            <div class="font-bold text-emerald-900 flex items-center justify-between border-b border-emerald-200/60 pb-1.5">
+                                <span>➕ Add WhatsApp Study Buddy</span>
+                                <button onclick="toggleAddFriendForm()" class="text-emerald-700 hover:text-emerald-900 font-bold text-xs">✕</button>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-emerald-800 uppercase mb-0.5">Friend's Name</label>
+                                <input type="text" id="new-friend-name" placeholder="e.g. Maya 📖" class="w-full px-2.5 py-1.5 text-xs rounded-xl border border-emerald-200 focus:outline-none bg-white">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-emerald-800 uppercase mb-0.5">WhatsApp Number (with country code)</label>
+                                <input type="tel" id="new-friend-phone" placeholder="e.g. +14155552671" class="w-full px-2.5 py-1.5 text-xs rounded-xl border border-emerald-200 focus:outline-none bg-white font-mono">
+                            </div>
+                            <div class="flex gap-2 pt-1">
+                                <button onclick="submitAddFriend()" class="flex-1 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition shadow-sm">
+                                    Save Buddy
+                                </button>
+                                <button onclick="toggleAddFriendForm()" class="px-3 py-1.5 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold text-xs transition">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="friends-call-list" class="flex flex-col gap-2"></div>
+
+                        <!-- Audio/Video Toggles -->
+                        <div class="flex items-center gap-2 pt-2 border-t border-vanilla-100">
+                            <button id="mic-btn" onclick="toggleCallSetting('mic')" class="flex-1 py-2 rounded-xl bg-white border border-vanilla-200 text-vanilla-800 text-xs font-bold shadow-sm hover:bg-vanilla-50">
+                                🎙️ Mic On
+                            </button>
+                            <button id="cam-btn" onclick="toggleCallSetting('cam')" class="flex-1 py-2 rounded-xl bg-white border border-vanilla-200 text-vanilla-800 text-xs font-bold shadow-sm hover:bg-vanilla-50">
+                                📹 Cam On
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Homework File Pre-Loader -->
+                    <div class="bg-white rounded-3xl p-5 border border-vanilla-200 shadow-sm space-y-3">
+                        <div class="flex items-center justify-between border-b border-vanilla-100 pb-2">
+                            <h2 class="font-serif font-bold text-sm text-vanilla-900 flex items-center gap-1.5">
+                                📄 Upload Class Notes
+                            </h2>
+                            <span class="text-[10px] text-vanilla-600 bg-vanilla-100 px-2 py-0.5 rounded-full font-bold">Pre-Class</span>
+                        </div>
+                        <p class="text-[11px] text-vanilla-600">Upload assignment photos or text files before class starts so Ms. Maple knows what to teach!</p>
+                        
+                        <input type="file" id="classroom-file-input" multiple onchange="handleClassroomFiles(event)" class="block w-full text-xs text-vanilla-600 file:mr-2 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-vanilla-800 file:text-white hover:file:bg-vanilla-900">
+                        
+                        <div id="classroom-files-list" class="space-y-1.5 pt-2 max-h-[140px] overflow-y-auto"></div>
+                    </div>
+                </div>
+
+                <!-- Right: Blackboard & Virtual Classroom -->
+                <div class="lg:col-span-2 bg-white rounded-3xl p-5 border border-vanilla-200 shadow-sm flex flex-col h-[520px]">
+                    
+                    <!-- Class Header Controls -->
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-vanilla-100 pb-3 mb-3">
+                        <div>
+                            <h2 class="font-serif font-bold text-sm text-vanilla-900 flex items-center gap-1.5">
+                                👩‍🏫 Virtual Classroom with Ms. Maple
+                            </h2>
+                            <p id="class-status-text" class="text-[11px] text-vanilla-600">Ready to lead your study group step by step.</p>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <select id="classroom-subject-select" class="px-2.5 py-1 text-xs rounded-xl border border-vanilla-200 bg-vanilla-50 font-bold">
+                                <option value="Math">📐 Math Class</option>
+                                <option value="English">📖 English Class</option>
+                                <option value="Science">🧪 Science Class</option>
+                                <option value="History">🏛️ History Class</option>
+                            </select>
+                            <button onclick="startClassLesson()" class="px-3 py-1.5 rounded-xl bg-vanilla-800 hover:bg-vanilla-900 text-white font-bold text-xs shadow-sm">
+                                🚀 Start Lesson
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Lesson Topic Prompt -->
+                    <div class="mb-3">
+                        <input type="text" id="classroom-topic-input" placeholder="Optional: Enter lesson topic (e.g., Fractions, Photosynthesis, Essay Writing)..." class="w-full px-3 py-1.5 text-xs rounded-xl border border-vanilla-200 bg-vanilla-50 focus:outline-none">
+                    </div>
+
+                    <!-- Virtual Blackboard / Message Stream -->
+                    <div id="classroom-board" class="flex-1 overflow-y-auto space-y-3 p-3 bg-amber-50/40 rounded-2xl border border-amber-200/60">
+                        <div class="bg-white border border-vanilla-200 p-3.5 rounded-2xl text-xs text-vanilla-900 leading-relaxed shadow-sm">
+                            ☕ <strong>Ms. Maple:</strong> Welcome class! Upload your notes or enter a topic above, then click <strong>Start Lesson</strong>. I'll guide you and your study group through your homework step-by-step with zero pressure!
+                        </div>
+                    </div>
+
+                    <!-- Classroom Q&A Controls -->
+                    <div class="mt-3 pt-2 border-t border-vanilla-100 flex items-center gap-2">
+                        <button onclick="raiseHandInClass()" class="px-3 py-2 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-xs transition border border-amber-300 flex-shrink-0">
+                            ✋ Raise Hand
+                        </button>
+                        <input type="text" id="classroom-user-question" placeholder="Ask Ms. Maple a question about the lesson..." onkeypress="if(event.key==='Enter') askTeacherQuestion()" class="flex-1 px-3 py-2 text-xs rounded-xl border border-vanilla-200 focus:outline-none focus:ring-2 focus:ring-vanilla-400 bg-white">
+                        <button onclick="askTeacherQuestion()" class="px-4 py-2 rounded-xl bg-vanilla-800 hover:bg-vanilla-900 text-white font-bold text-xs transition shadow-sm">
+                            Ask
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- MAIN JAVASCRIPT LOGIC -->
+    <script>
+        let tasks = JSON.parse(localStorage.getItem('cozy_priority_tasks')) || [
+            { title: "Math Worksheet #1-5", priority: "L4", dueDate: new Date().toISOString().split('T')[0], subject: "Math", completed: false },
+            { title: "Read Chapter 3 English", priority: "L3", dueDate: new Date(Date.now() + 86400000).toISOString().split('T')[0], subject: "English", completed: false }
+        ];
+
+        let stuckNotes = JSON.parse(localStorage.getItem('cozy_stuck')) || ["What is formula for area of triangle?"];
+        let userStars = parseInt(localStorage.getItem('cozy_stars')) || 5;
+        let subjectFolders = JSON.parse(localStorage.getItem('cozy_subject_folders')) || { math: [], english: [], science: [], history: [] };
+        
+        let callFriends = JSON.parse(localStorage.getItem('cozy_call_friends')) || [
+            { name: "You (Host)", phone: "", active: true },
+            { name: "Maya 📖", phone: "+12345678900", active: true },
+            { name: "Leo ☕", phone: "+19876543210", active: true }
+        ];
+
+        let uploadedClassFiles = [];
+        let isTimerRunning = false;
+        let timerSecondsLeft = 900; // 15 mins
+        let timerInterval = null;
+        let isMicOn = true;
+        let isCamOn = true;
+        let isQuietShieldActive = true;
+
+        function playAudioChime(type = 'success') {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                if (type === 'success') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(659.25, ctx.currentTime + 0.15);
+                    gain.gain.setValueAtTime(0.12, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.5);
+                } else if (type === 'timer_done') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(440, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.2);
+                    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+                    osc.start();
+                    osc.stop(ctx.currentTime + 0.6);
+                }
+            } catch (e) {
+                // Audio context fallback
+            }
+        }
+
+        function showToast(message, icon = "☕") {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = 'bg-vanilla-900 text-white px-4 py-2.5 rounded-2xl text-xs font-medium shadow-lg flex items-center gap-2 border border-vanilla-700 transform translate-y-2 opacity-0 transition-all duration-300 pointer-events-auto';
+            toast.innerHTML = `<span>${icon}</span> <span>${escapeHtml(message)}</span>`;
+
+            container.appendChild(toast);
+
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text || '';
+            return div.innerHTML;
+        }
+
+        function switchTab(tabName) {
+            ['tasks', 'timer', 'coach', 'classroom'].forEach(t => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                const content = document.getElementById(`tab-content-${t}`);
+                if (!btn || !content) return;
+
+                if (t === tabName) {
+                    content.classList.remove('hidden');
+                    btn.className = "px-4 py-2 rounded-xl text-xs font-bold transition bg-white text-vanilla-900 shadow-sm border border-vanilla-200 flex items-center gap-2 whitespace-nowrap";
+                } else {
+                    content.classList.add('hidden');
+                    btn.className = "px-4 py-2 rounded-xl text-xs font-bold transition text-vanilla-700 hover:text-vanilla-900 flex items-center gap-2 whitespace-nowrap";
+                }
+            });
+
+            if (tabName === 'coach') loadSubjectFolder();
+            if (tabName === 'classroom') renderFriendsCall();
+        }
+
+        function toggleQuietShield() {
+            isQuietShieldActive = !isQuietShieldActive;
+            const btn = document.getElementById('quiet-shield-btn');
+            if (isQuietShieldActive) {
+                btn.className = "px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-1.5 hover:bg-emerald-100 transition shadow-sm";
+                btn.textContent = "🛡️ Parent Shield: ON";
+                showToast("Distraction shield active! Only parent calls allowed 🌸", "🛡️");
+            } else {
+                btn.className = "px-3 py-1.5 rounded-xl bg-vanilla-100 border border-vanilla-200 text-vanilla-800 text-xs font-bold flex items-center gap-1.5 hover:bg-vanilla-200 transition shadow-sm";
+                btn.textContent = "🛡️ Parent Shield: OFF";
+                showToast("Parent shield disabled", "🔔");
+            }
+        }
+
+        function saveTasks() {
+            localStorage.setItem('cozy_priority_tasks', JSON.stringify(tasks));
+            renderTasks();
+        }
+
+        function getPriorityBadge(priority) {
+            switch(priority) {
+                case 'L4':
+                    return `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-100 text-rose-800 border border-rose-300">🔴 L4 - Critical</span>`;
+                case 'L3':
+                    return `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800 border border-amber-300">🟠 L3 - High</span>`;
+                case 'L2':
+                default:
+                    return `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-yellow-100 text-yellow-800 border border-yellow-300">🟡 L2 - Medium</span>`;
+            }
+        }
+
+        function formatDueDate(dateStr) {
+            if (!dateStr) return '';
+            const today = new Date().toISOString().split('T')[0];
+            const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+            
+            if (dateStr === today) {
+                return `<span class="text-rose-600 font-bold">📅 Due Today</span>`;
+            } else if (dateStr === tomorrow) {
+                return `<span class="text-amber-700 font-bold">📅 Due Tomorrow</span>`;
+            } else if (dateStr < today) {
+                return `<span class="text-rose-700 font-extrabold underline">⚠️ Overdue (${dateStr})</span>`;
+            } else {
+                return `<span class="text-vanilla-700">📅 Due: ${dateStr}</span>`;
+            }
+        }
+
+        function renderTasks() {
+            const container = document.getElementById('tasks-list');
+            const emptyState = document.getElementById('empty-tasks');
+            const countLabel = document.getElementById('task-count');
+            const l4CountLabel = document.getElementById('l4-urgent-count');
+            const sortVal = document.getElementById('sort-select') ? document.getElementById('sort-select').value : 'priority';
+
+            if (!container) return;
+            container.innerHTML = '';
+            
+            const remaining = tasks.filter(t => !t.completed);
+            const l4Count = remaining.filter(t => t.priority === 'L4').length;
+            
+            if (countLabel) countLabel.textContent = `${remaining.length} remaining tasks`;
+            if (l4CountLabel) l4CountLabel.textContent = `${l4Count} Urgent L4`;
+
+            if (tasks.length === 0) {
+                if (emptyState) emptyState.classList.remove('hidden');
+                return;
+            } else {
+                if (emptyState) emptyState.classList.add('hidden');
+            }
+
+            let sortedTasks = [...tasks].sort((a, b) => {
+                if (a.completed !== b.completed) return a.completed ? 1 : -1;
+
+                if (sortVal === 'priority') {
+                    const pMap = { 'L4': 1, 'L3': 2, 'L2': 3 };
+                    return (pMap[a.priority] || 99) - (pMap[b.priority] || 99);
+                } else if (sortVal === 'duedate') {
+                    return (a.dueDate || '9999') > (b.dueDate || '9999') ? 1 : -1;
+                } else {
+                    return a.subject.localeCompare(b.subject);
+                }
+            });
+
+            sortedTasks.forEach((task) => {
+                const realIndex = tasks.indexOf(task);
+                const card = document.createElement('div');
+                card.className = `p-4 rounded-2xl border transition-all flex flex-col gap-2 ${
+                    task.completed 
+                        ? 'bg-vanilla-100/50 border-vanilla-200/60 opacity-60' 
+                        : 'bg-white border-vanilla-200 hover:border-vanilla-300 shadow-sm'
+                }`;
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="flex items-start gap-3 flex-1 min-w-0">
+                            <button onclick="toggleTask(${realIndex})" class="mt-0.5 w-5 h-5 rounded-md border flex items-center justify-center transition text-xs flex-shrink-0 ${
+                                task.completed ? 'bg-vanilla-800 border-vanilla-800 text-white' : 'border-vanilla-300 hover:border-vanilla-500'
+                            }">
+                                ${task.completed ? '✓' : ''}
+                            </button>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center gap-2 flex-wrap mb-1">
+                                    ${getPriorityBadge(task.priority)}
+                                    <span class="text-[11px] text-vanilla-600 font-bold">${escapeHtml(task.subject)}</span>
+                                </div>
+                                <p class="text-xs font-bold ${task.completed ? 'line-through text-vanilla-400' : 'text-vanilla-900'}">
+                                    ${escapeHtml(task.title)}
+                                </p>
+                                <div class="mt-1.5 text-[11px] flex items-center gap-3">
+                                    ${formatDueDate(task.dueDate)}
+                                    ${!task.completed ? `<button onclick="splitTask(${realIndex})" class="text-amber-800 hover:underline font-bold text-[10px]">🪄 Split into 3 micro-steps</button>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="deleteTask(${realIndex})" class="text-xs text-vanilla-400 hover:text-rose-500 p-1 rounded-lg">
+                            🗑️
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        window.toggleTask = function(index) {
+            tasks[index].completed = !tasks[index].completed;
+            if (tasks[index].completed) {
+                userStars++;
+                localStorage.setItem('cozy_stars', userStars);
+                const badge = document.getElementById('streak-badge');
+                if (badge) badge.textContent = `⭐ ${userStars} Stars`;
+                playAudioChime('success');
+                showToast("Task completed! +1 Star earned ⭐", "☕");
+            }
+            saveTasks();
+        };
+
+        window.deleteTask = function(index) {
+            tasks.splice(index, 1);
+            saveTasks();
+        };
+
+        window.splitTask = function(index) {
+            const original = tasks[index];
+            if (!original) return;
+
+            const step1 = { title: `Step 1: Read instructions for ${original.title}`, priority: original.priority, dueDate: original.dueDate, subject: original.subject, completed: false };
+            const step2 = { title: `Step 2: Solve first 2 problems of ${original.title}`, priority: original.priority, dueDate: original.dueDate, subject: original.subject, completed: false };
+            const step3 = { title: `Step 3: Finish remaining parts of ${original.title}`, priority: original.priority, dueDate: original.dueDate, subject: original.subject, completed: false };
+
+            tasks.splice(index, 1, step1, step2, step3);
+            saveTasks();
+            showToast("Broke task into 3 easy micro-steps! 🪄", "☕");
+        };
+
+        function renderStuckNotes() {
+            const container = document.getElementById('stuck-notes-list');
+            if (!container) return;
+            container.innerHTML = '';
+            stuckNotes.forEach((note, index) => {
+                const badge = document.createElement('div');
+                badge.className = 'bg-white border border-amber-200 text-amber-900 px-2.5 py-1 rounded-xl text-[11px] flex items-center gap-1.5 shadow-sm font-medium';
+                badge.innerHTML = `
+                    <span>📌 ${escapeHtml(note)}</span>
+                    <button onclick="removeStuckNote(${index})" class="text-amber-400 hover:text-rose-500 font-bold ml-1">✕</button>
+                `;
+                container.appendChild(badge);
+            });
+        }
+
+        window.removeStuckNote = function(index) {
+            stuckNotes.splice(index, 1);
+            localStorage.setItem('cozy_stuck', JSON.stringify(stuckNotes));
+            renderStuckNotes();
+        };
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timerSecondsLeft / 60);
+            const secs = timerSecondsLeft % 60;
+            const display = document.getElementById('timer-display');
+            if (display) {
+                display.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+        }
+
+        function startTimer() {
+            if (isTimerRunning) return;
+            isTimerRunning = true;
+            const status = document.getElementById('timer-status');
+            if (status) status.textContent = 'Focusing... ☕';
+            showToast("Focus session started! Deep breath", "⏱️");
+
+            timerInterval = setInterval(() => {
+                if (timerSecondsLeft > 0) {
+                    timerSecondsLeft--;
+                    updateTimerDisplay();
+                } else {
+                    pauseTimer();
+                    playAudioChime('timer_done');
+                    userStars += 2;
+                    localStorage.setItem('cozy_stars', userStars);
+                    const badge = document.getElementById('streak-badge');
+                    if (badge) badge.textContent = `⭐ ${userStars} Stars`;
+                    showToast("Focus session complete! +2 Stars earned ⭐", "🎉");
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            const status = document.getElementById('timer-status');
+            if (status) status.textContent = 'Paused';
+        }
+
+        function loadSubjectFolder() {
+            const folderSelect = document.getElementById('active-subject-folder');
+            if (!folderSelect) return;
+            const folderKey = folderSelect.value;
+            const items = subjectFolders[folderKey] || [];
+            const grid = document.getElementById('folder-items-grid');
+            const emptyState = document.getElementById('folder-empty-state');
+            const countEl = document.getElementById('folder-item-count');
+
+            if (countEl) countEl.textContent = `${items.length} items`;
+
+            if (grid) {
+                grid.innerHTML = '';
+                if (items.length === 0) {
+                    if (emptyState) emptyState.classList.remove('hidden');
+                } else {
+                    if (emptyState) emptyState.classList.add('hidden');
+                    items.forEach((item, index) => {
+                        const card = document.createElement('div');
+                        card.className = 'bg-vanilla-50 rounded-2xl p-3 border border-vanilla-200 text-xs text-vanilla-900 flex justify-between items-start gap-2 shadow-sm';
+                        card.innerHTML = `
+                            <span class="break-words font-medium">${escapeHtml(item.data)}</span>
+                            <button onclick="deleteFolderItem('${folderKey}', ${index})" class="text-vanilla-400 hover:text-rose-500 font-bold p-1">🗑️</button>
+                        `;
+                        grid.appendChild(card);
+                    });
+                }
+            }
+        }
+
+        function saveTextNote() {
+            const textarea = document.getElementById('study-text-input');
+            if (!textarea) return;
+            const text = textarea.value.trim();
+            if (!text) return;
+
+            const folderSelect = document.getElementById('active-subject-folder');
+            if (!folderSelect) return;
+            const folderKey = folderSelect.value;
+            if (!subjectFolders[folderKey]) subjectFolders[folderKey] = [];
+
+            subjectFolders[folderKey].push({ data: text });
+            textarea.value = '';
+            localStorage.setItem('cozy_subject_folders', JSON.stringify(subjectFolders));
+            loadSubjectFolder();
+            showToast("Saved note to class folder!", "📝");
+        }
+
+        window.deleteFolderItem = function(folderKey, index) {
+            if (subjectFolders[folderKey]) {
+                subjectFolders[folderKey].splice(index, 1);
+                localStorage.setItem('cozy_subject_folders', JSON.stringify(subjectFolders));
+                loadSubjectFolder();
+            }
+        };
+
+        function askStudyCoach() {
+            const inputEl = document.getElementById('coach-user-input');
+            if (!inputEl) return;
+            const query = inputEl.value.trim();
+            if (!query) return;
+
+            inputEl.value = '';
+            const messages = document.getElementById('coach-messages');
+            if (!messages) return;
+
+            const uMsg = document.createElement('div');
+            uMsg.className = 'bg-vanilla-200 text-vanilla-900 p-2.5 rounded-2xl text-xs ml-auto max-w-[85%] font-medium shadow-sm';
+            uMsg.textContent = query;
+            messages.appendChild(uMsg);
+
+            let advice = "";
+            const qLower = query.toLowerCase();
+
+            if (qLower.includes('math') || qLower.includes('equation') || qLower.includes('number')) {
+                advice = "For math problems, write out what you know on paper first. Break complex equations into single operations, and check your work backward!";
+            } else if (qLower.includes('read') || qLower.includes('essay') || qLower.includes('write')) {
+                advice = "When writing or reading, start with an outline in 3 bullet points. Focus on getting ideas down first—polish grammar later!";
+            } else if (qLower.includes('focus') || qLower.includes('tired') || qLower.includes('stuck')) {
+                advice = "Take a 5-minute break, stretch, drink water, and switch to an easier task to regain your flow!";
+            } else {
+                advice = "Focus on your 🔴 <strong>L4 Priority</strong> task first! Split it into 5-minute micro-steps to build momentum. You've got this!";
+            }
+
+            setTimeout(() => {
+                const cMsg = document.createElement('div');
+                cMsg.className = 'bg-white border border-vanilla-200 text-vanilla-900 p-3 rounded-2xl text-xs leading-relaxed max-w-[90%] shadow-sm mt-1';
+                cMsg.innerHTML = `☕ <strong>Assistant:</strong> ${advice}`;
+                messages.appendChild(cMsg);
+                messages.scrollTop = messages.scrollHeight;
+            }, 400);
+        }
+
+        function renderFriendsCall() {
+            const list = document.getElementById('friends-call-list');
+            if (!list) return;
+            list.innerHTML = '';
+            callFriends.forEach((friend, idx) => {
+                const card = document.createElement('div');
+                card.className = 'bg-vanilla-50 border border-vanilla-200 p-2.5 rounded-2xl flex items-center justify-between gap-2 shadow-sm';
+                card.innerHTML = `
+                    <div class="flex items-center gap-2 min-w-0">
+                        <span class="w-2.5 h-2.5 rounded-full ${friend.inCall ? 'bg-emerald-500 animate-pulse' : 'bg-emerald-500'}"></span>
+                        <div class="truncate">
+                            <div class="font-bold text-xs text-vanilla-900 truncate">${escapeHtml(friend.name)}</div>
+                            <div class="text-[10px] text-vanilla-600 font-mono">${escapeHtml(friend.phone || 'Host')}</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1 flex-shrink-0">
+                        ${idx > 0 && friend.phone ? `
+                            <button onclick="callFriendWhatsApp(${idx})" class="px-2.5 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] flex items-center gap-1 shadow-sm transition">
+                                📞 Call
+                            </button>
+                        ` : ''}
+                        ${idx > 0 ? `
+                            <button onclick="removeFriendFromCall(${idx})" class="text-vanilla-400 hover:text-rose-500 text-xs font-bold p-1">✕</button>
+                        ` : ''}
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function toggleAddFriendForm() {
+            const container = document.getElementById('add-friend-form-container');
+            if (!container) return;
+            container.classList.toggle('hidden');
+            if (!container.classList.contains('hidden')) {
+                const nameInput = document.getElementById('new-friend-name');
+                if (nameInput) nameInput.focus();
+            }
+        }
+
+        function submitAddFriend() {
+            const nameEl = document.getElementById('new-friend-name');
+            const phoneEl = document.getElementById('new-friend-phone');
+
+            if (!nameEl || !phoneEl) return;
+
+            const friendName = nameEl.value.trim();
+            const friendPhone = phoneEl.value.trim();
+
+            if (!friendName) {
+                showToast("Please enter your friend's name", "⚠️");
+                return;
+            }
+
+            callFriends.push({ 
+                name: friendName, 
+                phone: friendPhone || "", 
+                active: true,
+                inCall: false 
+            });
+
+            localStorage.setItem('cozy_call_friends', JSON.stringify(callFriends));
+            
+            // Reset form fields
+            nameEl.value = '';
+            phoneEl.value = '';
+            toggleAddFriendForm();
+
+            renderFriendsCall();
+            showToast(`${friendName} added to study call list!`, '💬');
+        }
+
+        function callFriendWhatsApp(idx) {
+            const friend = callFriends[idx];
+            if (!friend || !friend.phone) {
+                showToast("Please add a valid WhatsApp phone number!", "⚠️");
+                return;
+            }
+
+            const cleanPhone = friend.phone.replace(/[^0-9]/g, '');
+            if (!cleanPhone) {
+                showToast("Invalid phone number format", "⚠️");
+                return;
+            }
+
+            friend.inCall = true;
+            renderFriendsCall();
+
+            const inviteText = encodeURIComponent(`Hey ${friend.name}! Join my homework study session on Cozy Homework Studio ☕📖`);
+            const waUrl = `https://wa.me/${cleanPhone}?text=${inviteText}`;
+            
+            showToast(`Calling ${friend.name} on WhatsApp...`, "📞");
+            window.open(waUrl, '_blank');
+        }
+
+        window.removeFriendFromCall = function(idx) {
+            callFriends.splice(idx, 1);
+            localStorage.setItem('cozy_call_friends', JSON.stringify(callFriends));
+            renderFriendsCall();
+        };
+
+        function toggleCallSetting(type) {
+            if (type === 'mic') {
+                isMicOn = !isMicOn;
+                const btn = document.getElementById('mic-btn');
+                if (btn) {
+                    btn.textContent = isMicOn ? '🎙️ Mic On' : '🔇 Mic Muted';
+                    btn.className = isMicOn ? 'flex-1 py-2 rounded-xl bg-white border border-vanilla-200 text-vanilla-800 text-xs font-bold shadow-sm' : 'flex-1 py-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold shadow-sm';
+                }
+            } else if (type === 'cam') {
+                isCamOn = !isCamOn;
+                const btn = document.getElementById('cam-btn');
+                if (btn) {
+                    btn.textContent = isCamOn ? '📹 Cam On' : '📷 Cam Off';
+                    btn.className = isCamOn ? 'flex-1 py-2 rounded-xl bg-white border border-vanilla-200 text-vanilla-800 text-xs font-bold shadow-sm' : 'flex-1 py-2 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-bold shadow-sm';
+                }
+            }
+        }
+
+        function handleClassroomFiles(event) {
+            const files = Array.from(event.target.files);
+            files.forEach(file => {
+                uploadedClassFiles.push({ name: file.name, type: file.type });
+            });
+            renderClassroomFiles();
+            showToast("Uploaded lesson file!", "📄");
+        }
+
+        function renderClassroomFiles() {
+            const list = document.getElementById('classroom-files-list');
+            if (!list) return;
+            list.innerHTML = '';
+            uploadedClassFiles.forEach((f, idx) => {
+                const badge = document.createElement('div');
+                badge.className = 'bg-vanilla-50 border border-vanilla-200 rounded-xl p-1.5 text-xs flex items-center justify-between gap-2 shadow-sm';
+                badge.innerHTML = `
+                    <div class="flex items-center gap-1.5 truncate">
+                        <span>📄</span>
+                        <span class="font-bold text-vanilla-900 truncate text-[11px]">${escapeHtml(f.name)}</span>
+                    </div>
+                    <button onclick="removeUploadedClassFile(${idx})" class="text-vanilla-400 hover:text-rose-500 font-bold text-xs">✕</button>
+                `;
+                list.appendChild(badge);
+            });
+        }
+
+        window.removeUploadedClassFile = function(idx) {
+            uploadedClassFiles.splice(idx, 1);
+            renderClassroomFiles();
+        };
+
+        function startClassLesson() {
+            const subject = document.getElementById('classroom-subject-select').value;
+            const topic = document.getElementById('classroom-topic-input').value.trim();
+            const board = document.getElementById('classroom-board');
+            const statusText = document.getElementById('class-status-text');
+
+            if (!board) return;
+
+            if (statusText) statusText.textContent = `Leading ${subject} lesson...`;
+            showToast("Ms. Maple is starting class lesson...", "👩‍🏫");
+
+            let mainTopic = topic || 'Homework Practice';
+            let fileList = uploadedClassFiles.map(f => f.name).join(', ') || 'Class Notes';
+
+            const teacherMsg = document.createElement('div');
+            teacherMsg.className = 'bg-white border border-vanilla-200 p-4 rounded-2xl text-xs text-vanilla-900 leading-relaxed shadow-sm font-sans space-y-2 mt-2';
+            
+            teacherMsg.innerHTML = `
+                <div class="font-bold text-sm text-vanilla-900 border-b border-vanilla-200 pb-1 mb-2">
+                    ☕ Ms. Maple's Lesson: ${escapeHtml(subject)} - ${escapeHtml(mainTopic)}
+                </div>
+                <p>Welcome study group! Let's examine <strong>${escapeHtml(fileList)}</strong> together step by step:</p>
+                <div class="bg-vanilla-50 p-3 rounded-xl border border-vanilla-200 space-y-1.5 my-2">
+                    <div><strong>Step 1:</strong> Read through the problem prompt and write down key facts.</div>
+                    <div><strong>Step 2:</strong> Apply the standard formula or breakdown method.</div>
+                    <div><strong>Step 3:</strong> Verify your answer step by step.</div>
+                </div>
+                <p class="text-vanilla-700 font-medium">Feel free to type any specific questions below or click <strong>Raise Hand</strong>!</p>
+            `;
+
+            board.appendChild(teacherMsg);
+            board.scrollTop = board.scrollHeight;
+        }
+
+        function askTeacherQuestion() {
+            const input = document.getElementById('classroom-user-question');
+            if (!input) return;
+            const qText = input.value.trim();
+            if (!qText) return;
+
+            input.value = '';
+            const board = document.getElementById('classroom-board');
+            if (!board) return;
+
+            const uMsg = document.createElement('div');
+            uMsg.className = 'bg-vanilla-200 text-vanilla-900 p-2.5 rounded-2xl text-xs ml-auto max-w-[85%] font-medium shadow-sm';
+            uMsg.textContent = `🙋 You: ${qText}`;
+            board.appendChild(uMsg);
+
+            setTimeout(() => {
+                const tMsg = document.createElement('div');
+                tMsg.className = 'bg-white border border-vanilla-200 p-3 rounded-2xl text-xs text-vanilla-900 leading-relaxed max-w-[90%] shadow-sm mt-1';
+                tMsg.innerHTML = `☕ <strong>Ms. Maple:</strong> Great question! Break this problem into 2 simpler steps: first write down what you know, then solve the unknown piece step by step!`;
+                board.appendChild(tMsg);
+                board.scrollTop = board.scrollHeight;
+            }, 500);
+        }
+
+        function raiseHandInClass() {
+            showToast("You raised your hand! Ms. Maple noticed you ✋", "☕");
+            const board = document.getElementById('classroom-board');
+            if (!board) return;
+            const handMsg = document.createElement('div');
+            handMsg.className = 'bg-amber-100 border border-amber-300 text-amber-900 p-2.5 rounded-2xl text-xs font-bold flex items-center gap-2 mt-2';
+            handMsg.innerHTML = `✋ <strong>Ms. Maple:</strong> Yes! What question would you or your study buddies like to ask?`;
+            board.appendChild(handMsg);
+            board.scrollTop = board.scrollHeight;
+        }
+
+        function init() {
+            // Task Form Event Listener
+            const addForm = document.getElementById('add-task-form');
+            if (addForm) {
+                const todayStr = new Date().toISOString().split('T')[0];
+                const dueDateInput = document.getElementById('task-duedate');
+                if (dueDateInput) dueDateInput.value = todayStr;
+
+                addForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const title = document.getElementById('task-title').value.trim();
+                    const priority = document.getElementById('task-priority').value;
+                    const dueDate = document.getElementById('task-duedate').value;
+                    const subject = document.getElementById('task-subject').value;
+
+                    if (!title) return;
+
+                    tasks.push({ title, priority, dueDate, subject, completed: false });
+                    document.getElementById('task-title').value = '';
+                    saveTasks();
+                    showToast(`Added ${priority} task to checklist!`, "☕");
+                });
+            }
+
+            // Stuck Note Listener
+            const addStuckBtn = document.getElementById('add-stuck-btn');
+            if (addStuckBtn) {
+                addStuckBtn.addEventListener('click', () => {
+                    const input = document.getElementById('stuck-note-input');
+                    if (!input || !input.value.trim()) return;
+                    stuckNotes.push(input.value.trim());
+                    input.value = '';
+                    localStorage.setItem('cozy_stuck', JSON.stringify(stuckNotes));
+                    renderStuckNotes();
+                    showToast("Saved question note!", "📌");
+                });
+            }
+
+            // Timer Event Listeners
+            const startBtn = document.getElementById('timer-start-btn');
+            if (startBtn) startBtn.addEventListener('click', startTimer);
+
+            const pauseBtn = document.getElementById('timer-pause-btn');
+            if (pauseBtn) pauseBtn.addEventListener('click', pauseTimer);
+
+            const resetBtn = document.getElementById('timer-reset-btn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    pauseTimer();
+                    timerSecondsLeft = 900;
+                    updateTimerDisplay();
+                    const status = document.getElementById('timer-status');
+                    if (status) status.textContent = 'Ready';
+                });
+            }
+
+            document.querySelectorAll('.timer-preset-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const mins = parseInt(e.target.dataset.time);
+                    pauseTimer();
+                    timerSecondsLeft = mins * 60;
+                    updateTimerDisplay();
+                });
+            });
+
+            // Initial Renders
+            renderTasks();
+            renderStuckNotes();
+            renderFriendsCall();
+            const badge = document.getElementById('streak-badge');
+            if (badge) badge.textContent = `⭐ ${userStars} Stars`;
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>

@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nourish & Rest - Sleep & Healthy Eating Companion</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for sleep charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter and Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        beige: {
+                            50: '#FCFAF7',
+                            100: '#F7F3EC',
+                            200: '#EFE6D8',
+                            300: '#E1D3BF',
+                            400: '#CDB9A0',
+                            500: '#B59E83',
+                            600: '#967E65',
+                            700: '#75604B',
+                            800: '#584737',
+                            900: '#3D3126',
+                        },
+                        sand: {
+                            50: '#FAF8F5',
+                            100: '#F3EFEA',
+                            200: '#E8E1D7',
+                            300: '#D5C7B5',
+                            400: '#BFA991',
+                        },
+                        warmdark: '#2C2520'
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: var(--bg-body, #F7F3EC);
+            color: var(--text-primary, #3D3126);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Dynamic Theme Utility Overrides */
+        .beige-glass {
+            background: var(--bg-glass, rgba(252, 250, 247, 0.85));
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-color: var(--border-color, rgba(225, 211, 191, 0.6));
+        }
+
+        .beige-card {
+            background: var(--bg-card, #FCFAF7);
+            border-color: var(--border-color, #EFE6D8);
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        /* Custom scrollbar in warm tones */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-body, #F7F3EC);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color, #D5C7B5);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-color, #B59E83);
+        }
+
+        /* Screen Filter Warm Overlay */
+        #warm-screen-overlay {
+            pointer-events: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9990;
+            transition: background-color 0.4s ease, opacity 0.4s ease;
+        }
+
+        /* Fullscreen Lockdown Simulator */
+        #lockdown-overlay {
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .pulse-subtle {
+            animation: pulse-light 3s infinite ease-in-out;
+        }
+
+        @keyframes pulse-light {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.03); opacity: 1; }
+        }
+
+        /* Custom Range Slider Styling */
+        input[type=range] {
+            accent-color: #967E65;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col relative selection:bg-beige-300 selection:text-beige-900">
+
+    <!-- Warm Blue-Light Interactive Screen Filter Overlay -->
+    <div id="warm-screen-overlay" class="opacity-0 bg-amber-500/10"></div>
+
+    <!-- Top Header -->
+    <header class="sticky top-0 z-40 beige-glass border-b border-beige-200">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-beige-300 text-beige-800 flex items-center justify-center shadow-sm">
+                    <i class="fa-solid fa-feather-pointed text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-display font-bold text-xl text-beige-900 tracking-tight leading-none">Nourish & Rest</h1>
+                    <p class="text-xs text-beige-600 font-medium mt-0.5">Offline Local Storage Companion</p>
+                </div>
+            </div>
+
+            <!-- Tab Switcher -->
+            <nav class="flex bg-beige-200/80 p-1 rounded-2xl border border-beige-300/60 my-1 sm:my-0">
+                <button id="tab-btn-sleep" onclick="switchTab('sleep')" class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 bg-beige-50 text-beige-900 shadow-sm">
+                    <i class="fa-solid fa-moon text-beige-600"></i>
+                    <span>Sleep Sanctuary</span>
+                </button>
+                <button id="tab-btn-food" onclick="switchTab('food')" class="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 text-beige-700 hover:text-beige-900">
+                    <i class="fa-solid fa-bowl-food text-beige-600"></i>
+                    <span>Healthy Eating</span>
+                </button>
+            </nav>
+
+            <!-- Quick Stats Badge & Storage Status -->
+            <div class="flex items-center gap-2 text-xs font-medium text-beige-800">
+                <div class="hidden sm:flex items-center gap-2 bg-beige-100 px-3 py-1.5 rounded-full border border-beige-300/50">
+                    <span class="flex items-center gap-1"><i class="fa-solid fa-fire text-amber-600"></i> <span id="streak-counter">5</span> Day Streak</span>
+                    <span class="text-beige-300">•</span>
+                    <span id="header-time-display" class="font-mono text-beige-700">10:00 PM</span>
+                </div>
+
+                <!-- Theme Color Scheme Selector Dropdown -->
+                <div class="relative">
+                    <button onclick="toggleThemeMenu()" id="theme-menu-btn" title="Change Color Scheme" class="flex items-center gap-1.5 px-3 py-2 bg-beige-200 hover:bg-beige-300 text-beige-800 rounded-xl text-xs font-semibold transition border border-beige-300/60 shadow-sm">
+                        <i class="fa-solid fa-palette text-amber-700"></i>
+                        <span class="hidden sm:inline">Theme</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] opacity-70"></i>
+                    </button>
+
+                    <div id="theme-menu" class="hidden absolute right-0 mt-2 w-48 beige-card rounded-2xl shadow-xl border border-beige-300 p-2 z-50 space-y-1">
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-beige-600 px-2.5 py-1">Color Palette</div>
+                        <button onclick="selectTheme('beige')" data-theme="beige" class="theme-option-btn w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-medium hover:bg-beige-200 transition">
+                            <span class="w-3.5 h-3.5 rounded-full bg-[#EFE6D8] border border-[#CDB9A0]"></span> Warm Beige
+                        </button>
+                        <button onclick="selectTheme('sage')" data-theme="sage" class="theme-option-btn w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-medium hover:bg-beige-200 transition">
+                            <span class="w-3.5 h-3.5 rounded-full bg-[#DCE6DC] border border-[#A8C4A8]"></span> Sage & Forest
+                        </button>
+                        <button onclick="selectTheme('lavender')" data-theme="lavender" class="theme-option-btn w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-medium hover:bg-beige-200 transition">
+                            <span class="w-3.5 h-3.5 rounded-full bg-[#E4DCEE] border border-[#C2B2D8]"></span> Lavender Dusk
+                        </button>
+                        <button onclick="selectTheme('peach')" data-theme="peach" class="theme-option-btn w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-medium hover:bg-beige-200 transition">
+                            <span class="w-3.5 h-3.5 rounded-full bg-[#EEDBD0] border border-[#D8B4A0]"></span> Peach & Honey
+                        </button>
+                        <button onclick="selectTheme('midnight')" data-theme="midnight" class="theme-option-btn w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-medium hover:bg-beige-200 transition">
+                            <span class="w-3.5 h-3.5 rounded-full bg-[#38302B] border border-[#584737]"></span> Midnight Sanctuary
+                        </button>
+                    </div>
+                </div>
+
+                <button onclick="clearLocalStorageData()" title="Reset saved local data" class="p-2 bg-beige-200 hover:bg-beige-300 text-beige-700 hover:text-beige-900 rounded-xl transition border border-beige-300/60">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-grow max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+
+        <!-- ========================================== -->
+        <!-- TAB 1: SLEEP SANCTUARY CONTAINER -->
+        <!-- ========================================== -->
+        <section id="tab-sleep" class="space-y-8 transition-all duration-300">
+            
+            <!-- Hero Banner & Lockdown Callout -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Bedtime Lockdown Card -->
+                <div class="lg:col-span-2 beige-card rounded-3xl p-6 sm:p-8 relative overflow-hidden flex flex-col justify-between">
+                    <div class="absolute -top-12 -right-12 w-48 h-48 bg-beige-200/50 rounded-full blur-2xl pointer-events-none"></div>
+                    
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-beige-200 text-beige-800 border border-beige-300">
+                                <i class="fa-solid fa-shield-halved text-beige-600"></i> Digital Wind-Down
+                            </span>
+                            <div class="flex items-center gap-2">
+                                <label for="lockdown-time" class="text-xs font-medium text-beige-700">Set Bedtime Target:</label>
+                                <input type="time" id="lockdown-time" value="22:30" onchange="updateTargetTime(this.value)" class="bg-beige-100 border border-beige-300 text-beige-900 rounded-lg px-2 py-1 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-beige-400">
+                            </div>
+                        </div>
+
+                        <h2 class="font-display font-bold text-2xl sm:text-3xl text-beige-900 mb-2">Phone Lockdown Routine</h2>
+                        <p class="text-sm text-beige-700 max-w-lg">
+                            Curb late bedtime scrolling by locking down your browser into a tranquil screen once your target hour arrives.
+                        </p>
+                    </div>
+
+                    <!-- Countdown & Action Button -->
+                    <div class="mt-8 pt-6 border-t border-beige-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <span class="text-xs text-beige-600 uppercase tracking-wider font-bold">Time Until Lockdown</span>
+                            <div id="lockdown-countdown" class="font-display font-bold text-3xl sm:text-4xl text-beige-900 font-mono tracking-tight">
+                                01h 45m 12s
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="startLockdownSimulation()" class="w-full sm:w-auto px-6 py-3.5 bg-beige-800 hover:bg-beige-900 text-beige-50 font-semibold text-sm rounded-2xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-lock"></i> Start Lockdown Mode
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Blue Light & Screen Warmth Filter -->
+                <div class="beige-card rounded-3xl p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 text-beige-800 font-display font-semibold text-lg mb-2">
+                            <i class="fa-solid fa-sun text-amber-600"></i> Interactive Night Filter
+                        </div>
+                        <p class="text-xs text-beige-600 leading-relaxed mb-4">
+                            Simulate warming blue-light filtering on your display right now to stimulate natural melatonin release before bed.
+                        </p>
+                    </div>
+
+                    <div class="space-y-4 my-2 bg-beige-100/70 p-4 rounded-2xl border border-beige-200">
+                        <div class="flex justify-between items-center text-xs font-semibold text-beige-800">
+                            <span>Screen Warmth Filter</span>
+                            <span id="filter-percent">0% Warmth</span>
+                        </div>
+                        <input type="range" id="filter-slider" min="0" max="80" value="0" oninput="adjustWarmFilter(this.value)" class="w-full h-2 bg-beige-300 rounded-lg appearance-none cursor-pointer">
+                        
+                        <div class="flex justify-between text-[10px] text-beige-600">
+                            <span>Cool / Daylight</span>
+                            <span>Sunset Warm</span>
+                        </div>
+                    </div>
+
+                    <div class="text-xs text-beige-700 bg-beige-200/40 p-3 rounded-xl border border-beige-300/40 flex items-center gap-2">
+                        <i class="fa-solid fa-lightbulb text-amber-700 text-sm"></i>
+                        <span>Reduces eye strain and helps mind transition to deep rest.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sleep Log Tracker & Quality Evaluator -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Sleep Entry Form -->
+                <div class="beige-card rounded-3xl p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 text-beige-900 font-display font-semibold text-lg mb-1">
+                            <i class="fa-solid fa-bed text-beige-600"></i> Log Last Night's Sleep
+                        </div>
+                        <p class="text-xs text-beige-600 mb-4">Record your hours to generate personalized sleep quality analysis saved directly to Local Storage.</p>
+
+                        <form id="sleep-log-form" onsubmit="handleSleepSubmit(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-medium text-beige-800 mb-1">Hours Slept Today</label>
+                                <input type="number" step="0.5" id="sleep-hours" min="1" max="16" value="7.5" required class="w-full bg-beige-100 border border-beige-300 rounded-xl px-3 py-2 text-sm text-beige-900 font-semibold focus:outline-none focus:ring-2 focus:ring-beige-400">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-medium text-beige-800 mb-1">Felt Sleep Quality</label>
+                                <select id="sleep-rating" class="w-full bg-beige-100 border border-beige-300 rounded-xl px-3 py-2 text-sm text-beige-900 font-medium focus:outline-none focus:ring-2 focus:ring-beige-400">
+                                    <option value="5">🌟 Excellent - Woke up energized</option>
+                                    <option value="4">😊 Good - Rested and calm</option>
+                                    <option value="3" selected>😐 Fair - Somewhat tired</option>
+                                    <option value="2">🥱 Poor - Woke up multiple times</option>
+                                    <option value="1">😩 Exhausted - Less than optimal rest</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-medium text-beige-800 mb-1">Bedtime Notes (Optional)</label>
+                                <input type="text" id="sleep-notes" placeholder="e.g. Drank herbal tea, no screen time" class="w-full bg-beige-100 border border-beige-300 rounded-xl px-3 py-2 text-xs text-beige-900 focus:outline-none focus:ring-2 focus:ring-beige-400">
+                            </div>
+
+                            <button type="submit" class="w-full py-2.5 bg-beige-700 hover:bg-beige-800 text-beige-50 font-semibold text-xs rounded-xl shadow transition">
+                                <i class="fa-solid fa-plus-circle mr-1"></i> Save Sleep Entry
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Instant Sleep Quality Assessment Box -->
+                    <div id="sleep-eval-box" class="mt-4 p-3 bg-beige-200/60 rounded-2xl border border-beige-300 text-xs text-beige-800 flex items-start gap-2.5">
+                        <i class="fa-solid fa-circle-check text-emerald-600 text-base mt-0.5"></i>
+                        <div>
+                            <span class="font-bold text-beige-900 block" id="sleep-status-title">Optimal Sleep Duration (7.5h)</span>
+                            <p class="text-[11px] text-beige-700 mt-0.5" id="sleep-status-desc">You hit the recommended target for cognitive performance and cellular renewal.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sleep Log Chart Visualization -->
+                <div class="lg:col-span-2 beige-card rounded-3xl p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="font-display font-bold text-lg text-beige-900">Weekly Sleep Patterns</h3>
+                                <p class="text-xs text-beige-600">Saved dynamically in your local storage</p>
+                            </div>
+                            <span class="text-xs font-bold text-beige-700 bg-beige-200/80 px-2.5 py-1 rounded-lg border border-beige-300">Target: 7-9 Hrs</span>
+                        </div>
+                        <div class="h-60 w-full relative">
+                            <canvas id="sleep-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-beige-200 text-center">
+                        <div class="bg-beige-100/70 p-2.5 rounded-xl border border-beige-200">
+                            <span class="text-[10px] text-beige-600 font-semibold uppercase block">Average Sleep</span>
+                            <span class="font-display font-bold text-sm text-beige-900" id="avg-sleep-val">7.4 hrs</span>
+                        </div>
+                        <div class="bg-beige-100/70 p-2.5 rounded-xl border border-beige-200">
+                            <span class="text-[10px] text-beige-600 font-semibold uppercase block">Consistency</span>
+                            <span class="font-display font-bold text-sm text-beige-900" id="sleep-consistency-val">88%</span>
+                        </div>
+                        <div class="bg-beige-100/70 p-2.5 rounded-xl border border-beige-200">
+                            <span class="text-[10px] text-beige-600 font-semibold uppercase block">Sleep Debt</span>
+                            <span class="font-display font-bold text-sm text-emerald-700" id="sleep-debt-val">Low (0.5h)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 2: HEALTHY EATING CONTAINER -->
+        <!-- ========================================== -->
+        <section id="tab-food" class="space-y-8 hidden transition-all duration-300">
+            
+            <!-- Food Schedule & Meal Timer Hero -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Smart Meal Time Schedule -->
+                <div class="lg:col-span-2 beige-card rounded-3xl p-6 sm:p-8 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-100/80 text-amber-900 border border-amber-200">
+                                <i class="fa-solid fa-clock text-amber-700"></i> Circadian Eating Rhythm
+                            </span>
+                            <span class="text-xs text-beige-600 font-medium">Optimal Digestion Windows</span>
+                        </div>
+
+                        <h2 class="font-display font-bold text-2xl sm:text-3xl text-beige-900 mb-2">Meal Timer & Schedule</h2>
+                        <p class="text-sm text-beige-700 max-w-lg mb-6">
+                            Eating at consistent times aids gut health and helps synchronize your internal clock for better nighttime sleep quality.
+                        </p>
+
+                        <!-- Meal Schedule Timetable Grid -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-2">
+                            <div id="meal-card-breakfast" class="p-3.5 rounded-2xl bg-beige-100 border border-beige-300 flex flex-col justify-between transition-all">
+                                <div class="flex items-center justify-between text-xs text-beige-600 mb-1">
+                                    <span>Breakfast</span>
+                                    <i class="fa-solid fa-sun text-amber-500"></i>
+                                </div>
+                                <span class="font-display font-bold text-beige-900 text-base">08:00 AM</span>
+                                <span class="text-[10px] text-emerald-700 font-semibold mt-2 flex items-center gap-1">
+                                    <i class="fa-solid fa-check text-[9px]"></i> High Protein
+                                </span>
+                            </div>
+
+                            <div id="meal-card-lunch" class="p-3.5 rounded-2xl bg-beige-200/90 border-2 border-beige-500 flex flex-col justify-between transition-all shadow-sm">
+                                <div class="flex items-center justify-between text-xs text-beige-800 font-semibold mb-1">
+                                    <span>Lunch</span>
+                                    <i class="fa-solid fa-utensils text-beige-700"></i>
+                                </div>
+                                <span class="font-display font-bold text-beige-900 text-base">01:00 PM</span>
+                                <span class="text-[10px] text-amber-800 font-semibold mt-2 flex items-center gap-1">
+                                    <i class="fa-solid fa-spinner animate-spin text-[9px]"></i> Next Meal
+                                </span>
+                            </div>
+
+                            <div id="meal-card-snack" class="p-3.5 rounded-2xl bg-beige-100 border border-beige-300 flex flex-col justify-between transition-all">
+                                <div class="flex items-center justify-between text-xs text-beige-600 mb-1">
+                                    <span>Nourish Snack</span>
+                                    <i class="fa-solid fa-apple-whole text-amber-600"></i>
+                                </div>
+                                <span class="font-display font-bold text-beige-900 text-base">04:30 PM</span>
+                                <span class="text-[10px] text-beige-600 mt-2">Light Fiber</span>
+                            </div>
+
+                            <div id="meal-card-dinner" class="p-3.5 rounded-2xl bg-beige-100 border border-beige-300 flex flex-col justify-between transition-all">
+                                <div class="flex items-center justify-between text-xs text-beige-600 mb-1">
+                                    <span>Early Dinner</span>
+                                    <i class="fa-solid fa-moon text-indigo-400"></i>
+                                </div>
+                                <span class="font-display font-bold text-beige-900 text-base">07:00 PM</span>
+                                <span class="text-[10px] text-beige-600 mt-2">3h Before Sleep</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Next Meal Timer Output -->
+                    <div class="mt-6 pt-4 border-t border-beige-200 flex items-center justify-between flex-wrap gap-2">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center font-bold">
+                                <i class="fa-solid fa-hourglass-half text-sm"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs text-beige-600 font-semibold uppercase">Countdown to Next Meal</span>
+                                <div id="next-meal-countdown" class="font-display font-bold text-xl text-beige-900 font-mono">
+                                    01h 12m 45s
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="logHydration()" class="px-4 py-2 bg-beige-200 hover:bg-beige-300 text-beige-800 rounded-xl text-xs font-semibold transition border border-beige-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-droplet text-blue-500"></i> + Glass of Water
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hydration Tracker Quick Card -->
+                <div class="beige-card rounded-3xl p-6 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-display font-semibold text-lg text-beige-900">Hydration Meter</span>
+                            <i class="fa-solid fa-glass-water text-blue-500 text-xl"></i>
+                        </div>
+                        <p class="text-xs text-beige-600 mb-4">Proper hydration prevents false evening hunger signals.</p>
+
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-xs font-bold text-beige-800">
+                                <span id="water-count-text">5 of 8 Glasses</span>
+                                <span id="water-percent-text">62%</span>
+                            </div>
+                            <div class="w-full h-3 bg-beige-200 rounded-full overflow-hidden p-0.5 border border-beige-300">
+                                <div id="water-progress-bar" class="bg-amber-600 h-full rounded-full transition-all duration-300" style="width: 62%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-1.5 mt-6">
+                        <button onclick="setWater(2)" class="py-1.5 bg-beige-100 hover:bg-beige-200 border border-beige-300 rounded-lg text-xs font-semibold text-beige-800">2 glasses</button>
+                        <button onclick="setWater(4)" class="py-1.5 bg-beige-100 hover:bg-beige-200 border border-beige-300 rounded-lg text-xs font-semibold text-beige-800">4 glasses</button>
+                        <button onclick="setWater(6)" class="py-1.5 bg-beige-100 hover:bg-beige-200 border border-beige-300 rounded-lg text-xs font-semibold text-beige-800">6 glasses</button>
+                        <button onclick="setWater(8)" class="py-1.5 bg-beige-200 hover:bg-beige-300 border border-beige-400 rounded-lg text-xs font-bold text-beige-900">Goal! (8)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Meal Healthiness Evaluator & "How To Make It Healthier" Feature -->
+            <div class="beige-card rounded-3xl p-6 sm:p-8">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="p-2 bg-amber-100 text-amber-900 rounded-xl text-base"><i class="fa-solid fa-magnifying-glass-chart"></i></span>
+                            <h3 class="font-display font-bold text-xl text-beige-900">Is My Food Healthy? (Meal Evaluator)</h3>
+                        </div>
+                        <p class="text-xs text-beige-600 mt-1">
+                            Type what you ate or plan to eat. The evaluator rates its nutrition and gives instant advice on **how to make it healthier**!
+                        </p>
+                    </div>
+
+                    <!-- Preset Fast Examples -->
+                    <div class="flex flex-wrap gap-1.5 text-xs text-beige-700">
+                        <span class="text-[11px] self-center font-medium">Try Preset:</span>
+                        <button onclick="quickAnalyze('Pepperoni Pizza & Soda')" class="px-2.5 py-1 bg-beige-200 hover:bg-beige-300 rounded-lg border border-beige-300">Pizza & Soda</button>
+                        <button onclick="quickAnalyze('Grilled Chicken Salad with Olive Oil')" class="px-2.5 py-1 bg-beige-200 hover:bg-beige-300 rounded-lg border border-beige-300">Chicken Salad</button>
+                        <button onclick="quickAnalyze('Cheeseburger and French Fries')" class="px-2.5 py-1 bg-beige-200 hover:bg-beige-300 rounded-lg border border-beige-300">Burger & Fries</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Input Form -->
+                    <div class="lg:col-span-5 space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-beige-800 mb-1.5">Describe your meal or ingredients:</label>
+                            <textarea id="food-input" rows="4" placeholder="e.g., White rice with fried beef patty, side of ketchup, and potato chips" class="w-full bg-beige-100 border border-beige-300 rounded-2xl p-3 text-xs text-beige-900 focus:outline-none focus:ring-2 focus:ring-beige-400 resize-none"></textarea>
+                        </div>
+
+                        <button onclick="analyzeMeal()" class="w-full py-3 bg-beige-800 hover:bg-beige-900 text-beige-50 font-semibold text-xs rounded-xl shadow transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Evaluate Healthiness & Get Upgrade Tips
+                        </button>
+                    </div>
+
+                    <!-- Evaluation Output Display Card -->
+                    <div class="lg:col-span-7 bg-beige-100/80 rounded-2xl p-5 border border-beige-300/80 flex flex-col justify-between">
+                        <div id="eval-placeholder" class="h-full flex flex-col items-center justify-center text-center p-6 text-beige-600">
+                            <i class="fa-solid fa-plate-wheat text-3xl mb-2 text-beige-400"></i>
+                            <p class="text-xs font-medium">Enter a meal on the left or select a preset to analyze its nutritional value and get personalized healthy swaps.</p>
+                        </div>
+
+                        <div id="eval-result" class="hidden space-y-4">
+                            <!-- Score Banner -->
+                            <div class="flex items-center justify-between pb-3 border-b border-beige-300">
+                                <div>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-beige-600">Healthiness Score</span>
+                                    <div class="flex items-center gap-2">
+                                        <span id="result-score" class="font-display font-bold text-3xl text-beige-900">65/100</span>
+                                        <span id="result-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-200 text-amber-900">Moderate</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-beige-600">Sleep Impact</span>
+                                    <p id="result-sleep-impact" class="text-xs font-semibold text-beige-800">Neutral digest timing</p>
+                                </div>
+                            </div>
+
+                            <!-- Analysis breakdown -->
+                            <div>
+                                <h4 class="text-xs font-bold text-beige-900 uppercase tracking-wider mb-1">Nutritional Assessment</h4>
+                                <p id="result-summary" class="text-xs text-beige-700 leading-relaxed">
+                                    High in refined carbs and saturated fats, but provides good protein. Low in dietary fiber and essential micronutrients.
+                                </p>
+                            </div>
+
+                            <!-- How to Make it Healthier Section -->
+                            <div class="bg-amber-50/80 border border-amber-200/90 rounded-xl p-3.5 space-y-2">
+                                <div class="flex items-center gap-1.5 text-amber-900 font-bold text-xs">
+                                    <i class="fa-solid fa-seedling text-amber-700"></i> How to Make It Healthier:
+                                </div>
+                                <ul id="result-tips" class="text-xs text-amber-950 space-y-1.5 list-disc list-inside">
+                                    <li>Swap white rice for quinoa or cauliflower rice to add 5g of digestion-friendly fiber.</li>
+                                    <li>Add a side of leafy spinach or steamed broccoli for magnesium (helps muscle relaxation before sleep).</li>
+                                    <li>Grill or bake the beef patty instead of deep frying to reduce heavy oxidized oils.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Healthy Food Recipes Explorer -->
+            <div class="space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <h3 class="font-display font-bold text-xl text-beige-900">Healthy Recipes to Try</h3>
+                        <p class="text-xs text-beige-600">Nutrient-dense meals designed for physical vitality & restful night sleep</p>
+                    </div>
+
+                    <!-- Category Filter Buttons -->
+                    <div class="flex flex-wrap gap-2 text-xs">
+                        <button onclick="filterRecipes('all')" class="recipe-filter-btn px-3 py-1.5 bg-beige-800 text-beige-50 rounded-xl font-medium shadow-sm transition" data-cat="all">All Recipes</button>
+                        <button onclick="filterRecipes('sleep')" class="recipe-filter-btn px-3 py-1.5 bg-beige-200 text-beige-800 hover:bg-beige-300 rounded-xl font-medium transition" data-cat="sleep">Sleep Enhancing 🌙</button>
+                        <button onclick="filterRecipes('quick')" class="recipe-filter-btn px-3 py-1.5 bg-beige-200 text-beige-800 hover:bg-beige-300 rounded-xl font-medium transition" data-cat="quick">Under 15 Mins ⚡</button>
+                        <button onclick="filterRecipes('high-protein')" class="recipe-filter-btn px-3 py-1.5 bg-beige-200 text-beige-800 hover:bg-beige-300 rounded-xl font-medium transition" data-cat="high-protein">High Protein 💪</button>
+                    </div>
+                </div>
+
+                <!-- Recipe Cards Grid -->
+                <div id="recipe-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Recipes rendered dynamically via JS -->
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- FULLSCREEN PHONE LOCKDOWN SIMULATOR OVERLAY -->
+    <div id="lockdown-overlay" class="fixed inset-0 z-50 bg-[#1e1915] text-beige-100 flex flex-col items-center justify-between p-6 opacity-0 pointer-events-none transition-all duration-500">
+        <!-- Top Status -->
+        <div class="w-full max-w-md flex justify-between items-center text-xs text-beige-400 pt-4">
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-amber-500"></i> Focus Sleep Lockdown Active</span>
+            <span id="lockdown-clock" class="font-mono text-beige-200 font-bold">10:30 PM</span>
+        </div>
+
+        <!-- Center Tranquil Ambient Focus -->
+        <div class="text-center max-w-sm space-y-6 my-auto">
+            <div class="relative w-36 h-36 mx-auto flex items-center justify-center">
+                <div class="absolute inset-0 bg-amber-600/20 rounded-full blur-xl pulse-subtle"></div>
+                <div class="w-28 h-28 rounded-full border-2 border-beige-400/30 flex items-center justify-center text-beige-200 text-4xl bg-beige-900/60 backdrop-blur-md">
+                    <i class="fa-solid fa-moon text-amber-300"></i>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="font-display font-bold text-2xl text-beige-100">Bedtime Sanctuary</h3>
+                <p class="text-xs text-beige-400 mt-2 leading-relaxed">
+                    Your bedtime lockdown target has arrived. Step away from screen lights and prepare your mind for sleep.
+                </p>
+            </div>
+
+            <!-- Gentle breathing prompt -->
+            <div class="p-4 bg-beige-900/80 rounded-2xl border border-beige-800/80 text-xs text-beige-300">
+                <span id="breath-guide" class="font-medium">Inhale slowly for 4 seconds...</span>
+            </div>
+        </div>
+
+        <!-- Unlock Delay Safeguard -->
+        <div class="w-full max-w-xs pb-6 text-center space-y-3">
+            <p class="text-[11px] text-beige-500">Need urgent access?</p>
+            <button onclick="exitLockdownMode()" class="w-full py-3 bg-beige-800/80 hover:bg-beige-800 border border-beige-700/60 rounded-2xl text-xs font-semibold text-beige-200 transition">
+                Exit Lockdown Screen
+            </button>
+        </div>
+    </div>
+
+    <!-- RECIPE MODAL DIALOG -->
+    <div id="recipe-modal" class="fixed inset-0 z-50 bg-warmdark/50 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="beige-card w-full max-w-2xl rounded-3xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto relative shadow-2xl">
+            <button onclick="closeRecipeModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-beige-200 text-beige-800 flex items-center justify-center hover:bg-beige-300 transition">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+
+            <div id="modal-recipe-content">
+                <!-- Injected via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // STORAGE KEY FOR LOCALSTORAGE PERSISTENCE
+        const LOCAL_STORAGE_KEY = 'nourish_rest_user_data_v2';
+
+        // THEME DEFINITIONS
+        const themes = {
+            beige: {
+                '--bg-body': '#F7F3EC',
+                '--bg-card': '#FCFAF7',
+                '--bg-glass': 'rgba(252, 250, 247, 0.85)',
+                '--border-color': '#EFE6D8',
+                '--text-primary': '#3D3126',
+                '--text-secondary': '#75604B',
+                '--accent-color': '#B59E83',
+                '--btn-primary-bg': '#584737'
+            },
+            sage: {
+                '--bg-body': '#EEF2EE',
+                '--bg-card': '#F6F8F6',
+                '--bg-glass': 'rgba(246, 248, 246, 0.85)',
+                '--border-color': '#C8D8C8',
+                '--text-primary': '#1E2E20',
+                '--text-secondary': '#425845',
+                '--accent-color': '#5E8262',
+                '--btn-primary-bg': '#324E35'
+            },
+            lavender: {
+                '--bg-body': '#F4F0F8',
+                '--bg-card': '#FAF8FC',
+                '--bg-glass': 'rgba(250, 248, 252, 0.85)',
+                '--border-color': '#D4C8E2',
+                '--text-primary': '#2B2138',
+                '--text-secondary': '#5B4B70',
+                '--accent-color': '#80699B',
+                '--btn-primary-bg': '#4A3B60'
+            },
+            peach: {
+                '--bg-body': '#FAF2EC',
+                '--bg-card': '#FCF8F5',
+                '--bg-glass': 'rgba(252, 248, 245, 0.85)',
+                '--border-color': '#E3C9B8',
+                '--text-primary': '#3B2820',
+                '--text-secondary': '#7A5B4D',
+                '--accent-color': '#C48B71',
+                '--btn-primary-bg': '#6B4535'
+            },
+            midnight: {
+                '--bg-body': '#1A1614',
+                '--bg-card': '#241F1C',
+                '--bg-glass': 'rgba(36, 31, 28, 0.85)',
+                '--border-color': '#473D37',
+                '--text-primary': '#FAF5F0',
+                '--text-secondary': '#D6C8BC',
+                '--accent-color': '#C2A488',
+                '--btn-primary-bg': '#8C725E'
+            }
+        };
+
+        // DEFAULT APP INITIAL STATE
+        const defaultState = {
+            activeTab: 'sleep',
+            colorTheme: 'beige',
+            targetBedtime: '22:30',
+            warmFilterValue: 0,
+            waterGlasses: 5,
+            streak: 5,
+            sleepLogs: [
+                { day: 'Mon', hours: 7.0, quality: 4 },
+                { day: 'Tue', hours: 6.5, quality: 3 },
+                { day: 'Wed', hours: 8.0, quality: 5 },
+                { day: 'Thu', hours: 7.5, quality: 4 },
+                { day: 'Fri', hours: 6.0, quality: 2 },
+                { day: 'Sat', hours: 8.5, quality: 5 },
+                { day: 'Sun', hours: 7.5, quality: 4 },
+            ]
+        };
+
+        let state = { ...defaultState };
+
+        function saveStateToLocalStorage() {
+            try {
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
+            } catch (e) {
+                console.warn('LocalStorage write error:', e);
+            }
+        }
+
+        function clearLocalStorageData() {
+            try {
+                localStorage.removeItem(LOCAL_STORAGE_KEY);
+                state = { ...defaultState };
+                syncUIWithState();
+                updateChartData();
+                renderRecipes('all');
+            } catch (e) {
+                console.warn('LocalStorage clear error:', e);
+            }
+        }
+
+        function loadSavedState() {
+            try {
+                const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    state = { ...defaultState, ...parsed };
+                }
+            } catch (e) {
+                console.warn('LocalStorage read error:', e);
+            }
+        }
+
+        function toggleThemeMenu() {
+            const menu = document.getElementById('theme-menu');
+            if (menu) menu.classList.toggle('hidden');
+        }
+
+        function selectTheme(themeName) {
+            applyTheme(themeName);
+            const menu = document.getElementById('theme-menu');
+            if (menu) menu.classList.add('hidden');
+        }
+
+        function applyTheme(themeName) {
+            state.colorTheme = themeName;
+            saveStateToLocalStorage();
+
+            const t = themes[themeName] || themes.beige;
+            const root = document.documentElement;
+            for (const [prop, value] of Object.entries(t)) {
+                root.style.setProperty(prop, value);
+            }
+
+            // Highlight active button in menu
+            document.querySelectorAll('.theme-option-btn').forEach(btn => {
+                if (btn.getAttribute('data-theme') === themeName) {
+                    btn.classList.add('bg-beige-300/60', 'font-bold');
+                } else {
+                    btn.classList.remove('bg-beige-300/60', 'font-bold');
+                }
+            });
+
+            // Update Chart styling if present
+            if (sleepChartInstance) {
+                sleepChartInstance.data.datasets[0].backgroundColor = t['--accent-color'];
+                sleepChartInstance.data.datasets[0].hoverBackgroundColor = t['--btn-primary-bg'];
+                sleepChartInstance.options.scales.y.ticks.color = t['--text-secondary'];
+                sleepChartInstance.options.scales.x.ticks.color = t['--text-secondary'];
+                sleepChartInstance.update();
+            }
+        }
+
+        // Close theme dropdown when clicking outside
+        window.addEventListener('click', (e) => {
+            const btn = document.getElementById('theme-menu-btn');
+            const menu = document.getElementById('theme-menu');
+            if (menu && btn && !btn.contains(e.target) && !menu.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        function syncUIWithState() {
+            // Apply current color theme
+            applyTheme(state.colorTheme || 'beige');
+
+            // Bedtime input
+            const bedtimeInput = document.getElementById('lockdown-time');
+            if (bedtimeInput) bedtimeInput.value = state.targetBedtime;
+
+            // Warm slider
+            const slider = document.getElementById('filter-slider');
+            if (slider) {
+                slider.value = state.warmFilterValue;
+                adjustWarmFilter(state.warmFilterValue, false);
+            }
+
+            // Water intake
+            updateWaterUI();
+
+            // Streak
+            const streakEl = document.getElementById('streak-counter');
+            if (streakEl) streakEl.innerText = state.streak;
+
+            // Tab
+            switchTab(state.activeTab || 'sleep');
+        }
+
+        // Tab Switcher
+        function switchTab(tab) {
+            state.activeTab = tab;
+            saveStateToLocalStorage();
+
+            const sleepTab = document.getElementById('tab-sleep');
+            const foodTab = document.getElementById('tab-food');
+            const btnSleep = document.getElementById('tab-btn-sleep');
+            const btnFood = document.getElementById('tab-btn-food');
+
+            if (tab === 'sleep') {
+                sleepTab.classList.remove('hidden');
+                foodTab.classList.add('hidden');
+                
+                btnSleep.className = "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 bg-beige-50 text-beige-900 shadow-sm";
+                btnFood.className = "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 text-beige-700 hover:text-beige-900";
+            } else {
+                sleepTab.classList.add('hidden');
+                foodTab.classList.remove('hidden');
+
+                btnFood.className = "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 bg-beige-50 text-beige-900 shadow-sm";
+                btnSleep.className = "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 text-beige-700 hover:text-beige-900";
+            }
+        }
+
+        // Screen Warmth Blue Light Filter
+        function adjustWarmFilter(val, save = true) {
+            state.warmFilterValue = parseInt(val);
+            if (save) saveStateToLocalStorage();
+
+            const overlay = document.getElementById('warm-screen-overlay');
+            const label = document.getElementById('filter-percent');
+            
+            if (label) label.innerText = `${val}% Warmth`;
+            const opacity = val / 100;
+            if (overlay) overlay.style.opacity = opacity;
+        }
+
+        function startClockAndCountdowns() {
+            function update() {
+                const now = new Date();
+                
+                // Header Time
+                const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const headerTime = document.getElementById('header-time-display');
+                const lockClock = document.getElementById('lockdown-clock');
+                if (headerTime) headerTime.innerText = timeStr;
+                if (lockClock) lockClock.innerText = timeStr;
+
+                // Lockdown Countdown calculation
+                const targetTimeStr = state.targetBedtime || "22:30";
+                const [targetHour, targetMin] = targetTimeStr.split(':').map(Number);
+                
+                let targetDate = new Date();
+                targetDate.setHours(targetHour, targetMin, 0, 0);
+
+                if (now > targetDate) {
+                    targetDate.setDate(targetDate.getDate() + 1);
+                }
+
+                const diffMs = targetDate - now;
+                const hrs = Math.floor(diffMs / (1000 * 60 * 60));
+                const mins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                const secs = Math.floor((diffMs % (1000 * 60)) / 1000);
+
+                const countdownEl = document.getElementById('lockdown-countdown');
+                if (countdownEl) {
+                    countdownEl.innerText = `${String(hrs).padStart(2, '0')}h ${String(mins).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
+                }
+
+                // Next Meal Countdown (e.g., target Lunch at 1:00 PM)
+                let mealTarget = new Date();
+                mealTarget.setHours(13, 0, 0, 0);
+                if (now > mealTarget) {
+                    mealTarget.setHours(19, 0, 0, 0); // Dinner 7 PM
+                }
+                if (now > mealTarget) {
+                    mealTarget.setDate(mealTarget.getDate() + 1);
+                    mealTarget.setHours(8, 0, 0, 0); // Breakfast 8 AM
+                }
+
+                const mealDiff = mealTarget - now;
+                const mHrs = Math.floor(mealDiff / (1000 * 60 * 60));
+                const mMins = Math.floor((mealDiff % (1000 * 60 * 60)) / (1000 * 60));
+                const mSecs = Math.floor((mealDiff % (1000 * 60)) / 1000);
+
+                const nextMealEl = document.getElementById('next-meal-countdown');
+                if (nextMealEl) {
+                    nextMealEl.innerText = `${String(mHrs).padStart(2, '0')}h ${String(mMins).padStart(2, '0')}m ${String(mSecs).padStart(2, '0')}s`;
+                }
+            }
+
+            update();
+            setInterval(update, 1000);
+        }
+
+        function updateTargetTime(val) {
+            state.targetBedtime = val;
+            saveStateToLocalStorage();
+        }
+
+        function startLockdownSimulation() {
+            const overlay = document.getElementById('lockdown-overlay');
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            overlay.classList.add('opacity-100', 'pointer-events-auto');
+        }
+
+        function exitLockdownMode() {
+            const overlay = document.getElementById('lockdown-overlay');
+            overlay.classList.add('opacity-0', 'pointer-events-none');
+            overlay.classList.remove('opacity-100', 'pointer-events-auto');
+        }
+
+        function initBreathingGuide() {
+            const textEl = document.getElementById('breath-guide');
+            const phases = [
+                "Inhale slowly through your nose (4s)...",
+                "Hold breath gently (4s)...",
+                "Exhale softly through your mouth (6s)...",
+                "Rest and relax your shoulders..."
+            ];
+            let idx = 0;
+            setInterval(() => {
+                idx = (idx + 1) % phases.length;
+                if (textEl) textEl.innerText = phases[idx];
+            }, 4000);
+        }
+
+        let sleepChartInstance = null;
+
+        function initChart() {
+            const canvas = document.getElementById('sleep-chart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            const labels = state.sleepLogs.map(l => l.day);
+            const dataHours = state.sleepLogs.map(l => l.hours);
+            const currentTheme = themes[state.colorTheme || 'beige'];
+
+            sleepChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Hours Slept',
+                        data: dataHours,
+                        backgroundColor: currentTheme['--accent-color'],
+                        hoverBackgroundColor: currentTheme['--btn-primary-bg'],
+                        borderRadius: 8,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 12,
+                            ticks: {
+                                color: currentTheme['--text-secondary'],
+                                font: { family: 'Plus Jakarta Sans', size: 10 }
+                            },
+                            grid: { color: 'rgba(225, 211, 191, 0.3)' }
+                        },
+                        x: {
+                            ticks: {
+                                color: currentTheme['--text-secondary'],
+                                font: { family: 'Plus Jakarta Sans', size: 11, weight: 'bold' }
+                            },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+            calculateSleepStats();
+        }
+
+        function updateChartData() {
+            if (!sleepChartInstance) return;
+            sleepChartInstance.data.labels = state.sleepLogs.map(l => l.day);
+            sleepChartInstance.data.datasets[0].data = state.sleepLogs.map(l => l.hours);
+            sleepChartInstance.update();
+            calculateSleepStats();
+        }
+
+        function calculateSleepStats() {
+            if (!state.sleepLogs || state.sleepLogs.length === 0) return;
+
+            const total = state.sleepLogs.reduce((acc, cur) => acc + cur.hours, 0);
+            const avg = (total / state.sleepLogs.length).toFixed(1);
+
+            const avgEl = document.getElementById('avg-sleep-val');
+            if (avgEl) avgEl.innerText = `${avg} hrs`;
+
+            // Sleep Debt (target 7.5 hrs average)
+            const debt = Math.max(0, (7.5 * state.sleepLogs.length - total)).toFixed(1);
+            const debtEl = document.getElementById('sleep-debt-val');
+            if (debtEl) {
+                if (debt <= 1) {
+                    debtEl.innerText = `Low (${debt}h)`;
+                    debtEl.className = "font-display font-bold text-sm text-emerald-700";
+                } else {
+                    debtEl.innerText = `Moderate (${debt}h)`;
+                    debtEl.className = "font-display font-bold text-sm text-amber-700";
+                }
+            }
+        }
+
+        function handleSleepSubmit(e) {
+            e.preventDefault();
+            const hours = parseFloat(document.getElementById('sleep-hours').value);
+            const quality = parseInt(document.getElementById('sleep-rating').value);
+
+            // Update chart data
+            state.sleepLogs.shift();
+            state.sleepLogs.push({ day: 'Today', hours: hours, quality: quality });
+            saveStateToLocalStorage();
+
+            updateChartData();
+
+            // Evaluate Sleep
+            const titleEl = document.getElementById('sleep-status-title');
+            const descEl = document.getElementById('sleep-status-desc');
+
+            if (hours >= 7 && hours <= 9) {
+                titleEl.innerText = `Optimal Sleep Logged (${hours} hrs) - Good! 🟢`;
+                descEl.innerText = "Excellent sleep window! You are giving your immune system and brain time to repair.";
+            } else if (hours < 7) {
+                titleEl.innerText = `Sleep Deficit Detected (${hours} hrs) - Below Target 🟡`;
+                descEl.innerText = "Try advancing your lockdown bedtime by 30 minutes tonight to restore energy levels.";
+            } else {
+                titleEl.innerText = `Extended Sleep Logged (${hours} hrs) 🔵`;
+                descEl.innerText = "You slept longer than standard target. Ensure consistent wake-up times to avoid sleep inertia.";
+            }
+        }
+
+        function analyzeMeal() {
+            const input = document.getElementById('food-input').value.trim();
+            if (!input) return;
+
+            const placeholder = document.getElementById('eval-placeholder');
+            const resultBox = document.getElementById('eval-result');
+
+            placeholder.classList.add('hidden');
+            resultBox.classList.remove('hidden');
+
+            const lower = input.toLowerCase();
+
+            let score = 75;
+            let badge = "Healthy Choice";
+            let badgeClass = "bg-emerald-200 text-emerald-900";
+            let sleepImpact = "Good Digest Timing";
+            let summary = "Balanced breakdown of ingredients providing steady metabolic burn.";
+            let tips = [];
+
+            if (lower.includes('pizza') || lower.includes('fries') || lower.includes('soda') || lower.includes('burger') || lower.includes('fried') || lower.includes('chips')) {
+                score = 48;
+                badge = "Needs Healthy Upgrade";
+                badgeClass = "bg-amber-200 text-amber-900";
+                sleepImpact = "May cause night reflux if eaten late";
+                summary = "Higher in processed saturated fats, refined sodium, and quick simple sugars that spike insulin levels.";
+                tips = [
+                    "Replace soda/sweet beverage with sparkling water infused with lemon or cucumber.",
+                    "Swap deep-fried side items (fries/chips) for roasted sweet potato wedges or a fresh garden salad.",
+                    "Include a side of fiber-rich green vegetables (spinach, asparagus) to slow down sugar absorption.",
+                    "Avoid eating heavy fried foods within 3 hours of your scheduled sleep lockdown."
+                ];
+            } else if (lower.includes('salad') || lower.includes('salmon') || lower.includes('chicken') || lower.includes('oatmeal') || lower.includes('quinoa') || lower.includes('veggie')) {
+                score = 92;
+                badge = "Nutrient Dense 🌟";
+                badgeClass = "bg-emerald-200 text-emerald-900";
+                sleepImpact = "Promotes calm digestion & restorative sleep";
+                summary = "Rich in essential amino acids, dietary fiber, and healthy micronutrients!";
+                tips = [
+                    "To make it even healthier: Add pumpkin seeds or walnuts for healthy Omega-3 fats.",
+                    "Drizzle extra virgin olive oil as a raw cold dressing to maximize nutrient absorption.",
+                    "Pair with herbal chamomile or peppermint tea after eating to aid smooth digestion."
+                ];
+            } else {
+                score = 70;
+                badge = "Moderate Balance";
+                badgeClass = "bg-amber-100 text-amber-900";
+                sleepImpact = "Neutral sleep impact";
+                summary = "Contains standard meal components. Adding raw greens and whole grains will enhance fiber content.";
+                tips = [
+                    "Increase fiber by swapping refined white grains (white bread/rice) for whole wheat, quinoa, or brown rice.",
+                    "Add a source of lean protein (tofu, beans, eggs, or chicken) to stay fuller for longer.",
+                    "Drink a full glass of water 15 minutes before your meal to assist metabolic breakdown."
+                ];
+            }
+
+            document.getElementById('result-score').innerText = `${score}/100`;
+            document.getElementById('result-badge').innerText = badge;
+            document.getElementById('result-badge').className = `px-2.5 py-0.5 rounded-full text-xs font-bold ${badgeClass}`;
+            document.getElementById('result-sleep-impact').innerText = sleepImpact;
+            document.getElementById('result-summary').innerText = summary;
+
+            const tipsList = document.getElementById('result-tips');
+            tipsList.innerHTML = tips.map(t => `<li>${t}</li>`).join('');
+        }
+
+        function quickAnalyze(presetText) {
+            document.getElementById('food-input').value = presetText;
+            analyzeMeal();
+        }
+
+        const recipes = [
+            {
+                id: 1,
+                title: "Golden Turmeric Moon Milk & Oats",
+                category: "sleep",
+                tag: "Sleep Enhancing 🌙",
+                tagBg: "bg-amber-100 text-amber-800 border-amber-300",
+                prepTime: "10 mins",
+                calories: "280 kcal",
+                img: "https://images.unsplash.com/photo-1541544741938-0af808871cc0?w=600&auto=format&fit=crop&q=80",
+                desc: "Warm rolled oats infused with golden turmeric, cinnamon, and a splash of oat milk for natural melatonin support.",
+                whyHealthy: "Turmeric reduces systemic inflammation, while oats contain natural tryptophan and complex carbohydrates that promote serotonin release for better sleep quality.",
+                ingredients: ["1/2 cup rolled oats", "1 cup oat milk or almond milk", "1/2 tsp ground turmeric", "1/4 tsp cinnamon", "1 tsp raw honey", "1 tbsp chia seeds"],
+                instructions: ["Combine oats, milk, turmeric, and cinnamon in a small saucepan.", "Simmer gently over medium-low heat for 5 minutes, stirring continuously.", "Pour into a bowl, stir in raw honey, and top with chia seeds.", "Enjoy warm 1 to 2 hours before bedtime."]
+            },
+            {
+                id: 2,
+                title: "Avocado & Pumpkin Seed Power Toast",
+                category: "quick",
+                tag: "Under 15 Mins ⚡",
+                tagBg: "bg-emerald-100 text-emerald-800 border-emerald-300",
+                prepTime: "8 mins",
+                calories: "320 kcal",
+                img: "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=600&auto=format&fit=crop&q=80",
+                desc: "Sourdough toast topped with mashed avocado, toasted magnesium-rich pumpkin seeds, and red pepper flakes.",
+                whyHealthy: "Avocado provides heart-healthy monounsaturated fats while pumpkin seeds deliver zinc and magnesium to promote muscle relaxation and nerve health.",
+                ingredients: ["2 slices whole grain or sourdough bread", "1 ripe avocado", "2 tbsp roasted pumpkin seeds", "1 tsp extra virgin olive oil", "Pinch of sea salt and red pepper flakes"],
+                instructions: ["Toast the sourdough slices until golden and crisp.", "Mash avocado with olive oil, sea salt, and a pinch of pepper.", "Spread generously over toast and top with toasted pumpkin seeds."]
+            },
+            {
+                id: 3,
+                title: "Grilled Salmon & Quinoa Grain Bowl",
+                category: "high-protein",
+                tag: "High Protein 💪",
+                tagBg: "bg-blue-100 text-blue-800 border-blue-300",
+                prepTime: "20 mins",
+                calories: "450 kcal",
+                img: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80",
+                desc: "Wild salmon fillet served over fluffy quinoa, steamed broccoli florets, and a lemon-herb drizzle.",
+                whyHealthy: "Rich in Omega-3 fatty acids and high-quality protein to support tissue restoration, satiety, and cardiovascular health.",
+                ingredients: ["1 salmon fillet (150g)", "1/2 cup cooked quinoa", "1 cup steamed broccoli florets", "1 tbsp extra virgin olive oil", "1 tbsp fresh lemon juice", "Garlic powder, salt, and black pepper"],
+                instructions: ["Season salmon with garlic powder, salt, and pepper.", "Pan-sear salmon in olive oil for 3-4 minutes per side until flakey.", "Assemble bowl with quinoa base, topped with salmon and broccoli, then drizzle with lemon juice."]
+            },
+            {
+                id: 4,
+                title: "Tart Cherry & Kiwi Sleep Smoothie",
+                category: "sleep",
+                tag: "Sleep Enhancing 🌙",
+                tagBg: "bg-amber-100 text-amber-800 border-amber-300",
+                prepTime: "5 mins",
+                calories: "210 kcal",
+                img: "https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=600&auto=format&fit=crop&q=80",
+                desc: "Refreshing bedtime smoothie blending tart cherry juice, ripe kiwi fruit, and Greek yogurt.",
+                whyHealthy: "Tart cherries are one of nature's richest sources of melatonin, and kiwis contain antioxidants that increase sleep duration and efficiency.",
+                ingredients: ["1/2 cup tart cherry juice (unsweetened)", "1 ripe kiwi, peeled", "1/2 cup plain Greek yogurt", "1/2 cup ice cubes", "1 tbsp flaxseeds"],
+                instructions: ["Place all ingredients into a high-speed blender.", "Blend on high speed for 45 seconds until smooth and creamy.", "Pour into a chilled glass and consume 1 hour before sleep."]
+            },
+            {
+                id: 5,
+                title: "Mediterranean Chickpea & Spinach Salad",
+                category: "quick",
+                tag: "Under 15 Mins ⚡",
+                tagBg: "bg-emerald-100 text-emerald-800 border-emerald-300",
+                prepTime: "10 mins",
+                calories: "310 kcal",
+                img: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&auto=format&fit=crop&q=80",
+                desc: "Crisp spinach leaves tossed with tender chickpeas, cherry tomatoes, cucumbers, and feta cheese.",
+                whyHealthy: "High in plant protein, dietary fiber, folate, and iron to stabilize blood sugar and prevent late-night cravings.",
+                ingredients: ["1 cup canned chickpeas, rinsed and drained", "2 cups fresh baby spinach", "1/2 cup cherry tomatoes, halved", "1/4 cup crumbled feta cheese", "1 tbsp extra virgin olive oil", "1 tbsp red wine vinegar"],
+                instructions: ["Combine spinach, chickpeas, tomatoes, and feta in a large bowl.", "Whisk olive oil and red wine vinegar together with salt and pepper.", "Toss salad with dressing and serve immediately."]
+            },
+            {
+                id: 6,
+                title: "Roasted Turkey Breast & Sweet Potato",
+                category: "high-protein",
+                tag: "High Protein 💪",
+                tagBg: "bg-blue-100 text-blue-800 border-blue-300",
+                prepTime: "25 mins",
+                calories: "410 kcal",
+                img: "https://images.unsplash.com/photo-1532550907401-a500c9a57435?w=600&auto=format&fit=crop&q=80",
+                desc: "Lean turkey breast paired with roasted sweet potato cubes and rosemary.",
+                whyHealthy: "Turkey is abundant in tryptophan, which converts into serotonin and melatonin, while sweet potatoes supply complex carbs that ease tryptophan uptake into the brain.",
+                ingredients: ["150g turkey breast", "1 medium sweet potato, cubed", "1 tbsp olive oil", "Fresh rosemary, salt, and pepper"],
+                instructions: ["Preheat oven to 200°C (400°F).", "Toss sweet potato cubes and turkey breast with olive oil, rosemary, salt, and pepper.", "Roast on a baking sheet for 20-25 minutes until turkey reaches 74°C (165°F) internal temp.", "Serve warm for a satisfying dinner."]
+            }
+        ];
+
+        function renderRecipes(category) {
+            const grid = document.getElementById('recipe-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            const filtered = category === 'all' ? recipes : recipes.filter(r => r.category === category);
+
+            filtered.forEach(r => {
+                const card = document.createElement('div');
+                card.className = "beige-card rounded-2xl overflow-hidden flex flex-col justify-between hover:shadow-lg transition-all duration-200 border border-beige-300";
+                card.innerHTML = `
+                    <div>
+                        <div class="relative h-44 overflow-hidden">
+                            <img src="${r.img}" alt="${r.title}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" onerror="this.src='https://placehold.co/600x400/EFE6D8/584737?text=Healthy+Food'">
+                            <span class="absolute top-3 right-3 text-[10px] font-bold px-2.5 py-1 rounded-full border shadow-sm ${r.tagBg}">${r.tag}</span>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex items-center gap-3 text-[11px] text-beige-600 font-semibold mb-1">
+                                <span><i class="fa-regular fa-clock"></i> ${r.prepTime}</span>
+                                <span>•</span>
+                                <span><i class="fa-solid fa-fire text-amber-600"></i> ${r.calories}</span>
+                            </div>
+                            <h4 class="font-display font-bold text-lg text-beige-900 leading-snug mb-2">${r.title}</h4>
+                            <p class="text-xs text-beige-600 line-clamp-2 leading-relaxed">${r.desc}</p>
+                        </div>
+                    </div>
+
+                    <div class="px-5 pb-5 pt-0">
+                        <button onclick="openRecipeModal(${r.id})" class="w-full py-2.5 bg-beige-200 hover:bg-beige-300 text-beige-900 font-semibold text-xs rounded-xl transition flex items-center justify-center gap-1.5 border border-beige-300">
+                            <span>View Recipe & Instructions</span>
+                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterRecipes(cat) {
+            document.querySelectorAll('.recipe-filter-btn').forEach(btn => {
+                if (btn.getAttribute('data-cat') === cat) {
+                    btn.className = "recipe-filter-btn px-3 py-1.5 bg-beige-800 text-beige-50 rounded-xl font-medium shadow-sm transition";
+                } else {
+                    btn.className = "recipe-filter-btn px-3 py-1.5 bg-beige-200 text-beige-800 hover:bg-beige-300 rounded-xl font-medium transition";
+                }
+            });
+            renderRecipes(cat);
+        }
+
+        function openRecipeModal(id) {
+            const recipe = recipes.find(r => r.id === id);
+            if (!recipe) return;
+
+            const modalContent = document.getElementById('modal-recipe-content');
+            modalContent.innerHTML = `
+                <div class="space-y-4">
+                    <span class="inline-block text-xs font-bold px-3 py-1 rounded-full border ${recipe.tagBg}">${recipe.tag}</span>
+                    <h3 class="font-display font-bold text-2xl text-beige-900">${recipe.title}</h3>
+                    <p class="text-xs text-beige-700 leading-relaxed">${recipe.desc}</p>
+
+                    <div class="p-3.5 bg-amber-50 border border-amber-200 rounded-2xl text-xs text-amber-900 flex items-start gap-2">
+                        <i class="fa-solid fa-heart-pulse text-amber-700 text-base mt-0.5"></i>
+                        <div>
+                            <span class="font-bold">Why it's healthy:</span> ${recipe.whyHealthy}
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        <div>
+                            <h4 class="font-display font-bold text-sm text-beige-900 mb-2 border-b border-beige-200 pb-1">Ingredients</h4>
+                            <ul class="text-xs text-beige-800 space-y-2 list-disc list-inside">
+                                ${recipe.ingredients.map(ing => `<li>${ing}</li>`).join('')}
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h4 class="font-display font-bold text-sm text-beige-900 mb-2 border-b border-beige-200 pb-1">Instructions</h4>
+                            <ol class="text-xs text-beige-800 space-y-2.5 list-decimal list-inside">
+                                ${recipe.instructions.map(inst => `<li class="leading-relaxed">${inst}</li>`).join('')}
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const modal = document.getElementById('recipe-modal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.classList.add('opacity-100', 'pointer-events-auto');
+        }
+
+        function closeRecipeModal() {
+            const modal = document.getElementById('recipe-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modal.classList.remove('opacity-100', 'pointer-events-auto');
+        }
+
+        function logHydration() {
+            if (state.waterGlasses < 8) {
+                state.waterGlasses += 1;
+                saveStateToLocalStorage();
+                updateWaterUI();
+            }
+        }
+
+        function setWater(val) {
+            state.waterGlasses = val;
+            saveStateToLocalStorage();
+            updateWaterUI();
+        }
+
+        function updateWaterUI() {
+            const countText = document.getElementById('water-count-text');
+            const percentText = document.getElementById('water-percent-text');
+            const bar = document.getElementById('water-progress-bar');
+
+            if (!countText || !percentText || !bar) return;
+
+            const pct = Math.round((state.waterGlasses / 8) * 100);
+            countText.innerText = `${state.waterGlasses} of 8 Glasses`;
+            percentText.innerText = `${pct}%`;
+            bar.style.width = `${pct}%`;
+        }
+
+        window.onload = function() {
+            loadSavedState();
+            syncUIWithState();
+            initChart();
+            startClockAndCountdowns();
+            initBreathingGuide();
+            renderRecipes('all');
+        };
+    </script>
+</body>
+</html>

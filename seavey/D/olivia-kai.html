@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusNest - Zero Distraction Homework Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f6ff',
+                            100: '#e0edff',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        },
+                        darkbg: '#0f172a',
+                        darkcard: '#1e293b',
+                        darkborder: '#334155'
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b0f19;
+            color: #f1f5f9;
+        }
+        /* Custom sleek scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .glow-effect {
+            box-shadow: 0 0 25px -5px rgba(59, 130, 246, 0.25);
+        }
+        .glow-accent {
+            box-shadow: 0 0 20px -3px rgba(168, 85, 247, 0.3);
+        }
+        .pulse-soft {
+            animation: pulseSoft 3s infinite ease-in-out;
+        }
+        @keyframes pulseSoft {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.85; transform: scale(0.99); }
+        }
+        /* Custom checkbox style */
+        .custom-checkbox input:checked + div {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+        .custom-checkbox input:checked + div i {
+            display: block;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-brand-500 selection:text-white">
+
+    <!-- Navigation Header -->
+    <header class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-brand-500/20">
+                    <i class="fa-solid font-bolt fa-bolt text-white text-xl"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">FocusNest</span>
+                    <span class="hidden sm:inline-block text-xs text-brand-400 font-medium px-2 py-0.5 rounded-full bg-brand-500/10 border border-brand-500/20 ml-2">Nido Student Edition</span>
+                </div>
+            </div>
+
+            <!-- Header Quick Stats -->
+            <div class="flex items-center space-x-3 sm:space-x-4">
+                <div class="hidden md:flex items-center space-x-6 bg-slate-800/50 border border-slate-700/50 px-4 py-1.5 rounded-full text-xs font-medium">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-fire text-amber-500"></i>
+                        <span class="text-slate-400">Streak:</span>
+                        <span id="streakCount" class="text-slate-100 font-bold">3 Days</span>
+                    </div>
+                    <div class="h-3 w-px bg-slate-700"></div>
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-clock text-emerald-400"></i>
+                        <span class="text-slate-400">Total Homework:</span>
+                        <span id="headerTotalTime" class="text-slate-100 font-bold">0m</span>
+                    </div>
+                </div>
+
+                <div class="relative bg-slate-800/90 border border-emerald-500/30 hover:border-emerald-500/60 rounded-xl p-1.5 flex items-center space-x-2 text-xs shadow-md backdrop-blur-sm transition-all">
+                    <div class="flex items-center space-x-1.5 px-1.5">
+                        <span class="relative flex h-2.5 w-2.5">
+                            <span id="breakPulsePing" class="hidden animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span id="breakPulseDot" class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                        </span>
+                        <span class="text-[11px] font-bold text-slate-300 hidden sm:inline">15m Break:</span>
+                        <span id="breakTimerDisplay" class="font-mono font-bold text-emerald-400 text-xs sm:text-sm tracking-wide">15:00</span>
+                    </div>
+                    <div class="flex items-center space-x-1 border-l border-slate-700/70 pl-1.5">
+                        <button id="breakStartBtn" onclick="toggleBreakTimer()" title="Start/Pause 15m Break" class="w-6 h-6 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center transition-all active:scale-95 text-[10px]">
+                            <i id="breakStartIcon" class="fa-solid fa-play"></i>
+                        </button>
+                        <button onclick="resetBreakTimer()" title="Reset 15m Break" class="w-6 h-6 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 hover:text-white flex items-center justify-center transition-all text-[10px]">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button id="quickFocusBtn" onclick="openFocusRoomModal()" class="bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-semibold text-xs sm:text-sm px-4 py-2 rounded-xl transition-all shadow-md hover:shadow-brand-500/25 flex items-center space-x-2 active:scale-95">
+                    <i class="fa-solid fa-play"></i>
+                    <span>Focus Mode</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <section class="lg:col-span-5 space-y-6">
+            
+            <!-- Quick Add Homework Card -->
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden">
+                <div class="absolute -right-10 -top-10 w-32 h-32 bg-brand-500/10 rounded-full blur-2xl pointer-events-none"></div>
+                
+                <h2 class="text-lg font-bold text-white mb-4 flex items-center justify-between">
+                    <span class="flex items-center gap-2">
+                        <i class="fa-solid fa-plus-circle text-brand-400"></i>
+                        Log Today's Homework
+                    </span>
+                    <span class="text-xs font-normal text-slate-400">Get it in early</span>
+                </h2>
+
+                <form id="addTaskForm" class="space-y-3.5">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Assignment Title</label>
+                        <input type="text" id="taskTitle" required placeholder="e.g. History DBQ essay outline / Math Ch. 4 exercises" class="w-full bg-slate-950 border border-slate-700/70 rounded-xl px-3.5 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-all">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Subject</label>
+                            <select id="taskSubject" class="w-full bg-slate-950 border border-slate-700/70 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand-500">
+                                <option value="Math">Math / Math HL</option>
+                                <option value="English">English / Language Arts</option>
+                                <option value="Science">Science (Bio/Chem/Phys)</option>
+                                <option value="History">History / Social Studies</option>
+                                <option value="Language">Spanish / Foreign Lang</option>
+                                <option value="Elective">Elective / Arts / CS</option>
+                                <option value="Other">Other Assignment</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Est. Time (Mins)</label>
+                            <input type="number" id="taskEstimate" min="5" max="300" value="30" class="w-full bg-slate-950 border border-slate-700/70 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Due Date</label>
+                            <select id="taskDueDate" class="w-full bg-slate-950 border border-slate-700/70 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand-500">
+                                <option value="Today">Due Today</option>
+                                <option value="Tomorrow">Due Tomorrow</option>
+                                <option value="This Week">Later This Week</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Priority Level</label>
+                            <select id="taskPriority" class="w-full bg-slate-950 border border-slate-700/70 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand-500">
+                                <option value="High">🔴 High (Do First)</option>
+                                <option value="Medium" selected>🟡 Medium</option>
+                                <option value="Low">🟢 Low</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full mt-2 bg-slate-800 hover:bg-brand-600 text-white font-medium text-xs sm:text-sm py-2.5 rounded-xl border border-slate-700 hover:border-brand-500 transition-all flex items-center justify-center space-x-2 group">
+                        <i class="fa-solid fa-arrow-down-short-wide group-hover:scale-110 transition-transform"></i>
+                        <span>Add Homework Task</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Daily Workload & Stress Gauge -->
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                        <i class="fa-solid fa-gauge-high text-indigo-400"></i>
+                        Tonight's Workload Check
+                    </h3>
+                    <span id="workloadBadge" class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">Manageable</span>
+                </div>
+
+                <div class="space-y-2 mb-4">
+                    <div class="flex justify-between text-xs text-slate-400">
+                        <span>Total Estimated Work</span>
+                        <span id="workloadMinutesText" class="font-semibold text-slate-200">0 mins</span>
+                    </div>
+                    <div class="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                        <div id="workloadProgressBar" class="h-full bg-gradient-to-r from-emerald-500 via-amber-500 to-rose-500 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div id="workloadAdvice" class="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 text-xs text-slate-400 flex items-start space-x-2.5">
+                    <i class="fa-solid fa-lightbulb text-amber-400 text-sm mt-0.5 shrink-0"></i>
+                    <span>Log your assignments above to see your realistic end time and focus recommendation.</span>
+                </div>
+            </div>
+
+            <!-- AI Task De-Chunker Feature Promo / Explainer -->
+            <div class="bg-gradient-to-br from-indigo-950/40 via-slate-900 to-slate-900 border border-indigo-500/20 rounded-2xl p-5 shadow-xl relative overflow-hidden">
+                <div class="flex items-start space-x-3">
+                    <div class="p-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400">
+                        <i class="fa-solid fa-wand-magic-sparkles text-xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-slate-100">Stuck or Sidetracked?</h4>
+                        <p class="text-xs text-slate-400 mt-1 leading-relaxed">
+                            Feeling overwhelmed by big tasks is the #1 cause of distraction. Use our built-in <strong class="text-slate-200">AI De-Chunker</strong> on any task to instantly break it into 15-minute action steps.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <section class="lg:col-span-7 space-y-6">
+
+            <!-- Today's Homework Dashboard Header -->
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                    <div>
+                        <h2 class="text-xl font-extrabold text-white flex items-center gap-2">
+                            <span>Today's Homework Queue</span>
+                            <span id="taskCountBadge" class="text-xs px-2.5 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20">0 Pending</span>
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Focus on one task at a time. Finish early and stay distraction-free.</p>
+                    </div>
+
+                    <!-- Filter Tabs -->
+                    <div class="flex items-center space-x-1 bg-slate-950 p-1 rounded-xl border border-slate-800 self-start sm:self-auto">
+                        <button onclick="setTaskFilter('all')" id="filterAll" class="px-3 py-1 rounded-lg text-xs font-semibold bg-brand-600 text-white transition-all">All</button>
+                        <button onclick="setTaskFilter('pending')" id="filterPending" class="px-3 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all">Pending</button>
+                        <button onclick="setTaskFilter('completed')" id="filterCompleted" class="px-3 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all">Done</button>
+                    </div>
+                </div>
+
+                <!-- Homework Cards Container -->
+                <div id="taskList" class="space-y-3 min-h-[250px]">
+                    <!-- Dynamic tasks rendered via Javascript -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="hidden py-12 text-center">
+                    <div class="w-16 h-16 rounded-2xl bg-slate-800/50 border border-slate-700/50 flex items-center justify-center mx-auto mb-3 text-slate-500">
+                        <i class="fa-solid fa-check-double text-2xl"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-slate-300">All clear for now!</h3>
+                    <p class="text-xs text-slate-500 mt-1 max-w-xs mx-auto">No pending homework in this view. Add a task on the left or take a break!</p>
+                </div>
+            </div>
+
+            <!-- Quick Tips to Avoid Sidetracking -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-1">
+                    <div class="text-amber-400 text-sm font-bold flex items-center gap-1.5">
+                        <i class="fa-solid fa-ban"></i> Phone Out of Reach
+                    </div>
+                    <p class="text-[11px] text-slate-400 leading-snug">Place phone in another room while in Focus Mode to eliminate 80% of distractions.</p>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-1">
+                    <div class="text-brand-400 text-sm font-bold flex items-center gap-1.5">
+                        <i class="fa-solid fa-list-check"></i> Single Task Rule
+                    </div>
+                    <p class="text-[11px] text-slate-400 leading-snug">Multitasking takes 40% longer. Work on 1 assignment until timer rings.</p>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-xl space-y-1">
+                    <div class="text-emerald-400 text-sm font-bold flex items-center gap-1.5">
+                        <i class="fa-solid fa-brain"></i> Brain Dump Pad
+                    </div>
+                    <p class="text-[11px] text-slate-400 leading-snug">Got a random thought during homework? Write it in Focus Mode scratchpad to review later.</p>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- AI Task Breakdown Modal -->
+    <div id="aiModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative overflow-hidden">
+            <button onclick="closeAiModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white p-2">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center">
+                    <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white">AI Homework Breakdown</h3>
+                    <p class="text-xs text-slate-400" id="aiModalSub">Bite-sized 10-15 min action plan</p>
+                </div>
+            </div>
+
+            <!-- Modal Content State: Loading -->
+            <div id="aiLoading" class="py-10 text-center space-y-3">
+                <div class="inline-block animate-spin text-brand-400 text-3xl">
+                    <i class="fa-solid fa-circle-notch"></i>
+                </div>
+                <p class="text-sm font-medium text-slate-300">Gemini AI is analyzing your assignment...</p>
+                <p class="text-xs text-slate-500">Breaking it down into achievable steps to keep you focused.</p>
+            </div>
+
+            <!-- Modal Content State: Result -->
+            <div id="aiResult" class="hidden space-y-4">
+                <div class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                    <span class="text-xs font-semibold text-brand-400 uppercase tracking-wider">Target Task</span>
+                    <p id="aiTargetTaskName" class="text-sm font-bold text-white mt-0.5">History Essay</p>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="text-xs font-semibold text-slate-300">Generated Micro-Steps</label>
+                    <div id="aiStepsList" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                        <!-- AI steps appended dynamically -->
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-800 flex items-center justify-end space-x-3">
+                    <button onclick="closeAiModal()" class="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white">Close</button>
+                    <button id="applyAiStepsBtn" onclick="applyAiStepsToTask()" class="px-4 py-2 text-xs font-semibold bg-brand-600 hover:bg-brand-500 text-white rounded-xl shadow-md transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-check"></i>
+                        <span>Attach Steps to Task</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DISTRACTION-FREE FOCUS ROOM OVERLAY -->
+    <div id="focusRoomModal" class="fixed inset-0 bg-slate-950 z-50 flex flex-col hidden transition-opacity duration-300">
+        <!-- Focus Room Header -->
+        <header class="p-4 border-b border-slate-800 flex items-center justify-between max-w-5xl w-full mx-auto">
+            <div class="flex items-center space-x-3">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                    <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+                    Focus Mode Active
+                </span>
+                <span id="focusActiveSubject" class="text-xs text-slate-400 font-medium hidden sm:inline">Subject</span>
+            </div>
+
+            <!-- Header Controls -->
+            <div class="flex items-center space-x-3">
+                <!-- Sound Engine Drawer Toggle -->
+                <button onclick="toggleSoundPanel()" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300 hover:text-white flex items-center gap-1.5">
+                    <i class="fa-solid fa-headphones text-brand-400"></i>
+                    <span id="soundLabel">Ambient Sounds</span>
+                </button>
+
+                <!-- Brain Dump Toggle -->
+                <button onclick="toggleBrainDump()" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300 hover:text-white flex items-center gap-1.5">
+                    <i class="fa-solid fa-note-sticky text-amber-400"></i>
+                    <span>Scratchpad</span>
+                </button>
+
+                <!-- Exit Focus Mode Button -->
+                <button onclick="closeFocusRoomModal()" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold transition-all">
+                    Exit Focus
+                </button>
+            </div>
+        </header>
+
+        <!-- Ambient Sound Control Bar (Collapsible) -->
+        <div id="soundPanel" class="hidden bg-slate-900/90 border-b border-slate-800 p-3">
+            <div class="max-w-2xl mx-auto flex flex-wrap items-center justify-between gap-4 text-xs">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-volume-high text-brand-400"></i>
+                    <span class="font-bold text-slate-200">Study Sound Generator:</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="setAmbientSound('off')" id="soundOff" class="px-2.5 py-1 rounded-lg bg-slate-800 text-white">Off</button>
+                    <button onclick="setAmbientSound('rain')" id="soundRain" class="px-2.5 py-1 rounded-lg bg-slate-950 text-slate-400 hover:text-white">🌧️ Rain</button>
+                    <button onclick="setAmbientSound('brown')" id="soundBrown" class="px-2.5 py-1 rounded-lg bg-slate-950 text-slate-400 hover:text-white">🪵 Brown Noise</button>
+                    <button onclick="setAmbientSound('drone')" id="soundDrone" class="px-2.5 py-1 rounded-lg bg-slate-950 text-slate-400 hover:text-white">🧘 Focus Drone</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Brain Dump Floating Sidebar -->
+        <div id="brainDumpPanel" class="hidden absolute top-20 right-6 w-80 bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-2xl z-20 space-y-2">
+            <div class="flex items-center justify-between">
+                <h4 class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    Distraction Dump
+                </h4>
+                <button onclick="toggleBrainDump()" class="text-slate-500 hover:text-slate-300 text-xs">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <p class="text-[11px] text-slate-400">Thought of something unrelated? Write it down here so your mind can let go and stay on homework.</p>
+            <textarea id="brainDumpNotes" rows="5" placeholder="e.g. Check text message at 8pm, search for shoe size..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500/50 resize-none"></textarea>
+        </div>
+
+        <!-- Main Focus Mode Interface -->
+        <div class="flex-grow max-w-4xl w-full mx-auto px-4 py-8 flex flex-col justify-between items-center text-center">
+            
+            <!-- Focus Task Display -->
+            <div class="space-y-2 max-w-lg">
+                <span class="text-xs uppercase font-bold tracking-widest text-brand-400">Current Objective</span>
+                <h2 id="focusActiveTitle" class="text-2xl sm:text-3xl font-extrabold text-white">Select a task to get started</h2>
+                <p id="focusActiveSubtitle" class="text-xs text-slate-400">Distraction shield active. Stay on this screen until done.</p>
+            </div>
+
+            <!-- Big Timer Dial -->
+            <div class="my-6 relative flex flex-col items-center justify-center">
+                <div class="w-64 h-64 sm:w-72 sm:h-72 rounded-full border-4 border-slate-800 bg-slate-900/50 flex flex-col items-center justify-center relative glow-effect">
+                    <span id="focusTimerDisplay" class="text-5xl sm:text-6xl font-black font-mono tracking-tight text-white">25:00</span>
+                    <span id="focusModeState" class="text-xs font-bold uppercase tracking-wider text-slate-400 mt-2">Deep Focus</span>
+                </div>
+
+                <!-- Timer Controls -->
+                <div class="flex items-center space-x-3 mt-6">
+                    <button id="focusStartBtn" onclick="toggleTimer()" class="w-14 h-14 rounded-2xl bg-brand-600 hover:bg-brand-500 text-white text-xl flex items-center justify-center shadow-lg shadow-brand-500/30 transition-all active:scale-95">
+                        <i id="focusStartIcon" class="fa-solid fa-play"></i>
+                    </button>
+                    <button onclick="resetTimer()" class="w-11 h-11 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-base flex items-center justify-center transition-all">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+                    <button onclick="addFiveMins()" class="px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all">
+                        +5 min
+                    </button>
+                </div>
+            </div>
+
+            <!-- Interactive Sub-steps Checklist (In Focus Mode) -->
+            <div class="w-full max-w-md bg-slate-900/60 border border-slate-800 rounded-2xl p-4 text-left">
+                <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2 flex items-center justify-between">
+                    <span>Task Checklist</span>
+                    <span id="focusSubstepCount" class="text-[10px] text-brand-400">0/0 done</span>
+                </h4>
+                <div id="focusSubstepsContainer" class="space-y-1.5 max-h-36 overflow-y-auto pr-1">
+                    <p class="text-xs text-slate-500 italic">No sub-steps added. Add tasks with AI De-chunker for instant bite-sized checklists!</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let tasks = JSON.parse(localStorage.getItem('focusnest_tasks')) || [
+            {
+                id: 1,
+                title: "Math HL - Functions Problem Set #3",
+                subject: "Math",
+                estimate: 35,
+                dueDate: "Today",
+                priority: "High",
+                completed: false,
+                substeps: [
+                    { title: "Solve questions 1 through 4", done: false },
+                    { title: "Review graph sketching rules for Q5", done: false },
+                    { title: "Check answers against textbook key", done: false }
+                ]
+            },
+            {
+                id: 2,
+                title: "English - Read Hamlet Act 2 & note quotes",
+                subject: "English",
+                estimate: 30,
+                dueDate: "Tomorrow",
+                priority: "Medium",
+                completed: false,
+                substeps: []
+            }
+        ];
+
+        let currentFilter = 'all';
+        let activeTaskIdForAi = null;
+        let activeFocusTaskId = null;
+
+        // Timer State
+        let timerInterval = null;
+        let timerSeconds = 25 * 60;
+        let isTimerRunning = false;
+        let isBreakMode = false;
+
+        let breakInterval = null;
+        let breakSeconds = 15 * 60;
+        let isBreakTimerRunning = false;
+
+        // Audio Context & Sound Generators
+        let audioCtx = null;
+        let activeSoundNode = null;
+        let currentSoundType = 'off';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderTasks();
+            updateWorkloadStats();
+            loadBrainDump();
+
+            // Form Submit Listener
+            document.getElementById('addTaskForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                addNewTask();
+            });
+
+            // Auto-save brain dump notes
+            document.getElementById('brainDumpNotes').addEventListener('input', (e) => {
+                localStorage.setItem('focusnest_braindump', e.target.value);
+            });
+        });
+
+        function saveTasks() {
+            localStorage.setItem('focusnest_tasks', JSON.stringify(tasks));
+            renderTasks();
+            updateWorkloadStats();
+        }
+
+        function setTaskFilter(filter) {
+            currentFilter = filter;
+            ['All', 'Pending', 'Completed'].forEach(f => {
+                const btn = document.getElementById(`filter${f}`);
+                if (f.toLowerCase() === filter) {
+                    btn.className = "px-3 py-1 rounded-lg text-xs font-semibold bg-brand-600 text-white transition-all";
+                } else {
+                    btn.className = "px-3 py-1 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all";
+                }
+            });
+            renderTasks();
+        }
+
+        function getSubjectColor(subject) {
+            switch(subject) {
+                case 'Math': return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+                case 'English': return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+                case 'Science': return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+                case 'History': return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+                case 'Language': return 'bg-rose-500/10 text-rose-400 border-rose-500/20';
+                default: return 'bg-slate-800 text-slate-300 border-slate-700';
+            }
+        }
+
+        function renderTasks() {
+            const listContainer = document.getElementById('taskList');
+            const emptyState = document.getElementById('emptyState');
+            
+            let filtered = tasks;
+            if (currentFilter === 'pending') filtered = tasks.filter(t => !t.completed);
+            if (currentFilter === 'completed') filtered = tasks.filter(t => t.completed);
+
+            const pendingCount = tasks.filter(t => !t.completed).length;
+            document.getElementById('taskCountBadge').innerText = `${pendingCount} Pending`;
+
+            if (filtered.length === 0) {
+                listContainer.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            listContainer.innerHTML = filtered.map(task => {
+                const completedSubsteps = task.substeps ? task.substeps.filter(s => s.done).length : 0;
+                const totalSubsteps = task.substeps ? task.substeps.length : 0;
+
+                return `
+                <div class="bg-slate-950 border border-slate-800/80 rounded-xl p-4 hover:border-slate-700 transition-all ${task.completed ? 'opacity-60' : ''}">
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="flex items-start space-x-3">
+                            <label class="custom-checkbox cursor-pointer pt-1">
+                                <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTaskComplete(${task.id})" class="sr-only">
+                                <div class="w-5 h-5 rounded-md border border-slate-700 bg-slate-900 flex items-center justify-center transition-all">
+                                    <i class="fa-solid fa-check text-white text-xs hidden"></i>
+                                </div>
+                            </label>
+
+                            <div>
+                                <h3 class="text-sm font-bold ${task.completed ? 'line-through text-slate-500' : 'text-slate-100'}">${escapeHtml(task.title)}</h3>
+                                <div class="flex flex-wrap items-center gap-2 mt-1.5">
+                                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded-md border ${getSubjectColor(task.subject)}">
+                                        ${task.subject}
+                                    </span>
+                                    <span class="text-[11px] text-slate-400 flex items-center gap-1">
+                                        <i class="fa-regular fa-clock text-slate-500"></i> ${task.estimate}m
+                                    </span>
+                                    <span class="text-[11px] text-slate-400">
+                                        • Due: <strong class="text-slate-300">${task.dueDate}</strong>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-1 shrink-0">
+                            <!-- AI De-chunker Button -->
+                            <button onclick="triggerAiBreakdown(${task.id})" title="Break down with AI" class="px-2.5 py-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 border border-indigo-500/20 text-xs font-medium transition-all flex items-center gap-1">
+                                <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+                                <span class="hidden sm:inline">De-chunk</span>
+                            </button>
+
+                            <!-- Start Focus Button -->
+                            <button onclick="launchTaskFocus(${task.id})" title="Focus on this task" class="p-1.5 rounded-lg bg-brand-600/20 hover:bg-brand-600 text-brand-400 hover:text-white border border-brand-500/30 text-xs transition-all">
+                                <i class="fa-solid fa-play px-1"></i>
+                            </button>
+
+                            <!-- Delete Task -->
+                            <button onclick="deleteTask(${task.id})" title="Delete task" class="p-1.5 rounded-lg hover:bg-rose-500/20 text-slate-500 hover:text-rose-400 text-xs transition-all">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Sub-steps preview if available -->
+                    ${totalSubsteps > 0 ? `
+                        <div class="mt-3 pt-3 border-t border-slate-900 space-y-1.5">
+                            <div class="flex items-center justify-between text-[11px] text-slate-400 mb-1">
+                                <span>Action Steps Progress</span>
+                                <span class="font-bold text-brand-400">${completedSubsteps}/${totalSubsteps}</span>
+                            </div>
+                            <div class="space-y-1">
+                                ${task.substeps.map((sub, idx) => `
+                                    <div class="flex items-center space-x-2 text-xs">
+                                        <input type="checkbox" ${sub.done ? 'checked' : ''} onchange="toggleSubstep(${task.id}, ${idx})" class="rounded border-slate-700 bg-slate-900 text-brand-500 focus:ring-0">
+                                        <span class="${sub.done ? 'line-through text-slate-500' : 'text-slate-300'}">${escapeHtml(sub.title)}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+                `;
+            }).join('');
+        }
+
+        function addNewTask() {
+            const title = document.getElementById('taskTitle').value.trim();
+            const subject = document.getElementById('taskSubject').value;
+            const estimate = parseInt(document.getElementById('taskEstimate').value) || 30;
+            const dueDate = document.getElementById('taskDueDate').value;
+            const priority = document.getElementById('taskPriority').value;
+
+            if (!title) return;
+
+            const newTask = {
+                id: Date.now(),
+                title,
+                subject,
+                estimate,
+                dueDate,
+                priority,
+                completed: false,
+                substeps: []
+            };
+
+            tasks.unshift(newTask);
+            saveTasks();
+
+            // Reset Form
+            document.getElementById('taskTitle').value = '';
+        }
+
+        function toggleTaskComplete(id) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                saveTasks();
+            }
+        }
+
+        function toggleSubstep(taskId, substepIndex) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task && task.substeps && task.substeps[substepIndex]) {
+                task.substeps[substepIndex].done = !task.substeps[substepIndex].done;
+                
+                // If all substeps are done, suggest completing main task
+                if (task.substeps.every(s => s.done)) {
+                    task.completed = true;
+                }
+                saveTasks();
+            }
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            saveTasks();
+        }
+
+        function updateWorkloadStats() {
+            const pendingTasks = tasks.filter(t => !t.completed);
+            const totalMins = pendingTasks.reduce((acc, t) => acc + t.estimate, 0);
+
+            document.getElementById('headerTotalTime').innerText = `${totalMins}m`;
+            document.getElementById('workloadMinutesText').innerText = `${totalMins} mins (~${(totalMins/60).toFixed(1)} hrs)`;
+
+            const progressBar = document.getElementById('workloadProgressBar');
+            const badge = document.getElementById('workloadBadge');
+            const advice = document.getElementById('workloadAdvice');
+
+            // Max cap 180 mins for 100% bar
+            const percentage = Math.min(100, (totalMins / 180) * 100);
+            progressBar.style.width = `${percentage}%`;
+
+            if (totalMins > 120) {
+                badge.innerText = "Heavy Night";
+                badge.className = "text-xs px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 font-semibold";
+                advice.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-rose-400 text-sm mt-0.5 shrink-0"></i><span>High workload tonight! Start with high priority tasks first and take 5m breaks between tasks.</span>`;
+            } else if (totalMins > 60) {
+                badge.innerText = "Moderate";
+                badge.className = "text-xs px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 font-semibold";
+                advice.innerHTML = `<i class="fa-solid fa-bullseye text-amber-400 text-sm mt-0.5 shrink-0"></i><span>Solid study load. Knock out 2 Pomodoro sessions and you'll finish early.</span>`;
+            } else {
+                badge.innerText = "Light & Easy";
+                badge.className = "text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold";
+                advice.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 text-sm mt-0.5 shrink-0"></i><span>Workload is super manageable! You can get this done in under an hour.</span>`;
+            }
+        }
+
+        async function triggerAiBreakdown(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            activeTaskIdForAi = taskId;
+            document.getElementById('aiTargetTaskName').innerText = task.title;
+            document.getElementById('aiModal').classList.remove('hidden');
+            document.getElementById('aiLoading').classList.remove('hidden');
+            document.getElementById('aiResult').classList.add('hidden');
+
+            const systemPrompt = "You are an expert high-school academic productivity advisor. Your goal is to break down homework assignments into 3 to 5 actionable, bite-sized 10-15 minute micro-steps so students don't get distracted or overwhelmed.";
+            const userPrompt = `Break down this homework assignment: Title: "${task.title}", Subject: "${task.subject}", Total Estimated Time: ${task.estimate} minutes.`;
+
+            const apiKey = ""; // Runtime automatically injects API key
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userPrompt }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            estimatedTotalMinutes: { type: "NUMBER" },
+                            steps: {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        title: { type: "STRING" },
+                                        durationMinutes: { type: "NUMBER" },
+                                        tip: { type: "STRING" }
+                                    },
+                                    propertyOrdering: ["title", "durationMinutes", "tip"]
+                                }
+                            }
+                        },
+                        propertyOrdering: ["estimatedTotalMinutes", "steps"]
+                    }
+                }
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error("API call failed");
+
+                const result = await response.json();
+                const jsonText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (jsonText) {
+                    const parsedData = JSON.parse(jsonText);
+                    renderAiModalSteps(parsedData.steps || []);
+                } else {
+                    throw new Error("Invalid structure from model");
+                }
+            } catch (err) {
+                // Fallback smart micro-steps if network/API throttled
+                console.warn("Using offline fallback breakdown due to API context", err);
+                const fallbackSteps = [
+                    { title: `Read prompt & set up blank draft/workspace for ${task.title}`, durationMinutes: 10, tip: "Remove extra tabs" },
+                    { title: "Gather main formulas, notes, or source materials needed", durationMinutes: 10, tip: "Keep phone away" },
+                    { title: "Execute core section/problems 1 to half point", durationMinutes: 15, tip: "Don't stop to refine yet" },
+                    { title: "Complete remaining section and double-check final work", durationMinutes: 10, tip: "Check against rubric" }
+                ];
+                renderAiModalSteps(fallbackSteps);
+            }
+        }
+
+        let pendingGeneratedSteps = [];
+
+        function renderAiModalSteps(steps) {
+            pendingGeneratedSteps = steps;
+            const container = document.getElementById('aiStepsList');
+            container.innerHTML = steps.map((s, idx) => `
+                <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs flex items-start space-x-2.5">
+                    <span class="w-5 h-5 rounded-full bg-brand-500/20 text-brand-400 font-bold flex items-center justify-center shrink-0 mt-0.5 text-[10px]">${idx + 1}</span>
+                    <div class="flex-grow">
+                        <div class="font-bold text-slate-200">${escapeHtml(s.title)}</div>
+                        ${s.tip ? `<p class="text-[10px] text-slate-400 mt-0.5"><i class="fa-regular fa-lightbulb text-amber-400"></i> ${escapeHtml(s.tip)}</p>` : ''}
+                    </div>
+                    <span class="text-[10px] text-slate-500 font-mono shrink-0">${s.durationMinutes || 10}m</span>
+                </div>
+            `).join('');
+
+            document.getElementById('aiLoading').classList.add('hidden');
+            document.getElementById('aiResult').classList.remove('hidden');
+        }
+
+        function applyAiStepsToTask() {
+            if (!activeTaskIdForAi) return;
+            const task = tasks.find(t => t.id === activeTaskIdForAi);
+            if (task) {
+                task.substeps = pendingGeneratedSteps.map(s => ({
+                    title: s.title,
+                    done: false
+                }));
+                saveTasks();
+            }
+            closeAiModal();
+        }
+
+        function closeAiModal() {
+            document.getElementById('aiModal').classList.add('hidden');
+            activeTaskIdForAi = null;
+        }
+
+        function openFocusRoomModal() {
+            document.getElementById('focusRoomModal').classList.remove('hidden');
+            
+            if (!activeFocusTaskId && tasks.length > 0) {
+                const firstPending = tasks.find(t => !t.completed) || tasks[0];
+                launchTaskFocus(firstPending.id);
+            } else if (!activeFocusTaskId) {
+                document.getElementById('focusActiveTitle').innerText = "General Study Session";
+                document.getElementById('focusActiveSubject').innerText = "Focus Mode";
+            }
+        }
+
+        function launchTaskFocus(taskId) {
+            activeFocusTaskId = taskId;
+            const task = tasks.find(t => t.id === taskId);
+            
+            if (task) {
+                document.getElementById('focusActiveTitle').innerText = task.title;
+                document.getElementById('focusActiveSubject').innerText = `${task.subject} • ${task.estimate}m target`;
+                renderFocusSubsteps(task);
+            }
+
+            openFocusRoomModal();
+        }
+
+        function renderFocusSubsteps(task) {
+            const container = document.getElementById('focusSubstepsContainer');
+            const countSpan = document.getElementById('focusSubstepCount');
+
+            if (!task.substeps || task.substeps.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-500 italic py-1">No sub-steps created. Click "De-chunk" on task to add automated 15m steps!</p>';
+                countSpan.innerText = '0/0 done';
+                return;
+            }
+
+            const doneCount = task.substeps.filter(s => s.done).length;
+            countSpan.innerText = `${doneCount}/${task.substeps.length} done`;
+
+            container.innerHTML = task.substeps.map((sub, idx) => `
+                <div class="flex items-center space-x-2.5 p-1.5 rounded-lg hover:bg-slate-800/50 transition-all text-xs">
+                    <input type="checkbox" ${sub.done ? 'checked' : ''} onchange="toggleSubstepFocus(${task.id}, ${idx})" class="rounded border-slate-700 bg-slate-950 text-brand-500 focus:ring-0">
+                    <span class="${sub.done ? 'line-through text-slate-500' : 'text-slate-200'} font-medium">${escapeHtml(sub.title)}</span>
+                </div>
+            `).join('');
+        }
+
+        function toggleSubstepFocus(taskId, substepIndex) {
+            toggleSubstep(taskId, substepIndex);
+            const task = tasks.find(t => t.id === taskId);
+            if (task) renderFocusSubsteps(task);
+        }
+
+        function closeFocusRoomModal() {
+            document.getElementById('focusRoomModal').classList.add('hidden');
+            if (isTimerRunning) toggleTimer(); // pause timer on exit
+            setAmbientSound('off');
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timerSeconds / 60);
+            const secs = timerSeconds % 60;
+            document.getElementById('focusTimerDisplay').innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function toggleTimer() {
+            const startBtnIcon = document.getElementById('focusStartIcon');
+            if (isTimerRunning) {
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+                startBtnIcon.className = 'fa-solid fa-play';
+            } else {
+                isTimerRunning = true;
+                startBtnIcon.className = 'fa-solid fa-pause';
+                timerInterval = setInterval(() => {
+                    if (timerSeconds > 0) {
+                        timerSeconds--;
+                        updateTimerDisplay();
+                    } else {
+                        clearInterval(timerInterval);
+                        isTimerRunning = false;
+                        startBtnIcon.className = 'fa-solid fa-play';
+                        playTimerEndSound();
+                        
+                        if (!isBreakMode) {
+                            // Switch to 5 minute break
+                            isBreakMode = true;
+                            timerSeconds = 5 * 60;
+                            document.getElementById('focusModeState').innerText = "Short Break";
+                            document.getElementById('focusModeState').className = "text-xs font-bold uppercase tracking-wider text-emerald-400 mt-2";
+                        } else {
+                            // Switch back to 25m focus
+                            isBreakMode = false;
+                            timerSeconds = 25 * 60;
+                            document.getElementById('focusModeState').innerText = "Deep Focus";
+                            document.getElementById('focusModeState').className = "text-xs font-bold uppercase tracking-wider text-slate-400 mt-2";
+                        }
+                        updateTimerDisplay();
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            if (isTimerRunning) toggleTimer();
+            timerSeconds = isBreakMode ? 5 * 60 : 25 * 60;
+            updateTimerDisplay();
+        }
+
+        function addFiveMins() {
+            timerSeconds += 5 * 60;
+            updateTimerDisplay();
+        }
+
+        function initAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function setAmbientSound(type) {
+            initAudioContext();
+            currentSoundType = type;
+
+            if (activeSoundNode) {
+                try { activeSoundNode.stop(); } catch(e){}
+                activeSoundNode = null;
+            }
+
+            // Update UI buttons
+            ['off', 'rain', 'brown', 'drone'].forEach(t => {
+                const btn = document.getElementById(`sound${capitalize(t)}`);
+                if (btn) {
+                    if (t === type) {
+                        btn.className = "px-2.5 py-1 rounded-lg bg-brand-600 text-white font-bold";
+                    } else {
+                        btn.className = "px-2.5 py-1 rounded-lg bg-slate-950 text-slate-400 hover:text-white";
+                    }
+                }
+            });
+
+            if (type === 'off') return;
+
+            if (type === 'brown' || type === 'rain') {
+                // Generate noise buffer
+                const bufferSize = audioCtx.sampleRate * 2;
+                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                let lastOut = 0.0;
+
+                for (let i = 0; i < bufferSize; i++) {
+                    const white = Math.random() * 2 - 1;
+                    if (type === 'brown') {
+                        data[i] = (lastOut + (0.02 * white)) / 1.02;
+                        lastOut = data[i];
+                        data[i] *= 3.5;
+                    } else {
+                        // Rain noise profile
+                        data[i] = white * 0.15;
+                    }
+                }
+
+                const noise = audioCtx.createBufferSource();
+                noise.buffer = buffer;
+                noise.loop = true;
+
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = type === 'rain' ? 'lowpass' : 'lowpass';
+                filter.frequency.value = type === 'rain' ? 1200 : 400;
+
+                const gain = audioCtx.createGain();
+                gain.gain.value = 0.2;
+
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(audioCtx.destination);
+                noise.start();
+                activeSoundNode = noise;
+
+            } else if (type === 'drone') {
+                // Binaural / Focus Sine Drone
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(108, audioCtx.currentTime); // Deep focus pitch
+                gain.gain.value = 0.08;
+
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                activeSoundNode = osc;
+            }
+        }
+
+        function playTimerEndSound() {
+            try {
+                initAudioContext();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.2);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 1.2);
+            } catch(e){}
+        }
+
+        function toggleSoundPanel() {
+            const panel = document.getElementById('soundPanel');
+            panel.classList.toggle('hidden');
+        }
+
+        function toggleBrainDump() {
+            const panel = document.getElementById('brainDumpPanel');
+            panel.classList.toggle('hidden');
+        }
+
+        function loadBrainDump() {
+            const saved = localStorage.getItem('focusnest_braindump');
+            if (saved) {
+                document.getElementById('brainDumpNotes').value = saved;
+            }
+        }
+
+        function updateBreakTimerDisplay() {
+            const mins = Math.floor(breakSeconds / 60);
+            const secs = breakSeconds % 60;
+            const display = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            const elem = document.getElementById('breakTimerDisplay');
+            if (elem) elem.innerText = display;
+        }
+
+        function toggleBreakTimer() {
+            const btnIcon = document.getElementById('breakStartIcon');
+            const ping = document.getElementById('breakPulsePing');
+            const dot = document.getElementById('breakPulseDot');
+
+            if (isBreakTimerRunning) {
+                clearInterval(breakInterval);
+                isBreakTimerRunning = false;
+                if (btnIcon) btnIcon.className = 'fa-solid fa-play';
+                if (ping) ping.classList.add('hidden');
+                if (dot) dot.className = 'relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500';
+            } else {
+                initAudioContext();
+                isBreakTimerRunning = true;
+                if (btnIcon) btnIcon.className = 'fa-solid fa-pause';
+                if (ping) ping.classList.remove('hidden');
+                if (dot) dot.className = 'relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400 animate-pulse';
+
+                breakInterval = setInterval(() => {
+                    if (breakSeconds > 0) {
+                        breakSeconds--;
+                        updateBreakTimerDisplay();
+                    } else {
+                        clearInterval(breakInterval);
+                        isBreakTimerRunning = false;
+                        if (btnIcon) btnIcon.className = 'fa-solid fa-play';
+                        if (ping) ping.classList.add('hidden');
+                        if (dot) dot.className = 'relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500';
+                        playTimerEndSound();
+                        alertBreakComplete();
+                        resetBreakTimer();
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetBreakTimer() {
+            if (isBreakTimerRunning) {
+                clearInterval(breakInterval);
+                isBreakTimerRunning = false;
+            }
+            breakSeconds = 15 * 60;
+            updateBreakTimerDisplay();
+            const btnIcon = document.getElementById('breakStartIcon');
+            const ping = document.getElementById('breakPulsePing');
+            const dot = document.getElementById('breakPulseDot');
+            if (btnIcon) btnIcon.className = 'fa-solid fa-play';
+            if (ping) ping.classList.add('hidden');
+            if (dot) dot.className = 'relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500';
+        }
+
+        function alertBreakComplete() {
+            const elem = document.getElementById('breakTimerDisplay');
+            if (elem) {
+                elem.innerText = "Time's Up!";
+                elem.classList.add('animate-bounce');
+                setTimeout(() => {
+                    elem.classList.remove('animate-bounce');
+                    updateBreakTimerDisplay();
+                }, 4000);
+            }
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        function capitalize(s) {
+            return s.charAt(0).toUpperCase() + s.slice(1);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KICK-IN // Futuristic Homework & Focus Tracker</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js for analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        tech: ['Chakra Petch', 'sans-serif'],
+                    },
+                    colors: {
+                        cyber: {
+                            dark: '#07090e',
+                            card: '#0f141c',
+                            cardBorder: '#1e293b',
+                            neonCyan: '#00f0ff',
+                            neonPurple: '#a855f7',
+                            neonPink: '#ec4899',
+                            muted: '#64748b'
+                        }
+                    },
+                    boxShadow: {
+                        'neon-cyan': '0 0 20px -3px rgba(0, 240, 255, 0.3)',
+                        'neon-purple': '0 0 20px -3px rgba(168, 85, 247, 0.3)',
+                        'glow-sm': '0 0 10px rgba(0, 240, 255, 0.15)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #05070a;
+            color: #f1f5f9;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .tech-font {
+            font-family: 'Chakra Petch', sans-serif;
+        }
+
+        /* Glassmorphism utilities */
+        .glass-panel {
+            background: rgba(15, 20, 28, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-panel-glow {
+            background: rgba(15, 20, 28, 0.9);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 240, 255, 0.25);
+            box-shadow: 0 0 25px -5px rgba(0, 240, 255, 0.15);
+        }
+
+        /* Custom futuristic scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #07090e;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f0ff;
+        }
+
+        /* Animated grid background */
+        .bg-grid-pattern {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+        }
+
+        /* Float animation */
+        @keyframes floatShoe {
+            0%, 100% { transform: translateY(0px) rotate(-4deg); }
+            50% { transform: translateY(-8px) rotate(-1deg); }
+        }
+        .animate-float {
+            animation: floatShoe 4s ease-in-out infinite;
+        }
+
+        /* Gentle Light mode smooth transitions & soft pastel overrides */
+        body {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        html:not(.dark) body {
+            background-color: #f8fafc;
+            color: #334155;
+        }
+
+        html:not(.dark) .glass-panel {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 8px 24px -4px rgba(148, 163, 184, 0.12);
+        }
+
+        html:not(.dark) .glass-panel-glow {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(14, 165, 233, 0.25);
+            box-shadow: 0 10px 28px -4px rgba(14, 165, 233, 0.12);
+        }
+
+        html:not(.dark) .bg-grid-pattern {
+            background-size: 36px 36px;
+            background-image: 
+                linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+        }
+
+        html:not(.dark) .text-white, 
+        html:not(.dark) .text-slate-100, 
+        html:not(.dark) .text-slate-200 {
+            color: #1e293b !important;
+        }
+
+        html:not(.dark) .text-slate-300, 
+        html:not(.dark) .text-slate-400 {
+            color: #475569 !important;
+        }
+
+        html:not(.dark) .text-slate-500 {
+            color: #64748b !important;
+        }
+
+        /* Softer Cyan, Purple, & Amber Accents for Light Mode */
+        html:not(.dark) .text-cyan-400,
+        html:not(.dark) .text-cyan-300 {
+            color: #0284c7 !important; /* Sky blue tone */
+        }
+
+        html:not(.dark) .text-purple-400,
+        html:not(.dark) .text-purple-300 {
+            color: #7c3aed !important; /* Muted violet */
+        }
+
+        html:not(.dark) .text-amber-400 {
+            color: #d97706 !important; /* Warm amber */
+        }
+
+        html:not(.dark) .bg-slate-900, 
+        html:not(.dark) .bg-slate-900\/90, 
+        html:not(.dark) .bg-slate-900\/80, 
+        html:not(.dark) .bg-slate-950, 
+        html:not(.dark) .bg-slate-950\/80 {
+            background-color: #f1f5f9 !important;
+        }
+
+        html:not(.dark) .bg-slate-800,
+        html:not(.dark) .bg-slate-800\/50 {
+            background-color: #e2e8f0 !important;
+        }
+
+        html:not(.dark) .border-slate-800, 
+        html:not(.dark) .border-slate-800\/80, 
+        html:not(.dark) .border-slate-800\/60 {
+            border-color: #e2e8f0 !important;
+        }
+
+        html:not(.dark) input, 
+        html:not(.dark) select {
+            background-color: #ffffff !important;
+            color: #1e293b !important;
+            border-color: #cbd5e1 !important;
+        }
+
+        html:not(.dark) #unlock-modal, 
+        html:not(.dark) #add-task-modal {
+            background-color: rgba(241, 245, 249, 0.75) !important;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-grid-pattern flex flex-col md:flex-row text-slate-100 antialiased selection:bg-cyan-500 selection:text-black">
+
+    <!-- Navigation Sidebar -->
+    <aside class="w-full md:w-64 glass-panel border-r border-slate-800/80 flex flex-col justify-between z-30 shrink-0">
+        <div>
+            <!-- App Branding -->
+            <div class="p-5 border-b border-slate-800/80 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-purple-600 flex items-center justify-center shadow-neon-cyan">
+                        <i data-lucide="footprints" class="w-5 h-5 text-black font-bold"></i>
+                    </div>
+                    <div>
+                        <h1 class="tech-font text-lg font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400">KICK-IN</h1>
+                        <p class="text-[10px] text-slate-400 font-mono tracking-widest uppercase">FOCUS // NO PHONE</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Equipping Kicks Mini Badge -->
+            <div class="mx-4 my-4 p-3 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center space-x-3">
+                <div id="sidebar-active-shoe-svg" class="w-12 h-12 flex items-center justify-center rounded-lg bg-slate-950 border border-cyan-500/30 p-1">
+                    <!-- SVG render injected via JS -->
+                </div>
+                <div class="overflow-hidden">
+                    <span class="text-[10px] font-mono text-cyan-400 uppercase tracking-wider block">Equipped Kicks</span>
+                    <span id="sidebar-active-shoe-name" class="tech-font text-xs font-semibold truncate block text-slate-200">AJ1 High Chicago</span>
+                    <span id="sidebar-shoe-buff" class="text-[10px] text-slate-400 block">+15% Focus Miles</span>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="p-3 space-y-1">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-cyan-400 bg-cyan-500/10 border border-cyan-500/30">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                    <span>Focus Studio</span>
+                </button>
+                <button onclick="switchTab('tasks')" id="nav-tasks" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                    <i data-lucide="check-square" class="w-4 h-4"></i>
+                    <span class="flex-1 text-left">Homework Planner</span>
+                    <span id="nav-pending-count" class="px-2 py-0.5 text-[10px] font-mono bg-cyan-500/20 text-cyan-300 rounded-full">0</span>
+                </button>
+                <button onclick="switchTab('vault')" id="nav-vault" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                    <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                    <span class="flex-1 text-left">Sneaker Vault</span>
+                    <span id="nav-unlocked-badge" class="px-2 py-0.5 text-[10px] font-mono bg-purple-500/20 text-purple-300 rounded-full">1 Unlocked</span>
+                </button>
+                <button onclick="switchTab('trade')" id="nav-trade" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                    <i data-lucide="arrow-left-right" class="w-4 h-4"></i>
+                    <span>Trade Center</span>
+                </button>
+                <button onclick="switchTab('stats')" id="nav-stats" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                    <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                    <span>Study Stats</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Phone Free Habit Reminder Box -->
+        <div class="p-4 m-4 rounded-2xl bg-gradient-to-br from-purple-900/30 to-cyan-900/20 border border-purple-500/20">
+            <div class="flex items-center space-x-2 text-purple-300 text-xs font-semibold mb-1">
+                <i data-lucide="smartphone-off" class="w-4 h-4 text-purple-400"></i>
+                <span>PHONE-FREE RULE</span>
+            </div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+                Flip your phone face-down across the room before pressing <span class="text-cyan-300 font-semibold">LOCK IN</span>.
+            </p>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col min-h-screen overflow-y-auto">
+        <!-- Top Status Bar -->
+        <header class="glass-panel border-b border-slate-800/80 px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-20">
+            <div class="flex items-center space-x-4">
+                <h2 id="page-title" class="tech-font text-xl font-bold tracking-wide text-white">FOCUS STUDIO</h2>
+                <span class="hidden sm:inline-block px-2.5 py-1 rounded-full text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> SYSTEM READY
+                </span>
+            </div>
+
+            <!-- Top Header Stats -->
+            <div class="flex items-center space-x-3 sm:space-x-4">
+                <!-- Theme Switcher Button -->
+                <button onclick="toggleTheme()" id="theme-toggle-btn" class="p-2 rounded-xl bg-slate-900/90 border border-slate-800 text-amber-400 hover:text-amber-300 hover:scale-105 active:scale-95 transition-all flex items-center justify-center space-x-2 shadow-sm cursor-pointer" title="Switch Light/Dark Theme">
+                    <i id="theme-toggle-icon" data-lucide="sun" class="w-4 h-4"></i>
+                    <span id="theme-toggle-text" class="text-xs font-mono hidden md:inline font-medium text-slate-300">Dark</span>
+                </button>
+
+                <!-- Daily Target Badge -->
+                <div class="px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center space-x-2">
+                    <i data-lucide="target" class="w-4 h-4 text-cyan-400"></i>
+                    <div class="text-xs">
+                        <span class="text-slate-400 block text-[9px] uppercase font-mono">Daily Target Goal</span>
+                        <span id="top-daily-progress" class="font-bold text-slate-100">0 / 75m</span>
+                    </div>
+                </div>
+
+                <!-- Focus Miles -->
+                <div class="px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center space-x-2">
+                    <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
+                    <div class="text-xs">
+                        <span class="text-slate-400 block text-[9px] uppercase font-mono">Focus Miles</span>
+                        <span id="user-miles" class="font-bold text-amber-400 tech-font">0 FM</span>
+                    </div>
+                </div>
+
+                <!-- Streak Counter -->
+                <div class="px-3 py-1.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center space-x-2">
+                    <i data-lucide="flame" class="w-4 h-4 text-orange-500"></i>
+                    <div class="text-xs">
+                        <span class="text-slate-400 block text-[9px] uppercase font-mono">Day Streak</span>
+                        <span id="user-streak" class="font-bold text-orange-400 tech-font">0 Days</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic View Containers -->
+        <div class="p-4 md:p-8 flex-1 max-w-7xl w-full mx-auto space-y-8">
+
+            <!-- TAB 1: FOCUS STUDIO / DASHBOARD -->
+            <section id="tab-dashboard" class="tab-content space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+                    <!-- Timer Block -->
+                    <div class="lg:col-span-7 glass-panel-glow rounded-3xl p-6 md:p-8 flex flex-col justify-between relative overflow-hidden">
+                        <div class="absolute -top-24 -right-24 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                        <!-- Timer Header & Mode Selector -->
+                        <div class="flex flex-wrap items-center justify-between gap-3 mb-6 relative z-10">
+                            <div>
+                                <span class="text-xs font-mono text-cyan-400 tracking-wider uppercase">Deep Focus Lock-In</span>
+                                <h3 class="tech-font text-2xl font-bold">STAY OFF YOUR PHONE</h3>
+                            </div>
+                            <div class="flex bg-slate-900/80 p-1 rounded-xl border border-slate-800 text-xs">
+                                <button onclick="setTimerPreset(25)" class="timer-mode-btn px-3 py-1.5 rounded-lg font-medium transition text-cyan-400 bg-cyan-500/20" data-mins="25">25m Quick</button>
+                                <button onclick="setTimerPreset(45)" class="timer-mode-btn px-3 py-1.5 rounded-lg font-medium transition text-slate-400 hover:text-slate-200" data-mins="45">45m Deep</button>
+                                <button onclick="setTimerPreset(60)" class="timer-mode-btn px-3 py-1.5 rounded-lg font-medium transition text-slate-400 hover:text-slate-200" data-mins="60">60m Power</button>
+                            </div>
+                        </div>
+
+                        <!-- Circular Timer Center -->
+                        <div class="my-6 flex flex-col items-center justify-center relative z-10">
+                            <div class="relative w-64 h-64 md:w-72 md:h-72 flex items-center justify-center">
+                                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" r="44" stroke="#1e293b" stroke-width="6" fill="transparent"/>
+                                    <circle id="timer-progress-circle" cx="50" cy="50" r="44" stroke="url(#cyan-purple-grad)" stroke-width="6" stroke-dasharray="276.46" stroke-dashoffset="0" stroke-linecap="round" fill="transparent" class="transition-all duration-1000"/>
+                                    <defs>
+                                        <linearGradient id="cyan-purple-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stop-color="#00f0ff" />
+                                            <stop offset="100%" stop-color="#a855f7" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                                
+                                <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                                    <span id="timer-display" class="tech-font text-5xl md:text-6xl font-bold tracking-widest text-white">25:00</span>
+                                    <span id="timer-status-text" class="text-xs font-mono text-slate-400 mt-2 uppercase tracking-widest">Ready to Lock In</span>
+                                    <div id="active-task-badge" class="mt-3 px-3 py-1 rounded-full text-xs bg-slate-900/90 text-slate-300 border border-slate-800 max-w-[180px] truncate hidden">
+                                        Task: <span id="active-task-title" class="text-cyan-400 font-medium">Math Homework</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Timer Controls -->
+                        <div class="flex items-center justify-center space-x-4 relative z-10">
+                            <button id="start-btn" onclick="toggleTimer()" class="w-full max-w-xs py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-purple-600 text-black font-bold text-lg tech-font tracking-wider shadow-neon-cyan hover:opacity-90 active:scale-95 transition flex items-center justify-center space-x-2">
+                                <i data-lucide="play" class="w-5 h-5 fill-black"></i>
+                                <span id="start-btn-text">LOCK IN NOW</span>
+                            </button>
+                            <button onclick="resetTimer()" class="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition">
+                                <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+
+                        <div class="mt-6 text-center text-[11px] text-slate-500 font-mono">
+                            ⚡ Completing study sessions unlocks new grails & fills your shoe drop progress!
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Equipped Shoe & Drop Progress Widget -->
+                    <div class="lg:col-span-5 space-y-6">
+
+                        <!-- Equipped Shoe Showcase Card -->
+                        <div class="glass-panel rounded-3xl p-6 relative overflow-hidden group">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <span class="text-xs font-mono text-purple-400 uppercase tracking-widest">Equipped Sneaker</span>
+                                    <h4 id="dash-shoe-name" class="tech-font text-xl font-bold">Air Jordan 1 'Chicago'</h4>
+                                </div>
+                                <button onclick="switchTab('vault')" class="text-xs text-cyan-400 hover:underline flex items-center space-x-1">
+                                    <span>Swap</span>
+                                    <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                                </button>
+                            </div>
+
+                            <!-- Shoe Display SVG Container -->
+                            <div class="relative rounded-2xl bg-gradient-to-b from-slate-900/90 to-slate-950/80 p-6 border border-slate-800/80 flex items-center justify-center my-2 h-44">
+                                <div id="dash-shoe-svg-container" class="w-full h-full flex items-center justify-center animate-float">
+                                    <!-- Dynamic SVG Artwork -->
+                                </div>
+                                <div id="dash-shoe-tier" class="absolute bottom-2 right-3 px-2 py-0.5 rounded bg-black/60 backdrop-blur text-[10px] font-mono text-cyan-300">
+                                    TIER: LEGENDARY
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3 mt-4 text-xs">
+                                <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800">
+                                    <span class="text-slate-400 text-[10px] block">EXP MULTIPLIER</span>
+                                    <span id="dash-shoe-boost" class="font-bold text-cyan-400 tech-font text-sm">+15% Miles</span>
+                                </div>
+                                <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800">
+                                    <span class="text-slate-400 text-[10px] block">TOTAL WALKED</span>
+                                    <span id="dash-shoe-dist" class="font-bold text-purple-400 tech-font text-sm">0.0 Focus Miles</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Target Meter & Shoe Drop Progress Card -->
+                        <div class="glass-panel rounded-3xl p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div>
+                                    <h4 class="tech-font font-bold text-base">Next Sneaker Drop Progress</h4>
+                                    <p class="text-xs text-slate-400">Study to trigger auto shoe unlocks!</p>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <button onclick="resetDailyProgress()" title="Start New Day" class="px-2 py-1 rounded-lg bg-slate-900 border border-slate-800 text-[10px] font-mono text-slate-400 hover:text-cyan-400 transition flex items-center gap-1">
+                                        <i data-lucide="refresh-cw" class="w-3 h-3"></i> Start New Day
+                                    </button>
+                                    <div id="daily-status-badge" class="px-2.5 py-1 rounded-full text-[10px] font-mono bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+                                        1 SESSION TO DROP
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Progress Bar -->
+                            <div class="space-y-2 my-4">
+                                <div class="flex justify-between text-xs font-mono">
+                                    <span class="text-slate-400">Current Today: <strong id="dash-today-mins" class="text-cyan-400">0 min</strong></span>
+                                    <span class="text-slate-400">Goal Zone: <strong class="text-slate-200">60-90 min</strong></span>
+                                </div>
+                                <div class="w-full h-3 bg-slate-900 rounded-full overflow-hidden p-0.5 border border-slate-800">
+                                    <div id="dash-goal-bar" class="h-full bg-gradient-to-r from-cyan-400 via-purple-500 to-emerald-400 rounded-full transition-all duration-700" style="width: 0%;"></div>
+                                </div>
+                            </div>
+
+                            <p class="text-[11px] text-slate-400 leading-relaxed bg-slate-900/50 p-3 rounded-xl border border-slate-800/80">
+                                👟 Every completed study session guarantees Focus Miles + progress toward unlocking your next iconic sneaker!
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Priority Homework Quick List -->
+                <div class="glass-panel rounded-3xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <i data-lucide="list-todo" class="w-5 h-5 text-cyan-400"></i>
+                            <h3 class="tech-font text-lg font-bold">Top Priority Homework</h3>
+                        </div>
+                        <button onclick="switchTab('tasks')" class="text-xs text-cyan-400 hover:underline">Manage All Tasks →</button>
+                    </div>
+
+                    <div id="dash-quick-tasks" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Dynamic task cards -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: HOMEWORK PLANNER -->
+            <section id="tab-tasks" class="tab-content space-y-6 hidden">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="tech-font text-2xl font-bold">Homework & Task Organizer</h3>
+                        <p class="text-xs text-slate-400">Break your assignments into quick focused study sprints.</p>
+                    </div>
+
+                    <button onclick="toggleAddTaskModal(true)" class="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-semibold text-sm tech-font tracking-wide flex items-center space-x-2 shadow-neon-cyan transition">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>NEW ASSIGNMENT</span>
+                    </button>
+                </div>
+
+                <!-- Task Filter Bar -->
+                <div class="flex items-center space-x-2 border-b border-slate-800 pb-3">
+                    <button onclick="filterTasks('all')" class="task-filter-btn px-4 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-cyan-400" data-filter="all">All Homework</button>
+                    <button onclick="filterTasks('pending')" class="task-filter-btn px-4 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200" data-filter="pending">Pending</button>
+                    <button onclick="filterTasks('completed')" class="task-filter-btn px-4 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200" data-filter="completed">Completed</button>
+                </div>
+
+                <div id="full-task-list" class="space-y-3">
+                    <!-- Tasks rendered here -->
+                </div>
+            </section>
+
+            <!-- TAB 3: SNEAKER VAULT -->
+            <section id="tab-vault" class="tab-content space-y-6 hidden">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="tech-font text-2xl font-bold">The Sneaker Vault</h3>
+                        <p class="text-xs text-slate-400">Study off your phone to unlock real iconic kicks!</p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <div class="px-4 py-2 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center space-x-2">
+                            <i data-lucide="coins" class="w-4 h-4 text-amber-400"></i>
+                            <span class="text-xs font-mono text-slate-300">Balance: <strong id="vault-miles-balance" class="text-amber-400 font-bold">0 FM</strong></span>
+                        </div>
+                        <button onclick="switchTab('trade')" class="px-4 py-2 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/40 text-purple-300 text-xs font-bold tech-font tracking-wide flex items-center space-x-1">
+                            <i data-lucide="arrow-left-right" class="w-3.5 h-3.5"></i>
+                            <span>TRADE DESK</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Shoe Grid -->
+                <div id="sneaker-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Dynamic Sneakers -->
+                </div>
+            </section>
+
+            <!-- TAB 4: SNEAKER TRADE CENTER -->
+            <section id="tab-trade" class="tab-content space-y-6 hidden">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="tech-font text-2xl font-bold">Sneaker Trade Desk & Marketplace</h3>
+                        <p class="text-xs text-slate-400">Trade duplicate or extra shoes with NPC Sneakerheads or cash out for Focus Miles!</p>
+                    </div>
+                    <div class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 flex items-center space-x-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                        <span class="text-xs font-mono text-slate-300">LIVE MARKET OFFERS</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Active NPC Trade Offers -->
+                    <div class="lg:col-span-8 space-y-4">
+                        <h4 class="tech-font text-lg font-bold text-cyan-400">Collector Trade Offers</h4>
+                        <div id="trade-offers-list" class="space-y-4">
+                            <!-- Dynamic Trade Offers -->
+                        </div>
+                    </div>
+
+                    <!-- Quick Liquidation / Sell for FM -->
+                    <div class="lg:col-span-4 glass-panel rounded-3xl p-6 flex flex-col justify-between">
+                        <div>
+                            <h4 class="tech-font text-lg font-bold mb-2">Trade-In for Focus Miles</h4>
+                            <p class="text-xs text-slate-400 mb-4">Sell unlocked kicks back to the marketplace to get instant Focus Miles for new drops.</p>
+                            
+                            <div id="trade-inventory-list" class="space-y-3 max-h-80 overflow-y-auto pr-1">
+                                <!-- Dynamic shoe trade-in items -->
+                            </div>
+                        </div>
+
+                        <div class="mt-4 p-3 bg-purple-950/30 border border-purple-500/20 rounded-xl text-xs text-purple-200">
+                            💡 <strong>Trader Tip:</strong> Studying daily gives higher tier drops that yield 2x-3x higher trade values!
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: STUDY STATS & ANALYTICS -->
+            <section id="tab-stats" class="tab-content space-y-6 hidden">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="tech-font text-2xl font-bold">Study Analytics & Target Tracker</h3>
+                        <p class="text-xs text-slate-400">Monitor your daily 1.0h–1.5h goal adherence and focus habit purity.</p>
+                    </div>
+                </div>
+
+                <!-- Stat Counter Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="glass-panel p-5 rounded-2xl border-l-4 border-l-cyan-500">
+                        <span class="text-xs font-mono text-slate-400 block uppercase">Weekly Study Total</span>
+                        <span id="stat-weekly-total" class="tech-font text-2xl font-bold text-cyan-400 mt-1 block">0.0 Hours</span>
+                        <span class="text-[10px] text-slate-500">Target: 7 to 10.5 Hours/wk</span>
+                    </div>
+
+                    <div class="glass-panel p-5 rounded-2xl border-l-4 border-l-purple-500">
+                        <span class="text-xs font-mono text-slate-400 block uppercase">Daily Goal Met</span>
+                        <span id="stat-goal-met-days" class="tech-font text-2xl font-bold text-purple-400 mt-1 block">0 / 7 Days</span>
+                        <span class="text-[10px] text-slate-500">In 60m - 90m ideal zone</span>
+                    </div>
+
+                    <div class="glass-panel p-5 rounded-2xl border-l-4 border-l-emerald-500">
+                        <span class="text-xs font-mono text-slate-400 block uppercase">Phone Distractions</span>
+                        <span class="tech-font text-2xl font-bold text-emerald-400 mt-1 block">0 Interruptions</span>
+                        <span class="text-[10px] text-slate-500">100% Off-Phone Purity</span>
+                    </div>
+
+                    <div class="glass-panel p-5 rounded-2xl border-l-4 border-l-amber-500">
+                        <span class="text-xs font-mono text-slate-400 block uppercase">Shoe Miles Earned</span>
+                        <span id="stat-miles-total" class="tech-font text-2xl font-bold text-amber-400 mt-1 block">0 FM</span>
+                        <span class="text-[10px] text-slate-500">Earned through deep work</span>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div class="lg:col-span-8 glass-panel rounded-3xl p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="tech-font text-lg font-bold">Weekly Study Hours vs Target Band</h4>
+                            <div class="flex items-center space-x-4 text-xs font-mono">
+                                <span class="flex items-center space-x-1">
+                                    <span class="w-3 h-3 bg-cyan-500 rounded-sm"></span>
+                                    <span class="text-slate-400">Actual Mins</span>
+                                </span>
+                                <span class="flex items-center space-x-1">
+                                    <span class="w-3 h-3 bg-purple-500/40 rounded-sm"></span>
+                                    <span class="text-slate-400">Target Range (60-90m)</span>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="h-64 relative">
+                            <canvas id="weeklyChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-4 glass-panel rounded-3xl p-6 flex flex-col justify-between">
+                        <div>
+                            <h4 class="tech-font text-lg font-bold mb-3">Optimal Daily Balance</h4>
+                            <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+                                Studying <strong class="text-cyan-400">1 hour to 1.5 hours</strong> daily optimizes memory retention without causing phone addiction burnout.
+                            </p>
+
+                            <div class="space-y-3">
+                                <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                                    <div class="flex justify-between text-xs font-semibold mb-1">
+                                        <span class="text-cyan-300">Minimum (60 mins)</span>
+                                        <span class="text-slate-400">Daily Homework</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-400">Covers essential subject review & math exercises.</p>
+                                </div>
+
+                                <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                                    <div class="flex justify-between text-xs font-semibold mb-1">
+                                        <span class="text-purple-300">Maximum (90 mins)</span>
+                                        <span class="text-slate-400">Deep Prep</span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-400">Ideal for major exam review & complex projects.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 p-3 bg-emerald-950/30 border border-emerald-500/20 rounded-xl flex items-center space-x-3">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-emerald-400 shrink-0"></i>
+                            <span class="text-xs text-emerald-200">Current habit rating: EXCELLENT</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Modal: Add New Homework Task -->
+    <div id="add-task-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="glass-panel-glow w-full max-w-md rounded-3xl p-6 space-y-5 relative">
+            <button onclick="toggleAddTaskModal(false)" class="absolute top-5 right-5 text-slate-400 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="flex items-center space-x-3">
+                <div class="p-2 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+                    <i data-lucide="book-open" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="tech-font text-lg font-bold">Add Homework Task</h3>
+                    <p class="text-xs text-slate-400">Enter assignment details and duration</p>
+                </div>
+            </div>
+
+            <form id="add-task-form" onsubmit="handleAddTask(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 mb-1">TASK / ASSIGNMENT TITLE</label>
+                    <input type="text" id="input-task-title" required placeholder="e.g. Math Chapter 4 Exercises" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-cyan-500">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-mono text-slate-400 mb-1">SUBJECT</label>
+                        <select id="input-task-subject" class="w-full px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-cyan-500">
+                            <option value="Math">Math</option>
+                            <option value="Science">Science</option>
+                            <option value="English">English</option>
+                            <option value="History">History</option>
+                            <option value="Language">Language</option>
+                            <option value="General">General</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-mono text-slate-400 mb-1">EST. TIME (MINS)</label>
+                        <input type="number" id="input-task-duration" required min="5" max="180" value="25" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-cyan-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 mb-1">IMPORTANCE LEVEL (L2 - L4)</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="priority" value="L2" checked class="peer hidden">
+                            <div class="py-2 text-center rounded-xl border border-slate-800 bg-slate-900 text-xs text-slate-400 peer-checked:border-cyan-500 peer-checked:bg-cyan-500/10 peer-checked:text-cyan-400 font-mono">L2 (Normal)</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="priority" value="L3" class="peer hidden">
+                            <div class="py-2 text-center rounded-xl border border-slate-800 bg-slate-900 text-xs text-slate-400 peer-checked:border-amber-500 peer-checked:bg-amber-500/10 peer-checked:text-amber-400 font-mono">L3 (High)</div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="priority" value="L4" class="peer hidden">
+                            <div class="py-2 text-center rounded-xl border border-slate-800 bg-slate-900 text-xs text-slate-400 peer-checked:border-rose-500 peer-checked:bg-rose-500/10 peer-checked:text-rose-400 font-mono font-bold">L4 (Critical)</div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-600 text-black font-bold tech-font tracking-wide shadow-neon-cyan hover:opacity-90 transition">
+                        ADD TO ORGANIZER
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Study Completion Shoe Unlock Pop-Up -->
+    <div id="unlock-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 hidden">
+        <div class="glass-panel-glow w-full max-w-md rounded-3xl p-8 space-y-6 text-center relative overflow-hidden">
+            <div class="absolute -top-20 -left-20 w-48 h-48 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-20 -right-20 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div>
+                <span class="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 text-xs font-mono uppercase tracking-widest border border-cyan-500/40">
+                    ⚡ STUDY DROP UNLOCKED!
+                </span>
+                <h3 id="modal-shoe-title" class="tech-font text-2xl font-bold mt-2 text-white">Kobe 6 Protro 'Grinch'</h3>
+                <p id="modal-shoe-subtitle" class="text-xs text-slate-400">Unlocked by completing your focus session!</p>
+            </div>
+
+            <!-- Unlock Graphic Display -->
+            <div class="relative py-6 bg-slate-950/80 rounded-2xl border border-slate-800 flex items-center justify-center h-48">
+                <div id="modal-shoe-svg" class="w-full h-full flex items-center justify-center animate-bounce">
+                    <!-- SVG render -->
+                </div>
+            </div>
+
+            <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 text-xs text-slate-300">
+                <span id="modal-shoe-reward" class="text-amber-400 font-bold block tech-font text-sm">+250 Focus Miles Earned!</span>
+                <span>You can now equip or trade this kick in the Sneaker Vault.</span>
+            </div>
+
+            <div class="flex space-x-3">
+                <button onclick="closeUnlockModal(); switchTab('vault')" class="flex-1 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 tech-font">
+                    VIEW VAULT
+                </button>
+                <button onclick="closeUnlockModal()" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-600 text-black font-bold text-xs tech-font shadow-neon-cyan">
+                    KEEP STUDYING
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const DAILY_TARGET_MINS = 75; // Recommended daily study (60m to 90m target)
+
+        function generateShoeSVG(id) {
+            switch(id) {
+                case 'aj1-chicago':
+                    return `
+                    <svg viewBox="0 0 200 120" class="w-full h-full max-h-36 drop-shadow-[0_10px_15px_rgba(225,29,72,0.3)]">
+                        <path d="M 20,95 L 180,95 Q 185,95 183,90 L 178,82 L 20,82 Z" fill="#ffffff" />
+                        <path d="M 20,95 L 180,95 L 178,100 L 22,100 Z" fill="#dc2626" />
+                        <path d="M 30,82 L 175,82 Q 180,70 165,65 L 140,65 L 110,30 Q 100,20 85,25 L 50,45 L 30,65 Z" fill="#dc2626" />
+                        <path d="M 50,82 L 125,82 L 130,65 L 75,60 Z" fill="#f8fafc" />
+                        <path d="M 130,82 L 170,82 Q 173,75 160,72 L 135,72 Z" fill="#f8fafc" />
+                        <path d="M 85,25 L 50,45 L 45,65 L 60,65 Q 85,45 85,25 Z" fill="#0f172a" />
+                        <path d="M 60,78 Q 95,75 145,58 Q 115,68 80,70 Z" fill="#0f172a" />
+                        <line x1="80" y1="35" x2="95" y2="48" stroke="#0f172a" stroke-width="2.5" />
+                        <line x1="85" y1="42" x2="102" y2="54" stroke="#0f172a" stroke-width="2.5" />
+                        <line x1="90" y1="50" x2="110" y2="60" stroke="#0f172a" stroke-width="2.5" />
+                    </svg>`;
+
+                case 'ts-mocha':
+                    return `
+                    <svg viewBox="0 0 200 120" class="w-full h-full max-h-36 drop-shadow-[0_10px_15px_rgba(217,119,6,0.25)]">
+                        <path d="M 20,95 L 180,95 Q 185,95 183,90 L 178,82 L 20,82 Z" fill="#fef3c7" />
+                        <path d="M 20,95 L 180,95 L 178,100 L 22,100 Z" fill="#78350f" />
+                        <path d="M 30,82 L 175,82 Q 180,72 165,68 L 140,68 L 110,45 Q 100,40 85,42 L 50,55 L 30,70 Z" fill="#78350f" />
+                        <path d="M 50,82 L 125,82 L 130,68 L 75,62 Z" fill="#fef3c7" />
+                        <path d="M 165,72 Q 110,68 55,80 Q 105,82 145,82 Z" fill="#ffffff" />
+                        <circle cx="82" cy="48" r="2" fill="#dc2626" />
+                    </svg>`;
+
+                case 'kobe-grinch':
+                    return `
+                    <svg viewBox="0 0 200 120" class="w-full h-full max-h-36 drop-shadow-[0_10px_15px_rgba(132,204,22,0.4)]">
+                        <path d="M 18,95 L 182,95 Q 188,92 180,84 L 172,78 L 20,78 Z" fill="#84cc16" />
+                        <path d="M 18,95 L 182,95 L 180,100 L 20,100 Z" fill="#65a30d" />
+                        <path d="M 25,78 L 172,78 Q 178,65 160,60 L 130,55 L 105,40 Q 95,35 85,38 L 55,50 L 25,65 Z" fill="#a3e635" />
+                        <path d="M 60,72 Q 100,60 145,55 Q 110,68 75,74 Z" fill="#09090b" />
+                        <path d="M 92,36 L 96,28 L 100,36 L 96,40 Z" fill="#dc2626" />
+                        <circle cx="65" cy="60" r="1.5" fill="#4d7c0f" />
+                        <circle cx="80" cy="55" r="1.5" fill="#4d7c0f" />
+                        <circle cx="100" cy="52" r="1.5" fill="#4d7c0f" />
+                        <circle cx="120" cy="62" r="1.5" fill="#4d7c0f" />
+                    </svg>`;
+
+                case 'yeezy-zebra':
+                    return `
+                    <svg viewBox="0 0 200 120" class="w-full h-full max-h-36 drop-shadow-[0_10px_15px_rgba(255,255,255,0.2)]">
+                        <path d="M 15,96 Q 100,104 185,96 L 180,80 L 20,80 Z" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" />
+                        <path d="M 25,80 Q 90,75 175,80 Q 180,60 140,48 L 110,38 Q 90,32 75,45 L 40,60 Z" fill="#ffffff" />
+                        <path d="M 45,75 L 55,62 M 65,78 L 78,55 M 90,72 L 102,48 M 120,70 L 132,52 M 145,75 L 155,60" stroke="#09090b" stroke-width="3" stroke-linecap="round" />
+                        <text x="80" y="68" font-family="'Chakra Petch', sans-serif" font-size="7" font-weight="bold" fill="#dc2626">SPLY-350</text>
+                    </svg>`;
+
+                case 'off-presto':
+                    return `
+                    <svg viewBox="0 0 200 120" class="w-full h-full max-h-36 drop-shadow-[0_10px_15px_rgba(168,85,247,0.3)]">
+                        <path d="M 20,95 L 180,95 L 175,82 L 22,82 Z" fill="#1e293b" />
+                        <path d="M 28,82 L 172,82 Q 178,65 150,55 L 115,45 L 85,42 L 45,60 Z" fill="#09090b" />
+                        <path d="M 75,82 L 85,50 L 95,82 M 110,82 L 120,52 L 130,82" stroke="#94a3b8" stroke-width="2.5" fill="none" opacity="0.6" />
+                        <path d="M 55,75 Q 100,60 140,65" stroke="#ffffff" stroke-width="4" fill="none" />
+                        <rect x="135" y="62" width="5" height="5" fill="#f97316" />
+                        <path d="M 80,45 L 70,30 L 65,35 Z" fill="#f97316" />
+                    </svg>`;
+
+                case 'aj4-bred':
+                    return `
+                    <svg viewBox="0 0 200 120" class="w-full h-full max-h-36 drop-shadow-[0_10px_15px_rgba(220,38,38,0.25)]">
+                        <path d="M 20,95 L 180,95 L 175,82 L 22,82 Z" fill="#f8fafc" />
+                        <rect x="130" y="85" width="22" height="7" rx="2" fill="#09090b" />
+                        <rect x="133" y="87" width="16" height="3" fill="#ef4444" />
+                        <path d="M 20,95 L 180,95 L 178,100 L 22,100 Z" fill="#dc2626" />
+                        <path d="M 28,82 L 172,82 Q 178,65 155,60 L 125,55 L 100,32 Q 90,25 78,32 L 50,55 Z" fill="#18181b" />
+                        <polygon points="90,45 110,48 100,68" fill="#94a3b8" />
+                        <rect x="65" y="60" width="20" height="12" fill="#3f3f46" rx="2" />
+                    </svg>`;
+
+                case 'nb-990v6':
+                default:
+                    return `
+                    <svg viewBox="0 0 200 120" class="w-full h-full max-h-36 drop-shadow-[0_10px_15px_rgba(148,163,184,0.3)]">
+                        <path d="M 20,95 L 180,95 L 175,80 L 22,80 Z" fill="#e2e8f0" />
+                        <path d="M 28,80 L 172,80 Q 178,68 155,62 L 120,55 L 90,40 L 50,60 Z" fill="#64748b" />
+                        <path d="M 60,80 L 120,80 L 110,65 L 75,62 Z" fill="#94a3b8" />
+                        <text x="82" y="70" font-family="'Chakra Petch', sans-serif" font-size="22" font-weight="bold" fill="#ffffff" stroke="#334155" stroke-width="1">N</text>
+                    </svg>`;
+            }
+        }
+
+        const SNEAKERS = [
+            {
+                id: 'aj1-chicago',
+                name: "Air Jordan 1 High 'Chicago'",
+                brand: "Nike",
+                tier: "LEGENDARY",
+                boostPercent: 15,
+                cost: 0,
+                unlocked: true,
+                description: "The classic grail in iconic Red/White/Black. Gives +15% Focus Miles."
+            },
+            {
+                id: 'ts-mocha',
+                name: "Travis Scott x AJ1 Low 'Reverse Mocha'",
+                brand: "Nike / Cactus Jack",
+                tier: "HYPEREVAL",
+                boostPercent: 25,
+                cost: 200,
+                unlocked: false,
+                description: "Reverse sail swoosh with mocha brown suede. +25% Focus Miles."
+            },
+            {
+                id: 'kobe-grinch',
+                name: "Kobe 6 Protro 'Grinch'",
+                brand: "Nike",
+                tier: "MAMBA",
+                boostPercent: 30,
+                cost: 350,
+                unlocked: false,
+                description: "Lime green mamba scale pattern for maximum study focus. +30% Focus Miles."
+            },
+            {
+                id: 'yeezy-zebra',
+                name: "Yeezy Boost 350 V2 'Zebra'",
+                brand: "Adidas",
+                tier: "RARE",
+                boostPercent: 10,
+                cost: 120,
+                unlocked: false,
+                description: "White & black zebra primeknit knit with red SPLY-350 text. +10% Focus Miles."
+            },
+            {
+                id: 'off-presto',
+                name: "Off-White x Nike Air Presto",
+                brand: "Off-White",
+                tier: "GRAIL",
+                boostPercent: 35,
+                cost: 500,
+                unlocked: false,
+                description: "Virgil Abloh deconstructed black upper with orange tab detail. +35% Focus Miles."
+            },
+            {
+                id: 'aj4-bred',
+                name: "Air Jordan 4 Retro 'Bred'",
+                brand: "Nike",
+                tier: "ICONIC",
+                boostPercent: 20,
+                cost: 280,
+                unlocked: false,
+                description: "Black nubuck upper with visible Air bubble and Cement grey wings. +20% Focus Miles."
+            },
+            {
+                id: 'nb-990v6',
+                name: "New Balance 990v6 'Grey'",
+                brand: "New Balance",
+                tier: "ESSENTIAL",
+                boostPercent: 5,
+                cost: 80,
+                unlocked: false,
+                description: "Classic Boston grey mesh & suede with prominent N logo. +5% Focus Miles."
+            }
+        ];
+
+        let appState = {
+            todayMins: 0,
+            lastActiveDate: new Date().toISOString().split('T')[0],
+            streakDays: 0,
+            miles: 0,
+            activeShoeId: 'aj1-chicago',
+            shoeDistanceMap: { 'aj1-chicago': 0 },
+            sessionCount: 0,
+            tasks: [],
+            weeklyMins: [0, 0, 0, 0, 0, 0, 0]
+        };
+
+        let timerPresetMins = 25;
+        let timerSecondsLeft = 25 * 60;
+        let timerInterval = null;
+        let isTimerRunning = false;
+        let activeTaskIdForSession = null;
+        let currentTheme = localStorage.getItem('kickin_theme') || 'dark';
+
+        function applyTheme(theme) {
+            currentTheme = theme;
+            localStorage.setItem('kickin_theme', theme);
+            const htmlEl = document.documentElement;
+            const toggleIcon = document.getElementById('theme-toggle-icon');
+            const toggleText = document.getElementById('theme-toggle-text');
+
+            if (theme === 'dark') {
+                htmlEl.classList.add('dark');
+                if (toggleIcon) toggleIcon.setAttribute('data-lucide', 'sun');
+                if (toggleText) toggleText.innerText = 'Dark Mode';
+            } else {
+                htmlEl.classList.remove('dark');
+                if (toggleIcon) toggleIcon.setAttribute('data-lucide', 'moon');
+                if (toggleText) toggleText.innerText = 'Light Mode';
+            }
+
+            lucide.createIcons();
+            updateWeeklyChartTheme();
+        }
+
+        function toggleTheme() {
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
+            AudioFX.playBeep(currentTheme === 'dark' ? 800 : 500, 0.1);
+        }
+
+        const AudioFX = {
+            ctx: null,
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            },
+            playBeep(freq = 600, duration = 0.15) {
+                try {
+                    this.init();
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                    gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                } catch(e){}
+            },
+            playSuccess() {
+                try {
+                    this.init();
+                    [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
+                        setTimeout(() => this.playBeep(f, 0.2), i * 100);
+                    });
+                } catch(e){}
+            }
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            loadStateFromLocalStorage();
+            applyTheme(currentTheme);
+            renderAll();
+            initWeeklyChart();
+        });
+
+        function loadStateFromLocalStorage() {
+            const saved = localStorage.getItem('kickin_app_state_v4');
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    appState = { ...appState, ...parsed };
+
+                    if (appState.lastActiveDate !== todayStr) {
+                        const lastDate = new Date(appState.lastActiveDate);
+                        const todayDate = new Date(todayStr);
+                        const diffDays = Math.round((todayDate - lastDate) / (1000 * 60 * 60 * 24));
+
+                        if (diffDays > 1 && appState.todayMins < DAILY_TARGET_MINS) {
+                            appState.streakDays = 0;
+                        }
+
+                        appState.todayMins = 0;
+                        appState.lastActiveDate = todayStr;
+                        saveStateToLocalStorage();
+                    }
+                } catch(e){}
+            } else {
+                appState.lastActiveDate = todayStr;
+                appState.todayMins = 0;
+                saveStateToLocalStorage();
+            }
+        }
+
+        function resetDailyProgress() {
+            appState.todayMins = 0;
+            appState.lastActiveDate = new Date().toISOString().split('T')[0];
+            saveStateToLocalStorage();
+            renderAll();
+        }
+
+        function saveStateToLocalStorage() {
+            localStorage.setItem('kickin_app_state_v4', JSON.stringify(appState));
+        }
+
+        function renderAll() {
+            renderHeaderStats();
+            renderActiveShoe();
+            renderTasks();
+            renderSneakerVault();
+            renderTradeCenter();
+            updateTimerDisplay();
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-cyan-400', 'bg-cyan-500/10', 'border', 'border-cyan-500/30');
+                btn.classList.add('text-slate-400');
+            });
+
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-400');
+                activeBtn.classList.add('text-cyan-400', 'bg-cyan-500/10', 'border', 'border-cyan-500/30');
+            }
+
+            const pageTitles = {
+                'dashboard': 'FOCUS STUDIO',
+                'tasks': 'HOMEWORK ORGANIZER',
+                'vault': 'SNEAKER VAULT',
+                'trade': 'SNEAKER TRADE CENTER',
+                'stats': 'STUDY STATS & TARGETS'
+            };
+            document.getElementById('page-title').innerText = pageTitles[tabId] || 'KICK-IN FOCUS';
+
+            if (tabId === 'stats') {
+                updateWeeklyChart();
+            }
+        }
+
+        function setTimerPreset(mins) {
+            if (isTimerRunning) return;
+            timerPresetMins = mins;
+            timerSecondsLeft = mins * 60;
+
+            document.querySelectorAll('.timer-mode-btn').forEach(btn => {
+                if (parseInt(btn.dataset.mins) === mins) {
+                    btn.className = 'timer-mode-btn px-3 py-1.5 rounded-lg font-medium transition text-cyan-400 bg-cyan-500/20';
+                } else {
+                    btn.className = 'timer-mode-btn px-3 py-1.5 rounded-lg font-medium transition text-slate-400 hover:text-slate-200';
+                }
+            });
+
+            updateTimerDisplay();
+        }
+
+        function toggleTimer() {
+            if (isTimerRunning) {
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+                document.getElementById('start-btn-text').innerText = 'RESUME FOCUS';
+                document.getElementById('timer-status-text').innerText = 'PAUSED';
+                AudioFX.playBeep(400, 0.1);
+            } else {
+                AudioFX.playBeep(800, 0.2);
+                isTimerRunning = true;
+                document.getElementById('start-btn-text').innerText = 'LOCKING IN... (PAUSE)';
+                document.getElementById('timer-status-text').innerText = '⚡ PHONE OFF // IN FOCUS ZONE';
+
+                timerInterval = setInterval(() => {
+                    if (timerSecondsLeft > 0) {
+                        timerSecondsLeft--;
+                        updateTimerDisplay();
+                    } else {
+                        completeTimerSession();
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            timerSecondsLeft = timerPresetMins * 60;
+            document.getElementById('start-btn-text').innerText = 'LOCK IN NOW';
+            document.getElementById('timer-status-text').innerText = 'Ready to Lock In';
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timerSecondsLeft / 60);
+            const secs = timerSecondsLeft % 60;
+            const str = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            document.getElementById('timer-display').innerText = str;
+
+            const totalSecs = timerPresetMins * 60;
+            const fraction = timerSecondsLeft / totalSecs;
+            const circumference = 276.46;
+            const offset = circumference - (fraction * circumference);
+            document.getElementById('timer-progress-circle').style.strokeDashoffset = offset;
+        }
+
+        function completeTimerSession() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            AudioFX.playSuccess();
+
+            const minsCompleted = timerPresetMins;
+            appState.todayMins += minsCompleted;
+            appState.sessionCount += 1;
+
+            const activeShoe = SNEAKERS.find(s => s.id === appState.activeShoeId) || SNEAKERS[0];
+            const multiplier = 1 + (activeShoe.boostPercent / 100);
+            const earnedMiles = Math.round(minsCompleted * multiplier);
+
+            appState.miles += earnedMiles;
+            appState.shoeDistanceMap[activeShoe.id] = (appState.shoeDistanceMap[activeShoe.id] || 0) + (minsCompleted / 10);
+            appState.weeklyMins[4] += minsCompleted;
+
+            if (activeTaskIdForSession) {
+                const t = appState.tasks.find(x => x.id === activeTaskIdForSession);
+                if (t) t.completed = true;
+                activeTaskIdForSession = null;
+                document.getElementById('active-task-badge').classList.add('hidden');
+            }
+
+            const lockedShoes = SNEAKERS.filter(s => !s.unlocked);
+            let newlyUnlockedShoe = null;
+
+            if (lockedShoes.length > 0) {
+                newlyUnlockedShoe = lockedShoes[0];
+                newlyUnlockedShoe.unlocked = true;
+            } else {
+                newlyUnlockedShoe = SNEAKERS[Math.floor(Math.random() * SNEAKERS.length)];
+            }
+
+            saveStateToLocalStorage();
+            renderAll();
+            resetTimer();
+
+            triggerUnlockModal(newlyUnlockedShoe, earnedMiles);
+        }
+
+        function triggerUnlockModal(shoe, miles) {
+            document.getElementById('modal-shoe-title').innerText = shoe.name;
+            document.getElementById('modal-shoe-subtitle').innerText = `${shoe.brand} • ${shoe.tier} TIER`;
+            document.getElementById('modal-shoe-svg').innerHTML = generateShoeSVG(shoe.id);
+            document.getElementById('modal-shoe-reward').innerText = `+${miles} Focus Miles & New Kick Unlocked!`;
+            document.getElementById('unlock-modal').classList.remove('hidden');
+        }
+
+        function closeUnlockModal() {
+            document.getElementById('unlock-modal').classList.add('hidden');
+        }
+
+        function renderSneakerVault() {
+            const container = document.getElementById('sneaker-grid');
+            if (!container) return;
+
+            document.getElementById('vault-miles-balance').innerText = `${appState.miles} FM`;
+            const unlockedCount = SNEAKERS.filter(s => s.unlocked).length;
+            document.getElementById('nav-unlocked-badge').innerText = `${unlockedCount} / ${SNEAKERS.length} Unlocked`;
+
+            container.innerHTML = SNEAKERS.map(s => {
+                const isEquipped = appState.activeShoeId === s.id;
+                const canAfford = appState.miles >= s.cost;
+                const distWalked = (appState.shoeDistanceMap[s.id] || 0).toFixed(1);
+
+                return `
+                    <div class="glass-panel rounded-3xl p-5 flex flex-col justify-between relative overflow-hidden transition duration-300 hover:border-slate-700 ${isEquipped ? 'border-cyan-500/50 shadow-neon-cyan' : ''}">
+                        ${isEquipped ? `
+                            <div class="absolute top-3 right-3 px-2.5 py-0.5 rounded-full bg-cyan-500 text-black font-bold text-[10px] font-mono tracking-wider">
+                                EQUIPPED
+                            </div>
+                        ` : ''}
+
+                        <div>
+                            <span class="text-[10px] font-mono text-cyan-400 block uppercase tracking-widest">${s.brand}</span>
+                            <h4 class="tech-font font-bold text-base text-slate-100">${s.name}</h4>
+
+                            <div class="my-4 h-36 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-center justify-center p-3 relative group">
+                                ${generateShoeSVG(s.id)}
+                                <span class="absolute bottom-2 left-2 text-[9px] font-mono text-slate-400 bg-slate-950/80 px-2 py-0.5 rounded">
+                                    TIER: ${s.tier}
+                                </span>
+                            </div>
+
+                            <p class="text-xs text-slate-400 leading-relaxed">${s.description}</p>
+                        </div>
+
+                        <div class="mt-5 pt-4 border-t border-slate-800 space-y-3">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="text-slate-400">Focus Miles Walked:</span>
+                                <span class="font-mono text-purple-400 font-semibold">${distWalked} FM</span>
+                            </div>
+
+                            ${s.unlocked ? `
+                                <button onclick="equipShoe('${s.id}')" ${isEquipped ? 'disabled' : ''} class="w-full py-2.5 rounded-xl text-xs font-bold tech-font tracking-wider transition ${
+                                    isEquipped ? 'bg-slate-800 text-slate-500 cursor-default' : 'bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 border border-cyan-500/40'
+                                }">
+                                    ${isEquipped ? 'CURRENTLY WEARING' : 'EQUIP FOR FOCUS'}
+                                </button>
+                            ` : `
+                                <button onclick="unlockShoe('${s.id}')" ${!canAfford ? 'disabled' : ''} class="w-full py-2.5 rounded-xl text-xs font-bold tech-font tracking-wider transition ${
+                                    canAfford ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-black shadow-lg hover:opacity-90' : 'bg-slate-900 text-slate-600 border border-slate-800 cursor-not-allowed'
+                                }">
+                                    ${canAfford ? `UNLOCK FOR ${s.cost} FM` : `STUDY TO UNLOCK OR ${s.cost} FM`}
+                                </button>
+                            `}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function equipShoe(shoeId) {
+            appState.activeShoeId = shoeId;
+            saveStateToLocalStorage();
+            AudioFX.playBeep(700, 0.15);
+            renderAll();
+        }
+
+        function unlockShoe(shoeId) {
+            const shoe = SNEAKERS.find(s => s.id === shoeId);
+            if (shoe && !shoe.unlocked && appState.miles >= shoe.cost) {
+                appState.miles -= shoe.cost;
+                shoe.unlocked = true;
+                appState.activeShoeId = shoe.id;
+                AudioFX.playSuccess();
+                saveStateToLocalStorage();
+                renderAll();
+            }
+        }
+
+        function renderActiveShoe() {
+            const activeShoe = SNEAKERS.find(s => s.id === appState.activeShoeId) || SNEAKERS[0];
+            const dist = (appState.shoeDistanceMap[activeShoe.id] || 0).toFixed(1);
+
+            document.getElementById('sidebar-active-shoe-svg').innerHTML = generateShoeSVG(activeShoe.id);
+            document.getElementById('sidebar-active-shoe-name').innerText = activeShoe.name;
+            document.getElementById('sidebar-shoe-buff').innerText = `+${activeShoe.boostPercent}% Focus Miles`;
+
+            document.getElementById('dash-shoe-name').innerText = activeShoe.name;
+            document.getElementById('dash-shoe-svg-container').innerHTML = generateShoeSVG(activeShoe.id);
+            document.getElementById('dash-shoe-tier').innerText = `TIER: ${activeShoe.tier}`;
+            document.getElementById('dash-shoe-boost').innerText = `+${activeShoe.boostPercent}% Miles`;
+            document.getElementById('dash-shoe-dist').innerText = `${dist} Miles`;
+        }
+
+        function renderTradeCenter() {
+            const container = document.getElementById('trade-offers-list');
+            const invContainer = document.getElementById('trade-inventory-list');
+            if (!container || !invContainer) return;
+
+            const npcTrades = [
+                {
+                    trader: "SoleCollector_SF",
+                    offerShoe: SNEAKERS.find(s => s.id === 'kobe-grinch'),
+                    wantShoe: SNEAKERS.find(s => s.id === 'aj1-chicago'),
+                    addedMiles: 100,
+                    note: "Looking for iconic AJ1 high Chicago OG."
+                },
+                {
+                    trader: "KickKing_NY",
+                    offerShoe: SNEAKERS.find(s => s.id === 'off-presto'),
+                    wantShoe: SNEAKERS.find(s => s.id === 'ts-mocha'),
+                    addedMiles: 150,
+                    note: "Trading my Virgil Abloh Presto for Reverse Mocha!"
+                }
+            ];
+
+            container.innerHTML = npcTrades.map(trd => `
+                <div class="glass-panel rounded-3xl p-5 flex flex-col md:flex-row items-center justify-between gap-4 border border-slate-800">
+                    <div class="flex items-center space-x-4 w-full md:w-auto">
+                        <div class="w-24 h-20 bg-slate-900 rounded-xl border border-slate-800 p-1 flex items-center justify-center">
+                            ${generateShoeSVG(trd.offerShoe.id)}
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-mono text-purple-400">TRADER: @${trd.trader}</span>
+                            <h5 class="tech-font font-bold text-sm text-slate-100">${trd.offerShoe.name}</h5>
+                            <p class="text-[11px] text-slate-400">${trd.note}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-3 w-full md:w-auto justify-end">
+                        <div class="text-right text-xs">
+                            <span class="text-slate-400 block text-[10px]">THEY WANT:</span>
+                            <span class="font-semibold text-cyan-400">${trd.wantShoe.name}</span>
+                        </div>
+                        <button onclick="executeNPCTrade('${trd.offerShoe.id}', '${trd.wantShoe.id}', ${trd.addedMiles})" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-cyan-500 text-black font-bold text-xs tech-font tracking-wider shadow-neon-purple hover:opacity-90">
+                            ACCEPT TRADE
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            const unlockedList = SNEAKERS.filter(s => s.unlocked && s.id !== appState.activeShoeId);
+            if (unlockedList.length === 0) {
+                invContainer.innerHTML = `<p class="text-xs text-slate-500 py-4 text-center">No spare unlocked kicks to sell. Unlock more through studying!</p>`;
+            } else {
+                invContainer.innerHTML = unlockedList.map(s => `
+                    <div class="p-3 bg-slate-900/80 border border-slate-800 rounded-xl flex items-center justify-between">
+                        <div>
+                            <h6 class="text-xs font-semibold text-slate-200">${s.name}</h6>
+                            <span class="text-[10px] font-mono text-amber-400">+120 FM Trade Value</span>
+                        </div>
+                        <button onclick="sellShoeForMiles('${s.id}', 120)" class="px-3 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 text-xs font-medium">
+                            Sell
+                        </button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function executeNPCTrade(giveId, wantId, bonusMiles) {
+            const wantShoe = SNEAKERS.find(s => s.id === wantId);
+            const giveShoe = SNEAKERS.find(s => s.id === giveId);
+
+            if (!wantShoe || !wantShoe.unlocked) {
+                const msgBox = document.createElement('div');
+                msgBox.className = 'fixed bottom-6 right-6 bg-slate-900 border border-amber-500/50 text-amber-300 p-4 rounded-xl text-xs z-50 shadow-xl';
+                msgBox.innerText = `⚠️ You need to unlock ${wantShoe ? wantShoe.name : 'the required shoe'} first to make this trade!`;
+                document.body.appendChild(msgBox);
+                setTimeout(() => msgBox.remove(), 4000);
+                return;
+            }
+
+            giveShoe.unlocked = true;
+            appState.miles += bonusMiles;
+            AudioFX.playSuccess();
+            saveStateToLocalStorage();
+            renderAll();
+        }
+
+        function sellShoeForMiles(shoeId, value) {
+            const shoe = SNEAKERS.find(s => s.id === shoeId);
+            if (shoe) {
+                shoe.unlocked = false;
+                appState.miles += value;
+                AudioFX.playBeep(900, 0.2);
+                saveStateToLocalStorage();
+                renderAll();
+            }
+        }
+
+        let currentTaskFilter = 'all';
+
+        function renderTasks() {
+            const pendingTasks = appState.tasks.filter(t => !t.completed);
+            document.getElementById('nav-pending-count').innerText = pendingTasks.length;
+
+            const dashQuickContainer = document.getElementById('dash-quick-tasks');
+            if (dashQuickContainer) {
+                const topTasks = appState.tasks.slice(0, 3);
+                if (topTasks.length === 0) {
+                    dashQuickContainer.innerHTML = `<div class="col-span-3 text-center text-xs text-slate-500 py-6 bg-slate-900/40 rounded-2xl border border-dashed border-slate-800">No assignments logged yet. Click "+ NEW ASSIGNMENT" to get started!</div>`;
+                } else {
+                    dashQuickContainer.innerHTML = topTasks.map(t => `
+                        <div class="p-4 rounded-2xl bg-slate-900/80 border ${t.completed ? 'border-emerald-500/30' : 'border-slate-800'} flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between text-[10px] font-mono mb-1">
+                                    <span class="px-2 py-0.5 rounded bg-slate-800 text-cyan-300">${t.subject}</span>
+                                    <span class="${t.priority === 'L4' ? 'text-rose-400 font-bold' : t.priority === 'L3' ? 'text-amber-400' : 'text-cyan-400'}">${t.priority} Importance</span>
+                                </div>
+                                <h5 class="text-sm font-medium ${t.completed ? 'line-through text-slate-500' : 'text-slate-200'} truncate">${t.title}</h5>
+                            </div>
+                            <div class="mt-3 flex items-center justify-between pt-2 border-t border-slate-800/60">
+                                <span class="text-xs text-slate-400 flex items-center gap-1">
+                                    <i data-lucide="clock" class="w-3 h-3 text-cyan-400"></i> ${t.duration}m
+                                </span>
+                                ${!t.completed ? `
+                                    <button onclick="attachTaskToFocus(${t.id})" class="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 text-[11px] font-medium transition">
+                                        Focus This
+                                    </button>
+                                ` : '<span class="text-[10px] text-emerald-400">Completed ✓</span>'}
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            const fullListContainer = document.getElementById('full-task-list');
+            if (fullListContainer) {
+                let filtered = appState.tasks;
+                if (currentTaskFilter === 'pending') filtered = appState.tasks.filter(t => !t.completed);
+                if (currentTaskFilter === 'completed') filtered = appState.tasks.filter(t => t.completed);
+
+                if (filtered.length === 0) {
+                    fullListContainer.innerHTML = `<div class="text-center py-12 text-slate-500 text-sm">No assignments found. Add your first assignment using "+ NEW ASSIGNMENT".</div>`;
+                } else {
+                    fullListContainer.innerHTML = filtered.map(t => `
+                        <div class="glass-panel p-4 rounded-2xl flex flex-wrap items-center justify-between gap-4 transition hover:border-slate-700">
+                            <div class="flex items-center space-x-3 flex-1 min-w-[200px]">
+                                <button onclick="toggleTaskComplete(${t.id})" class="w-6 h-6 rounded-lg border ${t.completed ? 'bg-emerald-500 border-emerald-400 text-black' : 'border-slate-700 hover:border-cyan-400'} flex items-center justify-center transition">
+                                    ${t.completed ? '<i data-lucide="check" class="w-4 h-4 font-bold"></i>' : ''}
+                                </button>
+                                <div>
+                                    <h4 class="text-sm font-semibold ${t.completed ? 'line-through text-slate-500' : 'text-slate-100'}">${t.title}</h4>
+                                    <div class="flex items-center space-x-2 text-[10px] text-slate-400 font-mono mt-0.5">
+                                        <span class="text-cyan-400">${t.subject}</span>
+                                        <span>•</span>
+                                        <span>Est: ${t.duration} mins</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center space-x-3">
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-mono ${
+                                    t.priority === 'L4' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/30 font-bold' :
+                                    t.priority === 'L3' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30' :
+                                    'bg-cyan-500/10 text-cyan-400 border border-cyan-500/30'
+                                }">${t.priority} Importance</span>
+
+                                ${!t.completed ? `
+                                    <button onclick="attachTaskToFocus(${t.id})" class="px-3 py-1.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/20 text-xs font-medium flex items-center space-x-1">
+                                        <i data-lucide="target" class="w-3.5 h-3.5"></i>
+                                        <span>Focus</span>
+                                    </button>
+                                ` : ''}
+
+                                <button onclick="deleteTask(${t.id})" class="p-1.5 text-slate-500 hover:text-rose-400 transition">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            lucide.createIcons();
+        }
+
+        function filterTasks(filter) {
+            currentTaskFilter = filter;
+            document.querySelectorAll('.task-filter-btn').forEach(btn => {
+                if (btn.dataset.filter === filter) {
+                    btn.className = 'task-filter-btn px-4 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-cyan-400';
+                } else {
+                    btn.className = 'task-filter-btn px-4 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-slate-200';
+                }
+            });
+            renderTasks();
+        }
+
+        function toggleTaskComplete(id) {
+            const task = appState.tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                AudioFX.playBeep(task.completed ? 900 : 400, 0.1);
+                saveStateToLocalStorage();
+                renderAll();
+            }
+        }
+
+        function deleteTask(id) {
+            appState.tasks = appState.tasks.filter(t => t.id !== id);
+            saveStateToLocalStorage();
+            renderAll();
+        }
+
+        function attachTaskToFocus(id) {
+            const task = appState.tasks.find(t => t.id === id);
+            if (task) {
+                activeTaskIdForSession = id;
+                document.getElementById('active-task-title').innerText = task.title;
+                document.getElementById('active-task-badge').classList.remove('hidden');
+                setTimerPreset(task.duration || 25);
+                switchTab('dashboard');
+            }
+        }
+
+        function toggleAddTaskModal(show) {
+            const modal = document.getElementById('add-task-modal');
+            if (show) modal.classList.remove('hidden');
+            else modal.classList.add('hidden');
+        }
+
+        function handleAddTask(e) {
+            e.preventDefault();
+            const title = document.getElementById('input-task-title').value;
+            const subject = document.getElementById('input-task-subject').value;
+            const duration = parseInt(document.getElementById('input-task-duration').value) || 25;
+            const priority = document.querySelector('input[name="priority"]:checked').value;
+
+            const newTask = {
+                id: Date.now(),
+                title,
+                subject,
+                duration,
+                priority,
+                completed: false
+            };
+
+            appState.tasks.unshift(newTask);
+            saveStateToLocalStorage();
+            renderAll();
+            toggleAddTaskModal(false);
+            document.getElementById('add-task-form').reset();
+        }
+
+        function renderHeaderStats() {
+            const today = appState.todayMins;
+            document.getElementById('top-daily-progress').innerText = `${today} / ${DAILY_TARGET_MINS}m`;
+            document.getElementById('dash-today-mins').innerText = `${today} min`;
+            document.getElementById('user-miles').innerText = `${appState.miles} FM`;
+            document.getElementById('user-streak').innerText = `${appState.streakDays} Days`;
+
+            const percent = Math.min(100, Math.round((today / DAILY_TARGET_MINS) * 100));
+            document.getElementById('dash-goal-bar').style.width = `${percent}%`;
+
+            const weeklyTotal = appState.weeklyMins.reduce((a, b) => a + b, 0) / 60;
+            document.getElementById('stat-weekly-total').innerText = `${weeklyTotal.toFixed(1)} Hours`;
+            document.getElementById('stat-miles-total').innerText = `${appState.miles} FM`;
+
+            const goalMetDays = appState.weeklyMins.filter(m => m >= 60).length;
+            const goalMetEl = document.getElementById('stat-goal-met-days');
+            if (goalMetEl) goalMetEl.innerText = `${goalMetDays} / 7 Days`;
+        }
+
+        let weeklyChartInstance = null;
+
+        function initWeeklyChart() {
+            const ctx = document.getElementById('weeklyChart');
+            if (!ctx) return;
+
+            const isDark = document.documentElement.classList.contains('dark');
+
+            weeklyChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [
+                        {
+                            label: 'Study Minutes',
+                            data: appState.weeklyMins,
+                            backgroundColor: '#00f0ff',
+                            borderRadius: 8,
+                            borderSkipped: false
+                        },
+                        {
+                            label: 'Target Min (60m)',
+                            data: [60, 60, 60, 60, 60, 60, 60],
+                            type: 'line',
+                            borderColor: 'rgba(168, 85, 247, 0.6)',
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            fill: false
+                        },
+                        {
+                            label: 'Target Max (90m)',
+                            data: [90, 90, 90, 90, 90, 90, 90],
+                            type: 'line',
+                            borderColor: 'rgba(236, 72, 153, 0.6)',
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.06)' }, ticks: { color: isDark ? '#64748b' : '#475569' } },
+                        y: { grid: { color: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.06)' }, ticks: { color: isDark ? '#64748b' : '#475569' }, min: 0, max: 120 }
+                    }
+                }
+            });
+        }
+
+        function updateWeeklyChartTheme() {
+            if (!weeklyChartInstance) return;
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#64748b' : '#475569';
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(148, 163, 184, 0.15)';
+
+            weeklyChartInstance.options.scales.x.ticks.color = textColor;
+            weeklyChartInstance.options.scales.x.grid.color = gridColor;
+            weeklyChartInstance.options.scales.y.ticks.color = textColor;
+            weeklyChartInstance.options.scales.y.grid.color = gridColor;
+            weeklyChartInstance.update();
+        }
+
+        function updateWeeklyChart() {
+            if (weeklyChartInstance) {
+                weeklyChartInstance.data.datasets[0].data = appState.weeklyMins;
+                updateWeeklyChartTheme();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homework Motivator & Organizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glow-green {
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.25);
+        }
+        .glow-red {
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.35);
+        }
+        .pulse-angry {
+            animation: pulseAngry 1.2s infinite alternate;
+        }
+        @keyframes pulseAngry {
+            0% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(239,68,68,0.6)); }
+            100% { transform: scale(1.08); filter: drop-shadow(0 0 25px rgba(220,38,38,0.95)); }
+        }
+        .ai-holo-glow {
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.25), inset 0 0 15px rgba(59, 130, 246, 0.15);
+        }
+        .ai-float {
+            animation: floatMascot 3s ease-in-out infinite;
+        }
+        @keyframes floatMascot {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    </style>
+</head>
+<body class="min-h-screen pb-12 flex flex-col">
+
+    <!-- Top Navigation Bar -->
+    <header class="border-b border-slate-800 bg-slate-900/80 sticky top-0 z-50 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-red-500 flex items-center justify-center font-black text-white text-xl shadow-lg">
+                    ⚡
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-lg text-white tracking-tight flex items-center gap-2">
+                        FocusForge <span class="text-xs bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full font-semibold">Procrastination Destroyer</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Wesley, Francisco & Fanny's Homework Hub</p>
+                </div>
+            </div>
+
+            <!-- User Selector & Streak Stats -->
+            <div class="flex items-center gap-4 flex-wrap">
+                <!-- User Switching -->
+                <div class="flex items-center bg-slate-800 rounded-xl p-1 border border-slate-700">
+                    <button onclick="switchUser('Wesley')" id="btn-Wesley" class="px-3 py-1.5 text-xs font-bold rounded-lg transition-all text-slate-400 hover:text-white">Wesley</button>
+                    <button onclick="switchUser('Francisco')" id="btn-Francisco" class="px-3 py-1.5 text-xs font-bold rounded-lg transition-all text-slate-400 hover:text-white">Francisco</button>
+                    <button onclick="switchUser('Fanny')" id="btn-Fanny" class="px-3 py-1.5 text-xs font-bold rounded-lg transition-all text-slate-400 hover:text-white">Fanny</button>
+                </div>
+
+                <!-- Streak Display -->
+                <div class="flex items-center gap-3 bg-slate-900/90 px-3 py-1.5 rounded-xl border border-slate-800 text-xs font-bold">
+                    <div class="flex items-center text-amber-400 gap-1.5" title="Daily Streak">
+                        🔥 Streak: <span id="user-streak" class="text-white font-extrabold">0</span> Days
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 mt-6 flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6 w-full">
+
+        <!-- Banner for Personal Goal -->
+        <div class="lg:col-span-12 glass-card rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-l-4 border-amber-500">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl">🎯</span>
+                <div>
+                    <h3 class="text-xs uppercase tracking-wider font-bold text-amber-400">Current Big Goal / Motivation</h3>
+                    <p id="user-goal-text" class="text-sm font-semibold text-slate-200">"Pass all subjects with A's so I can enjoy the summer stress-free!"</p>
+                </div>
+            </div>
+            <button onclick="editGoal()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition">
+                ✏️ Edit Goal
+            </button>
+        </div>
+
+        <!-- LEFT COLUMN: Homework & Test Reminders (4 Cols) -->
+        <section class="lg:col-span-4 flex flex-col gap-6">
+            <div class="glass-card rounded-2xl p-5 flex flex-col h-full shadow-xl">
+                <!-- Section Header -->
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl">📝</span>
+                        <h2 class="font-bold text-lg text-white">Reminders</h2>
+                    </div>
+                    <button onclick="openAddTaskModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-3 py-2 rounded-xl transition flex items-center gap-1 shadow-md shadow-indigo-600/30">
+                        <span>+</span> Add Task
+                    </button>
+                </div>
+
+                <!-- Filter Tabs -->
+                <div class="flex gap-2 border-b border-slate-800 pb-3 mb-4">
+                    <button onclick="filterTasks('all')" id="filter-all" class="text-xs font-semibold text-indigo-400 border-b-2 border-indigo-500 pb-1 px-1">All</button>
+                    <button onclick="filterTasks('homework')" id="filter-homework" class="text-xs font-semibold text-slate-400 hover:text-white pb-1 px-1">Homework</button>
+                    <button onclick="filterTasks('test')" id="filter-test" class="text-xs font-semibold text-slate-400 hover:text-white pb-1 px-1">Tests ⚠️</button>
+                </div>
+
+                <!-- Task Cards List -->
+                <div id="tasks-container" class="space-y-3 overflow-y-auto max-h-[500px] pr-1 flex-grow">
+                    <!-- Tasks inserted dynamically via JS -->
+                </div>
+
+                <!-- Quick Stats Footer -->
+                <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+                    <span id="pending-count">0 tasks pending</span>
+                    <span id="tests-count" class="text-amber-400">0 upcoming tests</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- CENTER COLUMN: Dedicated AI Motivator Session (4 Cols) -->
+        <section class="lg:col-span-4 flex flex-col gap-6">
+            <div id="ai-card" class="glass-card rounded-2xl p-5 flex flex-col justify-between shadow-xl relative overflow-hidden transition-all duration-500 border-t-4 border-cyan-500 ai-holo-glow">
+                
+                <!-- Background ambient glow based on status -->
+                <div id="ai-glow" class="absolute -top-10 -right-10 w-44 h-44 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div>
+                    <!-- AI Header -->
+                    <div class="flex items-center justify-between mb-3 border-b border-slate-800 pb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 rounded-full bg-cyan-400 animate-ping"></div>
+                            <h2 class="font-extrabold text-base text-white tracking-wide flex items-center gap-2">
+                                🤖 Educated AI <span class="text-[10px] text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded font-mono border border-cyan-500/20">v2.0</span>
+                            </h2>
+                        </div>
+                        <span id="ai-mood-badge" class="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                            Cyber Coach
+                        </span>
+                    </div>
+
+                    <!-- Mascot Graphic Avatar -->
+                    <div class="flex flex-col items-center my-2">
+                        <div id="mascot-avatar" class="w-32 h-32 relative flex items-center justify-center transition-all duration-300 ai-float">
+                            <!-- SVG Mascot generated dynamically -->
+                        </div>
+                        <div id="ai-time-warning" class="mt-1 text-[11px] font-semibold text-slate-400 text-center flex items-center gap-1.5 bg-slate-900/80 px-3 py-1 rounded-full border border-slate-800">
+                            <span>🕒 System Time:</span> <span id="clock-display" class="font-mono text-cyan-400 font-bold">16:00:00</span>
+                        </div>
+                    </div>
+
+                    <!-- Speech Bubble -->
+                    <div class="relative bg-slate-900/90 rounded-2xl p-4 border border-cyan-500/30 shadow-lg my-3">
+                        <div class="absolute -top-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[8px] border-b-cyan-500/40"></div>
+                        <p id="ai-speech-bubble" class="text-xs sm:text-sm text-cyan-100 font-medium text-center leading-relaxed">
+                            "Hey Wesley! After school is the best time to finish homework so you can play games later. Let's do Math first!"
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Quick Response Chips & Chat Form -->
+                <div class="mt-2 pt-3 border-t border-slate-800">
+                    <div class="flex flex-wrap gap-1.5 mb-2.5 justify-center">
+                        <button onclick="sendQuickChat('I feel lazy')" class="text-[10px] bg-slate-800/90 hover:bg-cyan-950 hover:text-cyan-300 text-slate-300 px-2 py-1 rounded-lg border border-slate-700 transition">🥱 I feel lazy</button>
+                        <button onclick="sendQuickChat('Why study?')" class="text-[10px] bg-slate-800/90 hover:bg-cyan-950 hover:text-cyan-300 text-slate-300 px-2 py-1 rounded-lg border border-slate-700 transition">💡 Why study?</button>
+                        <button onclick="sendQuickChat('Nervous for test')" class="text-[10px] bg-slate-800/90 hover:bg-cyan-950 hover:text-cyan-300 text-slate-300 px-2 py-1 rounded-lg border border-slate-700 transition">😰 Test nervous</button>
+                    </div>
+                    <form onsubmit="handleAIChatSubmit(event)" class="flex gap-2">
+                        <input type="text" id="ai-chat-input" placeholder="Ask AI a homework question or excuse..." 
+                            class="flex-grow bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500 transition">
+                        <button type="submit" class="bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold px-3 py-2 rounded-xl transition shadow-md shadow-cyan-600/30">
+                            Ask / Send
+                        </button>
+                    </form>
+                    <p class="text-[10px] text-slate-500 mt-2 text-center">
+                        💡 Ask questions like "How to solve fractions?" or "Explain photosynthesis" — AI gives smart **hints** instead of doing the work for you!
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- RIGHT COLUMN: Dedicated Alarm Session & Digital Schedule (4 Cols) -->
+        <section class="lg:col-span-4 flex flex-col gap-6">
+            <div class="glass-card rounded-2xl p-5 flex flex-col h-full shadow-xl border-t-4 border-indigo-500">
+                
+                <!-- Alarm Session Header -->
+                <div class="flex items-center justify-between mb-3 border-b border-slate-800 pb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl">⏰</span>
+                        <div>
+                            <h2 class="font-extrabold text-base text-white tracking-wide">Alarm Session & Routine</h2>
+                            <p class="text-[10px] text-slate-400">Scheduled Audio Alerts & Custom Alarms</p>
+                        </div>
+                    </div>
+                    <button onclick="openAddAlarmModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition flex items-center gap-1 shadow-md shadow-indigo-600/30">
+                        <span>+</span> Add Alarm
+                    </button>
+                </div>
+
+                <!-- Digital Clock Display Card -->
+                <div class="bg-slate-950/90 border border-indigo-500/30 rounded-2xl p-3.5 my-1 text-center shadow-inner relative overflow-hidden">
+                    <div class="text-[10px] font-bold tracking-widest text-indigo-400 uppercase mb-0.5">Live Digital Clock</div>
+                    <div id="large-digital-clock" class="text-3xl font-black font-mono tracking-wider text-indigo-300 drop-shadow-md">
+                        00:00:00
+                    </div>
+                    <div id="current-phase-text" class="text-[11px] text-slate-400 mt-1 font-medium">
+                        Current Routine Block: <span class="text-slate-200 font-bold">16:00 Focus Time</span>
+                    </div>
+                </div>
+
+                <!-- Digital Routine Time Blocks -->
+                <div class="grid grid-cols-2 gap-2 my-2">
+                    <button onclick="triggerAlarmSlot('16:00')" class="bg-slate-900/90 hover:bg-emerald-950/40 border border-emerald-500/30 p-2.5 rounded-xl text-left transition group">
+                        <div class="text-[10px] text-emerald-400 font-bold uppercase">Block 1</div>
+                        <div class="text-base font-black font-mono text-white group-hover:text-emerald-300">16:00</div>
+                        <div class="text-[9px] text-slate-400 truncate">After School Study</div>
+                    </button>
+                    <button onclick="triggerAlarmSlot('20:00')" class="bg-slate-900/90 hover:bg-amber-950/40 border border-amber-500/30 p-2.5 rounded-xl text-left transition group">
+                        <div class="text-[10px] text-amber-400 font-bold uppercase">Block 2</div>
+                        <div class="text-base font-black font-mono text-white group-hover:text-amber-300">20:00</div>
+                        <div class="text-[9px] text-slate-400 truncate">Evening Push</div>
+                    </button>
+                    <button onclick="triggerAlarmSlot('21:00')" class="bg-slate-900/90 hover:bg-red-950/40 border border-red-500/30 p-2.5 rounded-xl text-left transition group">
+                        <div class="text-[10px] text-red-400 font-bold uppercase">Block 3</div>
+                        <div class="text-base font-black font-mono text-white group-hover:text-red-300">21:00</div>
+                        <div class="text-[9px] text-slate-400 truncate">Emergency Hour</div>
+                    </button>
+                    <button onclick="triggerAlarmSlot('22:00')" class="bg-slate-900/90 hover:bg-purple-950/40 border border-purple-500/30 p-2.5 rounded-xl text-left transition group">
+                        <div class="text-[10px] text-purple-400 font-bold uppercase">Block 4</div>
+                        <div class="text-base font-black font-mono text-white group-hover:text-purple-300">22:00</div>
+                        <div class="text-[9px] text-slate-400 truncate">Wind Down</div>
+                    </button>
+                </div>
+
+                <!-- Alarms List Session -->
+                <div class="mt-1 space-y-2 flex-grow overflow-y-auto max-h-[220px]">
+                    <div class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-1 flex items-center justify-between">
+                        <span>Configured Alarms</span>
+                        <span class="text-[10px] text-indigo-400 lowercase">Auto-triggers audio</span>
+                    </div>
+                    
+                    <div id="alarms-list-container" class="space-y-2">
+                        <!-- Alarms inserted dynamically via JS -->
+                    </div>
+                </div>
+
+                <button onclick="testAudioTone()" class="mt-3 w-full bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs py-2 rounded-xl border border-slate-700 transition flex items-center justify-center gap-2 shadow-sm">
+                    🔊 Test Siren Sound
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- 🚨 Active Alarm Ringing Overlay Modal -->
+    <div id="alarm-ringing-modal" class="fixed inset-0 bg-red-950/90 backdrop-blur-md hidden items-center justify-center z-[100] p-4 animate-pulse">
+        <div class="glass-card bg-slate-900/95 rounded-3xl w-full max-w-lg p-8 border-4 border-red-500 shadow-[0_0_60px_rgba(239,68,68,0.6)] text-center relative overflow-hidden flex flex-col items-center">
+            
+            <div class="w-24 h-24 rounded-full bg-red-600/30 border-4 border-red-500 flex items-center justify-center text-5xl mb-4 animate-bounce shadow-lg shadow-red-500/50">
+                🚨
+            </div>
+
+            <div class="text-xs font-black tracking-widest uppercase text-red-400 bg-red-500/20 px-3 py-1 rounded-full border border-red-500/30 mb-2">
+                ALARM IS RINGING NOW!
+            </div>
+
+            <h2 id="ringing-alarm-time" class="text-5xl font-black font-mono text-white tracking-wider my-2 text-shadow-lg">
+                16:00
+            </h2>
+
+            <h3 id="ringing-alarm-label" class="text-xl font-extrabold text-amber-300 mb-2">
+                Study Session Started!
+            </h3>
+
+            <p id="ringing-alarm-note" class="text-sm text-slate-300 max-w-sm mb-6 font-medium bg-slate-950/80 px-4 py-2.5 rounded-xl border border-slate-800">
+                Close games, grab your notebook, and begin your homework now!
+            </p>
+
+            <button onclick="dismissActiveAlarm()" class="w-full bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-extrabold text-base py-4 rounded-2xl shadow-xl shadow-red-600/40 transition active:scale-95 flex items-center justify-center gap-2">
+                <span>🔕</span> STOP ALARM & ACKNOWLEDGE
+            </button>
+        </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div id="add-task-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="glass-card rounded-2xl w-full max-w-md p-6 border border-slate-700 shadow-2xl relative">
+            <button onclick="closeAddTaskModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <span>➕</span> Add Assignment or Test
+            </h3>
+            
+            <form onsubmit="saveTask(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Subject / Title</label>
+                    <input type="text" id="task-title" placeholder="e.g. Math homework, English L4, Spanish Project" required
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Type</label>
+                        <select id="task-type" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+                            <option value="homework">Homework</option>
+                            <option value="test">Test / Exam ⚠️️</option>
+                            <option value="project">Project</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Due Date</label>
+                        <input type="date" id="task-date" required
+                            class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Priority</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <label class="flex items-center justify-center gap-1 bg-slate-900 p-2 rounded-xl border border-slate-800 text-xs cursor-pointer hover:bg-slate-800">
+                            <input type="radio" name="priority" value="Low" class="accent-indigo-500"> Low
+                        </label>
+                        <label class="flex items-center justify-center gap-1 bg-slate-900 p-2 rounded-xl border border-slate-800 text-xs cursor-pointer hover:bg-slate-800">
+                            <input type="radio" name="priority" value="Medium" checked class="accent-indigo-500"> Medium
+                        </label>
+                        <label class="flex items-center justify-center gap-1 bg-slate-900 p-2 rounded-xl border border-slate-800 text-xs cursor-pointer hover:bg-slate-800 text-amber-400">
+                            <input type="radio" name="priority" value="High" class="accent-indigo-500"> High 🔥
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="closeAddTaskModal()" class="w-1/2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold py-2.5 rounded-xl transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="w-1/2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold py-2.5 rounded-xl transition shadow-lg shadow-indigo-600/30">
+                        Save Task
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Goal Modal -->
+    <div id="edit-goal-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="glass-card rounded-2xl w-full max-w-md p-6 border border-slate-700 shadow-2xl relative">
+            <button onclick="closeGoalModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <span>🎯</span> Update Personal Motivation Goal
+            </h3>
+            <p class="text-xs text-slate-400 mb-3">
+                The AI Motivator will remind you of this goal whenever you get lazy or try to delay homework!
+            </p>
+            <form onsubmit="saveGoal(event)" class="space-y-4">
+                <textarea id="goal-input-text" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-amber-500" placeholder="e.g. Pass English tests to play soccer all weekend without guilt!"></textarea>
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeGoalModal()" class="w-1/2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold py-2.5 rounded-xl transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="w-1/2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs py-2.5 rounded-xl transition shadow-lg shadow-amber-500/20">
+                        Save Goal
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Custom Alarm Modal -->
+    <div id="add-alarm-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="glass-card rounded-2xl w-full max-w-md p-6 border border-slate-700 shadow-2xl relative">
+            <button onclick="closeAddAlarmModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg">✕</button>
+            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                <span>⏰</span> Set Custom Study Alarm
+            </h3>
+            
+            <form onsubmit="saveAlarm(event)" class="space-y-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Alarm Time</label>
+                        <input type="time" id="alarm-time-input" required
+                            class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Label / Subject</label>
+                        <input type="text" id="alarm-label-input" placeholder="e.g. Math Time, Review" required
+                            class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Note / Description</label>
+                    <input type="text" id="alarm-note-input" placeholder="e.g. Turn off phone & open workbook page 20"
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500">
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="closeAddAlarmModal()" class="w-1/2 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold py-2.5 rounded-xl transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="w-1/2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold py-2.5 rounded-xl transition shadow-lg shadow-indigo-600/30">
+                        Create Alarm
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        /* ==========================================================================
+           HELPER DATE FUNCTIONS (Defined first to avoid TDZ initialization errors)
+           ========================================================================== */
+        function getTodayString() {
+            const today = new Date();
+            return today.toISOString().split('T')[0];
+        }
+
+        function getTomorrowString() {
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            return tomorrow.toISOString().split('T')[0];
+        }
+
+        /* ==========================================================================
+           GLOBAL STATE & DATA STORAGE (LocalStorage based)
+           ========================================================================== */
+        const DEFAULT_ALARMS = [
+            { id: 'a1', time: '16:00', label: '16:00 - Study Start', note: 'After School Energy Boost', enabled: true },
+            { id: 'a2', time: '20:00', label: '20:00 - Evening Push', note: 'Motivation Warning Chime', enabled: true },
+            { id: 'a3', time: '21:00', label: '21:00 - Emergency Hour', note: 'Finish Homework Alert', enabled: true },
+            { id: 'a4', time: '22:00', label: '22:00 - Bedtime Rest', note: 'Close Books & Sleep', enabled: true }
+        ];
+
+        const DEFAULT_USERS = {
+            'Wesley': {
+                streak: 0,
+                goal: "Pass Math with an A and get permission for the gaming tournament!",
+                tasks: [
+                    { id: '1', title: 'Math homework', type: 'homework', dueDate: getTodayString(), priority: 'High', completed: false },
+                    { id: '2', title: 'English L4 Reading', type: 'homework', dueDate: getTodayString(), priority: 'Medium', completed: false },
+                    { id: '3', title: 'Spanish Project', type: 'project', dueDate: getTomorrowString(), priority: 'High', completed: false },
+                    { id: '4', title: 'Science Unit Test', type: 'test', dueDate: getTomorrowString(), priority: 'High', completed: false }
+                ],
+                alarms: JSON.parse(JSON.stringify(DEFAULT_ALARMS))
+            },
+            'Francisco': {
+                streak: 0,
+                goal: "Finish homework fast after school so I can hang out with friends!",
+                tasks: [
+                    { id: '101', title: 'Math exercises p.45', type: 'homework', dueDate: getTodayString(), priority: 'High', completed: false },
+                    { id: '102', title: 'History Essay Draft', type: 'homework', dueDate: getTomorrowString(), priority: 'Medium', completed: false }
+                ],
+                alarms: JSON.parse(JSON.stringify(DEFAULT_ALARMS))
+            },
+            'Fanny': {
+                streak: 0,
+                goal: "Keep my top grades and never study late past 21:00!",
+                tasks: [
+                    { id: '201', title: 'English Vocabulary Quiz', type: 'test', dueDate: getTomorrowString(), priority: 'High', completed: false },
+                    { id: '202', title: 'Spanish Worksheet', type: 'homework', dueDate: getTodayString(), priority: 'Low', completed: false }
+                ],
+                alarms: JSON.parse(JSON.stringify(DEFAULT_ALARMS))
+            }
+        };
+
+        // Variable definitions initialized cleanly at top scope
+        var currentUser = 'Wesley';
+        var currentFilter = 'all';
+        var appData = {};
+        var triggeredLastMinute = "";
+
+        // Web Audio API State for Siren Sound
+        var audioCtx = null;
+        var sirenOscillator = null;
+        var sirenGainNode = null;
+        var sirenInterval = null;
+        var isSirenPlaying = false;
+
+        /* ==========================================================================
+           INITIALIZATION & LOCAL STORAGE MANAGERS
+           ========================================================================== */
+        function loadDataFromStorage() {
+            const stored = localStorage.getItem('focusforge_app_data');
+            if (stored) {
+                try {
+                    appData = JSON.parse(stored);
+                } catch(e) {
+                    console.error("Failed to parse stored data:", e);
+                    appData = JSON.parse(JSON.stringify(DEFAULT_USERS));
+                }
+            } else {
+                appData = JSON.parse(JSON.stringify(DEFAULT_USERS));
+            }
+        }
+
+        function saveDataToStorage() {
+            localStorage.setItem('focusforge_app_data', JSON.stringify(appData));
+        }
+
+        window.onload = function() {
+            loadDataFromStorage();
+            
+            // Ensure streak is set to 0 across profiles
+            Object.keys(appData).forEach(u => {
+                if (appData[u]) appData[u].streak = 0;
+            });
+            saveDataToStorage();
+
+            switchUser(currentUser);
+            
+            // Set today's date in task modal by default
+            const taskDateInput = document.getElementById('task-date');
+            if (taskDateInput) taskDateInput.value = getTodayString();
+
+            // Start live digital clock updates
+            setInterval(updateClockAndMascotMood, 1000);
+            updateClockAndMascotMood();
+
+            // Enable WebAudio on first user interaction anywhere
+            document.body.addEventListener('click', initAudioCtx, { once: true });
+        };
+
+        function initAudioCtx() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function switchUser(userName) {
+            currentUser = userName;
+            
+            // Update active tabs styling
+            ['Wesley', 'Francisco', 'Fanny'].forEach(u => {
+                const btn = document.getElementById(`btn-${u}`);
+                if (btn) {
+                    if (u === userName) {
+                        btn.className = "px-3 py-1.5 text-xs font-bold rounded-lg transition-all bg-indigo-600 text-white shadow-md";
+                    } else {
+                        btn.className = "px-3 py-1.5 text-xs font-bold rounded-lg transition-all text-slate-400 hover:text-white";
+                    }
+                }
+            });
+
+            // Ensure profile exists
+            if (!appData[currentUser]) {
+                appData[currentUser] = {
+                    streak: 0, goal: "Finish homework early!", tasks: [],
+                    alarms: JSON.parse(JSON.stringify(DEFAULT_ALARMS))
+                };
+                saveDataToStorage();
+            }
+
+            const profile = appData[currentUser];
+
+            // Render stats
+            const streakEl = document.getElementById('user-streak');
+            if (streakEl) streakEl.innerText = profile.streak || 0;
+
+            const goalEl = document.getElementById('user-goal-text');
+            if (goalEl) goalEl.innerText = `"${profile.goal}"`;
+
+            renderTasks();
+            renderAlarms();
+            updateClockAndMascotMood();
+        }
+
+        /* ==========================================================================
+           TASK MANAGER / REMINDERS FUNCTIONS
+           ========================================================================== */
+        function renderTasks() {
+            const container = document.getElementById('tasks-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const userTasks = (appData[currentUser] && appData[currentUser].tasks) ? appData[currentUser].tasks : [];
+            
+            let filtered = userTasks.filter(t => {
+                if (currentFilter === 'homework') return t.type === 'homework' || t.type === 'project';
+                if (currentFilter === 'test') return t.type === 'test';
+                return true;
+            });
+
+            let pendingCount = 0;
+            let testsCount = 0;
+
+            userTasks.forEach(t => {
+                if (!t.completed) pendingCount++;
+                if (t.type === 'test' && !t.completed) testsCount++;
+            });
+
+            const pendingEl = document.getElementById('pending-count');
+            if (pendingEl) pendingEl.innerText = `${pendingCount} task${pendingCount === 1 ? '' : 's'} pending`;
+
+            const testsEl = document.getElementById('tests-count');
+            if (testsEl) testsEl.innerText = `${testsCount} test${testsCount === 1 ? '' : 's'} coming up`;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 border border-dashed border-slate-800 rounded-xl">
+                        <div class="text-3xl mb-2">🎉</div>
+                        <p class="text-xs text-slate-400 font-medium">No tasks found in this section!</p>
+                        <p class="text-[10px] text-slate-500 mt-1">Enjoy your free time or add a new task.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(task => {
+                const isTest = task.type === 'test';
+                const isOverdue = !task.completed && task.dueDate < getTodayString();
+                const isToday = task.dueDate === getTodayString();
+
+                const card = document.createElement('div');
+                card.className = `p-3 rounded-xl border transition-all duration-300 flex items-center justify-between gap-3 ${
+                    task.completed 
+                        ? 'bg-slate-900/40 border-slate-800/60 opacity-60' 
+                        : isTest 
+                            ? 'bg-amber-950/20 border-amber-500/40 hover:border-amber-500/80' 
+                            : 'bg-slate-900/80 border-slate-700/80 hover:border-slate-600'
+                }`;
+
+                card.innerHTML = `
+                    <div class="flex items-start gap-3 flex-grow min-w-0">
+                        <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTaskComplete('${task.id}')" 
+                            class="mt-1 w-4 h-4 accent-emerald-500 rounded cursor-pointer">
+                        <div class="min-w-0 flex-grow">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold ${task.completed ? 'line-through text-slate-500' : 'text-slate-100'} truncate">
+                                    ${escapeHtml(task.title)}
+                                </span>
+                                ${isTest ? '<span class="text-[9px] bg-red-500/20 text-red-400 border border-red-500/30 px-1.5 py-0.5 rounded font-extrabold">TEST</span>' : ''}
+                                ${task.priority === 'High' ? '<span class="text-[9px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded font-bold">HIGH</span>' : ''}
+                            </div>
+                            <div class="flex items-center gap-3 mt-1 text-[10px] text-slate-400">
+                                <span>📅 ${isToday ? 'Today' : task.dueDate}</span>
+                                ${isOverdue ? '<span class="text-red-400 font-bold">⚠️ Overdue!</span>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="deleteTask('${task.id}')" class="text-slate-500 hover:text-red-400 text-xs px-1">
+                        🗑️
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function toggleTaskComplete(taskId) {
+            const user = appData[currentUser];
+            if (!user) return;
+
+            const task = user.tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            task.completed = !task.completed;
+
+            if (task.completed) {
+                speakAIMessage(`Awesome job completing "${task.title}"! Keep up the momentum! 🚀`);
+                showConfetti();
+            }
+
+            saveDataToStorage();
+            switchUser(currentUser);
+        }
+
+        function filterTasks(type) {
+            currentFilter = type;
+            ['all', 'homework', 'test'].forEach(f => {
+                const el = document.getElementById(`filter-${f}`);
+                if (el) {
+                    if (f === type) {
+                        el.className = "text-xs font-semibold text-indigo-400 border-b-2 border-indigo-500 pb-1 px-1";
+                    } else {
+                        el.className = "text-xs font-semibold text-slate-400 hover:text-white pb-1 px-1";
+                    }
+                }
+            });
+            renderTasks();
+        }
+
+        function openAddTaskModal() {
+            document.getElementById('add-task-modal').classList.remove('hidden');
+            document.getElementById('add-task-modal').classList.add('flex');
+        }
+
+        function closeAddTaskModal() {
+            document.getElementById('add-task-modal').classList.add('hidden');
+            document.getElementById('add-task-modal').classList.remove('flex');
+        }
+
+        function saveTask(e) {
+            e.preventDefault();
+            const title = document.getElementById('task-title').value.trim();
+            const type = document.getElementById('task-type').value;
+            const dueDate = document.getElementById('task-date').value;
+            const priorityRadio = document.querySelector('input[name="priority"]:checked');
+            const priority = priorityRadio ? priorityRadio.value : 'Medium';
+
+            if (!title) return;
+
+            const newTask = {
+                id: Date.now().toString(),
+                title: title,
+                type: type,
+                dueDate: dueDate,
+                priority: priority,
+                completed: false
+            };
+
+            if (!appData[currentUser].tasks) appData[currentUser].tasks = [];
+            appData[currentUser].tasks.unshift(newTask);
+
+            saveDataToStorage();
+            closeAddTaskModal();
+            renderTasks();
+            updateClockAndMascotMood();
+
+            // Reset Form Input
+            document.getElementById('task-title').value = '';
+        }
+
+        function deleteTask(taskId) {
+            if (appData[currentUser] && appData[currentUser].tasks) {
+                appData[currentUser].tasks = appData[currentUser].tasks.filter(t => t.id !== taskId);
+                saveDataToStorage();
+                renderTasks();
+                updateClockAndMascotMood();
+            }
+        }
+
+        function editGoal() {
+            document.getElementById('goal-input-text').value = (appData[currentUser] && appData[currentUser].goal) ? appData[currentUser].goal : '';
+            document.getElementById('edit-goal-modal').classList.remove('hidden');
+            document.getElementById('edit-goal-modal').classList.add('flex');
+        }
+
+        function closeGoalModal() {
+            document.getElementById('edit-goal-modal').classList.add('hidden');
+            document.getElementById('edit-goal-modal').classList.remove('flex');
+        }
+
+        function saveGoal(e) {
+            e.preventDefault();
+            const text = document.getElementById('goal-input-text').value.trim();
+            if (text && appData[currentUser]) {
+                appData[currentUser].goal = text;
+                saveDataToStorage();
+                document.getElementById('user-goal-text').innerText = `"${text}"`;
+            }
+            closeGoalModal();
+        }
+
+        /* ==========================================================================
+           CUSTOM ALARM SYSTEM MANAGEMENT
+           ========================================================================== */
+        function renderAlarms() {
+            const container = document.getElementById('alarms-list-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const alarms = (appData[currentUser] && appData[currentUser].alarms) ? appData[currentUser].alarms : [];
+
+            if (alarms.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-4 text-xs text-slate-500">
+                        No alarms configured. Click "+ Add Alarm" above!
+                    </div>
+                `;
+                return;
+            }
+
+            // Sort alarms chronologically by time
+            const sortedAlarms = [...alarms].sort((a, b) => a.time.localeCompare(b.time));
+
+            sortedAlarms.forEach(alarm => {
+                const item = document.createElement('div');
+                item.className = "flex items-center justify-between bg-slate-900/80 p-2.5 rounded-xl border border-slate-800 hover:border-indigo-500/40 transition";
+                
+                item.innerHTML = `
+                    <div class="flex items-center gap-2.5 min-w-0 flex-grow">
+                        <span class="w-2.5 h-2.5 rounded-full ${alarm.enabled ? 'bg-emerald-400 shadow-sm shadow-emerald-400' : 'bg-slate-600'}"></span>
+                        <div class="min-w-0">
+                            <div class="text-xs font-bold text-white font-mono flex items-center gap-2">
+                                <span>${alarm.time}</span>
+                                <span class="text-[11px] font-sans text-indigo-300 font-semibold truncate">${escapeHtml(alarm.label)}</span>
+                            </div>
+                            <div class="text-[10px] text-slate-400 truncate">${escapeHtml(alarm.note || 'Study Reminder')}</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" ${alarm.enabled ? 'checked' : ''} onchange="toggleAlarmEnabled('${alarm.id}')" class="w-4 h-4 accent-indigo-500 rounded cursor-pointer" title="Toggle Alarm">
+                        <button onclick="deleteAlarm('${alarm.id}')" class="text-slate-500 hover:text-red-400 text-xs px-1" title="Delete Alarm">✕</button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function openAddAlarmModal() {
+            document.getElementById('add-alarm-modal').classList.remove('hidden');
+            document.getElementById('add-alarm-modal').classList.add('flex');
+            const now = new Date();
+            const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+            document.getElementById('alarm-time-input').value = timeStr;
+        }
+
+        function closeAddAlarmModal() {
+            document.getElementById('add-alarm-modal').classList.add('hidden');
+            document.getElementById('add-alarm-modal').classList.remove('flex');
+        }
+
+        function saveAlarm(e) {
+            e.preventDefault();
+            const time = document.getElementById('alarm-time-input').value;
+            const label = document.getElementById('alarm-label-input').value.trim();
+            const note = document.getElementById('alarm-note-input').value.trim();
+
+            if (!time || !label) return;
+
+            const newAlarm = {
+                id: 'alarm_' + Date.now(),
+                time: time,
+                label: label,
+                note: note || 'Custom Alarm Alert',
+                enabled: true
+            };
+
+            if (!appData[currentUser].alarms) appData[currentUser].alarms = [];
+            appData[currentUser].alarms.push(newAlarm);
+            
+            saveDataToStorage();
+            closeAddAlarmModal();
+            renderAlarms();
+
+            // Clear inputs
+            document.getElementById('alarm-label-input').value = '';
+            document.getElementById('alarm-note-input').value = '';
+
+            speakAIMessage(`⏰ Alarm created for ${time} (${label})! I will remind you when it's time!`);
+        }
+
+        function toggleAlarmEnabled(alarmId) {
+            const alarms = appData[currentUser].alarms || [];
+            const alarm = alarms.find(a => a.id === alarmId);
+            if (alarm) {
+                alarm.enabled = !alarm.enabled;
+                saveDataToStorage();
+                renderAlarms();
+            }
+        }
+
+        function deleteAlarm(alarmId) {
+            if (appData[currentUser] && appData[currentUser].alarms) {
+                appData[currentUser].alarms = appData[currentUser].alarms.filter(a => a.id !== alarmId);
+                saveDataToStorage();
+                renderAlarms();
+            }
+        }
+
+        /* ==========================================================================
+           EDUCATED AI MASCOT & REACTIVE MOOD SYSTEM
+           ========================================================================== */
+        function updateClockAndMascotMood() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+
+            const digitalStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            const shortDigitalStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+            
+            const clockEl = document.getElementById('clock-display');
+            if (clockEl) clockEl.innerText = digitalStr;
+
+            const largeClock = document.getElementById('large-digital-clock');
+            if (largeClock) largeClock.innerText = digitalStr;
+
+            // Phase indicator text
+            const phaseEl = document.getElementById('current-phase-text');
+            if (phaseEl) {
+                let phaseText = "16:00 Focus Block";
+                if (hours >= 22) phaseText = "22:00 Wind Down Block";
+                else if (hours >= 21) phaseText = "21:00 Emergency Study Block";
+                else if (hours >= 20) phaseText = "20:00 Evening Push Block";
+                else if (hours >= 16) phaseText = "16:00 After School Study Block";
+                else phaseText = "Pre-16:00 Afternoon";
+                phaseEl.innerHTML = `Current Routine Block: <span class="text-indigo-400 font-bold">${phaseText}</span>`;
+            }
+
+            // Safety check for user tasks
+            const user = appData[currentUser] || { tasks: [], goal: "" };
+            const pendingTasks = (user.tasks || []).filter(t => !t.completed);
+            const pendingCount = pendingTasks.length;
+            const userGoal = user.goal || "your goals";
+
+            // Determine AI Mood based on time and pending tasks
+            let mood = "friendly"; 
+
+            if (pendingCount === 0) {
+                mood = "happy";
+            } else if (hours >= 22) {
+                mood = "furious";
+            } else if (hours >= 20) {
+                mood = "angry";
+            } else if (hours >= 17) {
+                mood = "impatient";
+            } else {
+                mood = "friendly";
+            }
+
+            renderMascotSVG(mood);
+            updateAIMoodBadge(mood);
+
+            // Trigger AI Warning Speech depending on mood state
+            if (!window.userInteractedWithChat) {
+                let speech = "";
+                if (pendingCount === 0) {
+                    speech = `🎉 Outstanding work, ${currentUser}! All homework is finished! Ask me any study question or enjoy your free time!`;
+                } else if (mood === "friendly") {
+                    speech = `Hey ${currentUser}! You have ${pendingCount} task(s) left. Finish them now after school or ask me for help with your homework!`;
+                } else if (mood === "impatient") {
+                    speech = `⚠️ Hey ${currentUser}, it's past 17:00! If you don't start ${pendingTasks[0].title} right now, you won't make it to your goal: "${userGoal}"!`;
+                } else if (mood === "angry") {
+                    speech = `😠 Digital time check (${shortDigitalStr})! Stop delaying your work! ${pendingTasks[0].title} needs to be done NOW!`;
+                } else if (mood === "furious") {
+                    speech = `🔥 IT IS ALMOST NIGHT (${shortDigitalStr})! ${currentUser.toUpperCase()}, WHY ARE YOU NOT DOING YOUR HOMEWORK?! You will regret this tomorrow if you fail! Do ${pendingTasks[0].title} IMMEDIATELY!`;
+                }
+                const speechEl = document.getElementById('ai-speech-bubble');
+                if (speechEl) speechEl.innerText = speech;
+            }
+
+            // Check dynamic active alarms for matching time slot
+            if (triggeredLastMinute !== shortDigitalStr) {
+                const userAlarms = user.alarms || [];
+                const matched = userAlarms.find(a => a.enabled && a.time === shortDigitalStr);
+                if (matched) {
+                    triggeredLastMinute = shortDigitalStr;
+                    triggerAlarmSlot(matched.time, matched.label, matched.note);
+                }
+            }
+        }
+
+        function renderMascotSVG(mood) {
+            const avatarContainer = document.getElementById('mascot-avatar');
+            if (!avatarContainer) return;
+
+            let bodyColor = "#0284c7"; // Cyan/Blue base
+            let visorColor = "#38bdf8";
+            let eyeElements = "";
+            let mouthElements = "";
+            let extraDecorations = "";
+
+            if (mood === "happy") {
+                bodyColor = "#10b981"; // Emerald
+                visorColor = "#34d399";
+                eyeElements = `
+                    <path d="M 35 48 Q 42 38 49 48" stroke="#ffffff" stroke-width="4" stroke-linecap="round" fill="none"/>
+                    <path d="M 61 48 Q 68 38 75 48" stroke="#ffffff" stroke-width="4" stroke-linecap="round" fill="none"/>
+                `;
+                mouthElements = `<path d="M 44 64 Q 55 76 66 64 Z" fill="#ffffff"/>`;
+                extraDecorations = `<circle cx="20" cy="25" r="3" fill="#facc15" class="animate-ping"/><circle cx="90" cy="30" r="4" fill="#facc15"/>`;
+            } else if (mood === "friendly") {
+                bodyColor = "#0284c7"; // High-tech Blue
+                visorColor = "#38bdf8";
+                eyeElements = `
+                    <circle cx="42" cy="48" r="7" fill="#ffffff"/><circle cx="68" cy="48" r="7" fill="#ffffff"/>
+                    <circle cx="44" cy="48" r="3" fill="#0f172a"/><circle cx="70" cy="48" r="3" fill="#0f172a"/>
+                `;
+                mouthElements = `<path d="M 45 65 Q 55 72 65 65" stroke="#ffffff" stroke-width="4" stroke-linecap="round" fill="none"/>`;
+            } else if (mood === "impatient") {
+                bodyColor = "#d97706"; // Amber
+                visorColor = "#fbbf24";
+                eyeElements = `
+                    <circle cx="42" cy="48" r="6" fill="#ffffff"/><circle cx="68" cy="48" r="6" fill="#ffffff"/>
+                    <line x1="33" y1="38" x2="49" y2="43" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
+                    <line x1="77" y1="38" x2="61" y2="43" stroke="#ffffff" stroke-width="3.5" stroke-linecap="round"/>
+                `;
+                mouthElements = `<line x1="45" y1="65" x2="65" y2="65" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>`;
+            } else if (mood === "angry") {
+                bodyColor = "#dc2626"; // Angry Red
+                visorColor = "#f87171";
+                eyeElements = `
+                    <polygon points="35,42 49,49 38,54" fill="#ffffff"/>
+                    <polygon points="75,42 61,49 72,54" fill="#ffffff"/>
+                `;
+                mouthElements = `<path d="M 44 68 Q 55 58 66 68" stroke="#ffffff" stroke-width="4" stroke-linecap="round" fill="none"/>`;
+                extraDecorations = `<path d="M25 20 L30 30" stroke="#ef4444" stroke-width="3"/><path d="M85 20 L80 30" stroke="#ef4444" stroke-width="3"/>`;
+            } else if (mood === "furious") {
+                bodyColor = "#b91c1c"; // Dark Furious Red
+                visorColor = "#ef4444";
+                avatarContainer.className = "w-32 h-32 relative flex items-center justify-center pulse-angry";
+                eyeElements = `
+                    <circle cx="42" cy="48" r="8" fill="#facc15"/><circle cx="68" cy="48" r="8" fill="#facc15"/>
+                    <line x1="30" y1="35" x2="52" y2="47" stroke="#b91c1c" stroke-width="5" stroke-linecap="round"/>
+                    <line x1="80" y1="35" x2="58" y2="47" stroke="#b91c1c" stroke-width="5" stroke-linecap="round"/>
+                `;
+                mouthElements = `<polygon points="42,62 68,62 55,76" fill="#facc15"/>`;
+                extraDecorations = `
+                    <polygon points="55,2 48,15 62,15" fill="#facc15" class="animate-bounce"/>
+                    <circle cx="55" cy="55" r="50" stroke="#ef4444" stroke-width="2" fill="none" stroke-dasharray="6,6" class="animate-spin"/>
+                `;
+            }
+
+            if (mood !== "furious") {
+                avatarContainer.className = "w-32 h-32 relative flex items-center justify-center transition-all duration-300 ai-float";
+            }
+
+            avatarContainer.innerHTML = `
+                <svg viewBox="0 0 110 110" class="w-full h-full drop-shadow-xl">
+                    ${extraDecorations}
+                    <!-- Cyber Owl Robot Base Body -->
+                    <rect x="25" y="28" width="60" height="68" rx="28" fill="${bodyColor}" />
+                    <rect x="29" y="32" width="52" height="60" rx="24" fill="#0f172a" />
+                    
+                    <!-- Cyber Ear Antennas -->
+                    <polygon points="30,28 18,12 38,22" fill="${bodyColor}" />
+                    <polygon points="80,28 92,12 72,22" fill="${bodyColor}" />
+
+                    <!-- Holographic High-Tech Visor Screen -->
+                    <rect x="33" y="38" width="44" height="32" rx="12" fill="${visorColor}" opacity="0.9" />
+
+                    <!-- Visor Shine -->
+                    <path d="M 36 40 L 50 40 L 38 65 L 36 65 Z" fill="#ffffff" opacity="0.3"/>
+
+                    <!-- Facial Expression (Eyes & Mouth) -->
+                    ${eyeElements}
+                    ${mouthElements}
+
+                    <!-- Side Tech Headphones/Sensors -->
+                    <circle cx="23" cy="54" r="7" fill="${bodyColor}"/>
+                    <circle cx="23" cy="54" r="3" fill="#ffffff"/>
+                    <circle cx="87" cy="54" r="7" fill="${bodyColor}"/>
+                    <circle cx="87" cy="54" r="3" fill="#ffffff"/>
+
+                    <!-- Chest Core Light -->
+                    <circle cx="55" cy="80" r="5" fill="${visorColor}" />
+                </svg>
+            `;
+        }
+
+        function updateAIMoodBadge(mood) {
+            const badge = document.getElementById('ai-mood-badge');
+            const card = document.getElementById('ai-card');
+            if (!badge || !card) return;
+
+            if (mood === "happy") {
+                badge.innerText = "Super Proud 🌟";
+                badge.className = "text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+                card.className = "glass-card rounded-2xl p-5 flex flex-col justify-between shadow-xl relative overflow-hidden transition-all duration-500 border-t-4 border-emerald-500 glow-green";
+            } else if (mood === "friendly") {
+                badge.innerText = "Cyber Coach 🤖";
+                badge.className = "text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/30";
+                card.className = "glass-card rounded-2xl p-5 flex flex-col justify-between shadow-xl relative overflow-hidden transition-all duration-500 border-t-4 border-cyan-500 ai-holo-glow";
+            } else if (mood === "impatient") {
+                badge.innerText = "Getting Impatient ⏱";
+                badge.className = "text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30";
+                card.className = "glass-card rounded-2xl p-5 flex flex-col justify-between shadow-xl relative overflow-hidden transition-all duration-500 border-t-4 border-amber-500";
+            } else if (mood === "angry") {
+                badge.innerText = "Angry Mascot 😠";
+                badge.className = "text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-lg bg-red-500/20 text-red-400 border border-red-500/30";
+                card.className = "glass-card rounded-2xl p-5 flex flex-col justify-between shadow-xl relative overflow-hidden transition-all duration-500 border-t-4 border-red-500 glow-red";
+            } else if (mood === "furious") {
+                badge.innerText = "RAGE MODE 🔥";
+                badge.className = "text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-lg bg-red-600 text-white border border-red-400 animate-bounce";
+                card.className = "glass-card rounded-2xl p-5 flex flex-col justify-between shadow-xl relative overflow-hidden transition-all duration-500 border-t-4 border-red-600 glow-red";
+            }
+        }
+
+        function sendQuickChat(msg) {
+            const inputEl = document.getElementById('ai-chat-input');
+            if (inputEl) {
+                inputEl.value = msg;
+                handleAIChatSubmit(new Event('submit'));
+            }
+        }
+
+        /* ==========================================================================
+           ENHANCED AI CHAT & HOMEWORK QUESTION ANSWERING ENGINE
+           ========================================================================== */
+        function handleAIChatSubmit(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            const inputEl = document.getElementById('ai-chat-input');
+            if (!inputEl) return;
+
+            const query = inputEl.value.trim();
+            if (!query) return;
+
+            window.userInteractedWithChat = true;
+
+            const user = appData[currentUser] || { tasks: [], goal: "" };
+            const pending = (user.tasks || []).filter(t => !t.completed);
+            const userGoal = user.goal || "your goals";
+
+            const qLower = query.toLowerCase();
+
+            // Direct emotional/motivation prompts
+            if (qLower.includes('lazy') || qLower.includes('tired') || qLower.includes('dont want') || qLower.includes("don't want")) {
+                speakAIMessage(`No excuses, ${currentUser}! Spend just 5 minutes on ${pending[0] ? pending[0].title : 'your work'}, and momentum will kick in! Remember: "${userGoal}"`);
+            } else if (qLower.includes('nervous') || qLower.includes('scared for test')) {
+                speakAIMessage(`Feeling nervous means you care! Prepare early for your upcoming tests today so you can sleep peacefully tonight!`);
+            } else if (qLower === 'why study?' || qLower.includes('why study') || qLower.includes('what is the point')) {
+                speakAIMessage(`You think you get nothing from homework? You get better grades, zero stress at night, and total freedom to play games guilt-free!`);
+            } else {
+                // AI Knowledge & Answering Engine
+                const aiAnswer = answerHomeworkQuestion(query);
+                speakAIMessage(aiAnswer);
+            }
+
+            inputEl.value = '';
+        }
+
+        function answerHomeworkQuestion(q) {
+            const lower = q.toLowerCase();
+            const user = appData[currentUser] || { tasks: [], goal: "" };
+            const pending = (user.tasks || []).filter(t => !t.completed);
+            const userGoal = user.goal || "your main target";
+
+            // History & Imperialism
+            if (lower.includes('imperialism') || lower.includes('imperialist')) {
+                return `🌍 **History Clue**: Think about big, powerful countries expanding into other lands! What happens when a nation takes over another's trade, resources, or government? Look up the root word **'Empire'** in your notes!`;
+            }
+
+            // Math Questions
+            if (lower.includes('pythagorean') || lower.includes('a^2 + b^2') || lower.includes('triangle')) {
+                return `📐 **Math Hint**: Remember, this theorem only applies to **right-angled triangles** (90° corner)! Think about the two shorter legs (a & b) and the slanted longest side (c). What happens when you square $a$ and $b$, then add them together?`;
+            }
+            if (lower.includes('fraction') || lower.includes('add fraction') || lower.includes('denominator')) {
+                return `🧮 **Math Hint**: You can't add pizza slices if they aren't cut into equal sizes! Look at the bottom numbers (denominators). What common denominator can BOTH bottom numbers multiply into first?`;
+            }
+            if (lower.includes('area') || lower.includes('perimeter') || lower.includes('volume')) {
+                return `📐 **Geometry Clue**: Picture a fenced yard! **Perimeter** is walking around the outside fence line. **Area** is all the grass inside. What calculation covers the inside surface of a rectangle?`;
+            }
+            if (lower.includes('percentage') || lower.includes('percent') || lower.includes('%')) {
+                return `📊 **Math Hint**: 'Percent' means 'out of 100'! Express your numbers as Part ÷ Whole. Once you get that decimal, how do you convert it into a hundredth percentage?`;
+            }
+
+            // Science Questions
+            if (lower.includes('photosynthesis')) {
+                return `🌿 **Science Hint**: What three ingredients does a plant absorb from sunlight, air gas, and soil water to make its food? What gas does the plant breathe OUT for us?`;
+            }
+            if (lower.includes('gravity') || lower.includes('gravitation') || lower.includes('newton')) {
+                return `🌌 **Science Hint**: What invisible force keeps your feet on the floor and pulls dropped pencils down? Think about how massive objects attract smaller objects!`;
+            }
+            if (lower.includes('atom') || lower.includes('proton') || lower.includes('electron') || lower.includes('neutron')) {
+                return `⚛️ **Science Hint**: Think of a solar system! What positive (+) and neutral particles hide in the center nucleus, while tiny negative (-) particles orbit around them?`;
+            }
+            if (lower.includes('cell') || lower.includes('mitochondria') || lower.includes('dna')) {
+                return `🔬 **Biology Hint**: What organelle acts like the 'Powerhouse' or energy generator of the cell to make ATP? Check your cell diagram for the folded oval shape!`;
+            }
+
+            // English & Essay Questions
+            if (lower.includes('essay') || lower.includes('write essay') || lower.includes('paragraph')) {
+                return `✍️ **Writing Clue**: Don't write one massive block of text! Split it into: 1) Intro with your main claim, 2) Body paragraphs with evidence (PEEL method), and 3) Conclusion. What main idea are you trying to prove?`;
+            }
+            if (lower.includes('verb') || lower.includes('noun') || lower.includes('adjective') || lower.includes('adverb')) {
+                return `📝 **Grammar Clue**: Ask yourself: Is the word a **person/place/thing** (Noun), an **action** you perform (Verb), or a word that **describes** something (Adjective)?`;
+            }
+
+            // General Study Tips / Homework Assistance
+            if (lower.includes('how to study') || lower.includes('memorize') || lower.includes('focus')) {
+                return `💡 **Study Hint**: Don't try to study for 3 hours non-stop! Try setting a timer for 20 minutes, turn off your phone, and focus on ONE problem. Can you do 20 minutes right now?`;
+            }
+
+            if (lower.includes('spanish') || lower.includes('hola') || lower.includes('translate')) {
+                return `🇪🇸 **Spanish Hint**: Check the ending of the verb (-AR, -ER, -IR) and who is speaking (Yo, Tú, Él/Ella). What ending replaces the infinitivo?`;
+            }
+
+            // Intelligent Fallback with Socratic Guardrail
+            return `🤖 **Educated AI Coach**: I won't give you the exact answer because that makes your brain lazy! 😉 Here is a hint to help you solve **"${q}"**:\n1. Find the key word in your textbook or notes.\n2. Write down the formula or definition in your own words.\n3. Try step 1 on paper! You've got this!`;
+        }
+
+        function speakAIMessage(msg) {
+            const speechEl = document.getElementById('ai-speech-bubble');
+            if (speechEl) speechEl.innerText = msg;
+        }
+
+        /* ==========================================================================
+           AUDIO SIREN ALARM ENGINE
+           ========================================================================== */
+        function triggerAlarmSlot(timeSlot, label, note) {
+            initAudioCtx();
+            const alarmLabel = label || 'Routine Study Check';
+            const alarmNote = note || 'Time to complete your scheduled tasks now!';
+
+            // Update modal UI
+            const timeEl = document.getElementById('ringing-alarm-time');
+            if (timeEl) timeEl.innerText = timeSlot;
+
+            const labelEl = document.getElementById('ringing-alarm-label');
+            if (labelEl) labelEl.innerText = alarmLabel;
+
+            const noteEl = document.getElementById('ringing-alarm-note');
+            if (noteEl) noteEl.innerText = alarmNote;
+
+            // Show alarm overlay
+            const modal = document.getElementById('alarm-ringing-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+
+            // Start repeating siren audio loop
+            startSirenSound();
+
+            speakAIMessage(`🚨 ALARM RINGING NOW [${timeSlot}] - ${alarmLabel}! ${alarmNote}`);
+        }
+
+        function startSirenSound() {
+            if (isSirenPlaying) return;
+            initAudioCtx();
+
+            try {
+                isSirenPlaying = true;
+                
+                // Frequency sweep oscillator logic
+                sirenOscillator = audioCtx.createOscillator();
+                sirenGainNode = audioCtx.createGain();
+
+                sirenOscillator.type = 'sawtooth';
+                sirenGainNode.gain.setValueAtTime(0.4, audioCtx.currentTime);
+
+                sirenOscillator.connect(sirenGainNode);
+                sirenGainNode.connect(audioCtx.destination);
+
+                sirenOscillator.start();
+
+                let highPitch = false;
+                sirenOscillator.frequency.setValueAtTime(600, audioCtx.currentTime);
+
+                // Alternating continuous pitch modulation (European Police Siren frequency pattern)
+                sirenInterval = setInterval(() => {
+                    if (!audioCtx || !sirenOscillator) return;
+                    const nextFreq = highPitch ? 600 : 960;
+                    sirenOscillator.frequency.exponentialRampToValueAtTime(nextFreq, audioCtx.currentTime + 0.35);
+                    highPitch = !highPitch;
+                }, 400);
+
+            } catch (e) {
+                console.warn("Siren Audio Context Error:", e);
+            }
+        }
+
+        function stopSirenSound() {
+            isSirenPlaying = false;
+            if (sirenInterval) {
+                clearInterval(sirenInterval);
+                sirenInterval = null;
+            }
+            if (sirenGainNode && audioCtx) {
+                try {
+                    sirenGainNode.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+                } catch(e) {}
+            }
+            if (sirenOscillator) {
+                try {
+                    sirenOscillator.stop(audioCtx.currentTime + 0.15);
+                    sirenOscillator.disconnect();
+                } catch(e) {}
+                sirenOscillator = null;
+            }
+        }
+
+        function dismissActiveAlarm() {
+            stopSirenSound();
+            const modal = document.getElementById('alarm-ringing-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+            speakAIMessage("✅ Alarm acknowledged! Time to focus on your homework now!");
+        }
+
+        function testAudioTone() {
+            triggerAlarmSlot('TEST', 'Siren Audio Test', 'Testing high-volume continuous siren alert!');
+        }
+
+        function showConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 80,
+                    spread: 60,
+                    origin: { y: 0.7 }
+                });
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>

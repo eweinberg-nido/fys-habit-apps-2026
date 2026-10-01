@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusForge Pitchside - Pro Soccer Student Athlete System</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .mono-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        :root {
+            --bg-main: #06100a;
+            --bg-card: #0e1c12;
+            --bg-hover: #162c1d;
+            --border-color: #1f3b28;
+            --border-strong: #366545;
+            --text-main: #ffffff;
+            --text-muted: #9ca3af;
+            --accent-primary: #22c55e; /* Pitch Green */
+            --accent-text: #052e16;
+            --card-shadow: 0 4px 25px rgba(0, 0, 0, 0.8);
+            --radius-main: 0.85rem;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+        }
+
+        .theme-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-main);
+            box-shadow: var(--card-shadow);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .theme-card:hover {
+            border-color: var(--border-strong);
+        }
+
+        .theme-border {
+            border-color: var(--border-color);
+        }
+
+        .theme-btn-primary {
+            background-color: var(--accent-primary);
+            color: var(--accent-text);
+            font-weight: 700;
+            border-radius: var(--radius-main);
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        .theme-btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .theme-btn-secondary {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-main);
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .theme-btn-secondary:hover {
+            background-color: var(--bg-hover);
+            border-color: var(--border-strong);
+        }
+
+        .theme-input {
+            background-color: var(--bg-main);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: var(--radius-main);
+        }
+
+        .theme-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-main);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-strong);
+            border-radius: 3px;
+        }
+
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+            display: flex;
+            width: 200%;
+            animation: marquee 25s linear infinite;
+        }
+        .animate-marquee:hover {
+            animation-play-state: paused;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col min-h-screen">
+
+    <div class="bg-emerald-950/90 border-b border-emerald-900/50 text-xs py-1.5 px-4 overflow-hidden whitespace-nowrap">
+        <div class="max-w-7xl mx-auto flex items-center gap-2">
+            <span class="bg-emerald-500 text-black font-extrabold px-2 py-0.5 rounded uppercase tracking-wider text-[10px]">PITCHSIDE TICKET</span>
+            <div class="overflow-hidden relative w-full">
+                <div class="animate-marquee flex gap-8 text-emerald-300 font-medium">
+                    <span>⚽ Pro Academy Tip: "Elite midfielders inspect the pitch before receiving the ball. Studying your homework in advance gives you total game control!"</span>
+                    <span>🔥 Match Fitness & Focus: Balance training and schoolwork so you step onto the pitch with zero mental fatigue.</span>
+                    <span>⚡ Pro Bound Routine: Break homework into 25-minute halves so you always have time for evening ball control and shooting drills!</span>
+                    <span>🏆 Champions League Mindset: 99% of professional pros master their daily schedule before turning pro. Lock in!</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <header class="border-b theme-border bg-opacity-80 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500 text-black flex items-center justify-center font-black text-xl shadow-lg">
+                        ⚽
+                    </div>
+                    <div>
+                        <h1 class="font-black text-lg leading-none tracking-tight">FocusForge <span class="text-emerald-400">PITCHSIDE</span></h1>
+                        <p class="text-[11px] text-neutral-400 mt-0.5">Pro Soccer Academy Study & Time Manager</p>
+                    </div>
+                </div>
+
+                <nav class="hidden md:flex space-x-1 lg:space-x-2">
+                    <button onclick="switchTab('playbook')" id="tab-btn-playbook" class="nav-tab px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-clipboard-list text-xs text-emerald-400"></i> Tactical Playbook (Goals)
+                    </button>
+                    <button onclick="switchTab('schedule')" id="tab-btn-schedule" class="nav-tab px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-days text-xs"></i> Match & Study Schedule
+                    </button>
+                    <button onclick="switchTab('timer')" id="tab-btn-timer" class="nav-tab px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-stopwatch text-xs"></i> Match Half Timer
+                    </button>
+                    <button onclick="switchTab('locker')" id="tab-btn-locker" class="nav-tab px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-bolt text-xs text-amber-400"></i> Locker Room (SOS)
+                    </button>
+                    <button onclick="switchTab('news')" id="tab-btn-news" class="nav-tab px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-futbol text-xs text-cyan-400"></i> Soccer Pro Hub
+                    </button>
+                </nav>
+
+                <div class="flex items-center gap-3">
+                    <div class="hidden sm:flex items-center gap-2 text-xs px-3 py-1.5 rounded-full border theme-border bg-neutral-900/50">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span class="text-neutral-400">Lock-In Time:</span>
+                        <span id="header-focus-time" class="font-bold mono-font text-emerald-400">00m</span>
+                    </div>
+                    <button onclick="launchQuickDrill()" class="theme-btn-primary px-3.5 py-2 text-xs flex items-center gap-1.5 shadow-lg bg-emerald-500 text-black hover:bg-emerald-400">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span>5-Min Drill</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="md:hidden flex border-t theme-border overflow-x-auto px-2 py-1 gap-1 text-xs">
+            <button onclick="switchTab('playbook')" id="mob-tab-playbook" class="px-3 py-1.5 rounded-md whitespace-nowrap flex items-center gap-1">Playbook</button>
+            <button onclick="switchTab('schedule')" id="mob-tab-schedule" class="px-3 py-1.5 rounded-md whitespace-nowrap flex items-center gap-1">Schedule</button>
+            <button onclick="switchTab('timer')" id="mob-tab-timer" class="px-3 py-1.5 rounded-md whitespace-nowrap flex items-center gap-1">Timer</button>
+            <button onclick="switchTab('locker')" id="mob-tab-locker" class="px-3 py-1.5 rounded-md whitespace-nowrap flex items-center gap-1">Locker Room</button>
+            <button onclick="switchTab('news')" id="mob-tab-news" class="px-3 py-1.5 rounded-md whitespace-nowrap flex items-center gap-1">Pro Hub</button>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- VIEW 1: TACTICAL PLAYBOOK (SMART GOALS & HOMEWORK) -->
+        <section id="view-playbook" class="tab-view space-y-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-black tracking-tight flex items-center gap-2">
+                        <i class="fa-solid fa-clipboard-list text-emerald-400"></i> Tactical Playbook (Homework & SMART Goals)
+                    </h2>
+                    <p class="text-sm text-neutral-400">Break daunting homework assignments into 3 easy passes so you can score quickly and head to soccer practice.</p>
+                </div>
+                <button onclick="openGoalModal()" class="theme-btn-primary px-4 py-2 text-sm flex items-center gap-2 bg-emerald-500 text-black hover:bg-emerald-400 shadow-lg font-bold">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Add New Homework Play</span>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="theme-card p-4 flex items-center justify-between border-emerald-500/20">
+                    <div>
+                        <p class="text-xs text-neutral-400 font-semibold uppercase">Active Homework Plays</p>
+                        <p id="stat-active-goals" class="text-3xl font-black mono-font text-white">0</p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-emerald-500/10 text-emerald-400"><i class="fa-solid fa-clipboard-question text-xl"></i></div>
+                </div>
+                <div class="theme-card p-4 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-neutral-400 font-semibold uppercase">Passes Completed</p>
+                        <p id="stat-completed-steps" class="text-3xl font-black mono-font text-white">0 / 0</p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-neutral-800 text-neutral-300"><i class="fa-solid fa-check-double text-xl"></i></div>
+                </div>
+                <div class="theme-card p-4 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-neutral-400 font-semibold uppercase">Match Readiness Rate</p>
+                        <p id="stat-completion-pct" class="text-3xl font-black mono-font text-emerald-400">0%</p>
+                    </div>
+                    <div class="p-3 rounded-xl bg-neutral-800 text-neutral-300"><i class="fa-solid fa-chart-line text-xl"></i></div>
+                </div>
+            </div>
+
+            <div id="goals-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+        </section>
+
+        <!-- VIEW 2: SCHEDULE & TIME BLOCKING -->
+        <section id="view-schedule" class="tab-view space-y-6 hidden">
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-black tracking-tight flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-days text-emerald-400"></i> Match Schedule & Time Blocks
+                    </h2>
+                    <p class="text-sm text-neutral-400">Protect your training sessions by scheduling your study blocks like tactical match preparations.</p>
+                </div>
+                
+                <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
+                    <div class="flex bg-neutral-900 border theme-border rounded-lg p-1 text-xs">
+                        <button onclick="setCalendarViewMode('month')" id="cal-view-month" class="px-3 py-1.5 rounded-md transition font-medium">Month</button>
+                        <button onclick="setCalendarViewMode('week')" id="cal-view-week" class="px-3 py-1.5 rounded-md transition font-medium">Week</button>
+                        <button onclick="setCalendarViewMode('day')" id="cal-view-day" class="px-3 py-1.5 rounded-md transition font-medium">Day View</button>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button onclick="changeCalendarPeriod(-1)" class="theme-btn-secondary px-3 py-1.5 text-xs"><i class="fa-solid fa-chevron-left"></i></button>
+                        <button onclick="goToCalendarToday()" class="theme-btn-secondary px-3 py-1.5 text-xs font-semibold">Today</button>
+                        <button onclick="changeCalendarPeriod(1)" class="theme-btn-secondary px-3 py-1.5 text-xs"><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+
+                    <button onclick="openScheduleModal()" class="theme-btn-primary px-4 py-2 text-xs flex items-center gap-2 bg-emerald-500 text-black hover:bg-emerald-400 font-bold">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add Training / Study Block</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between border-b theme-border pb-3">
+                <h3 id="calendar-header-title" class="text-lg font-bold mono-font flex items-center gap-2"></h3>
+                <span id="calendar-selected-date-badge" class="text-xs px-2.5 py-1 rounded-full border theme-border bg-neutral-900 text-emerald-300 mono-font">
+                    Selected: Today
+                </span>
+            </div>
+
+            <div class="theme-card p-4 sm:p-6 overflow-hidden">
+                <div id="cal-container-month" class="space-y-2">
+                    <div class="grid grid-cols-7 text-center text-xs font-bold uppercase tracking-wider text-neutral-400 py-2 border-b theme-border">
+                        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                    </div>
+                    <div id="calendar-month-grid" class="grid grid-cols-7 gap-1 sm:gap-2 auto-rows-fr"></div>
+                </div>
+
+                <div id="cal-container-week" class="hidden space-y-4">
+                    <div id="calendar-week-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3"></div>
+                </div>
+
+                <div id="cal-container-day" class="hidden space-y-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <p class="text-xs text-neutral-400">Match Plan for <span id="day-view-date-label" class="font-bold text-white mono-font"></span></p>
+                    </div>
+                    <div id="schedule-timeline" class="space-y-3 max-h-[600px] overflow-y-auto pr-2"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 3: MATCH HALF TIMER & AUDIO -->
+        <section id="view-timer" class="tab-view space-y-6 hidden">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-black tracking-tight flex items-center gap-2">
+                        <i class="fa-solid fa-stopwatch text-emerald-400"></i> Match Half Focus Timer (Lock-In Mode)
+                    </h2>
+                    <p class="text-sm text-neutral-400">Run your homework like a 25-minute match half. Short bursts, zero distractions, absolute ball control.</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="setTimerPreset(25, 5, '1st Half (25m)')" class="theme-btn-secondary px-3 py-1.5 text-xs">25m Half / 5m Water Break</button>
+                    <button onclick="setTimerPreset(45, 15, 'Full Match (45m)')" class="theme-btn-secondary px-3 py-1.5 text-xs">45m Pro Half / 15m Halftime</button>
+                    <button onclick="setTimerPreset(15, 3, 'Quick Drill (15m)')" class="theme-btn-secondary px-3 py-1.5 text-xs">15m Tactical Sprint</button>
+                    <button onclick="setTimerPreset(5, 2, '5-Min Blitz (5m)')" class="theme-btn-secondary px-3 py-1.5 text-xs font-semibold text-amber-400 border-amber-500/40">5m Emergency Blitz</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div class="lg:col-span-7 theme-card p-8 flex flex-col items-center justify-center relative min-h-[420px] border-emerald-500/30">
+                    <div class="w-full max-w-sm mb-6">
+                        <label class="block text-xs text-neutral-400 mb-1 font-semibold uppercase">Link Half to Tactical Playbook Assignment</label>
+                        <select id="timer-goal-select" class="w-full p-2.5 text-xs theme-input rounded-xl font-medium">
+                            <option value="">-- Unlinked Practice --</option>
+                        </select>
+                    </div>
+
+                    <div class="relative w-64 h-64 flex items-center justify-center my-4">
+                        <svg class="w-full h-full" viewBox="0 0 100 100">
+                            <circle class="text-neutral-900" stroke-width="6" stroke="currentColor" fill="transparent" r="42" cx="50" cy="50"/>
+                            <circle id="timer-progress-ring" class="progress-ring-circle text-emerald-400" stroke-width="6" stroke-dasharray="263.89" stroke-dashoffset="0" stroke-linecap="round" stroke="currentColor" fill="transparent" r="42" cx="50" cy="50"/>
+                        </svg>
+                        <div class="absolute flex flex-col items-center justify-center text-center">
+                            <span id="timer-mode-label" class="text-[11px] uppercase tracking-widest text-emerald-400 font-black mb-1">1st Half</span>
+                            <span id="timer-display" class="text-5xl font-black mono-font tracking-tight text-white">25:00</span>
+                            <span id="timer-subtext" class="text-xs text-neutral-400 mt-2">Ready for kickoff</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-4 mt-4">
+                        <button id="btn-timer-start" onclick="toggleTimer()" class="theme-btn-primary px-8 py-3.5 text-sm flex items-center gap-2 shadow-xl bg-emerald-500 text-black hover:bg-emerald-400 font-black uppercase tracking-wider">
+                            <i class="fa-solid fa-play"></i> <span id="timer-start-text">Kickoff (Start)</span>
+                        </button>
+                        <button onclick="resetTimer()" class="theme-btn-secondary px-4 py-3.5 text-sm">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="theme-card p-5 space-y-4">
+                        <h3 class="font-bold text-base flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-emerald-400"></i> Match Clock Customizer
+                        </h3>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs text-neutral-400 mb-1">Work Minutes</label>
+                                <input type="number" id="input-work-min" value="25" min="1" max="180" class="w-full p-2.5 text-sm theme-input text-center font-bold mono-font">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-neutral-400 mb-1">Water Break</label>
+                                <input type="number" id="input-break-min" value="5" min="1" max="60" class="w-full p-2.5 text-sm theme-input text-center font-bold mono-font">
+                            </div>
+                        </div>
+                        <button onclick="applyCustomTimerSettings()" class="w-full theme-btn-secondary py-2.5 text-xs font-semibold">Set Match Clock</button>
+                    </div>
+
+                    <div class="theme-card p-5 space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h3 class="font-bold text-base flex items-center gap-2">
+                                <i class="fa-solid fa-headphones text-emerald-400"></i> Pitchside Audio Focus
+                            </h3>
+                            <span class="text-[10px] uppercase border theme-border px-2 py-0.5 rounded text-emerald-400 font-bold">In-Browser Sound</span>
+                        </div>
+                        <p class="text-xs text-neutral-400">Block out external noise so you can stay locked in like a pro midfielder reading the game.</p>
+                        
+                        <div class="grid grid-cols-2 gap-2">
+                            <button onclick="toggleAmbientSound('brown')" id="ambient-btn-brown" class="ambient-btn theme-btn-secondary p-2.5 text-xs text-left flex items-center justify-between">
+                                <span><i class="fa-solid fa-wind mr-1"></i> Stadium Wind</span>
+                                <i class="fa-solid fa-volume-xmark text-neutral-500"></i>
+                            </button>
+                            <button onclick="toggleAmbientSound('white')" id="ambient-btn-white" class="ambient-btn theme-btn-secondary p-2.5 text-xs text-left flex items-center justify-between">
+                                <span><i class="fa-solid fa-water mr-1"></i> Pitch Rain</span>
+                                <i class="fa-solid fa-volume-xmark text-neutral-500"></i>
+                            </button>
+                            <button onclick="toggleAmbientSound('binaural')" id="ambient-btn-binaural" class="ambient-btn theme-btn-secondary p-2.5 text-xs text-left flex items-center justify-between">
+                                <span><i class="fa-solid fa-brain mr-1"></i> Hyper Focus (40Hz)</span>
+                                <i class="fa-solid fa-volume-xmark text-neutral-500"></i>
+                            </button>
+                            <button onclick="toggleAmbientSound('off')" class="theme-btn-secondary p-2.5 text-xs text-neutral-400 text-center col-span-2">
+                                Turn Off Audio
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 4: LOCKER ROOM (ANTI-PROCRASTINATION & HOMEWORK RESCUE) -->
+        <section id="view-locker" class="tab-view space-y-6 hidden">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-black tracking-tight flex items-center gap-2">
+                        <i class="fa-solid fa-shield-halved text-amber-400"></i> Locker Room (Homework Rescue & Focus SOS)
+                    </h2>
+                    <p class="text-sm text-neutral-400">When homework feels like an impossible 90th-minute deficit, use these pro soccer mindset plays to lock in instantly.</p>
+                </div>
+                <button onclick="launchSoccerRescueModal()" class="theme-btn-primary px-6 py-3 text-xs flex items-center gap-2 bg-amber-400 text-black hover:bg-amber-300 font-black uppercase tracking-wider shadow-lg">
+                    <i class="fa-solid fa-rocket"></i> Launch 90th-Minute Comeback
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="theme-card p-6 space-y-4 flex flex-col justify-between border-amber-500/30">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center text-xl mb-4 font-black">
+                            ⚽
+                        </div>
+                        <h3 class="font-bold text-lg">The 5-Minute Drill</h3>
+                        <p class="text-xs text-neutral-400 mt-2 leading-relaxed">
+                            Pro players don't think about scoring 5 goals at once; they just win their next duel. Commit to working for just <strong>300 seconds</strong>. Once you start, momentum takes over.
+                        </p>
+                    </div>
+                    <button onclick="launchQuickDrill()" class="w-full theme-btn-primary py-3 text-xs flex items-center justify-center gap-2 bg-amber-400 text-black hover:bg-amber-300 font-bold">
+                        <i class="fa-solid fa-bolt"></i> Start 5-Min Drill Timer
+                    </button>
+                </div>
+
+                <div class="theme-card p-6 space-y-4 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-xl mb-4 font-black">
+                            📋
+                        </div>
+                        <h3 class="font-bold text-lg">Break Down the Playbook</h3>
+                        <p class="text-xs text-neutral-400 mt-2 leading-relaxed">
+                            Instead of "do science project", break it down into passes: 1) Open document, 2) Write heading, 3) Write one sentence. Tiny steps eliminate mental paralysis.
+                        </p>
+                    </div>
+                    <button onclick="openGoalModal()" class="w-full theme-btn-secondary py-3 text-xs flex items-center justify-center gap-2 font-bold">
+                        <i class="fa-solid fa-diagram-project"></i> Create 3-Pass Play
+                    </button>
+                </div>
+
+                <div class="theme-card p-6 space-y-4 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 flex items-center justify-center text-xl mb-4 font-black">
+                            🛡️
+                        </div>
+                        <h3 class="font-bold text-lg">Match-Day Focus Shield</h3>
+                        <p class="text-xs text-neutral-400 mt-2 leading-relaxed">
+                            Put your phone in another room, clear off all browser tabs except what you need, and put on Stadium Wind noise. Zero distractions on the pitch.
+                        </p>
+                    </div>
+                    <button onclick="switchTab('timer')" class="w-full theme-btn-secondary py-3 text-xs flex items-center justify-center gap-2 font-bold">
+                        <i class="fa-solid fa-headphones"></i> Open Pitchside Audio
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 5: SOCCER PRO HUB & INSPIRATION -->
+        <section id="view-news" class="tab-view space-y-6 hidden">
+            <div>
+                <h2 class="text-2xl font-black tracking-tight flex items-center gap-2">
+                    <i class="fa-solid fa-futbol text-cyan-400"></i> Soccer Pro & Training Hub
+                </h2>
+                <p class="text-sm text-neutral-400">Daily inspiration, midfield vision habits, and soccer training mindset tips for aspiring professionals.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="theme-card p-6 space-y-4 border-cyan-500/30">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center font-black">10</div>
+                        <div>
+                            <h3 class="font-bold text-base">Midfielder Vision & Study Routine</h3>
+                            <p class="text-xs text-neutral-400">How elite playmakers scan the field before receiving</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-neutral-300 leading-relaxed">
+                        Kevin De Bruyne and Jude Bellingham never wing a match on raw talent alone. They scan the pitch constantly before getting the ball. Treating your homework like match film gives you total command of your schedule and leaves you free time for technical drills and shooting practice!
+                    </p>
+                    <div class="p-3 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs">
+                        <span class="font-bold block mb-0.5">⚽ The Pro Formula:</span>
+                        Homework Finished Early = Zero Stress = Maximum Energy for Evening Training & Footwork!
+                    </div>
+                </div>
+
+                <div class="theme-card p-6 space-y-4 border-emerald-500/30">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-black">⚡</div>
+                        <div>
+                            <h3 class="font-bold text-base">The 25-Minute Match Half Habit</h3>
+                            <p class="text-xs text-neutral-400">Why top athletes use timed interval sprints</p>
+                        </div>
+                    </div>
+                    <p class="text-xs text-neutral-300 leading-relaxed">
+                        When you study for 3 hours straight, your brain burns out just like playing 3 full 90-minute matches without a substitution. Breaking study into 25-minute halves with water breaks keeps your mental stamina explosive and sharp.
+                    </p>
+                    <button onclick="switchTab('timer')" class="w-full theme-btn-primary py-2.5 text-xs bg-emerald-500 text-black font-bold">
+                        Start Match Half Timer Now
+                    </button>
+                </div>
+            </div>
+
+            <div class="theme-card p-6 text-center space-y-3">
+                <h3 class="font-bold text-lg">Playbook Data Backup</h3>
+                <p class="text-xs text-neutral-400 max-w-md mx-auto">Your homework plays and time blocks are saved locally on this device.</p>
+                <div class="flex justify-center gap-3 pt-2">
+                    <button onclick="exportDataJSON()" class="theme-btn-secondary px-4 py-2 text-xs flex items-center gap-2">
+                        <i class="fa-solid fa-download"></i> Export Playbook Backup
+                    </button>
+                    <button onclick="confirmResetAllData()" class="theme-btn-secondary px-4 py-2 text-xs text-red-400 border-red-500/30">
+                        <i class="fa-solid fa-trash"></i> Reset Playbook
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL 1: GOAL / PLAYBOOK CREATOR -->
+    <div id="modal-goal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="theme-card max-w-xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-5 border-emerald-500/40">
+            <div class="flex justify-between items-center border-b theme-border pb-3">
+                <h3 id="modal-goal-title" class="font-black text-lg flex items-center gap-2 text-emerald-400">
+                    <i class="fa-solid fa-clipboard-list"></i> Create New Homework Play
+                </h3>
+                <button onclick="closeGoalModal()" class="text-neutral-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <form id="form-goal" onsubmit="saveGoal(event)" class="space-y-4">
+                <input type="hidden" id="goal-id" value="">
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider mb-1 text-white">Assignment / Goal Title</label>
+                    <input type="text" id="goal-title" required placeholder="e.g., Physics Lab Report & Problem Set" class="w-full p-3 text-sm theme-input font-medium">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-neutral-400 mb-1">🎯 [S]pecific Details</label>
+                        <textarea id="goal-s" rows="2" placeholder="Exactly what needs to be solved?" class="w-full p-2 text-xs theme-input"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-neutral-400 mb-1">📊 [M]easurable Outcome</label>
+                        <textarea id="goal-m" rows="2" placeholder="How do you know it's done?" class="w-full p-2 text-xs theme-input"></textarea>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-neutral-400 mb-1">⏰ [T]ime-Bound Deadline</label>
+                        <input type="date" id="goal-deadline" required class="w-full p-2 text-xs theme-input">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-neutral-400 mb-1">Match Priority</label>
+                        <select id="goal-priority" class="w-full p-2 text-xs theme-input">
+                            <option value="high">🔥 90th-Minute Fixture (High Priority)</option>
+                            <option value="medium" selected>⚡ Standard Match</option>
+                            <option value="low">🌱 Friendly Match</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider mb-1 text-white">3-Pass Action Playbook (Checklist)</label>
+                    <p class="text-xs text-neutral-400 mb-2">Break the homework down into 3 tiny passes so it feels effortless to start.</p>
+                    <div id="goal-modal-steps" class="space-y-2 mb-2"></div>
+                    <button type="button" onclick="addGoalModalStepInput()" class="theme-btn-secondary px-3 py-1.5 text-xs font-semibold">
+                        <i class="fa-solid fa-plus mr-1"></i> Add Pass
+                    </button>
+                </div>
+
+                <div class="flex justify-end gap-3 border-t theme-border pt-4">
+                    <button type="button" onclick="closeGoalModal()" class="theme-btn-secondary px-4 py-2 text-xs">Cancel</button>
+                    <button type="submit" class="theme-btn-primary px-6 py-2 text-xs bg-emerald-500 text-black font-bold">Save Playbook Goal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: SCHEDULE TIME-BLOCK CREATOR -->
+    <div id="modal-schedule" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="theme-card max-w-md w-full p-6 space-y-4 border-emerald-500/30">
+            <div class="flex justify-between items-center border-b theme-border pb-3">
+                <h3 class="font-bold text-lg text-emerald-400"><i class="fa-solid fa-calendar-plus mr-1"></i> Add Training / Study Block</h3>
+                <button onclick="closeScheduleModal()" class="text-neutral-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <form id="form-schedule" onsubmit="saveScheduleBlock(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase mb-1">Activity Title</label>
+                    <input type="text" id="sched-title" required placeholder="e.g., Homework Sprint & Team Training" class="w-full p-2.5 text-sm theme-input font-medium">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-neutral-400 mb-1">Start Time</label>
+                        <input type="time" id="sched-start" required value="16:00" class="w-full p-2 text-xs theme-input">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-neutral-400 mb-1">End Time</label>
+                        <input type="time" id="sched-end" required value="17:00" class="w-full p-2 text-xs theme-input">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-neutral-400 mb-1">Category</label>
+                    <select id="sched-category" class="w-full p-2 text-xs theme-input">
+                        <option value="Focus Work">Homework & Study</option>
+                        <option value="Training">Soccer & Pitch Training</option>
+                        <option value="Rest & Break">Rest & Recovery</option>
+                    </select>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-3 border-t theme-border">
+                    <button type="button" onclick="closeScheduleModal()" class="theme-btn-secondary px-4 py-2 text-xs">Cancel</button>
+                    <button type="submit" class="theme-btn-primary px-6 py-2 text-xs bg-emerald-500 text-black font-bold">Add Block</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: 90TH-MINUTE COMEBACK & SOCCER RESCUE -->
+    <div id="modal-soccer-rescue" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="theme-card max-w-lg w-full p-6 space-y-5 border-amber-500/50 bg-amber-500/[0.03]">
+            <div class="flex justify-between items-center border-b theme-border pb-3">
+                <h3 class="font-black text-lg text-amber-400 flex items-center gap-2">
+                    <i class="fa-solid fa-futbol"></i> 90th-Minute Homework Comeback
+                </h3>
+                <button onclick="closeSoccerRescueModal()" class="text-neutral-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <div class="space-y-4 text-xs text-neutral-300">
+                <p class="text-neutral-400 leading-relaxed">
+                    Feeling overwhelmed? Like a playmaker down 1 goal in stoppage time, you don't need to score the whole game on one touch. Let's run a <strong>Quick Drill</strong>:
+                </p>
+
+                <div>
+                    <label class="block font-bold uppercase tracking-wider mb-1 text-white">1. What assignment are you avoiding?</label>
+                    <input type="text" id="soc-subject-input" placeholder="e.g., Chemistry Worksheet #3" class="w-full p-3 text-xs theme-input font-medium">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold uppercase tracking-wider mb-1 text-white">2. First Pass (Under 2 Mins)</label>
+                        <input type="text" id="soc-step1-input" placeholder="e.g., Open notebook and write title" class="w-full p-2.5 text-xs theme-input">
+                    </div>
+                    <div>
+                        <label class="block font-bold uppercase tracking-wider mb-1 text-white">3. Match Half Length</label>
+                        <select id="soc-timer-select" class="w-full p-2.5 text-xs theme-input">
+                            <option value="15">15-Min Tactical Sprint</option>
+                            <option value="25" selected>25-Min Match Half</option>
+                            <option value="45">45-Min Pro Match Fixture</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 space-y-1">
+                    <span class="font-black block">⚽ Pro Soccer Mindset:</span>
+                    <p class="text-[11px] text-amber-400/90">You only have to execute Pass #1. Once you make the first pass, momentum takes over and you'll dominate the match!</p>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 border-t theme-border pt-4">
+                <button onclick="closeSoccerRescueModal()" class="theme-btn-secondary px-4 py-2 text-xs">Cancel</button>
+                <button onclick="executeSoccerRescue()" class="theme-btn-primary px-6 py-2.5 text-xs bg-amber-400 text-black hover:bg-amber-300 font-black uppercase tracking-wider shadow-lg">
+                    <i class="fa-solid fa-bolt mr-1"></i> Kickoff Match Timer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const DEFAULT_STATE = {
+            goals: [
+                {
+                    id: 'goal-demo-1',
+                    title: 'Algebra 2 Chapter 4 Problem Set',
+                    s: 'Solve problems 1 through 15 on worksheet.',
+                    m: '1 completed worksheet checked off.',
+                    deadline: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0],
+                    priority: 'high',
+                    steps: [
+                        { id: 's1', text: 'Open notebook to page 84 & get sharp pencil', done: true },
+                        { id: 's2', text: 'Solve odd-numbered practice problems', done: false },
+                        { id: 's3', text: 'Review answers and pack in backpack', done: false }
+                    ]
+                }
+            ],
+            schedule: [
+                { id: 'sch-1', date: getTodayStr(), start: '16:00', end: '16:30', title: 'Homework Half #1', category: 'Focus Work', completed: false }
+            ],
+            totalFocusSecondsToday: 0,
+            lastFocusDate: getTodayStr()
+        };
+
+        let state = JSON.parse(localStorage.getItem('focus_pitchside_data')) || DEFAULT_STATE;
+
+        let calendarViewMode = 'month';
+        let focalDate = new Date();
+        let currentScheduleDate = getTodayStr();
+
+        let timerInterval = null;
+        let timerSecondsLeft = 25 * 60;
+        let timerTotalDuration = 25 * 60;
+        let isTimerRunning = false;
+        let currentTimerMode = '1st Half (25m)';
+
+        let audioCtx = null;
+        let activeNoiseNode = null;
+        let activeAudioType = 'off';
+
+        function saveState() {
+            localStorage.setItem('focus_pitchside_data', JSON.stringify(state));
+            updateHeaderStats();
+        }
+
+        function getTodayStr() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-view').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-tab').forEach(el => {
+                el.classList.remove('bg-emerald-950', 'text-emerald-400', 'font-bold');
+            });
+
+            const targetView = document.getElementById(`view-${tabId}`);
+            if (targetView) targetView.classList.remove('hidden');
+
+            const targetBtn = document.getElementById(`tab-btn-${tabId}`);
+            if (targetBtn) targetBtn.classList.add('bg-emerald-950', 'text-emerald-400', 'font-bold');
+
+            if (tabId === 'playbook') renderGoals();
+            if (tabId === 'schedule') renderSchedule();
+            if (tabId === 'timer') populateTimerGoalDropdown();
+        }
+
+        function renderGoals() {
+            const container = document.getElementById('goals-list-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            let totalSteps = 0;
+            let completedSteps = 0;
+
+            state.goals.forEach(goal => {
+                const steps = goal.steps || [];
+                totalSteps += steps.length;
+                completedSteps += steps.filter(s => s.done).length;
+            });
+
+            const activeGoalsCount = state.goals.length;
+            const completionPct = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
+
+            document.getElementById('stat-active-goals').textContent = activeGoalsCount;
+            document.getElementById('stat-completed-steps').textContent = `${completedSteps} / ${totalSteps}`;
+            document.getElementById('stat-completion-pct').textContent = `${completionPct}%`;
+
+            if (state.goals.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full theme-card p-8 text-center space-y-3">
+                        <i class="fa-solid fa-clipboard-question text-4xl text-neutral-500"></i>
+                        <h3 class="font-bold text-lg">Playbook is Empty</h3>
+                        <p class="text-xs text-neutral-400 max-w-md mx-auto">Add your homework assignments here so you can break them into easy passes.</p>
+                        <button onclick="openGoalModal()" class="theme-btn-primary px-4 py-2 text-xs inline-flex items-center gap-2 mt-2 bg-emerald-500 text-black font-bold">
+                            <i class="fa-solid fa-plus"></i> Add Homework Play
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            state.goals.forEach(goal => {
+                const goalSteps = goal.steps || [];
+                const goalDoneSteps = goalSteps.filter(s => s.done).length;
+                const pct = goalSteps.length > 0 ? Math.round((goalDoneSteps / goalSteps.length) * 100) : 0;
+
+                const priorityColors = {
+                    high: 'border-red-500/40 text-red-400 bg-red-500/10',
+                    medium: 'border-amber-500/40 text-amber-400 bg-amber-500/10',
+                    low: 'border-blue-500/40 text-blue-400 bg-blue-500/10'
+                };
+
+                const card = document.createElement('div');
+                card.className = 'theme-card p-5 space-y-4 flex flex-col justify-between';
+                card.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-start gap-2">
+                            <h3 class="font-bold text-base tracking-tight leading-snug text-white">${escapeHTML(goal.title)}</h3>
+                            <span class="text-[10px] px-2 py-0.5 rounded border uppercase font-bold whitespace-nowrap ${priorityColors[goal.priority] || priorityColors.medium}">
+                                ${goal.priority === 'high' ? '🔥 90th-Min' : '⚡ Standard'}
+                            </span>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs text-neutral-400 mb-1">
+                                <span>Match Readiness</span>
+                                <span class="mono-font font-bold text-emerald-400">${pct}% (${goalDoneSteps}/${goalSteps.length})</span>
+                            </div>
+                            <div class="w-full bg-neutral-800 h-2 rounded-full overflow-hidden">
+                                <div class="bg-emerald-400 h-full transition-all duration-300" style="width: ${pct}%"></div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 text-xs p-2.5 rounded-xl bg-neutral-900/60 border theme-border">
+                            <div><span class="text-neutral-500 font-bold block">Target Deadline:</span> <span class="mono-font text-neutral-300">${goal.deadline || 'Today'}</span></div>
+                            <div><span class="text-neutral-500 font-bold block">Outcome:</span> <span class="text-neutral-300 truncate block">${escapeHTML(goal.m || 'Done')}</span></div>
+                        </div>
+
+                        <div class="space-y-1.5 pt-1">
+                            <p class="text-xs text-neutral-400 font-bold uppercase tracking-wider">3-Pass Action Breakdown:</p>
+                            ${goalSteps.length === 0 ? '<p class="text-xs text-neutral-500 italic">No passes added.</p>' : ''}
+                            ${goalSteps.map(step => `
+                                <div class="flex items-center justify-between gap-2 p-2 rounded-xl bg-neutral-900/40 border theme-border text-xs">
+                                    <label class="flex items-center gap-2 cursor-pointer flex-1">
+                                        <input type="checkbox" ${step.done ? 'checked' : ''} onchange="toggleGoalStep('${goal.id}', '${step.id}')" class="rounded text-emerald-500 focus:ring-0">
+                                        <span class="${step.done ? 'line-through text-neutral-500' : 'text-neutral-200'}">${escapeHTML(step.text)}</span>
+                                    </label>
+                                    <button onclick="quickScheduleStep('${escapeHTML(step.text)}')" title="Schedule on calendar" class="text-[10px] text-neutral-400 hover:text-white px-1.5 py-0.5 rounded border theme-border">
+                                        <i class="fa-solid fa-calendar-plus mr-1"></i>Schedule
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between border-t theme-border pt-3 gap-2">
+                        <div class="flex gap-1">
+                            <button onclick="linkGoalToTimer('${goal.id}')" class="theme-btn-secondary px-3 py-1.5 text-xs flex items-center gap-1 font-bold text-emerald-400 border-emerald-500/30">
+                                <i class="fa-solid fa-play text-[10px]"></i> Run Match Timer
+                            </button>
+                        </div>
+                        <div class="flex gap-1">
+                            <button onclick="openGoalModal('${goal.id}')" class="text-neutral-400 hover:text-white p-1.5 text-xs"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick="deleteGoal('${goal.id}')" class="text-neutral-400 hover:text-red-400 p-1.5 text-xs"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function openGoalModal(editGoalId = null) {
+            const form = document.getElementById('form-goal');
+            form.reset();
+            document.getElementById('goal-modal-steps').innerHTML = '';
+
+            if (editGoalId) {
+                const goal = state.goals.find(g => g.id === editGoalId);
+                if (goal) {
+                    document.getElementById('modal-goal-title').textContent = 'Edit Homework Play';
+                    document.getElementById('goal-id').value = goal.id;
+                    document.getElementById('goal-title').value = goal.title || '';
+                    document.getElementById('goal-s').value = goal.s || '';
+                    document.getElementById('goal-m').value = goal.m || '';
+                    document.getElementById('goal-deadline').value = goal.deadline || '';
+                    document.getElementById('goal-priority').value = goal.priority || 'medium';
+
+                    (goal.steps || []).forEach(step => addGoalModalStepInput(step.text));
+                }
+            } else {
+                document.getElementById('modal-goal-title').innerHTML = '<i class="fa-solid fa-clipboard-list mr-1 text-emerald-400"></i> Create New Homework Play';
+                document.getElementById('goal-id').value = '';
+                addGoalModalStepInput('Open notebook and get pen');
+                addGoalModalStepInput('Complete first 3 exercises');
+                addGoalModalStepInput('Review and pack bag');
+            }
+
+            document.getElementById('modal-goal').classList.remove('hidden');
+        }
+
+        function closeGoalModal() {
+            document.getElementById('modal-goal').classList.add('hidden');
+        }
+
+        function addGoalModalStepInput(value = '') {
+            const container = document.getElementById('goal-modal-steps');
+            const div = document.createElement('div');
+            div.className = 'flex items-center gap-2';
+            div.innerHTML = `
+                <input type="text" value="${escapeHTML(value)}" placeholder="Pass description..." class="goal-step-input flex-1 p-2 text-xs theme-input">
+                <button type="button" onclick="removeGoalModalStepInput(this)" class="text-neutral-400 hover:text-red-400 p-1.5 text-xs"><i class="fa-solid fa-trash"></i></button>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeGoalModalStepInput(btn) {
+            btn.closest('.flex').remove();
+        }
+
+        function saveGoal(e) {
+            e.preventDefault();
+            const id = document.getElementById('goal-id').value;
+            const title = document.getElementById('goal-title').value;
+            const s = document.getElementById('goal-s').value;
+            const m = document.getElementById('goal-m').value;
+            const deadline = document.getElementById('goal-deadline').value;
+            const priority = document.getElementById('goal-priority').value;
+
+            const stepInputs = document.querySelectorAll('.goal-step-input');
+            const steps = [];
+            stepInputs.forEach((input, index) => {
+                const val = input.value.trim();
+                if (val) {
+                    steps.push({ id: 's-' + index + '-' + Date.now(), text: val, done: false });
+                }
+            });
+
+            if (id) {
+                const existing = state.goals.find(g => g.id === id);
+                if (existing) {
+                    existing.title = title;
+                    existing.s = s;
+                    existing.m = m;
+                    existing.deadline = deadline;
+                    existing.priority = priority;
+                    existing.steps = steps.map(newStep => {
+                        const prevMatch = (existing.steps || []).find(ps => ps.text === newStep.text);
+                        return prevMatch ? { ...newStep, done: prevMatch.done } : newStep;
+                    });
+                }
+            } else {
+                state.goals.push({
+                    id: 'goal-' + Date.now(),
+                    title, s, m, deadline, priority, steps
+                });
+            }
+
+            saveState();
+            closeGoalModal();
+            renderGoals();
+        }
+
+        function deleteGoal(id) {
+            if (confirm('Delete this homework play?')) {
+                state.goals = state.goals.filter(g => g.id !== id);
+                saveState();
+                renderGoals();
+            }
+        }
+
+        function toggleGoalStep(goalId, stepId) {
+            const goal = state.goals.find(g => g.id === goalId);
+            if (goal) {
+                const step = (goal.steps || []).find(s => s.id === stepId);
+                if (step) {
+                    step.done = !step.done;
+                    saveState();
+                    renderGoals();
+                }
+            }
+        }
+
+        function setCalendarViewMode(mode) {
+            calendarViewMode = mode;
+            ['month', 'week', 'day'].forEach(m => {
+                const btn = document.getElementById(`cal-view-${m}`);
+                const container = document.getElementById(`cal-container-${m}`);
+                if (btn) {
+                    if (m === mode) {
+                        btn.classList.add('bg-emerald-500', 'text-black', 'font-bold');
+                        btn.classList.remove('text-neutral-400');
+                    } else {
+                        btn.classList.remove('bg-emerald-500', 'text-black', 'font-bold');
+                        btn.classList.add('text-neutral-400');
+                    }
+                }
+                if (container) {
+                    if (m === mode) container.classList.remove('hidden');
+                    else container.classList.add('hidden');
+                }
+            });
+            renderSchedule();
+        }
+
+        function goToCalendarToday() {
+            focalDate = new Date();
+            currentScheduleDate = getTodayStr();
+            renderSchedule();
+        }
+
+        function changeCalendarPeriod(delta) {
+            if (calendarViewMode === 'month') {
+                focalDate.setMonth(focalDate.getMonth() + delta);
+            } else if (calendarViewMode === 'week') {
+                focalDate.setDate(focalDate.getDate() + (delta * 7));
+            } else if (calendarViewMode === 'day') {
+                focalDate.setDate(focalDate.getDate() + delta);
+                currentScheduleDate = formatDateToYYYYMMDD(focalDate);
+            }
+            renderSchedule();
+        }
+
+        function selectCalendarDate(dateStr) {
+            currentScheduleDate = dateStr;
+            const parts = dateStr.split('-');
+            focalDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            document.getElementById('calendar-selected-date-badge').textContent = `Selected: ${dateStr === getTodayStr() ? 'Today' : dateStr}`;
+            
+            if (calendarViewMode === 'month') {
+                renderSchedule();
+            } else {
+                setCalendarViewMode('day');
+            }
+        }
+
+        function renderSchedule() {
+            document.getElementById('calendar-selected-date-badge').textContent = `Selected: ${currentScheduleDate === getTodayStr() ? 'Today' : currentScheduleDate}`;
+            
+            if (calendarViewMode === 'month') {
+                renderMonthView();
+            } else if (calendarViewMode === 'week') {
+                renderWeekView();
+            } else {
+                renderDayView();
+            }
+        }
+
+        function renderMonthView() {
+            const year = focalDate.getFullYear();
+            const month = focalDate.getMonth();
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            
+            document.getElementById('calendar-header-title').innerHTML = `<i class="fa-solid fa-calendar text-emerald-400"></i> ${monthNames[month]} ${year}`;
+
+            const firstDayOfMonth = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const grid = document.getElementById('calendar-month-grid');
+            grid.innerHTML = '';
+
+            const prevMonthDays = new Date(year, month, 0).getDate();
+            for (let i = firstDayOfMonth - 1; i >= 0; i--) {
+                const d = prevMonthDays - i;
+                const cell = document.createElement('div');
+                cell.className = 'min-h-[90px] p-1.5 rounded-xl border theme-border opacity-30 bg-neutral-900/20 text-xs';
+                cell.innerHTML = `<span class="mono-font text-neutral-500">${d}</span>`;
+                grid.appendChild(cell);
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const isToday = dateStr === getTodayStr();
+                const isSelected = dateStr === currentScheduleDate;
+                const dayEvents = state.schedule.filter(s => s.date === dateStr);
+
+                const cell = document.createElement('div');
+                cell.className = `min-h-[90px] p-1.5 rounded-xl border transition cursor-pointer flex flex-col justify-between ${
+                    isSelected ? 'ring-2 ring-emerald-400 bg-neutral-800/80' : 'theme-border bg-neutral-900/50 hover:border-emerald-500/50'
+                } ${isToday ? 'border-emerald-500/80' : ''}`;
+                
+                cell.onclick = (e) => {
+                    if (!e.target.closest('button')) {
+                        selectCalendarDate(dateStr);
+                    }
+                };
+
+                let eventsHTML = dayEvents.slice(0, 2).map(evt => `
+                    <div class="text-[10px] px-1.5 py-0.5 rounded truncate border theme-border mb-1 flex items-center justify-between ${
+                        evt.completed ? 'line-through opacity-50 bg-neutral-800' : 'bg-emerald-950 text-emerald-300 font-bold border-emerald-500/30'
+                    }">
+                        <span class="truncate">${escapeHTML(evt.title)}</span>
+                    </div>
+                `).join('');
+
+                if (dayEvents.length > 2) {
+                    eventsHTML += `<span class="text-[9px] text-emerald-400 font-bold">+${dayEvents.length - 2} more</span>`;
+                }
+
+                cell.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="mono-font text-xs font-bold px-1.5 py-0.5 rounded ${isToday ? 'bg-emerald-500 text-black' : 'text-neutral-300'}">${day}</span>
+                            ${isToday ? '<span class="text-[9px] font-extrabold uppercase tracking-wider text-emerald-400">Today</span>' : ''}
+                        </div>
+                        <div class="space-y-0.5">${eventsHTML}</div>
+                    </div>
+                    <button onclick="openScheduleModalForDate('${dateStr}')" title="Add block for ${dateStr}" class="text-[10px] text-neutral-500 hover:text-emerald-400 self-end p-0.5">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                `;
+                grid.appendChild(cell);
+            }
+        }
+
+        function renderWeekView() {
+            const startOfWeek = new Date(focalDate);
+            startOfWeek.setDate(focalDate.getDate() - focalDate.getDay());
+
+            const endOfWeek = new Date(startOfWeek);
+            endOfWeek.setDate(startOfWeek.getDate() + 6);
+
+            document.getElementById('calendar-header-title').innerHTML = `
+                <i class="fa-solid fa-calendar-week text-emerald-400"></i>
+                Week: ${startOfWeek.toLocaleDateString(undefined, {month:'short', day:'numeric'})} - ${endOfWeek.toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'})}
+            `;
+
+            const grid = document.getElementById('calendar-week-grid');
+            grid.innerHTML = '';
+
+            for (let i = 0; i < 7; i++) {
+                const current = new Date(startOfWeek);
+                current.setDate(startOfWeek.getDate() + i);
+                const dateStr = formatDateToYYYYMMDD(current);
+                const isToday = dateStr === getTodayStr();
+                const isSelected = dateStr === currentScheduleDate;
+                const dayEvents = state.schedule.filter(s => s.date === dateStr).sort((a,b) => a.start.localeCompare(b.start));
+
+                const col = document.createElement('div');
+                col.className = `theme-card p-3 flex flex-col justify-between space-y-3 ${isSelected ? 'ring-2 ring-emerald-400' : ''} ${isToday ? 'border-emerald-500/80' : ''}`;
+                
+                col.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-center border-b theme-border pb-2 mb-2">
+                            <div>
+                                <p class="text-[10px] uppercase font-bold text-neutral-400">${current.toLocaleDateString(undefined, {weekday: 'short'})}</p>
+                                <p class="text-sm font-black mono-font text-white">${current.getDate()}</p>
+                            </div>
+                            <button onclick="openScheduleModalForDate('${dateStr}')" class="text-xs text-neutral-400 hover:text-emerald-400"><i class="fa-solid fa-plus"></i></button>
+                        </div>
+
+                        <div class="space-y-1.5 max-h-[300px] overflow-y-auto">
+                            ${dayEvents.length === 0 ? '<p class="text-[10px] text-neutral-500 py-2 text-center">No training blocks</p>' : ''}
+                            ${dayEvents.map(evt => `
+                                <div class="p-2 rounded-xl bg-neutral-900 border theme-border text-xs space-y-1">
+                                    <div class="flex items-center justify-between">
+                                        <span class="mono-font text-[10px] text-emerald-400">${evt.start}</span>
+                                        <input type="checkbox" ${evt.completed ? 'checked' : ''} onchange="toggleScheduleCompleted('${evt.id}')" class="rounded text-emerald-500 focus:ring-0 w-3 h-3">
+                                    </div>
+                                    <p class="font-bold text-xs leading-tight ${evt.completed ? 'line-through text-neutral-500' : 'text-white'}">${escapeHTML(evt.title)}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <button onclick="selectCalendarDate('${dateStr}')" class="w-full theme-btn-secondary py-1.5 text-[10px] font-bold">
+                        Open Day
+                    </button>
+                `;
+                grid.appendChild(col);
+            }
+        }
+
+        function renderDayView() {
+            document.getElementById('calendar-header-title').innerHTML = `
+                <i class="fa-solid fa-calendar-day text-emerald-400"></i> Day Match Plan: ${currentScheduleDate}
+            `;
+            document.getElementById('day-view-date-label').textContent = currentScheduleDate;
+
+            const container = document.getElementById('schedule-timeline');
+            container.innerHTML = '';
+
+            const dayBlocks = state.schedule.filter(s => s.date === currentScheduleDate)
+                                         .sort((a, b) => a.start.localeCompare(b.start));
+
+            if (dayBlocks.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-neutral-400">
+                        <i class="fa-solid fa-calendar-xmark text-3xl mb-2 text-neutral-500"></i>
+                        <p class="font-bold text-sm">No training blocks scheduled for ${currentScheduleDate}.</p>
+                        <p class="text-xs mt-1">Click "Add Training Block" to schedule your homework and soccer practice.</p>
+                    </div>
+                `;
+            } else {
+                dayBlocks.forEach(block => {
+                    const row = document.createElement('div');
+                    row.className = `flex items-center justify-between p-3.5 rounded-xl border theme-border transition ${
+                        block.completed ? 'opacity-60 bg-neutral-900/20' : 'bg-neutral-900/60'
+                    }`;
+                    row.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" ${block.completed ? 'checked' : ''} onchange="toggleScheduleCompleted('${block.id}')" class="rounded text-emerald-500 focus:ring-0 w-4 h-4">
+                            <div>
+                                <span class="text-xs mono-font text-emerald-400 font-bold">${block.start} - ${block.end}</span>
+                                <h4 class="font-bold text-sm text-white ${block.completed ? 'line-through text-neutral-500' : ''}">${escapeHTML(block.title)}</h4>
+                                <span class="text-[10px] px-2 py-0.5 rounded border theme-border text-neutral-400">${block.category}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="startScheduleFocusTimer('${escapeHTML(block.title)}')" class="theme-btn-secondary px-3 py-1.5 text-xs font-bold text-emerald-400 border-emerald-500/30">
+                                <i class="fa-solid fa-play text-[10px]"></i> Match Timer
+                            </button>
+                            <button onclick="deleteScheduleBlock('${block.id}')" class="text-neutral-500 hover:text-red-400 p-1 text-xs"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    `;
+                    container.appendChild(row);
+                });
+            }
+        }
+
+        function formatDateToYYYYMMDD(d) {
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        }
+
+        function openScheduleModalForDate(dateStr) {
+            currentScheduleDate = dateStr;
+            openScheduleModal();
+        }
+
+        function openScheduleModal(defaultTitle = '') {
+            document.getElementById('form-schedule').reset();
+            if (defaultTitle) document.getElementById('sched-title').value = defaultTitle;
+            document.getElementById('modal-schedule').classList.remove('hidden');
+        }
+
+        function closeScheduleModal() {
+            document.getElementById('modal-schedule').classList.add('hidden');
+        }
+
+        function saveScheduleBlock(e) {
+            e.preventDefault();
+            const title = document.getElementById('sched-title').value;
+            const start = document.getElementById('sched-start').value;
+            const end = document.getElementById('sched-end').value;
+            const category = document.getElementById('sched-category').value;
+
+            state.schedule.push({
+                id: 'sch-' + Date.now(),
+                date: currentScheduleDate,
+                start,
+                end,
+                title,
+                category,
+                completed: false
+            });
+
+            saveState();
+            closeScheduleModal();
+            renderSchedule();
+        }
+
+        function toggleScheduleCompleted(id) {
+            const block = state.schedule.find(s => s.id === id);
+            if (block) {
+                block.completed = !block.completed;
+                saveState();
+                renderSchedule();
+            }
+        }
+
+        function deleteScheduleBlock(id) {
+            state.schedule = state.schedule.filter(s => s.id !== id);
+            saveState();
+            renderSchedule();
+        }
+
+        function quickScheduleStep(stepText) {
+            switchTab('schedule');
+            openScheduleModal(stepText);
+        }
+
+        function setTimerPreset(workMins, breakMins, modeLabel) {
+            pauseTimer();
+            currentTimerMode = modeLabel;
+            timerTotalDuration = workMins * 60;
+            timerSecondsLeft = timerTotalDuration;
+            document.getElementById('input-work-min').value = workMins;
+            document.getElementById('input-break-min').value = breakMins;
+            updateTimerDisplay();
+        }
+
+        function applyCustomTimerSettings() {
+            pauseTimer();
+            const w = parseInt(document.getElementById('input-work-min').value) || 25;
+            currentTimerMode = 'Custom Match Half';
+            timerTotalDuration = w * 60;
+            timerSecondsLeft = timerTotalDuration;
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timerSecondsLeft / 60);
+            const secs = timerSecondsLeft % 60;
+            const formatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            document.getElementById('timer-display').textContent = formatted;
+            document.getElementById('timer-mode-label').textContent = currentTimerMode;
+
+            const circle = document.getElementById('timer-progress-ring');
+            if (circle) {
+                const circumference = 2 * Math.PI * 42;
+                const offset = circumference - (timerSecondsLeft / timerTotalDuration) * circumference;
+                circle.style.strokeDasharray = `${circumference}`;
+                circle.style.strokeDashoffset = `${offset}`;
+            }
+        }
+
+        function toggleTimer() {
+            if (isTimerRunning) {
+                pauseTimer();
+            } else {
+                startTimer();
+            }
+        }
+
+        function startTimer() {
+            if (isTimerRunning) return;
+            isTimerRunning = true;
+            document.getElementById('timer-start-text').textContent = 'Call Halftime (Pause)';
+            document.getElementById('timer-subtext').textContent = 'In Possession - Total Focus';
+
+            timerInterval = setInterval(() => {
+                if (timerSecondsLeft > 0) {
+                    timerSecondsLeft--;
+                    state.totalFocusSecondsToday++;
+                    if (state.totalFocusSecondsToday % 10 === 0) saveState();
+                    updateTimerDisplay();
+                } else {
+                    pauseTimer();
+                    playTimerBeep();
+                    document.getElementById('timer-subtext').textContent = 'Half Complete! Take a water break.';
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            document.getElementById('timer-start-text').textContent = 'Resume Kickoff';
+            document.getElementById('timer-subtext').textContent = 'Match Paused';
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            timerSecondsLeft = timerTotalDuration;
+            updateTimerDisplay();
+            document.getElementById('timer-subtext').textContent = 'Ready for kickoff';
+        }
+
+        function populateTimerGoalDropdown() {
+            const select = document.getElementById('timer-goal-select');
+            if (!select) return;
+            select.innerHTML = '<option value="">-- Unlinked Practice --</option>';
+            state.goals.forEach(g => {
+                const opt = document.createElement('option');
+                opt.value = g.id;
+                opt.textContent = g.title;
+                select.appendChild(opt);
+            });
+        }
+
+        function linkGoalToTimer(goalId) {
+            switchTab('timer');
+            populateTimerGoalDropdown();
+            const select = document.getElementById('timer-goal-select');
+            if (select) select.value = goalId;
+        }
+
+        function startScheduleFocusTimer(title) {
+            switchTab('timer');
+            currentTimerMode = title.substring(0, 20);
+            setTimerPreset(25, 5, currentTimerMode);
+            startTimer();
+        }
+
+        function initAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function toggleAmbientSound(type) {
+            initAudioContext();
+            if (activeNoiseNode) {
+                activeNoiseNode.stop();
+                activeNoiseNode.disconnect();
+                activeNoiseNode = null;
+            }
+
+            document.querySelectorAll('.ambient-btn').forEach(btn => btn.classList.remove('border-emerald-400', 'font-bold'));
+
+            if (type === 'off' || activeAudioType === type) {
+                activeAudioType = 'off';
+                return;
+            }
+
+            activeAudioType = type;
+            const btn = document.getElementById(`ambient-btn-${type}`);
+            if (btn) btn.classList.add('border-emerald-400', 'font-bold');
+
+            const bufferSize = audioCtx.sampleRate * 2;
+            const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+
+            if (type === 'white') {
+                for (let i = 0; i < bufferSize; i++) output[i] = Math.random() * 2 - 1;
+            } else if (type === 'brown') {
+                let lastOut = 0.0;
+                for (let i = 0; i < bufferSize; i++) {
+                    const white = Math.random() * 2 - 1;
+                    output[i] = (lastOut + (0.02 * white)) / 1.02;
+                    lastOut = output[i];
+                    output[i] *= 3.5;
+                }
+            } else if (type === 'binaural') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                activeNoiseNode = osc;
+                return;
+            }
+
+            const whiteNoise = audioCtx.createBufferSource();
+            whiteNoise.buffer = noiseBuffer;
+            whiteNoise.loop = true;
+
+            const gainNode = audioCtx.createGain();
+            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+
+            whiteNoise.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            whiteNoise.start();
+
+            activeNoiseNode = whiteNoise;
+        }
+
+        function playTimerBeep() {
+            try {
+                initAudioContext();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.8);
+            } catch (e) {}
+        }
+
+        function launchQuickDrill() {
+            switchTab('timer');
+            setTimerPreset(5, 2, '5-Min Blitz (5m)');
+            startTimer();
+        }
+
+        function launchSoccerRescueModal() {
+            document.getElementById('soc-subject-input').value = '';
+            document.getElementById('soc-step1-input').value = '';
+            document.getElementById('modal-soccer-rescue').classList.remove('hidden');
+        }
+
+        function closeSoccerRescueModal() {
+            document.getElementById('modal-soccer-rescue').classList.add('hidden');
+        }
+
+        function executeSoccerRescue() {
+            const subject = document.getElementById('soc-subject-input').value.trim() || 'Homework Assignment';
+            const step1 = document.getElementById('soc-step1-input').value.trim() || 'Open notebook and get pen';
+            const durationMins = parseInt(document.getElementById('soc-timer-select').value) || 25;
+
+            const newGoal = {
+                id: 'goal-' + Date.now(),
+                title: `Play: ${subject}`,
+                s: `Complete assignment: ${subject}`,
+                m: 'Homework fully completed.',
+                deadline: getTodayStr(),
+                priority: 'high',
+                steps: [
+                    { id: 's1', text: step1, done: false },
+                    { id: 's2', text: 'Execute core problems or reading', done: false },
+                    { id: 's3', text: 'Review and pack bag', done: false }
+                ]
+            };
+
+            state.goals.push(newGoal);
+            saveState();
+            closeSoccerRescueModal();
+
+            switchTab('timer');
+            setTimerPreset(durationMins, 5, `Match: ${subject.substring(0, 15)}`);
+            populateTimerGoalDropdown();
+            
+            const dropdown = document.getElementById('timer-goal-select');
+            if (dropdown) dropdown.value = newGoal.id;
+
+            startTimer();
+        }
+
+        function updateHeaderStats() {
+            const mins = Math.floor((state.totalFocusSecondsToday || 0) / 60);
+            const el = document.getElementById('header-focus-time');
+            if (el) el.textContent = `${mins}m`;
+        }
+
+        function exportDataJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `focus_pitchside_backup_${getTodayStr()}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function confirmResetAllData() {
+            if (confirm('Reset your playbook data?')) {
+                localStorage.removeItem('focus_pitchside_data');
+                state = DEFAULT_STATE;
+                saveState();
+                location.reload();
+            }
+        }
+
+        function escapeHTML(str) {
+            return String(str || '').replace(/[&<>"']/g, function (m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+            });
+        }
+
+        window.onload = function () {
+            switchTab('playbook');
+            updateHeaderStats();
+            updateTimerDisplay();
+        };
+    </script>
+</body>
+</html>

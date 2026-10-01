@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudySync - Student Planner, Reminders & Practice Tests</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for performance graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Canvas Confetti for test victories -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .lockscreen-bg {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4338ca 100%);
+        }
+    </style>
+</head>
+<body class="h-full text-slate-800 antialiased flex flex-col md:flex-row overflow-hidden bg-slate-50">
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="w-full md:w-64 bg-slate-900 text-slate-300 flex flex-col justify-between shrink-0 z-30 transition-all duration-300">
+        <div>
+            <!-- App Logo & Header -->
+            <div class="p-5 flex items-center justify-between border-b border-slate-800">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white text-xl font-bold shadow-lg shadow-indigo-500/30">
+                        <i class="fa-solid font-bold fa-graduation-cap"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg text-white tracking-tight leading-none">StudySync</h1>
+                        <span class="text-xs text-indigo-400 font-medium">Smart Student Hub</span>
+                    </div>
+                </div>
+                <button id="lockscreen-toggle-btn" title="Simulate Lock Screen Notifications" onclick="toggleLockscreenSim()" class="md:hidden text-slate-400 hover:text-white p-2">
+                    <i class="fa-solid fa-mobile-screen-button text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="p-3 space-y-1">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all bg-indigo-600/10 text-indigo-400 font-semibold">
+                    <i class="fa-solid fa-chart-pie w-5"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button onclick="switchTab('calendar')" id="nav-calendar" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all hover:bg-slate-800 text-slate-400 hover:text-slate-200">
+                    <i class="fa-regular fa-calendar-days w-5"></i>
+                    <span>Schedule & Calendar</span>
+                </button>
+                <button onclick="switchTab('homework')" id="nav-homework" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all hover:bg-slate-800 text-slate-400 hover:text-slate-200">
+                    <i class="fa-solid fa-book-bookmark w-5"></i>
+                    <span>Homework Table</span>
+                    <span id="pending-hw-badge" class="ml-auto bg-indigo-500/20 text-indigo-300 text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+                </button>
+                <button onclick="switchTab('practice')" id="nav-practice" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all hover:bg-slate-800 text-slate-400 hover:text-slate-200">
+                    <i class="fa-solid fa-brain w-5"></i>
+                    <span>Practice Tests</span>
+                </button>
+                <button onclick="switchTab('focus')" id="nav-focus" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all hover:bg-slate-800 text-slate-400 hover:text-slate-200">
+                    <i class="fa-solid fa-stopwatch w-5"></i>
+                    <span>Focus & Pomodoro</span>
+                </button>
+                <button onclick="switchTab('reminders')" id="nav-reminders" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all hover:bg-slate-800 text-slate-400 hover:text-slate-200">
+                    <i class="fa-solid fa-bell w-5"></i>
+                    <span>Lockscreen & Alerts</span>
+                </button>
+            </nav>
+        </div>
+
+        <div class="p-4 border-t border-slate-800 space-y-2">
+            <button onclick="openModal('add-item-modal')" class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm rounded-xl shadow-md transition-all flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-plus"></i>
+                <span>Add Event / HW / Test</span>
+            </button>
+            <button onclick="toggleLockscreenSim()" class="w-full py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium rounded-xl transition-all flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-mobile-screen"></i>
+                <span>Test Lock Screen View</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col h-full overflow-y-auto bg-slate-50 relative">
+        <!-- Top Status Bar / Header -->
+        <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-20 shadow-sm">
+            <div class="flex items-center space-x-4">
+                <h2 id="page-title" class="text-xl font-bold text-slate-800">Dashboard Overview</h2>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <button id="notif-perm-btn" onclick="requestNotificationPermission()" class="text-xs px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 transition-all flex items-center space-x-2 text-slate-600">
+                    <i class="fa-solid fa-bell text-indigo-500"></i>
+                    <span id="notif-perm-text">Enable Notifications</span>
+                </button>
+
+                <div class="hidden sm:flex items-center space-x-2 bg-slate-100 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-700">
+                    <i class="fa-regular fa-clock text-indigo-600"></i>
+                    <span id="top-clock-time">12:00 PM</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Notification Banner Toast Container -->
+        <div id="toast-container" class="fixed top-5 right-5 z-50 space-y-3 pointer-events-none max-w-sm w-full px-4"></div>
+
+        <!-- View Content Container -->
+        <div class="p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
+
+            <!-- TAB 1: DASHBOARD -->
+            <section id="tab-dashboard" class="tab-content space-y-6">
+                <div class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-violet-900 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
+                    <div class="absolute right-0 top-0 bottom-0 opacity-10 flex items-center pointer-events-none pr-8">
+                        <i class="fa-solid fa-clock-rotate-left text-9xl"></i>
+                    </div>
+                    <div class="relative z-10 space-y-2 max-w-2xl">
+                        <span class="inline-block px-3 py-1 bg-indigo-500/30 text-indigo-200 text-xs font-bold uppercase tracking-wider rounded-full border border-indigo-400/30">Smart Assistant</span>
+                        <h3 class="text-2xl font-extrabold tracking-tight">Stay ahead of your homework & tests!</h3>
+                        <p class="text-indigo-200 text-sm leading-relaxed">
+                            Don't know where to start? We schedule smart reminders directly to your lockscreen ahead of time so you never forget assignments or panic before exams.
+                        </p>
+                        <div class="pt-2 flex flex-wrap gap-3">
+                            <button onclick="openModal('add-item-modal')" class="px-4 py-2 bg-white text-indigo-900 hover:bg-indigo-50 text-xs font-bold rounded-lg shadow-sm transition-all flex items-center space-x-2">
+                                <i class="fa-solid fa-plus text-indigo-600"></i>
+                                <span>Add New Homework or Test</span>
+                            </button>
+                            <button onclick="switchTab('focus')" class="px-4 py-2 bg-indigo-700/60 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg border border-indigo-500/40 transition-all flex items-center space-x-2">
+                                <i class="fa-solid fa-play"></i>
+                                <span>Start 25-Min Study Session</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Pending Homework</p>
+                            <p id="dash-pending-hw" class="text-3xl font-extrabold text-slate-800 mt-1">0</p>
+                            <p id="dash-hw-subtext" class="text-xs text-indigo-600 font-medium mt-1">0 due today</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-book-open"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Upcoming Tests</p>
+                            <p id="dash-upcoming-tests" class="text-3xl font-extrabold text-rose-600 mt-1">0</p>
+                            <p id="dash-tests-subtext" class="text-xs text-slate-500 mt-1">Next test soon</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-file-pen"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Completed Tasks</p>
+                            <p id="dash-completed-tasks" class="text-3xl font-extrabold text-emerald-600 mt-1">0</p>
+                            <p class="text-xs text-emerald-600 font-medium mt-1">Keep the momentum!</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-500 uppercase tracking-wide">Lockscreen Alerts</p>
+                            <p id="dash-reminders-count" class="text-3xl font-extrabold text-amber-500 mt-1">0</p>
+                            <p class="text-xs text-slate-500 mt-1">Scheduled reminders</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl">
+                            <i class="fa-solid fa-bell"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <i class="fa-solid fa-list-check text-indigo-600"></i>
+                                <h4 class="font-bold text-slate-800 text-lg">Homework & Assignments Due Soon</h4>
+                            </div>
+                            <button onclick="switchTab('homework')" class="text-xs text-indigo-600 hover:text-indigo-800 font-bold flex items-center space-x-1">
+                                <span>View Table</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                        <div id="dash-urgent-hw-list" class="space-y-3">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 space-y-4 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                                <h4 class="font-bold text-slate-800 text-lg flex items-center space-x-2">
+                                    <i class="fa-solid fa-brain text-violet-600"></i>
+                                    <span>Practice Tests</span>
+                                </h4>
+                                <button onclick="openModal('create-test-modal')" class="text-xs bg-violet-50 text-violet-700 font-semibold px-2.5 py-1 rounded-lg hover:bg-violet-100">
+                                    + Create New
+                                </button>
+                            </div>
+                            <div id="dash-tests-list" class="mt-4 space-y-3">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+
+                        <div class="mt-6 bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs space-y-2">
+                            <div class="flex items-center justify-between font-bold text-slate-700">
+                                <span><i class="fa-solid fa-calendar-plus text-indigo-500 mr-1"></i> Daily HW Check-In</span>
+                                <span class="bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded text-[10px]">Daily 5:00 PM</span>
+                            </div>
+                            <p class="text-slate-500">Forget what homework was assigned today? Set an automated alert to remind you to log assignments right after school!</p>
+                            <button onclick="triggerDailyHWReminderPrompt()" class="w-full text-center py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded font-semibold transition-all">
+                                Test Daily Check-In Prompt
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: SCHEDULE & CALENDAR -->
+            <section id="tab-calendar" class="tab-content hidden space-y-6">
+                <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="flex items-center space-x-3">
+                        <button onclick="changeCalendarMonth(-1)" class="p-2 rounded-lg hover:bg-slate-100 text-slate-600">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <h3 id="calendar-month-year" class="text-lg font-extrabold text-slate-800 min-w-[160px] text-center">October 2026</h3>
+                        <button onclick="changeCalendarMonth(1)" class="p-2 rounded-lg hover:bg-slate-100 text-slate-600">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                        <button onclick="resetCalendarToToday()" class="text-xs px-3 py-1.5 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-lg font-semibold">
+                            Today
+                        </button>
+                    </div>
+
+                    <div class="flex items-center space-x-2 text-xs">
+                        <span class="font-bold text-slate-500 mr-1">Filter:</span>
+                        <button onclick="filterCalendar('all')" id="cal-filter-all" class="px-3 py-1.5 rounded-lg font-bold bg-indigo-600 text-white">All</button>
+                        <button onclick="filterCalendar('homework')" id="cal-filter-homework" class="px-3 py-1.5 rounded-lg font-bold bg-slate-100 text-slate-600 hover:bg-slate-200">Homework</button>
+                        <button onclick="filterCalendar('test')" id="cal-filter-test" class="px-3 py-1.5 rounded-lg font-bold bg-slate-100 text-slate-600 hover:bg-slate-200">Tests</button>
+                        <button onclick="filterCalendar('event')" id="cal-filter-event" class="px-3 py-1.5 rounded-lg font-bold bg-slate-100 text-slate-600 hover:bg-slate-200">Events</button>
+                    </div>
+
+                    <button onclick="openModal('add-item-modal')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl shadow-sm flex items-center space-x-2">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add Entry</span>
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                    <div class="grid grid-cols-7 border-b border-slate-200 text-center text-xs font-bold text-slate-500 py-3 bg-slate-50">
+                        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                    </div>
+                    <div id="calendar-grid" class="grid grid-cols-7 auto-rows-fr divide-x divide-y divide-slate-100 min-h-[500px]">
+                        <!-- Rendered by JavaScript -->
+                    </div>
+                </div>
+
+                <div id="calendar-day-detail" class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 hidden space-y-3">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                        <h4 id="selected-date-title" class="font-bold text-slate-800 text-lg">Schedule for Oct 15, 2026</h4>
+                        <button onclick="openModal('add-item-modal')" class="text-xs bg-indigo-50 text-indigo-600 font-bold px-3 py-1.5 rounded-lg hover:bg-indigo-100">
+                            + Add to this date
+                        </button>
+                    </div>
+                    <div id="selected-date-items" class="space-y-2">
+                        <!-- Items populated dynamically -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: HOMEWORK TABLE -->
+            <section id="tab-homework" class="tab-content hidden space-y-6">
+                <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                        <div class="relative flex-1 md:w-64">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
+                            <input type="text" id="hw-search" oninput="renderHomeworkTable()" placeholder="Search homework, subjects..." class="w-full pl-9 pr-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50">
+                        </div>
+                        <select id="hw-subject-filter" onchange="renderHomeworkTable()" class="text-xs py-2 px-3 border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="all">All Subjects</option>
+                            <option value="Math">Math</option>
+                            <option value="Science">Science</option>
+                            <option value="English">English</option>
+                            <option value="History">History</option>
+                            <option value="Languages">Languages</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <select id="hw-status-filter" onchange="renderHomeworkTable()" class="text-xs py-2 px-3 border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="pending">Pending Only</option>
+                            <option value="completed">Completed Only</option>
+                            <option value="all">All Statuses</option>
+                        </select>
+                    </div>
+
+                    <button onclick="openModal('add-item-modal', 'homework')" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl shadow-sm flex items-center space-x-2">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add Homework</span>
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider border-b border-slate-200">
+                                    <th class="py-3.5 px-4 w-12 text-center">Done</th>
+                                    <th class="py-3.5 px-4">Assignment / Subject</th>
+                                    <th class="py-3.5 px-4">Due Date & Time</th>
+                                    <th class="py-3.5 px-4">Est. Time</th>
+                                    <th class="py-3.5 px-4">Priority</th>
+                                    <th class="py-3.5 px-4">Lockscreen Alert</th>
+                                    <th class="py-3.5 px-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="homework-table-body" class="divide-y divide-slate-100">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="hw-empty-state" class="p-8 text-center hidden">
+                        <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-400 text-2xl">
+                            <i class="fa-solid fa-check-double"></i>
+                        </div>
+                        <p class="font-bold text-slate-700">No homework found!</p>
+                        <p class="text-xs text-slate-500 mt-1">You're all caught up or try adjusting your search filters.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: PRACTICE TESTS -->
+            <section id="tab-practice" class="tab-content hidden space-y-6">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="space-y-1">
+                        <h3 class="text-xl font-bold text-slate-800">Practice Test Creator & Studio</h3>
+                        <p class="text-xs text-slate-500">Build interactive quizzes for Math, Science, History or any subject to test your knowledge before exam day!</p>
+                    </div>
+                    <button onclick="openModal('create-test-modal')" class="px-4 py-2.5 bg-violet-600 hover:bg-violet-500 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center space-x-2 shrink-0">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Create Practice Test</span>
+                    </button>
+                </div>
+
+                <!-- Instant Topic Generator Search Bar -->
+                <div class="bg-gradient-to-r from-violet-900 to-indigo-900 rounded-2xl p-6 text-white shadow-lg space-y-3">
+                    <div class="flex items-center space-x-2 text-violet-300 font-bold text-xs">
+                        <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
+                        <span>INSTANT TOPIC & STUDY NOTES QUIZ GENERATOR</span>
+                    </div>
+                    <h4 class="text-lg font-extrabold text-white">What do you need to learn or study for your test?</h4>
+                    <p class="text-xs text-violet-200">Type any topic, chapter, or paste your study notes below to automatically generate practice test questions!</p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-2 pt-1">
+                        <div class="relative flex-1">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400 text-sm"></i>
+                            <input type="text" id="topic-search-input" placeholder="e.g. Photosynthesis, World War 2, Quadratic Equations, Spanish Conjugation..." class="w-full pl-10 pr-4 py-3 text-xs border-0 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-400 bg-white text-slate-800 font-medium shadow-inner">
+                        </div>
+                        <button onclick="generateTestFromSearchInput()" class="px-5 py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-2 shrink-0">
+                            <i class="fa-solid fa-bolt"></i>
+                            <span>Generate Quiz</span>
+                        </button>
+                    </div>
+
+                    <!-- Quick Topic Chips -->
+                    <div class="flex flex-wrap items-center gap-2 pt-2 text-[11px]">
+                        <span class="text-violet-300 font-semibold">Quick Topics:</span>
+                        <button onclick="quickTopicQuiz('Cell Biology & Photosynthesis', 'Science')" class="px-2.5 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-violet-100 font-medium">Cell Biology</button>
+                        <button onclick="quickTopicQuiz('World War II & 20th Century', 'History')" class="px-2.5 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-violet-100 font-medium">World War II</button>
+                        <button onclick="quickTopicQuiz('Algebra & Quadratic Equations', 'Math')" class="px-2.5 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-violet-100 font-medium">Quadratic Equations</button>
+                        <button onclick="quickTopicQuiz('Newton\'s Laws of Motion', 'Science')" class="px-2.5 py-1 bg-white/10 hover:bg-white/20 rounded-lg text-violet-100 font-medium">Newton's Laws</button>
+                    </div>
+                </div>
+
+                <!-- Active Test Running Screen -->
+                <div id="test-runner-container" class="hidden bg-white p-6 rounded-2xl border-2 border-indigo-500 shadow-xl space-y-6 relative">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                        <div>
+                            <span id="runner-test-subject" class="text-xs font-bold text-indigo-600 uppercase tracking-wider">Subject</span>
+                            <h3 id="runner-test-title" class="text-xl font-extrabold text-slate-800">Practice Test Name</h3>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <span id="runner-progress-text" class="text-xs font-bold text-slate-500">Question 1 of 5</span>
+                            <button onclick="cancelActiveTest()" class="text-xs text-rose-600 font-bold bg-rose-50 px-3 py-1.5 rounded-lg hover:bg-rose-100">Quit Test</button>
+                        </div>
+                    </div>
+
+                    <div id="runner-question-box" class="space-y-4">
+                        <h4 id="runner-question-text" class="text-base font-semibold text-slate-800">Question goes here?</h4>
+                        <div id="runner-options-list" class="space-y-2">
+                            <!-- Options injected dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                        <button id="runner-prev-btn" onclick="navigateTestQuestion(-1)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl disabled:opacity-50">Previous</button>
+                        <button id="runner-next-btn" onclick="navigateTestQuestion(1)" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl shadow-md">Next Question</button>
+                    </div>
+                </div>
+
+                <!-- Test Scorecard Modal / Box -->
+                <div id="test-results-container" class="hidden bg-emerald-950 text-white p-6 rounded-2xl shadow-xl space-y-4 border border-emerald-500/30">
+                    <div class="text-center space-y-2">
+                        <div class="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-3xl mx-auto border border-emerald-400/40">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <h3 class="text-2xl font-extrabold">Practice Test Completed!</h3>
+                        <p class="text-slate-300 text-sm">Great effort testing your mastery!</p>
+                        <div class="py-3">
+                            <span id="test-score-display" class="text-5xl font-black text-emerald-400">80%</span>
+                            <p id="test-score-details" class="text-xs text-emerald-200 mt-1">4 out of 5 correct</p>
+                        </div>
+                        <button onclick="closeTestResults()" class="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl transition-all">
+                            Back to Test Library
+                        </button>
+                    </div>
+                </div>
+
+                <div id="practice-tests-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    <!-- Practice test cards populated dynamically -->
+                </div>
+            </section>
+
+            <!-- TAB 5: FOCUS & POMODORO -->
+            <section id="tab-focus" class="tab-content hidden space-y-6">
+                <div class="max-w-2xl mx-auto bg-white rounded-3xl border border-slate-200/80 shadow-lg p-8 text-center space-y-6">
+                    <div class="inline-block px-3 py-1 bg-indigo-50 text-indigo-700 font-bold text-xs rounded-full">
+                        <i class="fa-solid fa-bolt mr-1"></i> Anti-Procrastination Mode
+                    </div>
+                    <h3 class="text-2xl font-black text-slate-800">Homework Focus Timer</h3>
+                    <p class="text-xs text-slate-500 max-w-md mx-auto">
+                        Break down daunting homework into manageable 25-minute sprints with 5-minute study breaks.
+                    </p>
+
+                    <div class="max-w-md mx-auto space-y-1 text-left">
+                        <label class="text-xs font-bold text-slate-600">Select Homework to Focus On:</label>
+                        <select id="focus-hw-selector" class="w-full text-xs py-2.5 px-3 border border-slate-200 rounded-xl bg-slate-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold text-slate-700">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+
+                    <div class="relative w-64 h-64 mx-auto flex items-center justify-center rounded-full bg-slate-900 text-white shadow-2xl border-4 border-indigo-500/30">
+                        <div class="text-center">
+                            <span id="focus-timer-display" class="text-5xl font-black tracking-wider">25:00</span>
+                            <p id="focus-state-label" class="text-xs text-indigo-400 font-bold uppercase tracking-widest mt-2">Study Time</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-center space-x-4">
+                        <button id="focus-start-btn" onclick="toggleFocusTimer()" class="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-sm rounded-2xl shadow-lg transition-all flex items-center space-x-2">
+                            <i id="focus-icon" class="fa-solid fa-play"></i>
+                            <span id="focus-btn-text">Start Focus Session</span>
+                        </button>
+                        <button onclick="resetFocusTimer()" class="p-3 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-2xl font-bold transition-all" title="Reset Timer">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 6: LOCKSCREEN & REMINDERS -->
+            <section id="tab-reminders" class="tab-content hidden space-y-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-5">
+                        <div class="flex items-center space-x-3 border-b border-slate-100 pb-3">
+                            <div class="w-10 h-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-bell"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-800 text-lg">Lockscreen & System Notifications</h3>
+                                <p class="text-xs text-slate-500">Configure how and when StudySync alerts you</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 text-xs">
+                            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
+                                <div>
+                                    <p class="font-bold text-slate-800">System Browser Notifications</p>
+                                    <p class="text-slate-500">Pushes real desktop/mobile browser notifications</p>
+                                </div>
+                                <button onclick="requestNotificationPermission()" class="px-3 py-1.5 bg-indigo-600 text-white font-bold rounded-lg hover:bg-indigo-500">
+                                    Enable
+                                </button>
+                            </div>
+
+                            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200">
+                                <div>
+                                    <p class="font-bold text-slate-800">Lock Screen Simulator Mode</p>
+                                    <p class="text-slate-500">Displays lockscreen style popup alerts right on screen</p>
+                                </div>
+                                <button onclick="toggleLockscreenSim()" class="px-3 py-1.5 bg-slate-800 text-white font-bold rounded-lg hover:bg-slate-700">
+                                    Launch Simulator
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                        <h3 class="font-bold text-slate-800 text-lg border-b border-slate-100 pb-3 flex items-center justify-between">
+                            <span>Upcoming Lockscreen Alerts Queue</span>
+                            <span id="queue-count-badge" class="bg-indigo-100 text-indigo-800 text-xs px-2.5 py-0.5 rounded-full font-bold">0 Active</span>
+                        </h3>
+                        <div id="reminders-queue-list" class="space-y-3 max-h-[350px] overflow-y-auto pr-1">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- MODAL: Add Event / Homework Modal -->
+    <div id="add-item-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-5 border border-slate-100">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 id="modal-item-title" class="text-lg font-bold text-slate-800">Add Entry to Schedule</h3>
+                <button onclick="closeModal('add-item-modal')" class="text-slate-400 hover:text-slate-600 text-sm">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="add-item-form" onsubmit="handleAddItemSubmit(event)" class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Entry Type</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="entryType" value="homework" checked onclick="toggleModalFields('homework')" class="peer sr-only">
+                            <div class="p-2.5 rounded-xl border border-slate-200 text-center peer-checked:border-indigo-600 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 font-bold transition-all">
+                                <i class="fa-solid fa-book-bookmark block text-base mb-1"></i> Homework
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="entryType" value="test" onclick="toggleModalFields('test')" class="peer sr-only">
+                            <div class="p-2.5 rounded-xl border border-slate-200 text-center peer-checked:border-rose-600 peer-checked:bg-rose-50 peer-checked:text-rose-700 font-bold transition-all">
+                                <i class="fa-solid fa-file-pen block text-base mb-1"></i> Test/Exam
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="entryType" value="event" onclick="toggleModalFields('event')" class="peer sr-only">
+                            <div class="p-2.5 rounded-xl border border-slate-200 text-center peer-checked:border-violet-600 peer-checked:bg-violet-50 peer-checked:text-violet-700 font-bold transition-all">
+                                <i class="fa-regular fa-calendar-check block text-base mb-1"></i> Event
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Title / Description</label>
+                    <input type="text" id="item-title" required placeholder="e.g. Chapter 4 Math Problem Set" class="w-full p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 font-medium">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Subject</label>
+                        <select id="item-subject" class="w-full p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 font-medium">
+                            <option value="Math">Math</option>
+                            <option value="Science">Science</option>
+                            <option value="English">English</option>
+                            <option value="History">History</option>
+                            <option value="Languages">Languages</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Priority</label>
+                        <select id="item-priority" class="w-full p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 font-medium">
+                            <option value="High">High</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Due Date</label>
+                        <input type="date" id="item-date" required class="w-full p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 font-medium">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Due Time</label>
+                        <input type="time" id="item-time" value="17:00" required class="w-full p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 font-medium">
+                    </div>
+                </div>
+
+                <div id="est-time-group">
+                    <label class="block font-bold text-slate-700 mb-1">Estimated Completion Time (minutes)</label>
+                    <input type="number" id="item-est-time" value="45" min="5" max="300" class="w-full p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 font-medium">
+                </div>
+
+                <div>
+                    <label class="block font-bold text-slate-700 mb-1">Lockscreen Notification Timing</label>
+                    <select id="item-reminder-lead" class="w-full p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-slate-50 font-medium">
+                        <option value="15">15 Minutes Before Due Time</option>
+                        <option value="60">1 Hour Before Due Time</option>
+                        <option value="180">3 Hours Before Due Time</option>
+                        <option value="1440" selected>1 Day Before Due Time</option>
+                        <option value="2880">2 Days Before Due Time</option>
+                    </select>
+                </div>
+
+                <div class="pt-2 flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('add-item-modal')" class="px-4 py-2 bg-slate-100 text-slate-600 font-bold rounded-xl hover:bg-slate-200">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 text-white font-bold rounded-xl shadow-md hover:bg-indigo-500">Save Schedule Entry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Practice Test Creation Modal -->
+    <div id="create-test-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full p-6 space-y-5 border border-slate-100 max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="text-lg font-bold text-slate-800">Create New Practice Test</h3>
+                <button onclick="closeModal('create-test-modal')" class="text-slate-400 hover:text-slate-600 text-sm">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-3 bg-violet-50 rounded-xl border border-violet-100 space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold text-violet-900 flex items-center"><i class="fa-solid fa-wand-magic-sparkles text-amber-500 mr-1.5"></i> Auto-Generate From Topic / Notes</span>
+                </div>
+                <div class="flex gap-2">
+                    <input type="text" id="modal-topic-input" placeholder="Enter topic or study notes..." class="flex-1 p-2 text-xs border border-violet-200 rounded-lg bg-white">
+                    <button type="button" onclick="autoFillModalQuestions()" class="px-3 py-2 bg-violet-600 hover:bg-violet-500 text-white font-bold text-xs rounded-lg shadow-sm">
+                        Auto-Fill
+                    </button>
+                </div>
+            </div>
+
+            <form id="create-test-form" onsubmit="handleCreateTestSubmit(event)" class="space-y-4 text-xs overflow-y-auto pr-1 flex-1">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Test Title</label>
+                        <input type="text" id="test-title-input" required placeholder="e.g. Geometry Quiz 1" class="w-full p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 bg-slate-50 font-medium">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-slate-700 mb-1">Subject</label>
+                        <select id="test-subject-input" class="w-full p-2.5 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 bg-slate-50 font-medium">
+                            <option value="Math">Math</option>
+                            <option value="Science">Science</option>
+                            <option value="English">English</option>
+                            <option value="History">History</option>
+                            <option value="Languages">Languages</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-100 pt-3 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <label class="font-bold text-slate-800 text-sm">Questions</label>
+                        <button type="button" onclick="addQuestionFieldToForm()" class="text-xs bg-violet-50 text-violet-700 font-bold px-2.5 py-1 rounded-lg hover:bg-violet-100">
+                            + Add Question
+                        </button>
+                    </div>
+                    
+                    <div id="form-questions-container" class="space-y-4">
+                        <!-- Questions form dynamically added -->
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 flex justify-end space-x-2">
+                    <button type="button" onclick="closeModal('create-test-modal')" class="px-4 py-2 bg-slate-100 text-slate-600 font-bold rounded-xl">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-violet-600 text-white font-bold rounded-xl shadow-md hover:bg-violet-500">Save & Publish Test</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- LOCKSCREEN SIMULATION OVERLAY SCREEN -->
+    <div id="lockscreen-overlay" class="fixed inset-0 lockscreen-bg z-50 hidden flex flex-col justify-between p-6 sm:p-12 text-white overflow-hidden transition-all duration-300">
+        <div class="flex justify-between items-center text-xs font-semibold text-slate-300">
+            <span><i class="fa-solid fa-lock text-slate-400 mr-2"></i>StudySync Lock Screen</span>
+            <button onclick="toggleLockscreenSim()" class="bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-full backdrop-blur-md transition-all">
+                Exit Lockscreen <i class="fa-solid fa-xmark ml-1"></i>
+            </button>
+        </div>
+
+        <div class="text-center space-y-2 my-auto">
+            <p id="ls-clock" class="text-6xl sm:text-8xl font-thin tracking-tight">12:00</p>
+            <p id="ls-date" class="text-base sm:text-xl font-medium text-indigo-200">Monday, October 15</p>
+
+            <div id="ls-notifications-stack" class="max-w-md mx-auto mt-8 space-y-3 text-left">
+                <!-- Lockscreen notifications injected here -->
+            </div>
+        </div>
+
+        <div class="text-center text-xs text-indigo-300 font-medium">
+            Swipe or click 'Exit Lockscreen' to return to study workspace
+        </div>
+    </div>
+
+    <script>
+        const defaultEvents = [
+            { id: '1', title: 'Calculus Chapter 3 Homework', type: 'homework', subject: 'Math', date: getRelativeDateStr(0), time: '17:00', estMins: 45, completed: false, priority: 'High', reminderLeadMins: 1440, reminderSent: false },
+            { id: '2', title: 'AP Biology Cellular Respiration Exam', type: 'test', subject: 'Science', date: getRelativeDateStr(1), time: '10:30', estMins: 60, completed: false, priority: 'High', reminderLeadMins: 1440, reminderSent: false },
+            { id: '3', title: 'History Essay DBQ Outline', type: 'homework', subject: 'History', date: getRelativeDateStr(2), time: '18:00', estMins: 30, completed: false, priority: 'Medium', reminderLeadMins: 180, reminderSent: false }
+        ];
+
+        const defaultTests = [
+            {
+                id: 'test_1',
+                title: 'Calculus & Advanced Algebra Mastery',
+                subject: 'Math',
+                difficulty: 'Advanced / AP Level',
+                questions: [
+                    {
+                        id: 'q1',
+                        question: 'For the function f(x) = 2x³ - 3x² - 12x + 5, on which interval is the function both strictly decreasing AND concave upward?',
+                        options: ['(-1, 0.5)', '(0.5, 2)', '(-∞, -1)', '(2, ∞)'],
+                        correctAnswer: 1,
+                        explanation: 'f\'(x) = 6(x-2)(x+1) < 0 on (-1, 2). f\'\'(x) = 12(x - 0.5) > 0 for x > 0.5. The intersection is (0.5, 2).'
+                    },
+                    {
+                        id: 'q2',
+                        question: 'Evaluate the limit: lim(x → 0) [ (sin(5x) - 5x) / x³ ].',
+                        options: ['0', '-25/6', '-125/6', 'Undefined'],
+                        correctAnswer: 2,
+                        explanation: 'Using Taylor series: sin(5x) = 5x - 125x³/6 + O(x⁵). Substituting gives -125/6.'
+                    }
+                ],
+                bestScore: 0
+            },
+            {
+                id: 'test_2',
+                title: 'AP Biology: Cellular Respiration',
+                subject: 'Science',
+                difficulty: 'AP Level',
+                questions: [
+                    {
+                        id: 'q1',
+                        question: 'What occurs if DNP renders the mitochondrial membrane permeable to protons?',
+                        options: [
+                            'Electron transport halts entirely.',
+                            'Proton gradient dissipates as heat, halting ATP synthesis while increasing O₂ consumption.',
+                            'Glycolysis is inhibited by ATP buildup.',
+                            'Pyruvate carboxylase generates glucose.'
+                        ],
+                        correctAnswer: 1,
+                        explanation: 'DNP dissipates the proton gradient, so ATP synthase cannot generate ATP while electron transport continues at max rate.'
+                    }
+                ],
+                bestScore: 0
+            }
+        ];
+
+        let appEvents = JSON.parse(localStorage.getItem('studysync_events')) || defaultEvents;
+        let appTests = JSON.parse(localStorage.getItem('studysync_tests')) || defaultTests;
+        let activeCalendarMonth = new Date().getMonth();
+        let activeCalendarYear = new Date().getFullYear();
+        let calendarFilter = 'all';
+
+        let focusTimerInterval = null;
+        let focusTimeLeft = 25 * 60;
+        let isFocusRunning = false;
+
+        let currentActiveTest = null;
+        let activeQuestionIndex = 0;
+        let userTestAnswers = [];
+
+        function getRelativeDateStr(daysOffset) {
+            const d = new Date();
+            d.setDate(d.getDate() + daysOffset);
+            return d.toISOString().split('T')[0];
+        }
+
+        function saveState() {
+            localStorage.setItem('studysync_events', JSON.stringify(appEvents));
+            localStorage.setItem('studysync_tests', JSON.stringify(appTests));
+            updateBadgesAndCounters();
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
+
+        function switchTab(tabId) {
+            try {
+                const allTabs = document.querySelectorAll('.tab-content');
+                allTabs.forEach(el => el.classList.add('hidden'));
+
+                const allNavBtns = document.querySelectorAll('.nav-btn');
+                allNavBtns.forEach(btn => {
+                    btn.classList.remove('bg-indigo-600/10', 'text-indigo-400', 'font-semibold');
+                    btn.classList.add('text-slate-400', 'hover:bg-slate-800');
+                });
+
+                const targetTab = document.getElementById(`tab-${tabId}`);
+                if (targetTab) {
+                    targetTab.classList.remove('hidden');
+                }
+
+                const activeBtn = document.getElementById(`nav-${tabId}`);
+                if (activeBtn) {
+                    activeBtn.classList.add('bg-indigo-600/10', 'text-indigo-400', 'font-semibold');
+                    activeBtn.classList.remove('text-slate-400');
+                }
+
+                const titleElem = document.getElementById('page-title');
+                if (titleElem) {
+                    const titles = {
+                        dashboard: 'Dashboard Overview',
+                        calendar: 'Schedule & Calendar',
+                        homework: 'Homework Table',
+                        practice: 'Practice Tests',
+                        focus: 'Focus & Study Timer',
+                        reminders: 'Lockscreen & System Alerts'
+                    };
+                    titleElem.innerText = titles[tabId] || 'StudySync';
+                }
+
+                if (tabId === 'dashboard') renderDashboard();
+                else if (tabId === 'calendar') renderCalendar();
+                else if (tabId === 'homework') renderHomeworkTable();
+                else if (tabId === 'practice') renderPracticeTests();
+                else if (tabId === 'focus') populateFocusHwSelector();
+                else if (tabId === 'reminders') renderRemindersQueue();
+            } catch (err) {
+                console.error('Error switching tab:', err);
+            }
+        }
+
+        function renderDashboard() {
+            const pendingHW = appEvents.filter(e => e.type === 'homework' && !e.completed);
+            const upcomingTests = appEvents.filter(e => e.type === 'test' && !e.completed);
+            const completed = appEvents.filter(e => e.completed);
+
+            const pendingHwEl = document.getElementById('dash-pending-hw');
+            if (pendingHwEl) pendingHwEl.innerText = pendingHW.length;
+
+            const upcomingTestsEl = document.getElementById('dash-upcoming-tests');
+            if (upcomingTestsEl) upcomingTestsEl.innerText = upcomingTests.length;
+
+            const completedTasksEl = document.getElementById('dash-completed-tasks');
+            if (completedTasksEl) completedTasksEl.innerText = completed.length;
+
+            const remindersCountEl = document.getElementById('dash-reminders-count');
+            if (remindersCountEl) remindersCountEl.innerText = appEvents.filter(e => !e.completed).length;
+
+            const urgentContainer = document.getElementById('dash-urgent-hw-list');
+            if (urgentContainer) {
+                urgentContainer.innerHTML = '';
+                const sortedHW = [...pendingHW].sort((a,b) => new Date(a.date+'T'+a.time) - new Date(b.date+'T'+b.time)).slice(0, 4);
+
+                if (sortedHW.length === 0) {
+                    urgentContainer.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center italic">No pending homework right now! Nice job!</p>`;
+                } else {
+                    sortedHW.forEach(hw => {
+                        const el = document.createElement('div');
+                        el.className = 'p-3 rounded-xl border border-slate-100 hover:border-indigo-200 transition-all bg-slate-50 flex items-center justify-between text-xs';
+                        el.innerHTML = `
+                            <div class="flex items-center space-x-3">
+                                <button onclick="toggleItemComplete('${hw.id}')" class="w-5 h-5 rounded-md border border-slate-300 flex items-center justify-center text-white hover:border-indigo-600">
+                                    <i class="fa-solid fa-check text-[10px] hidden"></i>
+                                </button>
+                                <div>
+                                    <p class="font-bold text-slate-800">${escapeHtml(hw.title)}</p>
+                                    <p class="text-slate-500 font-medium">${hw.subject || 'General'} • Due ${hw.date} at ${hw.time}</p>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 rounded-md text-[10px] font-bold ${hw.priority === 'High' ? 'bg-rose-100 text-rose-700' : 'bg-slate-200 text-slate-700'}">${hw.priority || 'Medium'}</span>
+                        `;
+                        urgentContainer.appendChild(el);
+                    });
+                }
+            }
+
+            const testsContainer = document.getElementById('dash-tests-list');
+            if (testsContainer) {
+                testsContainer.innerHTML = '';
+                (appTests || []).slice(0, 3).forEach(test => {
+                    const qCount = (test.questions && Array.isArray(test.questions)) ? test.questions.length : 0;
+                    const item = document.createElement('div');
+                    item.className = 'p-3 rounded-xl border border-slate-100 bg-slate-50 flex items-center justify-between text-xs';
+                    item.innerHTML = `
+                        <div>
+                            <p class="font-bold text-slate-800">${escapeHtml(test.title)}</p>
+                            <p class="text-slate-500 font-medium">${test.subject || 'General'} • ${qCount} Questions</p>
+                        </div>
+                        <button onclick="startPracticeTest('${test.id}')" class="px-2.5 py-1 bg-violet-600 hover:bg-violet-500 text-white font-bold rounded-lg">
+                            Take Quiz
+                        </button>
+                    `;
+                    testsContainer.appendChild(item);
+                });
+            }
+        }
+
+        function generateTestFromSearchInput() {
+            const topicInput = document.getElementById('topic-search-input');
+            const topic = topicInput ? topicInput.value.trim() : '';
+
+            if (!topic) {
+                showToastAlert('Please enter a topic', 'Type a subject or study topic to generate your test.');
+                return;
+            }
+
+            const questions = generateRigorousQuestionsForTopic(topic);
+            const newTest = {
+                id: 'test_' + Date.now(),
+                title: `${topic} Advanced Practice`,
+                subject: 'General',
+                difficulty: 'AP / College Prep',
+                questions: questions,
+                bestScore: 0
+            };
+
+            appTests.unshift(newTest);
+            saveState();
+            renderPracticeTests();
+            renderDashboard();
+            if (topicInput) topicInput.value = '';
+            showToastAlert('Practice Test Generated!', `Created practice exam for "${topic}".`);
+            startPracticeTest(newTest.id);
+        }
+
+        function quickTopicQuiz(topicName, subject) {
+            const questions = generateRigorousQuestionsForTopic(topicName);
+            const newTest = {
+                id: 'test_' + Date.now(),
+                title: `${topicName} Quiz`,
+                subject: subject || 'General',
+                difficulty: 'AP / Honors',
+                questions: questions,
+                bestScore: 0
+            };
+
+            appTests.unshift(newTest);
+            saveState();
+            renderPracticeTests();
+            renderDashboard();
+            startPracticeTest(newTest.id);
+        }
+
+        function generateRigorousQuestionsForTopic(topic) {
+            return [
+                {
+                    id: 'gen_q1_' + Date.now(),
+                    question: `In the study of ${topic}, which fundamental principle or mechanism governs primary system behavior?`,
+                    options: [
+                        `Structural interplay and feedback rate-limiting factors in ${topic}`,
+                        `Linear single-variable progression without regulation`,
+                        `Passive non-dynamic equilibrium independent of external inputs`,
+                        `Inverse proportional variance between inputs and outputs`
+                    ],
+                    correctAnswer: 0,
+                    explanation: `Systematic analysis of ${topic} demonstrates that dynamic processes rely on structural feedback and multi-variable interaction.`
+                },
+                {
+                    id: 'gen_q2_' + Date.now(),
+                    question: `When evaluating a complex scenario in ${topic}, what critical conceptual error should be avoided?`,
+                    options: [
+                        `Assuming secondary variables have zero impact on equilibrium states`,
+                        `Accounting for conservation laws and boundary condition limits`,
+                        `Cross-verifying empirical findings against theoretical models`,
+                        `Evaluating variance in baseline controls before drawing conclusions`
+                    ],
+                    correctAnswer: 0,
+                    explanation: `A common error when studying ${topic} is neglecting subtle secondary parameters that influence long-term outcomes.`
+                },
+                {
+                    id: 'gen_q3_' + Date.now(),
+                    question: `Which methodology yields the highest diagnostic precision when testing hypotheses regarding ${topic}?`,
+                    options: [
+                        `Controlled multi-variable empirical verification with standardized baseline controls`,
+                        `Relying on qualitative anecdotes without baseline comparisons`,
+                        `Extrapolating trends beyond known boundary parameters`,
+                        `Ignoring divergent counter-examples in trial sets`
+                    ],
+                    correctAnswer: 0,
+                    explanation: `Rigorous analysis of ${topic} requires controlled, multi-faceted empirical testing to isolate key variables accurately.`
+                }
+            ];
+        }
+
+        function generateQuestionsForTopic(topicInput) {
+            return {
+                title: `${topicInput} Practice Test`,
+                subject: 'General',
+                questions: generateRigorousQuestionsForTopic(topicInput)
+            };
+        }
+
+        function autoFillModalQuestions() {
+            const topicInput = document.getElementById('modal-topic-input')?.value.trim();
+            if (!topicInput) {
+                showToastAlert('Topic Required', 'Please type a topic or study notes in the auto-fill box.');
+                return;
+            }
+
+            const generated = generateQuestionsForTopic(topicInput);
+            document.getElementById('test-title-input').value = generated.title;
+            document.getElementById('test-subject-input').value = generated.subject;
+
+            const container = document.getElementById('form-questions-container');
+            container.innerHTML = '';
+
+            generated.questions.forEach((q) => {
+                const qBox = document.createElement('div');
+                qBox.className = 'p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2 text-xs';
+                qBox.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-slate-700">Generated Question</span>
+                        <button type="button" onclick="this.parentElement.parentElement.remove()" class="text-rose-500 font-bold">&times; Remove</button>
+                    </div>
+                    <input type="text" required value="${escapeHtml(q.question)}" class="q-title-input w-full p-2 border border-slate-200 rounded-lg font-medium">
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" required value="${escapeHtml(q.options[0])}" class="opt-a w-full p-1.5 border border-slate-200 rounded-lg">
+                        <input type="text" required value="${escapeHtml(q.options[1])}" class="opt-b w-full p-1.5 border border-slate-200 rounded-lg">
+                        <input type="text" required value="${escapeHtml(q.options[2])}" class="opt-c w-full p-1.5 border border-slate-200 rounded-lg">
+                        <input type="text" required value="${escapeHtml(q.options[3])}" class="opt-d w-full p-1.5 border border-slate-200 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-600 mb-0.5">Correct Answer</label>
+                        <select class="correct-opt-select w-full p-1.5 border border-slate-200 rounded-lg font-bold">
+                            <option value="0" ${q.correctAnswer === 0 ? 'selected' : ''}>Option A</option>
+                            <option value="1" ${q.correctAnswer === 1 ? 'selected' : ''}>Option B</option>
+                            <option value="2" ${q.correctAnswer === 2 ? 'selected' : ''}>Option C</option>
+                            <option value="3" ${q.correctAnswer === 3 ? 'selected' : ''}>Option D</option>
+                        </select>
+                    </div>
+                `;
+                container.appendChild(qBox);
+            });
+
+            showToastAlert('Auto-Filled!', `Questions generated for ${topicInput}`);
+        }
+
+        function renderPracticeTests() {
+            const grid = document.getElementById('practice-tests-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            (appTests || []).forEach(test => {
+                const qCount = (test.questions && Array.isArray(test.questions)) ? test.questions.length : 0;
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 space-y-4 flex flex-col justify-between hover:shadow-md transition-all';
+                card.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-start">
+                            <span class="px-2.5 py-0.5 bg-violet-50 text-violet-700 font-bold text-[10px] rounded-full uppercase tracking-wider">${test.subject || 'General'}</span>
+                            <span class="text-xs text-slate-400 font-semibold">${qCount} Questions</span>
+                        </div>
+                        <h4 class="font-extrabold text-slate-800 text-base">${escapeHtml(test.title)}</h4>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] font-bold text-slate-400 uppercase">Best Score</p>
+                            <p class="font-black text-indigo-600 text-sm">${test.bestScore || 0}%</p>
+                        </div>
+                        <button onclick="startPracticeTest('${test.id}')" class="px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white font-bold text-xs rounded-xl shadow-sm">
+                            Take Test
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function startPracticeTest(testId) {
+            const test = appTests.find(t => t.id === testId);
+            if (!test) return;
+
+            switchTab('practice');
+
+            currentActiveTest = test;
+            activeQuestionIndex = 0;
+            userTestAnswers = new Array(test.questions ? test.questions.length : 0).fill(null);
+
+            document.getElementById('test-runner-container').classList.remove('hidden');
+            document.getElementById('test-results-container').classList.add('hidden');
+            document.getElementById('runner-test-title').innerText = test.title;
+            document.getElementById('runner-test-subject').innerText = `${test.subject} • ${test.difficulty || 'AP / Honors'}`;
+
+            renderActiveQuestion();
+            
+            const runnerContainer = document.getElementById('test-runner-container');
+            if (runnerContainer) {
+                runnerContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function renderActiveQuestion() {
+            if (!currentActiveTest || !currentActiveTest.questions || currentActiveTest.questions.length === 0) {
+                document.getElementById('runner-question-text').innerText = 'No questions available in this test.';
+                document.getElementById('runner-options-list').innerHTML = '';
+                return;
+            }
+
+            const q = currentActiveTest.questions[activeQuestionIndex];
+            document.getElementById('runner-progress-text').innerText = `Question ${activeQuestionIndex + 1} of ${currentActiveTest.questions.length}`;
+            document.getElementById('runner-question-text').innerText = q.question;
+
+            const optsBox = document.getElementById('runner-options-list');
+            optsBox.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                const isSelected = userTestAnswers[activeQuestionIndex] === idx;
+                btn.className = `w-full text-left p-4 rounded-xl border text-xs font-medium leading-relaxed transition-all flex items-start space-x-3 ${isSelected ? 'border-indigo-600 bg-indigo-50/90 text-indigo-950 font-semibold shadow-sm' : 'border-slate-200 hover:bg-slate-50 text-slate-800'}`;
+                btn.onclick = () => {
+                    userTestAnswers[activeQuestionIndex] = idx;
+                    renderActiveQuestion();
+                };
+                btn.innerHTML = `
+                    <span class="w-6 h-6 rounded-full border border-slate-300 shrink-0 flex items-center justify-center font-bold text-xs mt-0.5 ${isSelected ? 'bg-indigo-600 text-white border-indigo-600' : 'text-slate-500 bg-white'}">${String.fromCharCode(65 + idx)}</span>
+                    <span class="flex-1">${escapeHtml(opt)}</span>
+                `;
+                optsBox.appendChild(btn);
+            });
+
+            document.getElementById('runner-prev-btn').disabled = activeQuestionIndex === 0;
+            const nextBtn = document.getElementById('runner-next-btn');
+            if (activeQuestionIndex === currentActiveTest.questions.length - 1) {
+                nextBtn.innerText = 'Submit Test';
+                nextBtn.className = 'px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-md transition-all';
+            } else {
+                nextBtn.innerText = 'Next Question';
+                nextBtn.className = 'px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl shadow-md transition-all';
+            }
+        }
+
+        function navigateTestQuestion(dir) {
+            if (!currentActiveTest || !currentActiveTest.questions) return;
+            const newIdx = activeQuestionIndex + dir;
+            if (newIdx >= 0 && newIdx < currentActiveTest.questions.length) {
+                activeQuestionIndex = newIdx;
+                renderActiveQuestion();
+            } else if (newIdx >= currentActiveTest.questions.length) {
+                gradeAndSubmitTest();
+            }
+        }
+
+        function cancelActiveTest() {
+            currentActiveTest = null;
+            document.getElementById('test-runner-container').classList.add('hidden');
+            document.getElementById('test-results-container').classList.add('hidden');
+        }
+
+        function closeTestResults() {
+            currentActiveTest = null;
+            document.getElementById('test-runner-container').classList.add('hidden');
+            document.getElementById('test-results-container').classList.add('hidden');
+            renderPracticeTests();
+        }
+
+        function gradeAndSubmitTest() {
+            let correctCount = 0;
+            currentActiveTest.questions.forEach((q, idx) => {
+                if (userTestAnswers[idx] === q.correctAnswer) correctCount++;
+            });
+
+            const scorePercent = Math.round((correctCount / currentActiveTest.questions.length) * 100);
+            if (scorePercent > (currentActiveTest.bestScore || 0)) {
+                currentActiveTest.bestScore = scorePercent;
+                saveState();
+            }
+
+            document.getElementById('test-runner-container').classList.add('hidden');
+            const resultsBox = document.getElementById('test-results-container');
+            resultsBox.classList.remove('hidden');
+
+            document.getElementById('test-score-display').innerText = `${scorePercent}%`;
+            document.getElementById('test-score-details').innerText = `${correctCount} out of ${currentActiveTest.questions.length} correct`;
+
+            if (scorePercent >= 70 && typeof confetti === 'function') {
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            }
+        }
+
+        function openModal(modalId, type = 'homework') {
+            const modal = document.getElementById(modalId);
+            if (!modal) return;
+            modal.classList.remove('hidden');
+            if (modalId === 'add-item-modal') {
+                const itemDate = document.getElementById('item-date');
+                if (itemDate && !itemDate.value) {
+                    itemDate.value = getRelativeDateStr(0);
+                }
+                toggleModalFields(type);
+                const radio = document.querySelector(`input[name="entryType"][value="${type}"]`);
+                if (radio) radio.checked = true;
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function toggleModalFields(type) {
+            const estGroup = document.getElementById('est-time-group');
+            if (estGroup) {
+                if (type === 'homework') {
+                    estGroup.classList.remove('hidden');
+                } else {
+                    estGroup.classList.add('hidden');
+                }
+            }
+        }
+
+        function handleAddItemSubmit(e) {
+            e.preventDefault();
+            const type = document.querySelector('input[name="entryType"]:checked')?.value || 'homework';
+            const title = document.getElementById('item-title').value.trim();
+            const subject = document.getElementById('item-subject').value;
+            const priority = document.getElementById('item-priority').value;
+            const date = document.getElementById('item-date').value;
+            const time = document.getElementById('item-time').value;
+            const estMins = parseInt(document.getElementById('item-est-time')?.value || '30', 10);
+            const reminderLeadMins = parseInt(document.getElementById('item-reminder-lead')?.value || '1440', 10);
+
+            const newItem = {
+                id: 'item_' + Date.now(),
+                title,
+                type,
+                subject,
+                priority,
+                date,
+                time,
+                estMins,
+                completed: false,
+                reminderLeadMins,
+                reminderSent: false
+            };
+
+            appEvents.push(newItem);
+            saveState();
+            closeModal('add-item-modal');
+            document.getElementById('add-item-form')?.reset();
+            showToastAlert('Item Added!', `"${title}" has been added to your schedule.`);
+            renderDashboard();
+            renderCalendar();
+            renderHomeworkTable();
+        }
+
+        function addQuestionFieldToForm() {
+            const container = document.getElementById('form-questions-container');
+            if (!container) return;
+            const qBox = document.createElement('div');
+            qBox.className = 'p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2 text-xs';
+            qBox.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <span class="font-bold text-slate-700">Question ${container.children.length + 1}</span>
+                    <button type="button" onclick="this.parentElement.parentElement.remove()" class="text-rose-500 font-bold">&times; Remove</button>
+                </div>
+                <input type="text" required placeholder="Question text..." class="q-title-input w-full p-2 border border-slate-200 rounded-lg font-medium">
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" required placeholder="Option A" class="opt-a w-full p-1.5 border border-slate-200 rounded-lg">
+                    <input type="text" required placeholder="Option B" class="opt-b w-full p-1.5 border border-slate-200 rounded-lg">
+                    <input type="text" required placeholder="Option C" class="opt-c w-full p-1.5 border border-slate-200 rounded-lg">
+                    <input type="text" required placeholder="Option D" class="opt-d w-full p-1.5 border border-slate-200 rounded-lg">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-600 mb-0.5">Correct Answer</label>
+                    <select class="correct-opt-select w-full p-1.5 border border-slate-200 rounded-lg font-bold">
+                        <option value="0">Option A</option>
+                        <option value="1">Option B</option>
+                        <option value="2">Option C</option>
+                        <option value="3">Option D</option>
+                    </select>
+                </div>
+            `;
+            container.appendChild(qBox);
+        }
+
+        function handleCreateTestSubmit(e) {
+            e.preventDefault();
+            const title = document.getElementById('test-title-input').value.trim();
+            const subject = document.getElementById('test-subject-input').value;
+            const qBoxes = document.querySelectorAll('#form-questions-container > div');
+
+            if (qBoxes.length === 0) {
+                showToastAlert('Add Questions', 'Please add at least one question to your test.');
+                return;
+            }
+
+            const questions = [];
+            qBoxes.forEach((box, idx) => {
+                const qTitle = box.querySelector('.q-title-input')?.value || `Question ${idx + 1}`;
+                const optA = box.querySelector('.opt-a')?.value || 'Option A';
+                const optB = box.querySelector('.opt-b')?.value || 'Option B';
+                const optC = box.querySelector('.opt-c')?.value || 'Option C';
+                const optD = box.querySelector('.opt-d')?.value || 'Option D';
+                const correct = parseInt(box.querySelector('.correct-opt-select')?.value || '0', 10);
+
+                questions.push({
+                    id: 'q_' + idx + '_' + Date.now(),
+                    question: qTitle,
+                    options: [optA, optB, optC, optD],
+                    correctAnswer: correct,
+                    explanation: `Option ${String.fromCharCode(65 + correct)} is correct.`
+                });
+            });
+
+            const newTest = {
+                id: 'test_' + Date.now(),
+                title,
+                subject,
+                difficulty: 'Custom Practice',
+                questions,
+                bestScore: 0
+            };
+
+            appTests.unshift(newTest);
+            saveState();
+            closeModal('create-test-modal');
+            document.getElementById('create-test-form')?.reset();
+            document.getElementById('form-questions-container').innerHTML = '';
+            showToastAlert('Practice Test Saved!', `"${title}" is ready.`);
+            renderPracticeTests();
+            renderDashboard();
+        }
+
+        function renderHomeworkTable() {
+            const tbody = document.getElementById('homework-table-body');
+            const emptyState = document.getElementById('hw-empty-state');
+            if (!tbody) return;
+
+            const search = document.getElementById('hw-search')?.value.toLowerCase() || '';
+            const subjFilter = document.getElementById('hw-subject-filter')?.value || 'all';
+            const statusFilter = document.getElementById('hw-status-filter')?.value || 'pending';
+
+            const hwItems = appEvents.filter(item => {
+                if (item.type !== 'homework') return false;
+                if (subjFilter !== 'all' && item.subject !== subjFilter) return false;
+                if (statusFilter === 'pending' && item.completed) return false;
+                if (statusFilter === 'completed' && !item.completed) return false;
+                if (search && !item.title.toLowerCase().includes(search) && !item.subject.toLowerCase().includes(search)) return false;
+                return true;
+            });
+
+            tbody.innerHTML = '';
+
+            if (hwItems.length === 0) {
+                if (emptyState) emptyState.classList.remove('hidden');
+            } else {
+                if (emptyState) emptyState.classList.add('hidden');
+                hwItems.forEach(hw => {
+                    const tr = document.createElement('tr');
+                    tr.className = `hover:bg-slate-50 transition-all ${hw.completed ? 'opacity-60 bg-slate-50/50' : ''}`;
+                    tr.innerHTML = `
+                        <td class="py-3.5 px-4 text-center">
+                            <button onclick="toggleItemComplete('${hw.id}')" class="w-5 h-5 rounded-md border ${hw.completed ? 'bg-emerald-600 border-emerald-600 text-white' : 'border-slate-300 text-transparent hover:border-indigo-600'} flex items-center justify-center transition-all mx-auto">
+                                <i class="fa-solid fa-check text-[10px]"></i>
+                            </button>
+                        </td>
+                        <td class="py-3.5 px-4">
+                            <p class="font-bold text-slate-800 ${hw.completed ? 'line-through text-slate-400' : ''}">${escapeHtml(hw.title)}</p>
+                            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700">${hw.subject || 'General'}</span>
+                        </td>
+                        <td class="py-3.5 px-4 font-medium text-slate-600">
+                            <div>${hw.date}</div>
+                            <div class="text-[10px] text-slate-400">${hw.time}</div>
+                        </td>
+                        <td class="py-3.5 px-4 font-semibold text-slate-700">${hw.estMins || 30} mins</td>
+                        <td class="py-3.5 px-4">
+                            <span class="px-2 py-1 rounded-md text-[10px] font-bold ${hw.priority === 'High' ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-600'}">${hw.priority || 'Medium'}</span>
+                        </td>
+                        <td class="py-3.5 px-4 text-slate-500 font-medium">1 Day Before</td>
+                        <td class="py-3.5 px-4 text-right space-x-2">
+                            <button onclick="deleteHomeworkItem('${hw.id}')" class="text-rose-500 hover:text-rose-700 font-bold text-xs p-1">
+                                <i class="fa-regular fa-trash-can"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+
+        function toggleItemComplete(id) {
+            const item = appEvents.find(e => e.id === id);
+            if (item) {
+                item.completed = !item.completed;
+                saveState();
+                renderDashboard();
+                renderHomeworkTable();
+                renderCalendar();
+                if (item.completed) {
+                    showToastAlert('Task Completed!', `Great job completing "${item.title}"! 🎉`);
+                }
+            }
+        }
+
+        function deleteHomeworkItem(id) {
+            appEvents = appEvents.filter(e => e.id !== id);
+            saveState();
+            renderDashboard();
+            renderHomeworkTable();
+            renderCalendar();
+            showToastAlert('Deleted', 'Schedule entry removed.');
+        }
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            const date = new Date(activeCalendarYear, activeCalendarMonth, 1);
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById('calendar-month-year').innerText = `${monthNames[activeCalendarMonth]} ${activeCalendarYear}`;
+
+            const firstDayIndex = date.getDay();
+            const daysInMonth = new Date(activeCalendarYear, activeCalendarMonth + 1, 0).getDate();
+
+            for (let i = 0; i < firstDayIndex; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'bg-slate-50/50 p-2 min-h-[80px]';
+                grid.appendChild(emptyCell);
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayStr = `${activeCalendarYear}-${String(activeCalendarMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const itemsOnDay = appEvents.filter(e => e.date === dayStr);
+
+                const cell = document.createElement('div');
+                cell.className = 'p-2 min-h-[80px] bg-white border-t border-slate-100 hover:bg-slate-50 transition-all cursor-pointer space-y-1';
+                cell.onclick = () => selectCalendarDate(dayStr);
+
+                const dayNum = document.createElement('span');
+                dayNum.className = 'text-xs font-bold text-slate-700 block mb-1';
+                dayNum.innerText = day;
+                cell.appendChild(dayNum);
+
+                itemsOnDay.slice(0, 2).forEach(item => {
+                    const tag = document.createElement('div');
+                    tag.className = `text-[10px] p-1 rounded font-bold truncate ${item.type === 'homework' ? 'bg-indigo-50 text-indigo-700' : item.type === 'test' ? 'bg-rose-50 text-rose-700' : 'bg-violet-50 text-violet-700'}`;
+                    tag.innerText = item.title;
+                    cell.appendChild(tag);
+                });
+
+                grid.appendChild(cell);
+            }
+        }
+
+        function changeCalendarMonth(delta) {
+            activeCalendarMonth += delta;
+            if (activeCalendarMonth < 0) {
+                activeCalendarMonth = 11;
+                activeCalendarYear--;
+            } else if (activeCalendarMonth > 11) {
+                activeCalendarMonth = 0;
+                activeCalendarYear++;
+            }
+            renderCalendar();
+        }
+
+        function resetCalendarToToday() {
+            activeCalendarMonth = new Date().getMonth();
+            activeCalendarYear = new Date().getFullYear();
+            renderCalendar();
+        }
+
+        function filterCalendar(cat) {
+            calendarFilter = cat;
+            renderCalendar();
+        }
+
+        function selectCalendarDate(dateStr) {
+            const drawer = document.getElementById('calendar-day-detail');
+            const itemsBox = document.getElementById('selected-date-items');
+            if (!drawer || !itemsBox) return;
+
+            drawer.classList.remove('hidden');
+            document.getElementById('selected-date-title').innerText = `Schedule for ${dateStr}`;
+
+            const items = appEvents.filter(e => e.date === dateStr);
+            itemsBox.innerHTML = '';
+
+            if (items.length === 0) {
+                itemsBox.innerHTML = `<p class="text-xs text-slate-400 py-2">No entries scheduled for this date.</p>`;
+            } else {
+                items.forEach(item => {
+                    const el = document.createElement('div');
+                    el.className = 'p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs flex justify-between items-center';
+                    el.innerHTML = `
+                        <div>
+                            <p class="font-bold text-slate-800">${escapeHtml(item.title)}</p>
+                            <p class="text-slate-500">${item.subject} • ${item.time}</p>
+                        </div>
+                        <span class="px-2 py-0.5 text-[10px] font-bold rounded ${item.type === 'homework' ? 'bg-indigo-100 text-indigo-800' : 'bg-rose-100 text-rose-800'}">${item.type}</span>
+                    `;
+                    itemsBox.appendChild(el);
+                });
+            }
+        }
+
+        function toggleLockscreenSim() {
+            const ls = document.getElementById('lockscreen-overlay');
+            if (!ls) return;
+            if (ls.classList.contains('hidden')) {
+                ls.classList.remove('hidden');
+                updateLockscreenClock();
+                renderLockscreenNotifications();
+            } else {
+                ls.classList.add('hidden');
+            }
+        }
+
+        function updateLockscreenClock() {
+            const now = new Date();
+            const clockEl = document.getElementById('ls-clock');
+            const dateEl = document.getElementById('ls-date');
+            if (clockEl) clockEl.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+            if (dateEl) dateEl.innerText = now.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
+        }
+
+        function renderLockscreenNotifications() {
+            const stack = document.getElementById('ls-notifications-stack');
+            if (!stack) return;
+            stack.innerHTML = '';
+
+            const pending = appEvents.filter(e => !e.completed).slice(0, 4);
+            if (pending.length === 0) {
+                stack.innerHTML = `
+                    <div class="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl text-center text-xs text-indigo-200">
+                        No active notifications or pending assignments!
+                    </div>
+                `;
+                return;
+            }
+
+            pending.forEach(item => {
+                const notif = document.createElement('div');
+                notif.className = 'bg-white/15 backdrop-blur-md border border-white/20 p-4 rounded-2xl text-xs space-y-1 text-white shadow-lg';
+                notif.innerHTML = `
+                    <div class="flex items-center justify-between text-[11px] text-indigo-200 font-bold">
+                        <span><i class="fa-solid fa-graduation-cap mr-1"></i> StudySync • ${item.type.toUpperCase()}</span>
+                        <span>Due ${item.time}</span>
+                    </div>
+                    <p class="font-bold text-sm text-white">${escapeHtml(item.title)}</p>
+                    <p class="text-indigo-200 text-[11px]">${item.subject} • Priority: ${item.priority || 'Medium'}</p>
+                `;
+                stack.appendChild(notif);
+            });
+        }
+
+        function showToastAlert(title, message) {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = 'bg-slate-900 text-white p-4 rounded-xl shadow-xl border border-slate-700 flex items-start space-x-3 pointer-events-auto transform transition-all duration-300 translate-y-2 opacity-0';
+            toast.innerHTML = `
+                <div class="text-indigo-400 text-lg mt-0.5"><i class="fa-solid fa-bell"></i></div>
+                <div class="flex-1 text-xs">
+                    <p class="font-bold text-white">${escapeHtml(title)}</p>
+                    <p class="text-slate-300 mt-0.5">${escapeHtml(message)}</p>
+                </div>
+                <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white text-xs">&times;</button>
+            `;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.classList.add('opacity-0');
+                    setTimeout(() => toast.remove(), 300);
+                }
+            }, 4000);
+        }
+
+        function updateBadgesAndCounters() {
+            const pendingHW = appEvents.filter(e => e.type === 'homework' && !e.completed).length;
+            const hwBadge = document.getElementById('pending-hw-badge');
+            if (hwBadge) hwBadge.innerText = pendingHW;
+        }
+
+        function populateFocusHwSelector() {
+            const select = document.getElementById('focus-hw-selector');
+            if (!select) return;
+            select.innerHTML = '';
+
+            const pending = appEvents.filter(e => e.type === 'homework' && !e.completed);
+            if (pending.length === 0) {
+                select.innerHTML = `<option value="">No pending homework available</option>`;
+                return;
+            }
+
+            pending.forEach(hw => {
+                const opt = document.createElement('option');
+                opt.value = hw.id;
+                opt.innerText = `${hw.title} (${hw.subject}) - Due ${hw.date}`;
+                select.appendChild(opt);
+            });
+        }
+
+        function toggleFocusTimer() {
+            const btnText = document.getElementById('focus-btn-text');
+            const icon = document.getElementById('focus-icon');
+
+            if (isFocusRunning) {
+                clearInterval(focusTimerInterval);
+                isFocusRunning = false;
+                if (btnText) btnText.innerText = 'Resume Focus Session';
+                if (icon) icon.className = 'fa-solid fa-play';
+            } else {
+                isFocusRunning = true;
+                if (btnText) btnText.innerText = 'Pause Focus Timer';
+                if (icon) icon.className = 'fa-solid fa-pause';
+
+                focusTimerInterval = setInterval(() => {
+                    if (focusTimeLeft > 0) {
+                        focusTimeLeft--;
+                        updateFocusTimerDisplay();
+                    } else {
+                        clearInterval(focusTimerInterval);
+                        isFocusRunning = false;
+                        showToastAlert('Focus Session Complete!', '25 minutes finished! Take a 5-minute break.');
+                        resetFocusTimer();
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetFocusTimer() {
+            clearInterval(focusTimerInterval);
+            isFocusRunning = false;
+            focusTimeLeft = 25 * 60;
+            updateFocusTimerDisplay();
+            const btnText = document.getElementById('focus-btn-text');
+            const icon = document.getElementById('focus-icon');
+            if (btnText) btnText.innerText = 'Start Focus Session';
+            if (icon) icon.className = 'fa-solid fa-play';
+        }
+
+        function updateFocusTimerDisplay() {
+            const mins = Math.floor(focusTimeLeft / 60);
+            const secs = focusTimeLeft % 60;
+            const display = document.getElementById('focus-timer-display');
+            if (display) {
+                display.innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            }
+        }
+
+        function renderRemindersQueue() {
+            const list = document.getElementById('reminders-queue-list');
+            const badge = document.getElementById('queue-count-badge');
+            if (!list) return;
+
+            const pending = appEvents.filter(e => !e.completed);
+            if (badge) badge.innerText = `${pending.length} Active`;
+
+            list.innerHTML = '';
+            if (pending.length === 0) {
+                list.innerHTML = `<p class="text-xs text-slate-400 italic">No scheduled alerts queued.</p>`;
+                return;
+            }
+
+            pending.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs flex justify-between items-center';
+                div.innerHTML = `
+                    <div>
+                        <p class="font-bold text-slate-800">${escapeHtml(item.title)}</p>
+                        <p class="text-slate-500">Alert set for 1 Day Before Due Time (${item.time})</p>
+                    </div>
+                    <span class="text-[10px] font-bold px-2 py-0.5 bg-amber-100 text-amber-800 rounded">Scheduled</span>
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        function requestNotificationPermission() {
+            if (!("Notification" in window)) {
+                showToastAlert("Notifications Unavailable", "This browser does not support desktop notifications.");
+                return;
+            }
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    document.getElementById('notif-perm-text').innerText = "Notifications Enabled";
+                    showToastAlert("Notifications Active", "You will receive Lockscreen & system study alerts!");
+                }
+            });
+        }
+
+        function triggerDailyHWReminderPrompt() {
+            toggleLockscreenSim();
+            showToastAlert("Daily Homework Check-In", "Time to log homework assigned today!");
+        }
+
+        window.onload = function() {
+            saveState();
+            renderDashboard();
+            renderCalendar();
+
+            setInterval(() => {
+                const now = new Date();
+                const clock = document.getElementById('top-clock-time');
+                if (clock) clock.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                if (!document.getElementById('lockscreen-overlay').classList.contains('hidden')) {
+                    updateLockscreenClock();
+                }
+            }, 1000);
+        };
+    </script>
+</body>
+</html>

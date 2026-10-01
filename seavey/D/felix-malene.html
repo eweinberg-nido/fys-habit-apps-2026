@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusPulse</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        navy: {
+                            50: '#f0f4f8',
+                            100: '#d9e2ec',
+                            500: '#1e293b',
+                            700: '#0f172a',
+                            800: '#0b1320',
+                            900: '#070c14'
+                        },
+                        accentOrange: {
+                            400: '#ff9d5c',
+                            500: '#f97316',
+                            600: '#ea580c'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --app-font-size: 17px;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: var(--app-font-size);
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        input, select, button, textarea, p, span, h1, h2, h3 {
+            font-size: max(0.85em, 12px);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(156, 163, 175, 0.4);
+            border-radius: 4px;
+        }
+
+        .task-checkbox {
+            transition: all 0.2s ease;
+        }
+        .task-checkbox:hover {
+            background-color: rgba(249, 115, 22, 0.15);
+            border-color: #f97316;
+        }
+
+        .dark body {
+            background-color: #0b1320;
+            color: #f1f5f9;
+        }
+        .dark .sidebar-bg {
+            background-color: #0f172a;
+            border-color: #1e293b;
+        }
+        .dark .main-bg {
+            background-color: #0b1320;
+        }
+        .dark .panel-bg {
+            background-color: #1e293b;
+            border-color: #334155;
+        }
+        .dark .hover-bg:hover {
+            background-color: #334155;
+        }
+        .dark .input-bg {
+            background-color: #1e293b;
+            border-color: #334155;
+            color: #f8fafc;
+        }
+
+        /* Continuous breathing square keyframe pulse */
+        @keyframes box-expand-contract {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.6); opacity: 1; }
+        }
+        .animate-breathing-box {
+            animation: box-expand-contract 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="h-screen overflow-hidden bg-slate-50 text-slate-900 select-none">
+
+    <div id="app-container" class="flex h-full w-full">
+
+        <!-- SIDEBAR NAVIGATION -->
+        <aside id="sidebar" class="w-80 min-w-[260px] max-w-[320px] sidebar-bg bg-navy-50 border-r border-slate-200 flex flex-col justify-between shrink-0 h-full transition-colors duration-200">
+            <div class="p-3 space-y-4">
+                
+                <!-- Profile Header & Streak Badge -->
+                <div class="relative px-2 py-1">
+                    <div class="flex items-center justify-between">
+                        <!-- Profile Trigger -->
+                        <div onclick="toggleProfileMenu()" class="flex items-center gap-2 cursor-pointer hover:bg-slate-200/70 dark:hover-bg p-1.5 rounded-lg transition-colors">
+                            <div class="w-8 h-8 rounded-full bg-navy-700 text-white font-bold flex items-center justify-center text-xs shadow-sm">
+                                K
+                            </div>
+                            <div class="flex flex-col">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="font-bold text-slate-900 dark:text-white" id="sidebar-user-name">Kentaro</span>
+                                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-500"></i>
+                                </div>
+                                <span class="text-[11px] font-semibold text-accentOrange-600 dark:text-accentOrange-400 flex items-center gap-1">
+                                    <i class="fa-solid fa-fire text-accentOrange-500"></i> <span id="streak-count-display">5 Day Streak</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-1">
+                            <button onclick="toggleNotificationsModal()" class="w-8 h-8 rounded-lg hover:bg-slate-200/70 dark:hover-bg text-slate-600 dark:text-slate-300 flex items-center justify-center transition-colors relative" title="Notifications">
+                                <i class="fa-regular fa-bell"></i>
+                                <span id="notif-badge" class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-accentOrange-500 hidden"></span>
+                            </button>
+                            <button onclick="openSettingsModal()" class="w-8 h-8 rounded-lg hover:bg-slate-200/70 dark:hover-bg text-slate-600 dark:text-slate-300 flex items-center justify-center transition-colors" title="Settings">
+                                <i class="fa-solid fa-gear"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Profile Details Popover Menu -->
+                    <div id="profile-dropdown" class="absolute left-2 top-12 z-50 w-64 panel-bg bg-white border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl p-3.5 hidden space-y-3">
+                        <div class="flex items-center gap-3 pb-2 border-b border-slate-200 dark:border-slate-700">
+                            <div class="w-10 h-10 rounded-full bg-navy-700 text-white font-bold flex items-center justify-center text-sm">
+                                K
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-slate-900 dark:text-white text-sm">Kentaro Suzuki</h4>
+                                <p class="text-xs text-slate-500">FocusPulse Member</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-1.5 text-xs text-slate-700 dark:text-slate-300">
+                            <div class="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+                                <span class="text-slate-500 font-medium">Age:</span>
+                                <span class="font-semibold text-slate-900 dark:text-white">17 years old</span>
+                            </div>
+                            <div class="flex justify-between py-1 border-b border-slate-100 dark:border-slate-800">
+                                <span class="text-slate-500 font-medium">Focus Streak:</span>
+                                <span class="font-bold text-accentOrange-600 dark:text-accentOrange-400 flex items-center gap-1">
+                                    <i class="fa-solid fa-fire text-accentOrange-500"></i> 5 Days
+                                </span>
+                            </div>
+                            <div class="flex justify-between py-1">
+                                <span class="text-slate-500 font-medium">App Lock Status:</span>
+                                <span id="profile-app-lock-status" class="font-bold text-red-500">Apps Locked</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Task Primary Button -->
+                <button onclick="focusTaskInput()" class="w-full flex items-center gap-2 px-3 py-2 text-accentOrange-600 hover:bg-accentOrange-500/10 font-bold rounded-lg transition-colors">
+                    <div class="w-5 h-5 rounded-full bg-accentOrange-500 text-white flex items-center justify-center text-xs">
+                        <i class="fa-solid fa-plus"></i>
+                    </div>
+                    <span>Add task</span>
+                </button>
+
+                <!-- Search Input -->
+                <div class="relative px-1">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-slate-400"></i>
+                    <input type="text" id="sidebar-search" placeholder="Search tasks" oninput="handleSearch(this.value)" class="w-full input-bg bg-slate-200/60 border border-transparent rounded-lg pl-8 pr-3 py-1.5 focus:outline-none focus:border-slate-400 transition-all text-slate-900 dark:text-white placeholder-slate-500">
+                </div>
+
+                <!-- Sidebar Navigation Order -->
+                <nav class="space-y-0.5 font-medium">
+                    <button id="nav-inbox" onclick="switchView('inbox')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-900 dark:text-white bg-slate-200/80 dark:bg-slate-800 font-semibold transition-colors">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-inbox text-blue-600"></i>
+                            <span>Inbox</span>
+                        </div>
+                        <span id="badge-inbox-count" class="text-slate-500 font-normal">0</span>
+                    </button>
+
+                    <button id="nav-breathing" onclick="switchView('breathing')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover-bg transition-colors">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-spa text-teal-500"></i>
+                            <span>Breathing</span>
+                        </div>
+                    </button>
+
+                    <button id="nav-workout" onclick="switchView('workout')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover-bg transition-colors">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-dumbbell text-orange-500"></i>
+                            <span>Workout</span>
+                        </div>
+                        <span id="badge-lock-status" class="px-2 py-0.5 text-[10px] font-extrabold bg-red-500 text-white rounded-full">LOCKED</span>
+                    </button>
+
+                    <button id="nav-friends" onclick="switchView('friends')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover-bg transition-colors">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-users text-emerald-600"></i>
+                            <span>Friends</span>
+                        </div>
+                        <span id="badge-friends-count" class="text-slate-500 font-normal">3</span>
+                    </button>
+
+                    <button id="nav-widgets" onclick="switchView('widgets')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover-bg transition-colors">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-cubes text-purple-600"></i>
+                            <span>Widgets</span>
+                        </div>
+                    </button>
+
+                    <button id="nav-summary" onclick="switchView('summary')" class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover-bg transition-colors">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-chart-line text-navy-700 dark:text-blue-400"></i>
+                            <span>Weekly Summary</span>
+                        </div>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Sidebar Bottom Info -->
+            <div class="p-3 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-slate-500">
+                <span id="lang-display-label">Language: English</span>
+                <button onclick="openSettingsModal()" class="hover:text-slate-900 dark:hover:text-white"><i class="fa-solid fa-sliders"></i></button>
+            </div>
+        </aside>
+
+        <main class="flex-1 main-bg bg-white h-full overflow-y-auto custom-scrollbar p-6 md:p-10 transition-colors duration-200">
+            
+            <!-- VIEW 1: INBOX WITH PER-TASK TIMERS -->
+            <section id="view-inbox" class="max-w-3xl mx-auto space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <div>
+                        <h1 class="font-bold text-slate-900 dark:text-white text-xl">Inbox</h1>
+                        <p class="text-xs text-slate-500">High & Medium tasks start with a 5-minute focus timer. Tap <b>+5m to end</b> to extend time!</p>
+                    </div>
+                    <span id="inbox-pending-text" class="text-slate-500 font-medium text-xs">0 tasks remaining</span>
+                </div>
+
+                <!-- Add Task Form Block -->
+                <form onsubmit="handleAddTask(event)" class="space-y-3 bg-slate-100/70 dark:panel-bg p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <input type="text" id="main-task-input" placeholder="Type a task name..." required class="w-full bg-transparent font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none">
+                    
+                    <div class="flex items-center justify-between gap-3 pt-2 border-t border-slate-200 dark:border-slate-700">
+                        <div class="flex items-center gap-2">
+                            <select id="task-priority" class="input-bg bg-white border border-slate-300 dark:border-slate-700 rounded px-2.5 py-1 text-slate-900 dark:text-white focus:outline-none text-xs">
+                                <option value="High">Priority: High (5m Timer)</option>
+                                <option value="Medium" selected>Priority: Medium (5m Timer)</option>
+                                <option value="Low">Priority: Low (No Timer)</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="bg-navy-700 hover:bg-navy-800 text-white font-bold px-4 py-1.5 rounded transition-colors shadow-sm text-xs">
+                            Add task
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Tasks List with Embedded Timers -->
+                <div id="inbox-tasks-container" class="space-y-2">
+                    <!-- Tasks dynamically rendered here -->
+                </div>
+            </section>
+
+            <!-- VIEW 2: WORDLESS BREATHING SPACE -->
+            <section id="view-breathing" class="h-full flex flex-col items-center justify-center relative overflow-hidden hidden select-none">
+                
+                <div class="absolute w-96 h-96 bg-teal-500/10 rounded-full filter blur-3xl animate-pulse pointer-events-none"></div>
+                <div class="absolute w-80 h-80 bg-accentOrange-500/10 rounded-full filter blur-2xl pointer-events-none"></div>
+
+                <div class="relative z-10 flex flex-col items-center justify-center space-y-12 my-auto max-w-lg w-full px-4">
+                    
+                    <div class="text-center space-y-1">
+                        <h2 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Box Breathing</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">A wordless, peaceful space to center your focus</p>
+                    </div>
+
+                    <!-- Original Wordless Moving Box (Expands and Contracts) -->
+                    <div class="relative flex items-center justify-center h-64 w-64 my-6">
+                        <div id="breathing-box" class="w-32 h-32 bg-gradient-to-tr from-teal-500/30 via-emerald-400/20 to-teal-300/30 border-2 border-teal-400/60 rounded-3xl shadow-2xl backdrop-blur-md animate-breathing-box flex items-center justify-center"></div>
+                    </div>
+
+                    <!-- Ambient Sound Controls (Rain & Realistic Bird Tweets) -->
+                    <div class="flex items-center gap-3 bg-slate-900/60 dark:bg-slate-800/80 backdrop-blur-lg px-6 py-3 rounded-full border border-teal-500/30 shadow-lg">
+                        <button onclick="toggleAmbientSound('rain')" id="btn-sound-rain" class="flex items-center gap-2 px-4 py-1.5 rounded-full text-slate-400 hover:text-teal-300 transition-colors text-xs font-semibold" title="Calming Rain">
+                            <i class="fa-solid fa-cloud-showers-heavy text-base"></i>
+                            <span>Rain</span>
+                        </button>
+
+                        <div class="w-px h-4 bg-slate-700"></div>
+
+                        <button onclick="toggleAmbientSound('birds')" id="btn-sound-birds" class="flex items-center gap-2 px-4 py-1.5 rounded-full text-slate-400 hover:text-teal-300 transition-colors text-xs font-semibold" title="Bird Tweets">
+                            <i class="fa-solid fa-dove text-base"></i>
+                            <span>Bird Tweets</span>
+                        </button>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- VIEW 3: WORKOUT & APP LOCKER VIEW -->
+            <section id="view-workout" class="max-w-3xl mx-auto space-y-6 hidden">
+                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <div>
+                        <h1 class="font-bold text-slate-900 dark:text-white text-xl">Workout & Brain Stimulator</h1>
+                        <p class="text-xs text-slate-500">Get your heart pumping, stimulate your brain, and unlock your apps!</p>
+                    </div>
+                    <span id="workout-app-lock-badge" class="px-3 py-1 bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 font-extrabold text-xs rounded-full flex items-center gap-1.5">
+                        <i class="fa-solid fa-lock"></i> TikTok, YouTube & Instagram Locked
+                    </span>
+                </div>
+
+                <!-- APP LOCKER CHALLENGE CARD -->
+                <div class="panel-bg bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-red-500/10 p-6 rounded-2xl border border-orange-500/30 space-y-4">
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2 font-black text-slate-900 dark:text-white text-base md:text-lg">
+                                <i class="fa-solid fa-shield-halved text-accentOrange-500"></i>
+                                <span>UNLOCK TIKTOK, YOUTUBE, AND INSTAGRAM FOR 45 MINS</span>
+                            </div>
+                            <p class="text-slate-600 dark:text-slate-300 text-xs">
+                                Complete a quick movement challenge to stimulate your brain and release dopamine before social media scrolling!
+                            </p>
+                        </div>
+                        <div class="flex gap-1.5 shrink-0">
+                            <div class="w-9 h-9 rounded-xl bg-black/10 dark:bg-white/10 border border-slate-500/20 flex items-center justify-center text-slate-900 dark:text-white font-bold text-base" title="TikTok Locked">
+                                <i class="fa-brands fa-tiktok"></i>
+                            </div>
+                            <div class="w-9 h-9 rounded-xl bg-red-600/10 border border-red-500/20 flex items-center justify-center text-red-600 font-bold text-base" title="YouTube Locked">
+                                <i class="fa-brands fa-youtube"></i>
+                            </div>
+                            <div class="w-9 h-9 rounded-xl bg-pink-600/10 border border-pink-500/20 flex items-center justify-center text-pink-600 font-bold text-base" title="Instagram Locked">
+                                <i class="fa-brands fa-instagram"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Selected Exercise Challenge Selector -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 pt-2">
+                        <button onclick="selectChallenge('jump_squats')" id="btn-chal-jump_squats" class="p-3 rounded-xl border border-orange-500 bg-orange-500/20 text-slate-900 dark:text-white font-bold text-center transition-all">
+                            <div class="text-sm mb-1"><i class="fa-solid fa-bolt text-accentOrange-500"></i></div>
+                            <div class="text-xs">20 Jump Squats</div>
+                        </button>
+
+                        <button onclick="selectChallenge('pogo_jumps')" id="btn-chal-pogo_jumps" class="p-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-center transition-all">
+                            <div class="text-sm mb-1"><i class="fa-solid fa-person-running text-teal-500"></i></div>
+                            <div class="text-xs">30 Pogo Jumps</div>
+                        </button>
+
+                        <button onclick="selectChallenge('shoulder_taps')" id="btn-chal-shoulder_taps" class="p-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-center transition-all">
+                            <div class="text-sm mb-1"><i class="fa-solid fa-shield-halved text-purple-500"></i></div>
+                            <div class="text-xs">20 Shoulder Taps</div>
+                        </button>
+
+                        <button onclick="selectChallenge('fast_feet')" id="btn-chal-fast_feet" class="p-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-center transition-all">
+                            <div class="text-sm mb-1"><i class="fa-solid fa-stopwatch text-amber-500"></i></div>
+                            <div class="text-xs">15s Fast Feet</div>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-3 border-t border-orange-500/20">
+                        <span id="challenge-status-text" class="text-xs font-semibold text-slate-600 dark:text-slate-300">
+                            Challenge Selected: <b>20 Jump Squats</b>
+                        </span>
+                        <button onclick="completeChallengeAndUnlock()" class="bg-accentOrange-500 hover:bg-accentOrange-600 text-white font-extrabold px-4 py-2 rounded-xl transition-colors shadow-md flex items-center gap-2 text-xs">
+                            <i class="fa-solid fa-lock-open"></i>
+                            <span>Complete Challenge & Unlock</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- FOLLOW ALONG EXERCISE GUIDES CATEGORIES -->
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-slate-900 dark:text-white text-base">Follow-Along Movement Clips</h3>
+                        <span class="text-xs text-slate-500 font-medium">Click play to launch interactive follow-along guide</span>
+                    </div>
+
+                    <!-- Category 1: Power & Speed (Plyometrics) -->
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-xs uppercase tracking-wider text-accentOrange-600 dark:text-accentOrange-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-bolt"></i> Power & Speed (Plyometrics)
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div class="panel-bg bg-slate-50 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2 flex flex-col justify-between">
+                                <div>
+                                    <div class="font-bold text-slate-900 dark:text-white text-sm">Jump Squats</div>
+                                    <p class="text-xs text-slate-500 mt-1">Drop into a deep squat and explode upward forcefully, landing softly back into a squat to build raw sprint power.</p>
+                                </div>
+                                <button onclick="openExerciseVisualizer('Jump Squats', 'Explode upward forcefully & land softly back into a squat', 20, false, 'jump_squats')" class="w-full bg-accentOrange-500 hover:bg-accentOrange-600 text-white font-bold py-1.5 rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-sm mt-2">
+                                    <i class="fa-solid fa-play text-[10px]"></i> Start Follow-Along
+                                </button>
+                            </div>
+
+                            <div class="panel-bg bg-slate-50 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2 flex flex-col justify-between">
+                                <div>
+                                    <div class="font-bold text-slate-900 dark:text-white text-sm">Pogo Jumps</div>
+                                    <p class="text-xs text-slate-500 mt-1">Bounce rapidly on your toes with stiff legs, spending as little time on the ground as possible to improve your quick first-step reaction.</p>
+                                </div>
+                                <button onclick="openExerciseVisualizer('Pogo Jumps', 'Bounce rapidly on toes with stiff legs for quick first-step reaction', 30, false, 'pogo_jumps')" class="w-full bg-accentOrange-500 hover:bg-accentOrange-600 text-white font-bold py-1.5 rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-sm mt-2">
+                                    <i class="fa-solid fa-play text-[10px]"></i> Start Follow-Along
+                                </button>
+                            </div>
+
+                            <div class="panel-bg bg-slate-50 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2 flex flex-col justify-between">
+                                <div>
+                                    <div class="font-bold text-slate-900 dark:text-white text-sm">Skater Hops</div>
+                                    <p class="text-xs text-slate-500 mt-1">Leap sideways from one foot to the other, holding your balance for a split second on landing to build lateral cutting power.</p>
+                                </div>
+                                <button onclick="openExerciseVisualizer('Skater Hops', 'Leap sideways holding balance on each landing', 20, false, 'skater_hops')" class="w-full bg-accentOrange-500 hover:bg-accentOrange-600 text-white font-bold py-1.5 rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-sm mt-2">
+                                    <i class="fa-solid fa-play text-[10px]"></i> Start Follow-Along
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category 2: Soccer-Specific Leg Strength -->
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-xs uppercase tracking-wider text-teal-600 dark:text-teal-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-futbol"></i> Soccer-Specific Leg Strength
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div class="panel-bg bg-slate-50 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2 flex flex-col justify-between">
+                                <div>
+                                    <div class="font-bold text-slate-900 dark:text-white text-sm">Single-Leg RDLs</div>
+                                    <p class="text-xs text-slate-500 mt-1">Hinge forward at the hips on one leg while extending your other leg straight behind you to strengthen your hamstrings and prevent pulls.</p>
+                                </div>
+                                <button onclick="openExerciseVisualizer('Single-Leg RDLs', 'Hinge forward at hips on one leg to strengthen hamstrings', 16, false, 'single_leg_rdl')" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-1.5 rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-sm mt-2">
+                                    <i class="fa-solid fa-play text-[10px]"></i> Start Follow-Along
+                                </button>
+                            </div>
+
+                            <div class="panel-bg bg-slate-50 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2 flex flex-col justify-between">
+                                <div>
+                                    <div class="font-bold text-slate-900 dark:text-white text-sm">Reverse Lunges</div>
+                                    <p class="text-xs text-slate-500 mt-1">Step backward into a deep lunge and drive forcefully back up to a standing position to mimic running strides and build quad power.</p>
+                                </div>
+                                <button onclick="openExerciseVisualizer('Reverse Lunges', 'Step backward into deep lunge & drive back up', 20, false, 'reverse_lunges')" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-1.5 rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-sm mt-2">
+                                    <i class="fa-solid fa-play text-[10px]"></i> Start Follow-Along
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category 3: Core & Shielding Strength -->
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-xs uppercase tracking-wider text-purple-600 dark:text-purple-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-shield-halved"></i> Core & Shielding Strength
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div class="panel-bg bg-slate-50 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2 flex flex-col justify-between">
+                                <div>
+                                    <div class="font-bold text-slate-900 dark:text-white text-sm">Plank Shoulder Taps</div>
+                                    <p class="text-xs text-slate-500 mt-1">Hold a strong push-up position and alternate tapping your shoulders without letting your hips tilt to build a rigid core for shielding defenders.</p>
+                                </div>
+                                <button onclick="openExerciseVisualizer('Plank Shoulder Taps', 'Tap opposite shoulder without letting hips tilt', 24, false, 'shoulder_taps')" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-1.5 rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-sm mt-2">
+                                    <i class="fa-solid fa-play text-[10px]"></i> Start Follow-Along
+                                </button>
+                            </div>
+
+                            <div class="panel-bg bg-slate-50 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2 flex flex-col justify-between">
+                                <div>
+                                    <div class="font-bold text-slate-900 dark:text-white text-sm">Bicycle Crunches</div>
+                                    <p class="text-xs text-slate-500 mt-1">Alternate touching your elbow to the opposite knee in a smooth, continuous motion to train the rotational core strength used when changing direction.</p>
+                                </div>
+                                <button onclick="openExerciseVisualizer('Bicycle Crunches', 'Touch elbow to opposite knee in smooth rhythm', 30, false, 'bicycle_crunches')" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-1.5 rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-sm mt-2">
+                                    <i class="fa-solid fa-play text-[10px]"></i> Start Follow-Along
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category 4: Injury Prevention & Agility -->
+                    <div class="space-y-3">
+                        <h4 class="font-bold text-xs uppercase tracking-wider text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-stopwatch"></i> Injury Prevention & Agility
+                        </h4>
+                        <div class="panel-bg bg-slate-50 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2 flex flex-col justify-between">
+                            <div>
+                                <div class="font-bold text-slate-900 dark:text-white text-sm">Fast Feet (In-and-Outs)</div>
+                                <p class="text-xs text-slate-500 mt-1">Chop your feet as fast as possible, moving them wide and narrow in place for 15 seconds to quicken your footwork.</p>
+                            </div>
+                            <button onclick="openExerciseVisualizer('Fast Feet (In-and-Outs)', 'Chop feet wide and narrow as fast as possible', 15, true, 'fast_feet')" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-1.5 rounded-lg text-xs flex items-center justify-center gap-1.5 shadow-sm mt-2">
+                                <i class="fa-solid fa-play text-[10px]"></i> Start 15s Sprint Follow-Along
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- VIEW 4: FRIENDS ACTIVITY -->
+            <section id="view-friends" class="max-w-2xl mx-auto space-y-6 hidden">
+                <div class="border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <h1 class="font-bold text-slate-900 dark:text-white text-xl">Friends Workout Activity</h1>
+                    <p class="text-xs text-slate-500">See workouts completed by friends to stay motivated!</p>
+                </div>
+
+                <div class="space-y-3" id="friends-list-container">
+                    <!-- Dynamic Friends List -->
+                </div>
+            </section>
+
+            <!-- VIEW 5: WIDGETS -->
+            <section id="view-widgets" class="max-w-2xl mx-auto space-y-6 hidden">
+                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <h1 class="font-bold text-slate-900 dark:text-white text-xl">Widgets</h1>
+                    <button onclick="openAddWidgetModal()" class="bg-accentOrange-500 hover:bg-accentOrange-600 text-white font-bold px-3.5 py-1.5 rounded-lg flex items-center gap-2 transition-colors shadow-sm text-xs">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add Widget</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="widgets-grid-container">
+                    <!-- Dynamic Widgets Injected Here -->
+                </div>
+            </section>
+
+            <!-- VIEW 6: WEEKLY SUMMARY -->
+            <section id="view-summary" class="max-w-2xl mx-auto space-y-6 hidden">
+                <div class="border-b border-slate-200 dark:border-slate-800 pb-4">
+                    <h1 class="font-bold text-slate-900 dark:text-white text-xl">Weekly Summary</h1>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="panel-bg bg-slate-50 p-5 rounded-xl border border-slate-200 dark:border-slate-800 text-center space-y-1">
+                        <div class="font-bold text-slate-900 dark:text-white text-2xl" id="summary-tasks-completed">18</div>
+                        <div class="text-slate-500 font-medium text-xs">Tasks Completed This Week</div>
+                    </div>
+                    <div class="panel-bg bg-slate-50 p-5 rounded-xl border border-slate-200 dark:border-slate-800 text-center space-y-1">
+                        <div class="font-bold text-accentOrange-500 text-2xl" id="summary-workouts-done">4</div>
+                        <div class="text-slate-500 font-medium text-xs">Workouts & Apps Unlocked</div>
+                    </div>
+                </div>
+
+                <div class="panel-bg bg-slate-50 p-5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-slate-900 dark:text-white">Weekly Focus & Activity</h3>
+                        <span class="px-2.5 py-1 rounded bg-navy-100 dark:bg-slate-700 text-navy-700 dark:text-blue-300 font-bold text-xs">Current Week</span>
+                    </div>
+
+                    <div class="w-full h-48 pt-2">
+                        <svg class="w-full h-full overflow-visible" viewBox="0 0 500 160">
+                            <line x1="0" y1="30" x2="500" y2="30" stroke="currentColor" class="text-slate-200 dark:text-slate-700" stroke-dasharray="4"/>
+                            <line x1="0" y1="70" x2="500" y2="70" stroke="currentColor" class="text-slate-200 dark:text-slate-700" stroke-dasharray="4"/>
+                            <line x1="0" y1="110" x2="500" y2="110" stroke="currentColor" class="text-slate-200 dark:text-slate-700" stroke-dasharray="4"/>
+
+                            <path d="M 10 120 Q 80 100, 120 70 T 220 50 T 320 80 T 420 30 T 490 20" fill="none" stroke="#f97316" stroke-width="3.5" stroke-linecap="round"/>
+                            <path d="M 10 120 Q 80 100, 120 70 T 220 50 T 320 80 T 420 30 T 490 20 L 490 140 L 10 140 Z" fill="#f97316" fill-opacity="0.1"/>
+
+                            <circle cx="10" cy="120" r="5" fill="#1e293b" stroke="#f97316" stroke-width="2"/>
+                            <circle cx="120" cy="70" r="5" fill="#1e293b" stroke="#f97316" stroke-width="2"/>
+                            <circle cx="220" cy="50" r="5" fill="#1e293b" stroke="#f97316" stroke-width="2"/>
+                            <circle cx="320" cy="80" r="5" fill="#1e293b" stroke="#f97316" stroke-width="2"/>
+                            <circle cx="420" cy="30" r="5" fill="#1e293b" stroke="#f97316" stroke-width="2"/>
+                            <circle cx="490" cy="20" r="6" fill="#f97316"/>
+                        </svg>
+                    </div>
+
+                    <div class="flex justify-between text-slate-400 pt-1 font-mono text-xs">
+                        <span>Mon</span>
+                        <span>Tue</span>
+                        <span>Wed</span>
+                        <span>Thu</span>
+                        <span>Fri</span>
+                        <span>Sat</span>
+                        <span>Sun</span>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ADD WIDGET MODAL -->
+    <div id="add-widget-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="panel-bg bg-white max-w-md w-full rounded-2xl p-6 space-y-4 border border-slate-200 dark:border-slate-800 shadow-xl">
+            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                <h2 class="font-bold text-slate-900 dark:text-white">Create Custom Widget</h2>
+                <button onclick="closeAddWidgetModal()" class="text-slate-500 hover:text-slate-900 dark:hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleAddWidget(event)" class="space-y-4">
+                <div class="space-y-1">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 text-xs">Widget Title</label>
+                    <input type="text" id="widget-title-input" placeholder="e.g. Daily Reminder, Study Note" required class="w-full input-bg border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 focus:outline-none">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block font-bold text-slate-700 dark:text-slate-300 text-xs">Widget Content / Note</label>
+                    <textarea id="widget-content-input" rows="3" placeholder="Type text or custom message to display on screen..." required class="w-full input-bg border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 focus:outline-none"></textarea>
+                </div>
+
+                <div class="flex items-center gap-2 pt-1">
+                    <input type="checkbox" id="widget-auto-notif" class="w-4 h-4 rounded accent-accentOrange-500">
+                    <label for="widget-auto-notif" class="font-medium text-slate-700 dark:text-slate-300 text-xs">Enable automatic periodic task notifications</label>
+                </div>
+
+                <button type="submit" class="w-full bg-accentOrange-500 hover:bg-accentOrange-600 text-white font-bold py-2 rounded-lg transition-colors shadow-sm text-xs">
+                    Add Widget to Screen
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div id="settings-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="panel-bg bg-white max-w-md w-full rounded-2xl p-6 space-y-6 border border-slate-200 dark:border-slate-800 shadow-xl">
+            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                <h2 class="font-bold text-slate-900 dark:text-white">Settings</h2>
+                <button onclick="closeSettingsModal()" class="text-slate-500 hover:text-slate-900 dark:hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="space-y-5">
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-slate-900 dark:text-white text-xs">Preferred Language</label>
+                    <input type="text" id="setting-language-input" placeholder="e.g. English, Spanish, Japanese" onchange="updateLanguage(this.value)" class="w-full input-bg border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-2 focus:outline-none">
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-slate-900 dark:text-white text-xs">Appearance Theme</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="setAppTheme('light')" class="px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover-bg font-semibold text-xs text-slate-900 dark:text-white flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-sun text-amber-500"></i> Light Mode
+                        </button>
+                        <button onclick="setAppTheme('dark')" class="px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover-bg font-semibold text-xs text-slate-900 dark:text-white flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-moon text-indigo-400"></i> Dark Mode
+                        </button>
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="block font-bold text-slate-900 dark:text-white text-xs">Font Size</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="setFontSize('small')" class="px-2 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 font-semibold text-xs">Small</button>
+                        <button onclick="setFontSize('medium')" class="px-2 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 font-semibold text-xs">Medium</button>
+                        <button onclick="setFontSize('large')" class="px-2 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 font-semibold text-xs">Large</button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-2 border-t border-slate-200 dark:border-slate-800">
+                    <span class="font-bold text-slate-900 dark:text-white text-xs">In-App Notifications</span>
+                    <input type="checkbox" id="setting-notifications-toggle" onchange="toggleNotificationsSetting(this.checked)" class="w-4 h-4 rounded accent-accentOrange-500">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- INTERACTIVE FOLLOW-ALONG VISUALIZER MODAL -->
+    <div id="exercise-player-modal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-md hidden items-center justify-center p-4">
+        <div class="panel-bg bg-slate-900 text-white max-w-md w-full rounded-2xl p-6 space-y-5 border border-slate-700 shadow-2xl relative overflow-hidden">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-accentOrange-500 animate-ping"></span>
+                    <h3 id="player-title" class="font-black text-white text-base">Exercise Visualizer</h3>
+                </div>
+                <button onclick="closeExerciseVisualizer()" class="text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Animated Graphic Canvas visualizer -->
+            <div class="relative w-full h-48 bg-slate-950 rounded-xl border border-slate-800 flex flex-col items-center justify-center overflow-hidden p-4">
+                <canvas id="exercise-canvas" width="320" height="160" class="w-full h-full"></canvas>
+                <div id="player-rhythm-badge" class="absolute top-2 right-2 bg-accentOrange-500/20 border border-accentOrange-500/40 text-accentOrange-400 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                    Follow Rhythm
+                </div>
+            </div>
+
+            <div class="space-y-1 text-center">
+                <p id="player-desc" class="text-xs text-slate-300 font-medium">Follow along with the motion ticker on screen.</p>
+                <div id="player-counter" class="text-3xl font-black text-accentOrange-500 font-mono pt-1">
+                    0 / 20 REPS
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3 pt-2">
+                <button id="player-toggle-btn" onclick="toggleExercisePlayback()" class="flex-1 bg-accentOrange-500 hover:bg-accentOrange-600 text-white font-extrabold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 transition-colors shadow-lg">
+                    <i class="fa-solid fa-pause"></i> Pause Motion
+                </button>
+                <button onclick="completeExerciseFromPlayer()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-4 py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 transition-colors shadow-lg">
+                    <i class="fa-solid fa-check"></i> Complete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICATIONS MODAL -->
+    <div id="notifications-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="panel-bg bg-white max-w-sm w-full rounded-2xl p-5 space-y-4 border border-slate-200 dark:border-slate-800 shadow-xl">
+            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+                <h3 class="font-bold text-slate-900 dark:text-white">Notifications</h3>
+                <button onclick="toggleNotificationsModal()" class="text-slate-500 hover:text-slate-900 dark:hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="notif-list-container" class="space-y-2">
+                <!-- Notifications Injected Here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* APPLICATION STATE */
+        const state = {
+            activeView: 'inbox',
+            settings: {
+                language: 'English',
+                theme: 'light',
+                fontSize: 'medium',
+                notificationsEnabled: true
+            },
+            appLocked: true,
+            selectedChallenge: 'jump_squats',
+            ambient: {
+                audioCtx: null,
+                activeSound: null,
+                rainGain: null,
+                birdsInterval: null
+            },
+            exercisePlayer: {
+                active: false,
+                title: '',
+                desc: '',
+                type: 'jump_squats',
+                targetReps: 20,
+                currentReps: 0,
+                isTimeBased: false,
+                interval: null,
+                animFrame: null,
+                phase: 0
+            },
+            tasks: [
+                { id: 1, text: 'Track and field practice prep', priority: 'High', completed: false, timerSeconds: 5 * 60, timerRunning: false, interval: null },
+                { id: 2, text: 'Read AP Chemistry Chapter 4', priority: 'Medium', completed: false, timerSeconds: 5 * 60, timerRunning: false, interval: null },
+                { id: 3, text: 'Pack lunch for tomorrow', priority: 'Low', completed: false, timerSeconds: 0, timerRunning: false, interval: null },
+                { id: 4, text: 'Review history notes', priority: 'Medium', completed: true, timerSeconds: 0, timerRunning: false, interval: null }
+            ],
+            friends: [
+                { id: 1, name: 'Renato', status: 'Unlocked TikTok with 20 Jump Squats', workoutDone: '20 Jump Squats', active: true },
+                { id: 2, name: 'Alex', status: 'Completed 30 Pogo Jumps Brain Stimulator', workoutDone: '30 Pogo Jumps', active: true },
+                { id: 3, name: 'Maya', status: 'Finished Plank Shoulder Taps & Single-Leg RDLs', workoutDone: 'Shoulder Taps', active: false }
+            ],
+            widgets: [
+                { id: 1, title: 'Phone Charging Status', content: '82% - Plugged in after track practice', autoNotif: false },
+                { id: 2, title: 'Workout Focus Insight', content: '20 jump squats before studying increases blood flow to the prefrontal cortex by 30%!', autoNotif: true }
+            ],
+            notifications: [
+                { id: 1, text: 'Renato completed 20 jump squats to unlock TikTok', time: '10m ago' },
+                { id: 2, text: 'Reminder: YouTube, TikTok & Instagram are locked until your workout challenge!', time: '1h ago' }
+            ]
+        };
+
+        /* AUDIO SYNTHESIZER WITH TACTILE CLICK SOUNDS */
+        const AudioSynth = {
+            ctx: null,
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            },
+            playClick() {
+                try {
+                    this.init();
+                    if (this.ctx.state === 'suspended') this.ctx.resume();
+                    const now = this.ctx.currentTime;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    osc.frequency.exponentialRampToValueAtTime(200, now + 0.04);
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.04);
+                } catch(e) {}
+            },
+            playDing() {
+                try {
+                    this.init();
+                    if (this.ctx.state === 'suspended') this.ctx.resume();
+                    const now = this.ctx.currentTime;
+                    const osc1 = this.ctx.createOscillator();
+                    const gain1 = this.ctx.createGain();
+                    osc1.type = 'sine';
+                    osc1.frequency.setValueAtTime(880, now);
+                    osc1.frequency.exponentialRampToValueAtTime(1760, now + 0.15);
+                    gain1.gain.setValueAtTime(0.12, now);
+                    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                    
+                    osc1.connect(gain1);
+                    gain1.connect(this.ctx.destination);
+                    osc1.start(now);
+                    osc1.stop(now + 0.35);
+                } catch (e) {}
+            }
+        };
+
+        // Attach global tactile click sound listeners
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('button') || e.target.closest('a') || e.target.closest('.task-checkbox') || e.target.closest('select')) {
+                AudioSynth.playClick();
+            }
+        });
+
+        /* VIEW ROUTING CONTROLLER */
+        function switchView(viewName) {
+            state.activeView = viewName;
+            const views = ['inbox', 'breathing', 'workout', 'friends', 'widgets', 'summary'];
+            
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                const navBtn = document.getElementById(`nav-${v}`);
+                if (el) {
+                    if (v === viewName) {
+                        el.classList.remove('hidden');
+                    } else {
+                        el.classList.add('hidden');
+                    }
+                }
+                if (navBtn) {
+                    if (v === viewName) {
+                        navBtn.className = "w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-900 dark:text-white bg-slate-200/80 dark:bg-slate-800 font-semibold transition-colors";
+                    } else {
+                        navBtn.className = "w-full flex items-center justify-between px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/60 dark:hover-bg transition-colors";
+                    }
+                }
+            });
+        }
+
+        /* PROFILE DROPDOWN MENU TOGGLE */
+        function toggleProfileMenu() {
+            const dropdown = document.getElementById('profile-dropdown');
+            if (dropdown) dropdown.classList.toggle('hidden');
+        }
+
+        /* TASK MANAGEMENT & TIMERS */
+        function renderTasks(searchQuery = '') {
+            const container = document.getElementById('inbox-tasks-container');
+            if (!container) return;
+
+            const q = searchQuery.toLowerCase().trim();
+            const filteredTasks = state.tasks.filter(t => t.text.toLowerCase().includes(q));
+
+            const pending = state.tasks.filter(t => !t.completed).length;
+            const pendingLabel = document.getElementById('inbox-pending-text');
+            if (pendingLabel) pendingLabel.textContent = `${pending} tasks remaining`;
+
+            if (filteredTasks.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs font-medium">No tasks found.</div>`;
+                return;
+            }
+
+            container.innerHTML = filteredTasks.map(task => {
+                const isTimerTask = (task.priority === 'High' || task.priority === 'Medium');
+                const mins = Math.floor(task.timerSeconds / 60);
+                const secs = task.timerSeconds % 60;
+                const timeString = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+
+                let priorityBadge = '';
+                if (task.priority === 'High') {
+                    priorityBadge = `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">High</span>`;
+                } else if (task.priority === 'Medium') {
+                    priorityBadge = `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">Medium</span>`;
+                } else {
+                    priorityBadge = `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20">Low</span>`;
+                }
+
+                return `
+                    <div class="panel-bg bg-slate-50 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 ${task.completed ? 'opacity-60' : ''}">
+                        <div class="flex items-center gap-3 flex-1 min-w-0">
+                            <button onclick="toggleTask(${task.id})" class="task-checkbox w-5 h-5 rounded-md border-2 ${task.completed ? 'bg-accentOrange-500 border-accentOrange-500 text-white' : 'border-slate-400'} flex items-center justify-center shrink-0">
+                                ${task.completed ? '<i class="fa-solid fa-check text-[10px]"></i>' : ''}
+                            </button>
+                            <span class="font-semibold text-slate-900 dark:text-white truncate ${task.completed ? 'line-through text-slate-400' : ''}">
+                                ${escapeHtml(task.text)}
+                            </span>
+                            ${priorityBadge}
+                        </div>
+
+                        <div class="flex items-center gap-2 shrink-0">
+                            ${isTimerTask && !task.completed ? `
+                                <div class="flex items-center gap-1.5 bg-slate-200/80 dark:bg-slate-800 px-2.5 py-1 rounded-lg">
+                                    <span class="font-mono font-bold text-xs ${task.timerRunning ? 'text-accentOrange-500 animate-pulse' : 'text-slate-700 dark:text-slate-300'}">
+                                        ${timeString}
+                                    </span>
+                                    <button onclick="toggleTaskTimer(${task.id})" class="text-slate-600 dark:text-slate-300 hover:text-accentOrange-500 p-1 text-xs" title="${task.timerRunning ? 'Pause Timer' : 'Start Timer'}">
+                                        <i class="fa-solid ${task.timerRunning ? 'fa-pause' : 'fa-play'}"></i>
+                                    </button>
+                                </div>
+                                <button onclick="addFiveMinutesToTask(${task.id})" class="bg-accentOrange-500/15 hover:bg-accentOrange-500/25 text-accentOrange-600 dark:text-accentOrange-400 font-extrabold text-[11px] px-2.5 py-1 rounded-lg transition-colors border border-accentOrange-500/30">
+                                    +5m to end
+                                </button>
+                            ` : ''}
+
+                            <button onclick="deleteTask(${task.id})" class="text-slate-400 hover:text-red-500 p-1.5 rounded transition-colors text-xs">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function handleAddTask(e) {
+            e.preventDefault();
+            const input = document.getElementById('main-task-input');
+            const prioritySelect = document.getElementById('task-priority');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const priority = prioritySelect ? prioritySelect.value : 'Medium';
+            const timerSeconds = (priority === 'High' || priority === 'Medium') ? 5 * 60 : 0;
+
+            const newTask = {
+                id: Date.now(),
+                text: text,
+                priority: priority,
+                completed: false,
+                timerSeconds: timerSeconds,
+                timerRunning: false,
+                interval: null
+            };
+
+            state.tasks.unshift(newTask);
+            input.value = '';
+            renderTasks();
+            updateBadgeCounts();
+        }
+
+        function focusTaskInput() {
+            switchView('inbox');
+            const input = document.getElementById('main-task-input');
+            if (input) input.focus();
+        }
+
+        function handleSearch(query) {
+            renderTasks(query);
+        }
+
+        function toggleTask(id) {
+            const task = state.tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                if (task.completed && task.interval) {
+                    clearInterval(task.interval);
+                    task.timerRunning = false;
+                }
+                renderTasks();
+                updateBadgeCounts();
+            }
+        }
+
+        function toggleTaskTimer(id) {
+            const task = state.tasks.find(t => t.id === id);
+            if (!task) return;
+
+            if (task.timerRunning) {
+                clearInterval(task.interval);
+                task.timerRunning = false;
+            } else {
+                if (task.timerSeconds <= 0) task.timerSeconds = 5 * 60;
+                task.timerRunning = true;
+                task.interval = setInterval(() => {
+                    if (task.timerSeconds > 0) {
+                        task.timerSeconds--;
+                        renderTasks();
+                    } else {
+                        clearInterval(task.interval);
+                        task.timerRunning = false;
+                        AudioSynth.playDing();
+                        renderTasks();
+                    }
+                }, 1000);
+            }
+            renderTasks();
+        }
+
+        function addFiveMinutesToTask(id) {
+            const task = state.tasks.find(t => t.id === id);
+            if (task) {
+                task.timerSeconds += 5 * 60;
+                AudioSynth.playClick();
+                renderTasks();
+            }
+        }
+
+        function deleteTask(id) {
+            const task = state.tasks.find(t => t.id === id);
+            if (task && task.interval) clearInterval(task.interval);
+            state.tasks = state.tasks.filter(t => t.id !== id);
+            renderTasks();
+            updateBadgeCounts();
+        }
+
+        /* AMBIENT SOUND MANAGEMENT (RAIN & BIRD TWEETS) */
+        function toggleAmbientSound(type) {
+            if (state.ambient.activeSound === type) {
+                stopAmbientSound();
+                return;
+            }
+
+            stopAmbientSound();
+            state.ambient.activeSound = type;
+
+            AudioSynth.init();
+            if (AudioSynth.ctx.state === 'suspended') {
+                AudioSynth.ctx.resume();
+            }
+
+            const rainBtn = document.getElementById('btn-sound-rain');
+            const birdsBtn = document.getElementById('btn-sound-birds');
+
+            if (type === 'rain') {
+                if (rainBtn) rainBtn.className = "flex items-center gap-2 px-4 py-1.5 rounded-full text-teal-300 bg-teal-500/20 transition-colors text-xs font-semibold";
+
+                const bufferSize = 2 * AudioSynth.ctx.sampleRate;
+                const noiseBuffer = AudioSynth.ctx.createBuffer(1, bufferSize, AudioSynth.ctx.sampleRate);
+                const output = noiseBuffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    output[i] = Math.random() * 2 - 1;
+                }
+
+                const whiteNoise = AudioSynth.ctx.createBufferSource();
+                whiteNoise.buffer = noiseBuffer;
+                whiteNoise.loop = true;
+
+                const filter = AudioSynth.ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.value = 800;
+
+                const gainNode = AudioSynth.ctx.createGain();
+                gainNode.gain.setValueAtTime(0.1, AudioSynth.ctx.currentTime);
+
+                whiteNoise.connect(filter);
+                filter.connect(gainNode);
+                gainNode.connect(AudioSynth.ctx.destination);
+
+                whiteNoise.start();
+                state.ambient.rainGain = { source: whiteNoise, gain: gainNode };
+            } else if (type === 'birds') {
+                if (birdsBtn) birdsBtn.className = "flex items-center gap-2 px-4 py-1.5 rounded-full text-teal-300 bg-teal-500/20 transition-colors text-xs font-semibold";
+
+                function playBirdChirp() {
+                    if (state.ambient.activeSound !== 'birds') return;
+                    try {
+                        const now = AudioSynth.ctx.currentTime;
+                        const osc = AudioSynth.ctx.createOscillator();
+                        const gain = AudioSynth.ctx.createGain();
+
+                        osc.type = 'sine';
+                        const baseFreq = 2200 + Math.random() * 800;
+                        osc.frequency.setValueAtTime(baseFreq, now);
+                        osc.frequency.exponentialRampToValueAtTime(baseFreq + 600, now + 0.08);
+                        osc.frequency.exponentialRampToValueAtTime(baseFreq - 200, now + 0.15);
+
+                        gain.gain.setValueAtTime(0.01, now);
+                        gain.gain.linearRampToValueAtTime(0.08, now + 0.03);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+
+                        osc.connect(gain);
+                        gain.connect(AudioSynth.ctx.destination);
+
+                        osc.start(now);
+                        osc.stop(now + 0.18);
+                    } catch (e) {}
+                }
+
+                playBirdChirp();
+                state.ambient.birdsInterval = setInterval(() => {
+                    if (Math.random() > 0.3) {
+                        playBirdChirp();
+                        setTimeout(playBirdChirp, 150 + Math.random() * 100);
+                    }
+                }, 2200);
+            }
+        }
+
+        function stopAmbientSound() {
+            if (state.ambient.rainGain) {
+                try {
+                    state.ambient.rainGain.source.stop();
+                    state.ambient.rainGain.source.disconnect();
+                } catch (e) {}
+                state.ambient.rainGain = null;
+            }
+
+            if (state.ambient.birdsInterval) {
+                clearInterval(state.ambient.birdsInterval);
+                state.ambient.birdsInterval = null;
+            }
+
+            state.ambient.activeSound = null;
+
+            const rainBtn = document.getElementById('btn-sound-rain');
+            const birdsBtn = document.getElementById('btn-sound-birds');
+            if (rainBtn) rainBtn.className = "flex items-center gap-2 px-4 py-1.5 rounded-full text-slate-400 hover:text-teal-300 transition-colors text-xs font-semibold";
+            if (birdsBtn) birdsBtn.className = "flex items-center gap-2 px-4 py-1.5 rounded-full text-slate-400 hover:text-teal-300 transition-colors text-xs font-semibold";
+        }
+
+        /* CHALLENGE SELECTION & UNLOCK LOGIC */
+        function selectChallenge(type) {
+            state.selectedChallenge = type;
+            const btnIds = ['jump_squats', 'pogo_jumps', 'shoulder_taps', 'fast_feet'];
+            const labelMap = {
+                'jump_squats': '20 Jump Squats',
+                'pogo_jumps': '30 Pogo Jumps',
+                'shoulder_taps': '20 Plank Shoulder Taps',
+                'fast_feet': '15s Fast Feet'
+            };
+
+            btnIds.forEach(b => {
+                const btn = document.getElementById(`btn-chal-${b}`);
+                if (btn) {
+                    if (b === type) {
+                        btn.className = "p-3 rounded-xl border border-orange-500 bg-orange-500/20 text-slate-900 dark:text-white font-bold text-center transition-all";
+                    } else {
+                        btn.className = "p-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-center transition-all";
+                    }
+                }
+            });
+
+            document.getElementById('challenge-status-text').innerHTML = `Challenge Selected: <b>${labelMap[type]}</b>`;
+        }
+
+        function completeChallengeAndUnlock() {
+            state.appLocked = false;
+            AudioSynth.playDing();
+
+            const badge = document.getElementById('badge-lock-status');
+            if (badge) {
+                badge.className = "px-2 py-0.5 text-[10px] font-extrabold bg-emerald-500 text-white rounded-full";
+                badge.textContent = "UNLOCKED";
+            }
+
+            const headerBadge = document.getElementById('workout-app-lock-badge');
+            if (headerBadge) {
+                headerBadge.className = "px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-extrabold text-xs rounded-full flex items-center gap-1.5";
+                headerBadge.innerHTML = `<i class="fa-solid fa-lock-open"></i> TikTok, YouTube & Instagram Unlocked (45 Mins)`;
+            }
+
+            const profileLockStatus = document.getElementById('profile-app-lock-status');
+            if (profileLockStatus) {
+                profileLockStatus.className = "font-bold text-emerald-500";
+                profileLockStatus.textContent = "Unlocked (45 Mins)";
+            }
+
+            state.notifications.unshift({
+                id: Date.now(),
+                text: 'Workout challenge completed! TikTok, YouTube, & Instagram unlocked for 45 mins.',
+                time: 'Just now'
+            });
+            renderNotifications();
+        }
+
+        /* INTERACTIVE FOLLOW-ALONG VISUALIZER PLAYER */
+        function openExerciseVisualizer(title, desc, reps, isTimeBased = false, type = 'jump_squats') {
+            AudioSynth.playDing();
+            const modal = document.getElementById('exercise-player-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            state.exercisePlayer.active = true;
+            state.exercisePlayer.title = title;
+            state.exercisePlayer.desc = desc;
+            state.exercisePlayer.type = type;
+            state.exercisePlayer.targetReps = reps;
+            state.exercisePlayer.currentReps = 0;
+            state.exercisePlayer.isTimeBased = isTimeBased;
+            state.exercisePlayer.phase = 0;
+
+            document.getElementById('player-title').textContent = title;
+            document.getElementById('player-desc').textContent = desc;
+
+            updatePlayerCounterUI();
+            startExerciseVisualizerAnimation();
+        }
+
+        function updatePlayerCounterUI() {
+            const el = document.getElementById('player-counter');
+            if (state.exercisePlayer.isTimeBased) {
+                el.textContent = `${state.exercisePlayer.currentReps} / ${state.exercisePlayer.targetReps} SECS`;
+            } else {
+                el.textContent = `${state.exercisePlayer.currentReps} / ${state.exercisePlayer.targetReps} REPS`;
+            }
+        }
+
+        function startExerciseVisualizerAnimation() {
+            if (state.exercisePlayer.interval) clearInterval(state.exercisePlayer.interval);
+
+            const canvas = document.getElementById('exercise-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            // Define rep timing speed per exercise type
+            // Pogo jumps & fast feet are quick; squats, lunges, RDLs have a deliberate rep + pause tempo.
+            let cadenceMs = 1800; // default deliberate tempo
+            if (state.exercisePlayer.type === 'pogo_jumps') cadenceMs = 450;
+            if (state.exercisePlayer.type === 'fast_feet') cadenceMs = 1000; // 1s per time tick
+            if (state.exercisePlayer.type === 'shoulder_taps') cadenceMs = 1300;
+            if (state.exercisePlayer.type === 'bicycle_crunches') cadenceMs = 1100;
+            if (state.exercisePlayer.type === 'skater_hops') cadenceMs = 1600;
+            if (state.exercisePlayer.type === 'single_leg_rdl') cadenceMs = 2200;
+            if (state.exercisePlayer.type === 'reverse_lunges') cadenceMs = 2000;
+            if (state.exercisePlayer.type === 'jump_squats') cadenceMs = 2100;
+
+            state.exercisePlayer.interval = setInterval(() => {
+                if (!state.exercisePlayer.active) return;
+
+                if (state.exercisePlayer.currentReps < state.exercisePlayer.targetReps) {
+                    state.exercisePlayer.currentReps++;
+                    AudioSynth.playClick();
+                    updatePlayerCounterUI();
+                } else {
+                    clearInterval(state.exercisePlayer.interval);
+                    AudioSynth.playDing();
+                }
+            }, cadenceMs);
+
+            function drawLoop() {
+                if (!state.exercisePlayer.active) return;
+
+                // Adjust animation step speed matching the rhythm
+                let animSpeed = 0.05;
+                if (state.exercisePlayer.type === 'pogo_jumps' || state.exercisePlayer.type === 'fast_feet') {
+                    animSpeed = 0.18;
+                } else if (state.exercisePlayer.type === 'bicycle_crunches' || state.exercisePlayer.type === 'shoulder_taps') {
+                    animSpeed = 0.07;
+                }
+                state.exercisePlayer.phase += animSpeed;
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                const W = canvas.width;
+                const H = canvas.height;
+                const type = state.exercisePlayer.type;
+
+                ctx.strokeStyle = '#f97316';
+                ctx.fillStyle = '#f97316';
+                ctx.lineWidth = 4;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+
+                // Ground line for upright exercises
+                if (type !== 'shoulder_taps' && type !== 'bicycle_crunches') {
+                    ctx.strokeStyle = '#334155';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(30, 135);
+                    ctx.lineTo(W - 30, 135);
+                    ctx.stroke();
+
+                    ctx.strokeStyle = '#f97316';
+                    ctx.lineWidth = 4;
+                }
+
+                const p = state.exercisePlayer.phase;
+
+                // --- 1. JUMP SQUATS ---
+                if (type === 'jump_squats') {
+                    // Rep cycle with pause at standing: sin pulse clipped
+                    const cycle = Math.sin(p);
+                    const isJump = cycle > 0.3;
+                    const squatDepth = cycle < -0.2 ? Math.abs(cycle + 0.2) * 30 : 0;
+                    const jumpY = isJump ? (cycle - 0.3) * 35 : 0;
+                    const headY = 50 + squatDepth - jumpY;
+
+                    // Head
+                    ctx.beginPath(); ctx.arc(160, headY, 11, 0, Math.PI * 2); ctx.stroke();
+                    // Torso
+                    ctx.beginPath(); ctx.moveTo(160, headY + 11); ctx.lineTo(160, headY + 45); ctx.stroke();
+                    // Arms (swung back during squat, overhead on jump)
+                    const armY = isJump ? headY - 10 : headY + 30;
+                    ctx.beginPath(); ctx.moveTo(160, headY + 20); ctx.lineTo(140, armY); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(160, headY + 20); ctx.lineTo(180, armY); ctx.stroke();
+                    // Legs (bent when squatted, straight when jumping)
+                    if (isJump) {
+                        ctx.beginPath(); ctx.moveTo(160, headY + 45); ctx.lineTo(152, 135 - jumpY); ctx.stroke();
+                        ctx.beginPath(); ctx.moveTo(160, headY + 45); ctx.lineTo(168, 135 - jumpY); ctx.stroke();
+                    } else {
+                        const kneeX = 142;
+                        const kneeY = headY + 55;
+                        ctx.beginPath(); ctx.moveTo(160, headY + 45); ctx.lineTo(kneeX, kneeY); ctx.lineTo(150, 135); ctx.stroke();
+                        ctx.beginPath(); ctx.moveTo(160, headY + 45); ctx.lineTo(320 - kneeX, kneeY); ctx.lineTo(170, 135); ctx.stroke();
+                    }
+                }
+
+                // --- 2. POGO JUMPS ---
+                else if (type === 'pogo_jumps') {
+                    // Rapid bounce up and down on toes/one leg
+                    const bounceY = Math.abs(Math.sin(p * 2)) * 22;
+                    const headY = 48 - bounceY;
+
+                    // Head
+                    ctx.beginPath(); ctx.arc(160, headY, 11, 0, Math.PI * 2); ctx.stroke();
+                    // Torso
+                    ctx.beginPath(); ctx.moveTo(160, headY + 11); ctx.lineTo(160, headY + 48); ctx.stroke();
+                    // Hands on hips
+                    ctx.beginPath(); ctx.moveTo(160, headY + 22); ctx.lineTo(145, headY + 32); ctx.lineTo(160, headY + 38); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(160, headY + 22); ctx.lineTo(175, headY + 32); ctx.lineTo(160, headY + 38); ctx.stroke();
+                    // Stiff legs hopping on toes
+                    ctx.beginPath(); ctx.moveTo(160, headY + 48); ctx.lineTo(156, 135 - bounceY); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(160, headY + 48); ctx.lineTo(164, 135 - bounceY); ctx.stroke();
+                }
+
+                // --- 3. SKATER HOPS ---
+                else if (type === 'skater_hops') {
+                    // Sideways bounding left to right with a balance pause
+                    const cycle = Math.sin(p);
+                    const posX = 160 + cycle * 50;
+                    const hopHeight = Math.abs(Math.cos(p)) * 18;
+                    const headY = 52 - hopHeight;
+
+                    // Head
+                    ctx.beginPath(); ctx.arc(posX, headY, 11, 0, Math.PI * 2); ctx.stroke();
+                    // Torso slightly angled
+                    ctx.beginPath(); ctx.moveTo(posX, headY + 11); ctx.lineTo(posX - cycle * 5, headY + 45); ctx.stroke();
+                    // Arms swinging laterally for balance
+                    ctx.beginPath(); ctx.moveTo(posX, headY + 20); ctx.lineTo(posX - cycle * 25, headY + 30); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(posX, headY + 20); ctx.lineTo(posX + cycle * 25, headY + 25); ctx.stroke();
+                    // Planted leg vs trailing leg behind
+                    ctx.beginPath(); ctx.moveTo(posX - cycle * 5, headY + 45); ctx.lineTo(posX, 135); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(posX - cycle * 5, headY + 45); ctx.lineTo(posX - cycle * 35, 120); ctx.stroke();
+                }
+
+                // --- 4. SINGLE-LEG RDL ---
+                else if (type === 'single_leg_rdl') {
+                    // Hinge forward at hips on one leg, rear leg extending straight back horizontally
+                    const hingeCycle = (Math.sin(p) + 1) / 2; // 0 to 1 smooth wave
+                    const angle = hingeCycle * (Math.PI / 2.2); // rotate torso up to ~80 degrees
+
+                    const hipX = 150;
+                    const hipY = 88;
+
+                    // Standing Leg
+                    ctx.beginPath(); ctx.moveTo(hipX, hipY); ctx.lineTo(hipX, 135); ctx.stroke();
+
+                    // Torso & Head extending forward based on hinge angle
+                    const headX = hipX - Math.sin(angle) * 45;
+                    const headY = hipY - Math.cos(angle) * 45;
+                    ctx.beginPath(); ctx.arc(headX, headY, 11, 0, Math.PI * 2); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(hipX, hipY); ctx.lineTo(headX + Math.sin(angle) * 11, headY + Math.cos(angle) * 11); ctx.stroke();
+
+                    // Rear Leg extending straight out behind
+                    const rearFootX = hipX + Math.sin(angle) * 50;
+                    const rearFootY = hipY + Math.cos(angle) * 30;
+                    ctx.beginPath(); ctx.moveTo(hipX, hipY); ctx.lineTo(rearFootX, rearFootY); ctx.stroke();
+
+                    // Arms reaching toward ground
+                    ctx.beginPath(); ctx.moveTo(headX + Math.sin(angle) * 20, headY + Math.cos(angle) * 20); ctx.lineTo(headX, headY + 35); ctx.stroke();
+                }
+
+                // --- 5. REVERSE LUNGES ---
+                else if (type === 'reverse_lunges') {
+                    // Step backward into deep lunge and back up
+                    const lungeVal = (Math.sin(p) + 1) / 2; // 0 (standing) to 1 (deep lunge)
+                    const hipY = 82 + lungeVal * 20;
+
+                    // Head & Torso stay upright
+                    ctx.beginPath(); ctx.arc(150, hipY - 42, 11, 0, Math.PI * 2); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(150, hipY - 31); ctx.lineTo(150, hipY); ctx.stroke();
+
+                    // Front Leg (bent at knee)
+                    const frontKneeX = 150 + lungeVal * 15;
+                    ctx.beginPath(); ctx.moveTo(150, hipY); ctx.lineTo(frontKneeX, hipY + 25); ctx.lineTo(frontKneeX - 5, 135); ctx.stroke();
+
+                    // Rear Leg (stepping back with knee lowering)
+                    const rearFootX = 150 - lungeVal * 45;
+                    const rearKneeY = hipY + 28;
+                    ctx.beginPath(); ctx.moveTo(150, hipY); ctx.lineTo(rearFootX + 15, rearKneeY); ctx.lineTo(rearFootX, 135); ctx.stroke();
+
+                    // Runner's arms
+                    ctx.beginPath(); ctx.moveTo(150, hipY - 20); ctx.lineTo(165 - lungeVal * 10, hipY - 5); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(150, hipY - 20); ctx.lineTo(135 + lungeVal * 10, hipY - 5); ctx.stroke();
+                }
+
+                // --- 6. PLANK SHOULDER TAPS ---
+                else if (type === 'shoulder_taps') {
+                    // Horizontal push-up plank position, alternating hand taps to shoulder
+                    const tapSide = Math.sin(p) > 0 ? 1 : -1;
+                    const tapProgress = Math.abs(Math.sin(p));
+
+                    const headX = 220;
+                    const headY = 75;
+                    const hipX = 120;
+                    const hipY = 85;
+                    const feetX = 60;
+                    const feetY = 110;
+
+                    // Floor line for plank
+                    ctx.strokeStyle = '#334155'; ctx.lineWidth = 2;
+                    ctx.beginPath(); ctx.moveTo(40, 125); ctx.lineTo(260, 125); ctx.stroke();
+                    ctx.strokeStyle = '#f97316'; ctx.lineWidth = 4;
+
+                    // Feet to Hips to Torso to Head
+                    ctx.beginPath(); ctx.moveTo(feetX, feetY); ctx.lineTo(hipX, hipY); ctx.lineTo(headX, headY); ctx.stroke();
+                    ctx.beginPath(); ctx.arc(headX + 10, headY - 5, 10, 0, Math.PI * 2); ctx.stroke();
+
+                    // Supporting arm on ground
+                    const shoulderX = 190;
+                    const shoulderY = 79;
+                    if (tapSide > 0) {
+                        // Right hand supporting on floor, Left hand tapping right shoulder
+                        ctx.beginPath(); ctx.moveTo(shoulderX, shoulderY); ctx.lineTo(shoulderX - 5, 125); ctx.stroke();
+                        const handX = shoulderX - 15 + (1 - tapProgress) * 10;
+                        const handY = 125 - tapProgress * 40;
+                        ctx.beginPath(); ctx.moveTo(shoulderX, shoulderY); ctx.lineTo(handX, handY); ctx.stroke();
+                    } else {
+                        // Left hand supporting on floor, Right hand tapping left shoulder
+                        ctx.beginPath(); ctx.moveTo(shoulderX, shoulderY); ctx.lineTo(shoulderX - 15, 125); ctx.stroke();
+                        const handX = shoulderX + (1 - tapProgress) * 5;
+                        const handY = 125 - tapProgress * 40;
+                        ctx.beginPath(); ctx.moveTo(shoulderX, shoulderY); ctx.lineTo(handX, handY); ctx.stroke();
+                    }
+                }
+
+                // --- 7. BICYCLE CRUNCHES ---
+                else if (type === 'bicycle_crunches') {
+                    // Lying on back with feet up in air, alternating elbow to opposite knee
+                    const side = Math.sin(p); // alternates smooth cycling
+
+                    const hipX = 150;
+                    const hipY = 110;
+                    const shoulderX = 100;
+                    const shoulderY = 95;
+                    const headX = 85;
+                    const headY = 88;
+
+                    // Floor line
+                    ctx.strokeStyle = '#334155'; ctx.lineWidth = 2;
+                    ctx.beginPath(); ctx.moveTo(50, 125); ctx.lineTo(270, 125); ctx.stroke();
+                    ctx.strokeStyle = '#f97316'; ctx.lineWidth = 4;
+
+                    // Torso & Head slightly crunching up off floor
+                    ctx.beginPath(); ctx.moveTo(hipX, hipY); ctx.lineTo(shoulderX, shoulderY); ctx.stroke();
+                    ctx.beginPath(); ctx.arc(headX, headY, 11, 0, Math.PI * 2); ctx.stroke();
+
+                    // Alternating legs (one extended straight out, one bent to chest)
+                    const leg1KneeX = 150 + side * 20;
+                    const leg1KneeY = 75 - Math.max(0, side) * 15;
+                    const leg1FootX = 180 + side * 30;
+                    const leg1FootY = 80 - side * 10;
+
+                    const leg2KneeX = 170 - side * 20;
+                    const leg2KneeY = 80 + Math.min(0, side) * 15;
+                    const leg2FootX = 220 - side * 20;
+                    const leg2FootY = 110;
+
+                    ctx.beginPath(); ctx.moveTo(hipX, hipY); ctx.lineTo(leg1KneeX, leg1KneeY); ctx.lineTo(leg1FootX, leg1FootY); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(hipX, hipY); ctx.lineTo(leg2KneeX, leg2KneeY); ctx.lineTo(leg2FootX, leg2FootY); ctx.stroke();
+
+                    // Hands behind head with elbow reaching to opposite knee
+                    const elbowX = shoulderX + 25 + side * 15;
+                    const elbowY = shoulderY - 15;
+                    ctx.beginPath(); ctx.moveTo(shoulderX, shoulderY); ctx.lineTo(elbowX, elbowY); ctx.lineTo(headX, headY); ctx.stroke();
+                }
+
+                // --- 8. FAST FEET (IN-AND-OUTS) ---
+                else {
+                    const chop = Math.sin(p * 3);
+                    const feetDist = 15 + Math.abs(chop) * 20;
+
+                    // Head & Torso in athletic ready stance
+                    ctx.beginPath(); ctx.arc(160, 50, 11, 0, Math.PI * 2); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(160, 61); ctx.lineTo(160, 95); ctx.stroke();
+                    // Ready arms
+                    ctx.beginPath(); ctx.moveTo(160, 70); ctx.lineTo(140, 80); ctx.lineTo(145, 95); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(160, 70); ctx.lineTo(180, 80); ctx.lineTo(175, 95); ctx.stroke();
+                    // Rapid feet chopping wide and narrow
+                    ctx.beginPath(); ctx.moveTo(160, 95); ctx.lineTo(160 - feetDist, 135); ctx.stroke();
+                    ctx.beginPath(); ctx.moveTo(160, 95); ctx.lineTo(160 + feetDist, 135); ctx.stroke();
+                }
+
+                state.exercisePlayer.animFrame = requestAnimationFrame(drawLoop);
+            }
+
+            drawLoop();
+        }
+
+        function toggleExercisePlayback() {
+            state.exercisePlayer.active = !state.exercisePlayer.active;
+            const btn = document.getElementById('player-toggle-btn');
+            if (state.exercisePlayer.active) {
+                btn.innerHTML = `<i class="fa-solid fa-pause"></i> Pause Motion`;
+                startExerciseVisualizerAnimation();
+            } else {
+                btn.innerHTML = `<i class="fa-solid fa-play"></i> Resume Motion`;
+                if (state.exercisePlayer.interval) clearInterval(state.exercisePlayer.interval);
+            }
+        }
+
+        function completeExerciseFromPlayer() {
+            closeExerciseVisualizer();
+            completeChallengeAndUnlock();
+        }
+
+        function closeExerciseVisualizer() {
+            state.exercisePlayer.active = false;
+            if (state.exercisePlayer.interval) clearInterval(state.exercisePlayer.interval);
+            if (state.exercisePlayer.animFrame) cancelAnimationFrame(state.exercisePlayer.animFrame);
+            
+            const modal = document.getElementById('exercise-player-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        /* FRIENDS FEED RENDERING */
+        function renderFriends() {
+            const container = document.getElementById('friends-list-container');
+            if (!container) return;
+            container.innerHTML = state.friends.map(f => `
+                <div class="panel-bg bg-slate-50 p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-navy-700 text-white font-bold flex items-center justify-center shadow-sm">
+                            ${f.name.charAt(0)}
+                        </div>
+                        <div>
+                            <div class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                ${f.name}
+                                ${f.active ? '<span class="w-2 h-2 rounded-full bg-emerald-500"></span>' : ''}
+                            </div>
+                            <div class="text-xs text-slate-500">${f.status}</div>
+                        </div>
+                    </div>
+                    <span class="font-bold text-xs text-accentOrange-500 bg-accentOrange-500/10 px-2.5 py-1 rounded-full border border-accentOrange-500/20 flex items-center gap-1">
+                        <i class="fa-solid fa-bolt text-accentOrange-500"></i> ${f.workoutDone}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        /* WIDGETS MANAGEMENT */
+        function renderWidgets() {
+            const container = document.getElementById('widgets-grid-container');
+            if (!container) return;
+            container.innerHTML = state.widgets.map(w => `
+                <div class="panel-bg bg-slate-50 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-2 relative group">
+                    <div class="flex items-center justify-between font-bold text-slate-900 dark:text-white">
+                        <span>${escapeHtml(w.title)}</span>
+                        ${w.autoNotif ? '<span class="text-accentOrange-500 flex items-center gap-1"><i class="fa-solid fa-bell text-xs"></i> Auto</span>' : ''}
+                    </div>
+                    <p class="text-slate-600 dark:text-slate-300 text-xs">${escapeHtml(w.content)}</p>
+                    <button onclick="deleteWidget(${w.id})" class="absolute top-2 right-2 text-slate-400 hover:text-accentOrange-500 opacity-0 group-hover:opacity-100 transition-opacity p-1">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function openAddWidgetModal() {
+            const modal = document.getElementById('add-widget-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        function closeAddWidgetModal() {
+            const modal = document.getElementById('add-widget-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        function handleAddWidget(e) {
+            e.preventDefault();
+            const title = document.getElementById('widget-title-input').value.trim();
+            const content = document.getElementById('widget-content-input').value.trim();
+            const autoNotif = document.getElementById('widget-auto-notif').checked;
+
+            if (!title || !content) return;
+
+            const newWidget = {
+                id: Date.now(),
+                title,
+                content,
+                autoNotif
+            };
+
+            state.widgets.push(newWidget);
+
+            if (autoNotif) {
+                state.notifications.unshift({
+                    id: Date.now(),
+                    text: `Widget "${title}" registered automatic notifications`,
+                    time: 'Just now'
+                });
+                renderNotifications();
+            }
+
+            document.getElementById('widget-title-input').value = '';
+            document.getElementById('widget-content-input').value = '';
+            closeAddWidgetModal();
+            renderWidgets();
+        }
+
+        function deleteWidget(id) {
+            state.widgets = state.widgets.filter(w => w.id !== id);
+            renderWidgets();
+        }
+
+        function updateBadgeCounts() {
+            const pending = state.tasks.filter(t => !t.completed).length;
+            const badge = document.getElementById('badge-inbox-count');
+            if (badge) badge.textContent = pending;
+        }
+
+        /* SETTINGS MODAL & PREFERENCES CONTROLS */
+        function openSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                
+                document.getElementById('setting-language-input').value = state.settings.language;
+                document.getElementById('setting-notifications-toggle').checked = state.settings.notificationsEnabled;
+            }
+        }
+
+        function closeSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        function updateLanguage(lang) {
+            if (!lang.trim()) return;
+            state.settings.language = lang.trim();
+            document.getElementById('lang-display-label').textContent = `Language: ${state.settings.language}`;
+        }
+
+        function setAppTheme(theme) {
+            state.settings.theme = theme;
+            const html = document.documentElement;
+            if (theme === 'dark') {
+                html.classList.add('dark');
+            } else {
+                html.classList.remove('dark');
+            }
+        }
+
+        function setFontSize(size) {
+            state.settings.fontSize = size;
+            let px = '17px';
+            if (size === 'small') px = '14px';
+            if (size === 'medium') px = '17px';
+            if (size === 'large') px = '21px';
+            
+            document.documentElement.style.setProperty('--app-font-size', px);
+        }
+
+        function toggleNotificationsSetting(enabled) {
+            state.settings.notificationsEnabled = enabled;
+            const badge = document.getElementById('notif-badge');
+            if (!enabled) {
+                badge.classList.add('hidden');
+            } else if (state.notifications.length > 0) {
+                badge.classList.remove('hidden');
+            }
+        }
+
+        function toggleNotificationsModal() {
+            if (!state.settings.notificationsEnabled) return;
+            const modal = document.getElementById('notifications-modal');
+            if (modal) {
+                modal.classList.toggle('hidden');
+                modal.classList.toggle('flex');
+            }
+        }
+
+        function renderNotifications() {
+            const container = document.getElementById('notif-list-container');
+            const badge = document.getElementById('notif-badge');
+            if (!container || !badge) return;
+            
+            if (state.settings.notificationsEnabled && state.notifications.length > 0) {
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+
+            container.innerHTML = state.notifications.map(n => `
+                <div class="p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white text-xs">
+                    <div>${escapeHtml(n.text)}</div>
+                    <div class="text-slate-400 mt-0.5 text-[10px]">${n.time}</div>
+                </div>
+            `).join('');
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, function(m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+            });
+        }
+
+        function renderAll() {
+            renderTasks();
+            renderFriends();
+            renderWidgets();
+            renderNotifications();
+            updateBadgeCounts();
+        }
+
+        window.onload = function() {
+            renderAll();
+        };
+    </script>
+</body>
+</html>

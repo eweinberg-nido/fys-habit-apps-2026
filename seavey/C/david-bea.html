@@ -1,0 +1,2258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Socratic Study Notebook - 9th Grade Multi-Subject Edition</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts for Notebook Aesthetic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Kalam:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!-- KaTeX for LaTeX Math Rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            notebook: {
+              paper: '#FFFDF0', // Warm yellow/cream paper
+              lines: '#E2E8F0', // Light blue notebook lines
+              margin: '#FCA5A5', // Pink notebook margin line
+              yellow: '#FDE047',
+              header: '#FEF08A',
+              border: '#EAB308',
+              card: '#FFFFF5',
+              binder: '#475569'
+            }
+          },
+          fontFamily: {
+            sans: ['Nunito', 'sans-serif'],
+            handwriting: ['Caveat', 'cursive'],
+            casual: ['Kalam', 'cursive']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Base Notebook Paper Background Effect */
+    .lined-paper {
+      background-color: var(--theme-bg, #FFFDF0);
+      background-image: var(--theme-pattern, linear-gradient(var(--theme-lines, #e2e8f0) 1px, transparent 1px));
+      background-size: var(--theme-pattern-size, 100% 2rem);
+      position: relative;
+    }
+    
+    /* Red Margin Line for Notebooks */
+    .lined-paper.show-margin::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 3rem;
+      width: 2px;
+      background-color: var(--theme-margin-color, #fca5a5);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .spiral-hole {
+      width: 14px;
+      height: 14px;
+      background-color: #475569;
+      border-radius: 50%;
+      box-shadow: inset 2px 2px 4px rgba(0,0,0,0.6), 1px 1px 0 rgba(255,255,255,0.8);
+    }
+
+    /* Pattern Definitions */
+    .pattern-lines {
+      --theme-pattern: linear-gradient(var(--theme-lines, #e2e8f0) 1px, transparent 1px);
+      --theme-pattern-size: 100% 2rem;
+    }
+    .pattern-grid {
+      --theme-pattern: linear-gradient(var(--theme-lines, #cbd5e1) 1px, transparent 1px), linear-gradient(90deg, var(--theme-lines, #cbd5e1) 1px, transparent 1px);
+      --theme-pattern-size: 1.5rem 1.5rem;
+    }
+    .pattern-dots {
+      --theme-pattern: radial-gradient(var(--theme-lines, #94a3b8) 1.5px, transparent 1.5px);
+      --theme-pattern-size: 1.25rem 1.25rem;
+    }
+    .pattern-none {
+      --theme-pattern: none;
+    }
+
+    /* Vignette Paper Texture Overlay */
+    .paper-vignette {
+      box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Flip Card Animations */
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+    .transform-style-3d {
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .backface-hidden {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .rotate-y-180 {
+      transform: rotateY(180deg);
+    }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--theme-scroll-track, #fef08a);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--theme-scroll-thumb, #ca8a04);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--theme-scroll-thumb-hover, #a16207);
+    }
+  </style>
+</head>
+<body id="notebook-body" class="bg-amber-100 text-slate-800 font-sans min-h-screen flex flex-col md:flex-row antialiased selection:bg-yellow-300">
+
+  <!-- Spiral Binder Border Left (Desktop) -->
+  <aside id="spiral-binder-aside" class="hidden md:flex flex-col justify-around py-6 px-2 bg-slate-800 border-r-4 border-slate-900 z-30 w-12 shadow-2xl shrink-0">
+    <script>
+      for(let i=0; i<16; i++){
+        document.write('<div class="spiral-hole my-1 mx-auto relative group"><div class="absolute -left-3 -top-1 w-5 h-3 bg-gradient-to-r from-gray-400 via-slate-200 to-gray-500 rounded-full border border-gray-600 shadow-md"></div></div>');
+      }
+    </script>
+  </aside>
+
+  <!-- Main Container Page with Notebook Styling -->
+  <div id="main-notebook-container" class="flex-1 flex flex-col max-w-7xl mx-auto w-full min-h-screen lined-paper show-margin paper-vignette pattern-lines shadow-2xl relative border-l-0 md:border-l border-amber-300">
+
+    <!-- Header Navigation Bar -->
+    <header id="notebook-header" class="bg-amber-200 border-b-2 border-yellow-500 px-4 py-3 sticky top-0 z-20 shadow-sm flex flex-wrap justify-between items-center gap-3">
+      <div class="flex items-center gap-3 pl-8 md:pl-4">
+        <i class="fa-solid fa-graduation-cap text-amber-800 text-3xl"></i>
+        <div>
+          <h1 id="i18n-app-title" class="font-handwriting text-3xl text-slate-900 font-bold leading-none">Cuaderno de Estudio Multidisciplinario</h1>
+          <p id="i18n-app-subtitle" class="text-xs text-amber-900 font-semibold uppercase tracking-wider">Historia, Matemáticas, Ciencias e Inglés (9.° Grado)</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="flex items-center gap-1 overflow-x-auto py-1 w-full md:w-auto justify-start md:justify-end">
+        <button onclick="switchTab('dashboard')" id="tab-dashboard" class="nav-tab px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all bg-yellow-400 text-slate-900 shadow-sm cursor-pointer">
+          <i class="fa-solid fa-house"></i> <span id="i18n-nav-home">Inicio</span>
+        </button>
+        <button onclick="switchTab('flashcards')" id="tab-flashcards" class="nav-tab px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all hover:bg-yellow-300/60 text-slate-700 cursor-pointer">
+          <i class="fa-solid fa-layer-group"></i> <span id="i18n-nav-cards">Tarjetas</span>
+        </button>
+        <button onclick="switchTab('quiz')" id="tab-quiz" class="nav-tab px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all hover:bg-yellow-300/60 text-slate-700 cursor-pointer">
+          <i class="fa-solid fa-pen-clip"></i> <span id="i18n-nav-quiz">Cuestionarios</span>
+        </button>
+        <button onclick="switchTab('timer')" id="tab-timer" class="nav-tab px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all hover:bg-yellow-300/60 text-slate-700 cursor-pointer">
+          <i class="fa-solid fa-stopwatch"></i> <span id="i18n-nav-timer">Reloj de Estudio</span>
+        </button>
+      </nav>
+
+      <!-- Active Subject Quick Selector, Language Toggle & Theme Button -->
+      <div class="flex items-center gap-2">
+        <button onclick="toggleLanguage()" id="lang-toggle-btn" class="bg-amber-800 hover:bg-amber-900 text-yellow-300 border border-amber-900 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs transition">
+          <i class="fa-solid fa-language text-yellow-400 text-sm"></i>
+          <span id="lang-toggle-text">ES / EN</span>
+        </button>
+
+        <button onclick="openThemeModal()" class="bg-amber-100 hover:bg-amber-300 border border-amber-400 px-3 py-1.5 rounded-xl text-xs font-bold text-amber-900 flex items-center gap-1.5 cursor-pointer shadow-xs transition">
+          <i class="fa-solid fa-palette text-amber-700"></i> <span id="i18n-btn-theme">Tema y Fondos</span>
+        </button>
+
+        <div class="flex items-center gap-2 bg-amber-100/90 border border-amber-300 px-3 py-1 rounded-full text-xs font-semibold text-slate-800">
+          <i class="fa-solid fa-bookmark text-amber-600"></i>
+          <span id="i18n-label-subject">Materia:</span>
+          <select id="global-subject-select" onchange="changeActiveSubject(this.value)" class="bg-transparent font-bold text-slate-900 focus:outline-none cursor-pointer">
+            <!-- Populated by JS -->
+          </select>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Body -->
+    <main class="flex-1 p-4 md:p-6 pl-12 md:pl-16 z-10 relative">
+
+      <!-- TAB 1: HOMESCREEN DASHBOARD -->
+      <section id="view-dashboard" class="space-y-6">
+        <!-- Welcome Hero Banner -->
+        <div class="bg-gradient-to-r from-amber-200 via-yellow-100 to-amber-200 border-2 border-yellow-400 rounded-2xl p-6 shadow-md relative overflow-hidden">
+          <div class="relative z-10">
+            <h2 id="i18n-hero-title" class="font-handwriting text-4xl font-bold text-slate-900 mb-2">¡Bienvenido al Cuaderno de Estudio! 🎓</h2>
+            <p id="i18n-hero-desc" class="text-slate-700 max-w-2xl font-medium text-base">
+              Domina tus asignaturas de 9.° grado: Historia Universal y Moderna, Matemáticas (Álgebra I), Ciencias Naturales (Biología y Física) y Lengua e Inglés (Análisis Literario y Redacción).
+            </p>
+            
+            <div class="mt-4 flex flex-wrap gap-3">
+              <button onclick="switchTab('flashcards')" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-xl shadow transition flex items-center gap-2 text-sm cursor-pointer">
+                <i class="fa-solid fa-layer-group"></i> <span id="i18n-hero-btn-cards">Estudiar Tarjetas</span>
+              </button>
+              <button onclick="startSession25()" class="bg-slate-800 hover:bg-slate-900 text-amber-300 font-bold px-4 py-2 rounded-xl shadow transition flex items-center gap-2 text-sm cursor-pointer">
+                <i class="fa-solid fa-circle-play"></i> <span id="i18n-hero-btn-timer">Sesión de Estudio (25 min)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats & Streak Section -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <!-- Streak Card -->
+          <div class="bg-notebook-card border-2 border-amber-300 rounded-xl p-4 shadow-sm flex items-center gap-4">
+            <div class="w-14 h-14 rounded-full bg-orange-100 text-orange-500 border border-orange-300 flex items-center justify-center text-3xl shrink-0">
+              <i class="fa-solid fa-fire animate-bounce"></i>
+            </div>
+            <div>
+              <div class="text-3xl font-black text-slate-800" id="stat-streak">1 Días</div>
+              <div id="i18n-stat-streak-label" class="text-xs font-bold text-slate-500 uppercase tracking-wide">Racha Diaria</div>
+            </div>
+          </div>
+
+          <!-- Total Quizzes -->
+          <div class="bg-notebook-card border-2 border-amber-300 rounded-xl p-4 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 border border-blue-300 flex items-center justify-center text-2xl shrink-0">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-slate-800" id="stat-quizzes">0</div>
+              <div id="i18n-stat-quizzes-label" class="text-xs font-bold text-slate-500 uppercase tracking-wide">Exámenes Completados</div>
+            </div>
+          </div>
+
+          <!-- Cards Reviewed -->
+          <div class="bg-notebook-card border-2 border-amber-300 rounded-xl p-4 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-green-100 text-green-600 border border-green-300 flex items-center justify-center text-2xl shrink-0">
+              <i class="fa-solid fa-layer-group"></i>
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-slate-800" id="stat-cards">0</div>
+              <div id="i18n-stat-cards-label" class="text-xs font-bold text-slate-500 uppercase tracking-wide">Tarjetas Dominadas</div>
+            </div>
+          </div>
+
+          <!-- Study Time -->
+          <div class="bg-notebook-card border-2 border-amber-300 rounded-xl p-4 shadow-sm flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 border border-purple-300 flex items-center justify-center text-2xl shrink-0">
+              <i class="fa-solid fa-clock"></i>
+            </div>
+            <div>
+              <div class="text-2xl font-bold text-slate-800" id="stat-time">0 min</div>
+              <div id="i18n-stat-time-label" class="text-xs font-bold text-slate-500 uppercase tracking-wide">Tiempo de Enfoque</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Integrated Subjects Explorer -->
+        <div>
+          <div class="flex justify-between items-center mb-4">
+            <h3 id="i18n-subjects-heading" class="font-handwriting text-3xl font-bold text-slate-900">Materias del Cuaderno</h3>
+            <button onclick="openAddSubjectModal()" class="bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-bold text-xs px-3 py-2 rounded-lg border border-yellow-600 shadow-sm flex items-center gap-1.5 cursor-pointer">
+              <i class="fa-solid fa-plus"></i> <span id="i18n-btn-add-subject">Añadir Materia</span>
+            </button>
+          </div>
+
+          <div id="subjects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <!-- Populated via JavaScript -->
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: FLASHCARDS -->
+      <section id="view-flashcards" class="hidden space-y-6">
+        <div class="flex flex-wrap justify-between items-center gap-3">
+          <div>
+            <h2 id="i18n-fc-title" class="font-handwriting text-3xl font-bold text-slate-900">Tarjetas de Memorización</h2>
+            <p id="i18n-fc-subtitle" class="text-xs text-slate-600">Repasa conceptos clave de 9.° grado o crea nuevos mazos de tarjetas.</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="openAddDeckModal()" class="bg-amber-200 hover:bg-amber-300 text-amber-900 font-bold text-xs px-3.5 py-2 rounded-xl border border-amber-400 shadow transition flex items-center gap-1.5 cursor-pointer">
+              <i class="fa-solid fa-folder-plus"></i> <span id="i18n-btn-create-deck">Crear Mazo</span>
+            </button>
+            <button onclick="openAddFlashcardModal()" class="bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-bold text-xs px-3.5 py-2 rounded-xl border border-yellow-600 shadow transition flex items-center gap-2 cursor-pointer">
+              <i class="fa-solid fa-plus"></i> <span id="i18n-btn-add-card">Crear Tarjeta</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Flashcard Flip Area -->
+        <div class="max-w-xl mx-auto space-y-4">
+          <div id="flashcard-box" onclick="flipCard()" class="perspective-1000 w-full h-80 cursor-pointer group">
+            <div id="flashcard-inner" class="transform-style-3d relative w-full h-full rounded-2xl shadow-xl border-2 border-amber-400 bg-notebook-card p-6 flex flex-col justify-between text-center select-none">
+              <!-- Front Side -->
+              <div class="backface-hidden absolute inset-0 p-6 flex flex-col justify-between bg-notebook-card rounded-2xl">
+                <div class="text-xs font-bold text-amber-700 uppercase tracking-widest flex justify-between">
+                  <span id="i18n-card-badge-front">Pregunta / Concepto</span>
+                  <span id="card-progress-num">Tarjeta 1 de 5</span>
+                </div>
+                <div class="my-auto px-2">
+                  <div id="card-question" class="text-xl font-bold text-slate-800">Cargando pregunta...</div>
+                </div>
+                <div id="i18n-card-flip-prompt" class="text-xs text-slate-400 italic">Haz clic para Voltear 🔄</div>
+              </div>
+
+              <!-- Back Side -->
+              <div class="backface-hidden rotate-y-180 absolute inset-0 p-6 flex flex-col justify-between bg-amber-100 rounded-2xl border-2 border-amber-400">
+                <div class="text-xs font-bold text-amber-800 uppercase tracking-widest flex justify-between">
+                  <span id="i18n-card-badge-back">Respuesta / Explicación</span>
+                  <span id="i18n-card-solution">Solución</span>
+                </div>
+                <div class="my-auto overflow-y-auto max-h-48 px-2">
+                  <div id="card-answer" class="text-base font-semibold text-slate-900">La respuesta aparecerá aquí.</div>
+                </div>
+                <div id="i18n-card-flip-back" class="text-xs text-amber-900/70 italic">Haz clic para Voltear de nuevo</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Controls & Self Assessment -->
+          <div class="flex items-center justify-between gap-4">
+            <button onclick="prevCard()" class="bg-amber-200 hover:bg-amber-300 text-slate-800 px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition cursor-pointer">
+              <i class="fa-solid fa-arrow-left"></i> <span id="i18n-btn-prev-card">Anter.</span>
+            </button>
+
+            <div class="flex gap-2">
+              <button onclick="rateCard(false)" class="bg-rose-100 hover:bg-rose-200 text-rose-800 border border-rose-300 px-3 py-2 rounded-xl text-xs font-bold shadow-xs cursor-pointer">
+                ❌ <span id="i18n-btn-review-card">Repasar</span>
+              </button>
+              <button onclick="rateCard(true)" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 border border-emerald-300 px-3 py-2 rounded-xl text-xs font-bold shadow-xs cursor-pointer">
+                ✅ <span id="i18n-btn-mastered-card">Dominado</span>
+              </button>
+            </div>
+
+            <button onclick="nextCard()" class="bg-amber-200 hover:bg-amber-300 text-slate-800 px-4 py-2 rounded-xl text-sm font-bold shadow-sm transition cursor-pointer">
+              <span id="i18n-btn-next-card">Siguiente</span> <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: POP QUIZ ENGINE -->
+      <section id="view-quiz" class="hidden space-y-6">
+        <div class="bg-notebook-card border-2 border-yellow-400 rounded-2xl p-6 shadow-md max-w-3xl mx-auto space-y-6">
+          <div class="border-b border-amber-200 pb-4 flex flex-wrap justify-between items-center gap-2">
+            <div>
+              <h2 id="i18n-quiz-engine-title" class="font-handwriting text-3xl font-bold text-slate-900">Motor de Cuestionarios</h2>
+              <p id="i18n-quiz-engine-subtitle" class="text-xs text-slate-600">Pone a prueba tus conocimientos con cuestionarios por materia de 9.° grado o personalizados.</p>
+            </div>
+            <button onclick="openCreateQuizModal()" class="bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-bold text-xs px-3.5 py-2 rounded-xl border border-yellow-600 shadow transition flex items-center gap-1.5 cursor-pointer">
+              <i class="fa-solid fa-file-circle-plus"></i> <span id="i18n-btn-create-quiz">Crear Cuestionario</span>
+            </button>
+          </div>
+
+          <!-- Quiz Setup Form -->
+          <div id="quiz-setup-panel" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label id="i18n-label-quiz-source" class="block text-xs font-bold text-slate-700 mb-1">Origen del Cuestionario</label>
+                <select id="quiz-source-select" onchange="toggleQuizSource(this.value)" class="w-full bg-white border border-amber-300 rounded-xl p-2.5 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-yellow-500">
+                  <option value="subject" id="i18n-opt-src-subject">Materia / Tema Estándar</option>
+                  <option value="custom" id="i18n-opt-src-custom">Mis Cuestionarios Creados</option>
+                </select>
+              </div>
+
+              <div id="quiz-subject-group">
+                <label id="i18n-label-quiz-sub" class="block text-xs font-bold text-slate-700 mb-1">Materia</label>
+                <select id="quiz-subject-select" class="w-full bg-white border border-amber-300 rounded-xl p-2.5 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-yellow-500">
+                  <!-- Populated by JS -->
+                </select>
+              </div>
+
+              <div id="quiz-custom-group" class="hidden">
+                <label id="i18n-label-custom-quiz" class="block text-xs font-bold text-slate-700 mb-1">Seleccionar Cuestionario Creado</label>
+                <select id="quiz-custom-select" class="w-full bg-white border border-amber-300 rounded-xl p-2.5 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-yellow-500">
+                  <!-- Populated by JS -->
+                </select>
+              </div>
+
+              <div>
+                <label id="i18n-label-quiz-diff" class="block text-xs font-bold text-slate-700 mb-1">Dificultad</label>
+                <select id="quiz-difficulty" class="w-full bg-white border border-amber-300 rounded-xl p-2.5 text-sm font-semibold text-slate-800 focus:ring-2 focus:ring-yellow-500">
+                  <option value="Fácil" id="i18n-opt-diff-easy">Fácil (Fundamentos)</option>
+                  <option value="Intermedio" id="i18n-opt-diff-med" selected>Intermedio (Estándar)</option>
+                  <option value="Avanzado" id="i18n-opt-diff-hard">Avanzado (Desafío)</option>
+                </select>
+              </div>
+            </div>
+
+            <button onclick="startQuizEngine()" id="btn-start-quiz" class="w-full bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-bold py-3 rounded-xl shadow border border-yellow-600 transition flex justify-center items-center gap-2 text-base cursor-pointer">
+              <i class="fa-solid fa-circle-play"></i> <span id="i18n-btn-start-quiz">Iniciar Cuestionario</span>
+            </button>
+          </div>
+
+          <!-- Quiz Active Question Panel -->
+          <div id="quiz-active-panel" class="hidden space-y-6">
+            <div class="flex justify-between items-center text-xs font-bold text-slate-500 border-b border-amber-200 pb-2">
+              <span id="quiz-q-num">Pregunta 1 de 5</span>
+              <span id="quiz-score-badge" class="bg-amber-100 text-amber-900 px-2.5 py-1 rounded-full">Puntos: 0</span>
+            </div>
+
+            <div class="space-y-4">
+              <div id="quiz-question-text" class="text-lg font-bold text-slate-900 leading-snug">Cargando pregunta...</div>
+
+              <div id="quiz-options-container" class="space-y-2.5">
+                <!-- Option Buttons Injected via JS -->
+              </div>
+            </div>
+
+            <!-- Explanation Feedback Box -->
+            <div id="quiz-feedback-box" class="hidden p-4 rounded-xl border-2 text-sm space-y-2">
+              <div id="quiz-feedback-title" class="font-bold"></div>
+              <div id="quiz-feedback-body" class="text-slate-700"></div>
+            </div>
+
+            <div class="flex justify-end">
+              <button onclick="nextQuizQuestion()" id="btn-next-quiz-q" class="hidden bg-slate-800 hover:bg-slate-900 text-yellow-300 font-bold px-5 py-2.5 rounded-xl shadow text-sm cursor-pointer">
+                <span id="i18n-btn-next-quiz-q">Siguiente Pregunta</span> <i class="fa-solid fa-arrow-right ml-1"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Quiz Complete Results Panel -->
+          <div id="quiz-results-panel" class="hidden text-center space-y-4 py-6">
+            <div class="w-20 h-20 rounded-full bg-yellow-200 border-4 border-yellow-400 text-yellow-800 flex items-center justify-center mx-auto text-4xl shadow-inner">
+              🏆
+            </div>
+            <h3 id="i18n-quiz-done-title" class="font-handwriting text-4xl font-bold text-slate-900">¡Cuestionario Completado!</h3>
+            <p class="text-lg font-semibold text-slate-700" id="quiz-final-score">Puntuación: 0 / 0</p>
+            <p id="quiz-encouragement" class="text-sm text-slate-600 max-w-md mx-auto italic"></p>
+            
+            <button onclick="resetQuizState()" class="bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-bold px-6 py-2.5 rounded-xl shadow transition cursor-pointer">
+              <span id="i18n-btn-retake-quiz">Tomar Otro Cuestionario</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: INTEGRATED FOCUS TIMER -->
+      <section id="view-timer" class="hidden space-y-6">
+        <div class="bg-notebook-card border-2 border-yellow-400 rounded-2xl p-8 shadow-md max-w-md mx-auto text-center space-y-6">
+          <div>
+            <h2 id="i18n-timer-title" class="font-handwriting text-4xl font-bold text-slate-900">Reloj de Enfoque</h2>
+            <p id="i18n-timer-subtitle" class="text-xs text-slate-600">Mantén la concentración con intervalos de estudio Pomodoro.</p>
+          </div>
+
+          <!-- Circular Clock Display -->
+          <div class="relative w-56 h-56 mx-auto flex items-center justify-center rounded-full border-8 border-yellow-400 bg-amber-50 shadow-inner">
+            <div>
+              <div id="timer-display" class="font-mono text-5xl font-black text-slate-800">25:00</div>
+              <div id="timer-mode" class="text-xs font-bold text-amber-800 uppercase tracking-widest mt-1">Sesión de Estudio</div>
+            </div>
+          </div>
+
+          <!-- Mode Controls -->
+          <div class="flex justify-center gap-2">
+            <button onclick="setTimerMode(25, 'Sesión de Estudio')" id="i18n-timer-btn-25" class="px-3 py-1.5 bg-amber-200 hover:bg-amber-300 rounded-lg text-xs font-bold text-slate-800 shadow-xs cursor-pointer">25 min Enfoque</button>
+            <button onclick="setTimerMode(5, 'Descanso Corto')" id="i18n-timer-btn-5" class="px-3 py-1.5 bg-amber-200 hover:bg-amber-300 rounded-lg text-xs font-bold text-slate-800 shadow-xs cursor-pointer">5 min Descanso</button>
+            <button onclick="setTimerMode(15, 'Descanso Largo')" id="i18n-timer-btn-15" class="px-3 py-1.5 bg-amber-200 hover:bg-amber-300 rounded-lg text-xs font-bold text-slate-800 shadow-xs cursor-pointer">15 min Descanso</button>
+          </div>
+
+          <!-- Play/Pause Controls -->
+          <div class="flex justify-center items-center gap-4">
+            <button onclick="toggleTimer()" id="timer-toggle-btn" class="w-16 h-16 rounded-full bg-yellow-400 hover:bg-yellow-500 border-2 border-yellow-600 text-slate-900 flex items-center justify-center text-2xl font-bold shadow-md transition cursor-pointer">
+              <i class="fa-solid fa-play ml-1"></i>
+            </button>
+            <button onclick="resetTimer()" class="w-12 h-12 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-700 flex items-center justify-center text-lg font-bold shadow-xs cursor-pointer">
+              <i class="fa-solid fa-rotate-left"></i>
+            </button>
+          </div>
+
+          <div class="text-xs font-semibold text-slate-500 border-t border-amber-200 pt-4">
+            <span id="i18n-timer-sessions-done">Completadas hoy:</span> <span id="completed-sessions-count" class="font-bold text-slate-800">0 sesiones</span>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- Personalize Themes Modal -->
+  <div id="modal-theme-settings" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-notebook-card border-2 border-yellow-500 rounded-2xl p-6 max-w-2xl w-full shadow-2xl space-y-5 max-h-[90vh] flex flex-col">
+      <div class="flex justify-between items-center border-b border-amber-200 pb-3 shrink-0">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-palette text-amber-600 text-2xl"></i>
+          <div>
+            <h3 id="i18n-theme-modal-title" class="font-handwriting text-2xl font-bold text-slate-900">Personalizar Fondos y Temas</h3>
+            <p id="i18n-theme-modal-subtitle" class="text-xs text-slate-500">Selecciona temas predefinidos, patrones de hojas o crea tu propia combinación.</p>
+          </div>
+        </div>
+        <button onclick="closeModal('modal-theme-settings')" class="text-slate-400 hover:text-slate-700 cursor-pointer"><i class="fa-solid fa-xmark text-xl"></i></button>
+      </div>
+
+      <div class="overflow-y-auto space-y-6 pr-1 flex-1 text-sm">
+        
+        <!-- Section 1: Presets -->
+        <div>
+          <h4 id="i18n-theme-sec-1" class="font-bold text-slate-800 text-sm mb-2.5 flex items-center gap-1.5">
+            <i class="fa-solid fa-swatchbook text-amber-500"></i> Temas Predefinidos
+          </h4>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <button onclick="applyThemePreset('classic')" class="p-3 border-2 rounded-xl text-left bg-[#FFFDF0] border-amber-400 hover:scale-105 transition cursor-pointer shadow-xs group">
+              <div class="h-8 rounded bg-amber-200 border border-amber-300 mb-1.5 flex items-center px-1.5 text-amber-900 text-[10px] font-bold" id="i18n-preset-classic-tag">📜 Clásico</div>
+              <span class="text-xs font-bold text-slate-800" id="i18n-preset-classic-lbl">Cuaderno Clásico</span>
+            </button>
+
+            <button onclick="applyThemePreset('parchment')" class="p-3 border-2 rounded-xl text-left bg-[#fef3c7] border-amber-500 hover:scale-105 transition cursor-pointer shadow-xs group">
+              <div class="h-8 rounded bg-amber-300 border border-amber-400 mb-1.5 flex items-center px-1.5 text-amber-900 text-[10px] font-bold" id="i18n-preset-parchment-tag">🏛️ Antiguo</div>
+              <span class="text-xs font-bold text-slate-800" id="i18n-preset-parchment-lbl">Pergamino</span>
+            </button>
+
+            <button onclick="applyThemePreset('grid_paper')" class="p-3 border-2 rounded-xl text-left bg-slate-50 border-slate-300 hover:scale-105 transition cursor-pointer shadow-xs group">
+              <div class="h-8 rounded bg-slate-200 border border-slate-300 mb-1.5 flex items-center px-1.5 text-slate-800 text-[10px] font-bold" id="i18n-preset-grid-tag">📐 Cuadrícula</div>
+              <span class="text-xs font-bold text-slate-800" id="i18n-preset-grid-lbl">Papel Milimetrado</span>
+            </button>
+
+            <button onclick="applyThemePreset('chalkboard')" class="p-3 border-2 rounded-xl text-left bg-slate-900 border-slate-700 hover:scale-105 transition cursor-pointer shadow-xs group">
+              <div class="h-8 rounded bg-slate-800 border border-slate-600 mb-1.5 flex items-center px-1.5 text-amber-200 text-[10px] font-bold" id="i18n-preset-chalk-tag">✏️ Pizarra</div>
+              <span class="text-xs font-bold text-slate-200" id="i18n-preset-chalk-lbl">Pizarra Escolar</span>
+            </button>
+
+            <button onclick="applyThemePreset('sunset')" class="p-3 border-2 rounded-xl text-left bg-gradient-to-br from-amber-100 via-rose-100 to-purple-100 border-rose-300 hover:scale-105 transition cursor-pointer shadow-xs group">
+              <div class="h-8 rounded bg-rose-200/80 mb-1.5 flex items-center px-1.5 text-rose-900 text-[10px] font-bold" id="i18n-preset-sunset-tag">🌅 Atardecer</div>
+              <span class="text-xs font-bold text-slate-800" id="i18n-preset-sunset-lbl">Gradiente Cálido</span>
+            </button>
+
+            <button onclick="applyThemePreset('midnight')" class="p-3 border-2 rounded-xl text-left bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 border-indigo-700 hover:scale-105 transition cursor-pointer shadow-xs group">
+              <div class="h-8 rounded bg-indigo-900 border border-indigo-700 mb-1.5 flex items-center px-1.5 text-indigo-200 text-[10px] font-bold" id="i18n-preset-night-tag">🌌 Noche</div>
+              <span class="text-xs font-bold text-indigo-100" id="i18n-preset-night-lbl">Gradiente Oscuro</span>
+            </button>
+
+            <button onclick="applyThemePreset('mint')" class="p-3 border-2 rounded-xl text-left bg-emerald-50 border-emerald-300 hover:scale-105 transition cursor-pointer shadow-xs group">
+              <div class="h-8 rounded bg-emerald-200 border border-emerald-300 mb-1.5 flex items-center px-1.5 text-emerald-900 text-[10px] font-bold" id="i18n-preset-mint-tag">🌿 Menta</div>
+              <span class="text-xs font-bold text-slate-800" id="i18n-preset-mint-lbl">Menta Vintage</span>
+            </button>
+
+            <button onclick="applyThemePreset('minimal')" class="p-3 border-2 rounded-xl text-left bg-white border-gray-300 hover:scale-105 transition cursor-pointer shadow-xs group">
+              <div class="h-8 rounded bg-gray-100 border border-gray-200 mb-1.5 flex items-center px-1.5 text-gray-700 text-[10px] font-bold" id="i18n-preset-minimal-tag">📑 Limpio</div>
+              <span class="text-xs font-bold text-slate-800" id="i18n-preset-minimal-lbl">Minimalista</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 2: Background Patterns -->
+        <div>
+          <h4 id="i18n-theme-sec-2" class="font-bold text-slate-800 text-sm mb-2 flex items-center gap-1.5">
+            <i class="fa-solid fa-border-all text-amber-600"></i> Estilo de Trama / Fondo
+          </h4>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+            <button onclick="setThemePattern('lines')" id="pattern-btn-lines" class="p-2.5 border-2 rounded-xl font-bold text-xs bg-amber-100 border-amber-400 text-slate-800 hover:bg-amber-200 transition cursor-pointer">
+              📄 <span id="i18n-pat-lines">Líneas de Cuaderno</span>
+            </button>
+            <button onclick="setThemePattern('grid')" id="pattern-btn-grid" class="p-2.5 border-2 rounded-xl font-bold text-xs bg-white border-amber-300 text-slate-800 hover:bg-amber-100 transition cursor-pointer">
+              📐 <span id="i18n-pat-grid">Cuadrícula</span>
+            </button>
+            <button onclick="setThemePattern('dots')" id="pattern-btn-dots" class="p-2.5 border-2 rounded-xl font-bold text-xs bg-white border-amber-300 text-slate-800 hover:bg-amber-100 transition cursor-pointer">
+              ••• <span id="i18n-pat-dots">Puntos (Bullet)</span>
+            </button>
+            <button onclick="setThemePattern('none')" id="pattern-btn-none" class="p-2.5 border-2 rounded-xl font-bold text-xs bg-white border-amber-300 text-slate-800 hover:bg-amber-100 transition cursor-pointer">
+              ⚪ <span id="i18n-pat-none">Liso Sin Trama</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 3: Visual Elements & Toggles -->
+        <div>
+          <h4 id="i18n-theme-sec-3" class="font-bold text-slate-800 text-sm mb-2 flex items-center gap-1.5">
+            <i class="fa-solid fa-sliders text-amber-600"></i> Elementos Decorativos
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <label class="flex items-center justify-between p-3 bg-white border border-amber-300 rounded-xl cursor-pointer">
+              <span id="i18n-tog-margin" class="font-semibold text-xs text-slate-800">Línea de Margen Roja</span>
+              <input type="checkbox" id="toggle-margin" onchange="toggleMarginLine(this.checked)" checked class="w-4 h-4 accent-amber-600 cursor-pointer">
+            </label>
+
+            <label class="flex items-center justify-between p-3 bg-white border border-amber-300 rounded-xl cursor-pointer">
+              <span id="i18n-tog-binder" class="font-semibold text-xs text-slate-800">Espiral de Encuadernación</span>
+              <input type="checkbox" id="toggle-binder" onchange="toggleBinder(this.checked)" checked class="w-4 h-4 accent-amber-600 cursor-pointer">
+            </label>
+
+            <label class="flex items-center justify-between p-3 bg-white border border-amber-300 rounded-xl cursor-pointer">
+              <span id="i18n-tog-vignette" class="font-semibold text-xs text-slate-800">Efecto Textura/Sombra</span>
+              <input type="checkbox" id="toggle-vignette" onchange="toggleVignette(this.checked)" checked class="w-4 h-4 accent-amber-600 cursor-pointer">
+            </label>
+          </div>
+        </div>
+
+        <!-- Section 4: Custom Color Adjuster -->
+        <div class="border-t border-amber-200 pt-4">
+          <h4 id="i18n-theme-sec-4" class="font-bold text-slate-800 text-sm mb-2.5 flex items-center gap-1.5">
+            <i class="fa-solid fa-eye-dropper text-amber-600"></i> Personalizador Manual de Colores
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div>
+              <label id="i18n-clr-paper" class="block text-xs font-bold text-slate-600 mb-1">Color de Fondo del Papel</label>
+              <div class="flex items-center gap-2">
+                <input type="color" id="picker-bg" value="#FFFDF0" onchange="updateCustomColors()" class="w-10 h-10 rounded-lg border border-amber-300 cursor-pointer">
+                <span class="text-xs font-mono font-semibold text-slate-700" id="picker-bg-hex">#FFFDF0</span>
+              </div>
+            </div>
+
+            <div>
+              <label id="i18n-clr-lines" class="block text-xs font-bold text-slate-600 mb-1">Color de Líneas/Trama</label>
+              <div class="flex items-center gap-2">
+                <input type="color" id="picker-lines" value="#E2E8F0" onchange="updateCustomColors()" class="w-10 h-10 rounded-lg border border-amber-300 cursor-pointer">
+                <span class="text-xs font-mono font-semibold text-slate-700" id="picker-lines-hex">#E2E8F0</span>
+              </div>
+            </div>
+
+            <div>
+              <label id="i18n-clr-header" class="block text-xs font-bold text-slate-600 mb-1">Color del Encabezado</label>
+              <div class="flex items-center gap-2">
+                <input type="color" id="picker-header" value="#FEF08A" onchange="updateCustomColors()" class="w-10 h-10 rounded-lg border border-amber-300 cursor-pointer">
+                <span class="text-xs font-mono font-semibold text-slate-700" id="picker-header-hex">#FEF08A</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="flex justify-between items-center pt-3 border-t border-amber-200 shrink-0">
+        <button onclick="resetThemeToDefault()" class="px-3.5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-xl font-bold text-xs transition cursor-pointer">
+          <i class="fa-solid fa-rotate-left mr-1"></i> <span id="i18n-btn-reset-theme">Restablecer Defecto</span>
+        </button>
+        <button onclick="closeModal('modal-theme-settings')" class="px-5 py-2 bg-yellow-400 hover:bg-yellow-500 text-slate-900 rounded-xl font-bold text-xs shadow transition cursor-pointer">
+          <span id="i18n-btn-done-theme">Listo</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Custom Subject Modal -->
+  <div id="modal-add-subject" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-notebook-card border-2 border-yellow-500 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
+      <div class="flex justify-between items-center border-b border-amber-200 pb-2">
+        <h3 id="i18n-addsub-title" class="font-handwriting text-2xl font-bold text-slate-900">Añadir Materia</h3>
+        <button onclick="closeModal('modal-add-subject')" class="text-slate-400 hover:text-slate-700 cursor-pointer"><i class="fa-solid fa-xmark text-xl"></i></button>
+      </div>
+
+      <div class="space-y-3 text-sm">
+        <div>
+          <label id="i18n-addsub-lbl-name" class="block font-bold text-xs text-slate-700 mb-1">Nombre de la Materia</label>
+          <input type="text" id="new-sub-name" placeholder="ej. Geometría o Química Básica" class="w-full bg-white border border-amber-300 rounded-xl p-2.5 focus:ring-2 focus:ring-yellow-500">
+        </div>
+        <div>
+          <label id="i18n-addsub-lbl-desc" class="block font-bold text-xs text-slate-700 mb-1">Descripción</label>
+          <textarea id="new-sub-desc" placeholder="Resumen o temas principales" class="w-full bg-white border border-amber-300 rounded-xl p-2.5 h-20 focus:ring-2 focus:ring-yellow-500"></textarea>
+        </div>
+        <div>
+          <label id="i18n-addsub-lbl-units" class="block font-bold text-xs text-slate-700 mb-1">Unidades (Separadas por comas)</label>
+          <input type="text" id="new-sub-units" placeholder="Unidad 1, Unidad 2, Unidad 3" class="w-full bg-white border border-amber-300 rounded-xl p-2.5 focus:ring-2 focus:ring-yellow-500">
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeModal('modal-add-subject')" id="i18n-addsub-btn-cancel" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl font-bold text-xs cursor-pointer">Cancelar</button>
+        <button onclick="saveCustomSubject()" id="i18n-addsub-btn-save" class="px-4 py-2 bg-yellow-400 text-slate-900 rounded-xl font-bold text-xs shadow cursor-pointer">Guardar Materia</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manual Add Flashcard Modal -->
+  <div id="modal-add-flashcard" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-notebook-card border-2 border-yellow-500 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
+      <div class="flex justify-between items-center border-b border-amber-200 pb-2">
+        <h3 id="i18n-manualfc-title" class="font-handwriting text-2xl font-bold text-slate-900">Crear Tarjeta Manualmente</h3>
+        <button onclick="closeModal('modal-add-flashcard')" class="text-slate-400 hover:text-slate-700 cursor-pointer"><i class="fa-solid fa-xmark text-xl"></i></button>
+      </div>
+
+      <div class="space-y-3 text-sm">
+        <div>
+          <label id="i18n-manualfc-lbl-q" class="block font-bold text-xs text-slate-700 mb-1">Pregunta / Término</label>
+          <input type="text" id="manual-q" placeholder="ej. ¿Cuál es la fórmula cuadrática?" class="w-full bg-white border border-amber-300 rounded-xl p-2.5 focus:ring-2 focus:ring-yellow-500">
+        </div>
+        <div>
+          <label id="i18n-manualfc-lbl-a" class="block font-bold text-xs text-slate-700 mb-1">Respuesta / Explicación</label>
+          <textarea id="manual-a" placeholder="Escribe la explicación detallada..." class="w-full bg-white border border-amber-300 rounded-xl p-2.5 h-20 focus:ring-2 focus:ring-yellow-500"></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeModal('modal-add-flashcard')" id="i18n-manualfc-btn-cancel" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl font-bold text-xs cursor-pointer">Cancelar</button>
+        <button onclick="saveManualFlashcard()" id="i18n-manualfc-btn-save" class="px-4 py-2 bg-yellow-400 text-slate-900 rounded-xl font-bold text-xs shadow cursor-pointer">Guardar Tarjeta</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Custom Deck Modal -->
+  <div id="modal-add-deck" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-notebook-card border-2 border-yellow-500 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4">
+      <div class="flex justify-between items-center border-b border-amber-200 pb-2">
+        <h3 id="i18n-adddeck-title" class="font-handwriting text-2xl font-bold text-slate-900">Crear Nuevo Mazo de Tarjetas</h3>
+        <button onclick="closeModal('modal-add-deck')" class="text-slate-400 hover:text-slate-700 cursor-pointer"><i class="fa-solid fa-xmark text-xl"></i></button>
+      </div>
+
+      <div class="space-y-3 text-sm">
+        <div>
+          <label id="i18n-adddeck-lbl-title" class="block font-bold text-xs text-slate-700 mb-1">Nombre del Mazo</label>
+          <input type="text" id="new-deck-title" placeholder="ej. Fórmulas de Geometría y Álgebra" class="w-full bg-white border border-amber-300 rounded-xl p-2.5 focus:ring-2 focus:ring-yellow-500">
+        </div>
+        <div>
+          <label id="i18n-adddeck-lbl-desc" class="block font-bold text-xs text-slate-700 mb-1">Descripción</label>
+          <textarea id="new-deck-desc" placeholder="Resumen o tema de este mazo..." class="w-full bg-white border border-amber-300 rounded-xl p-2.5 h-20 focus:ring-2 focus:ring-yellow-500"></textarea>
+        </div>
+        <div>
+          <label id="i18n-adddeck-lbl-icon" class="block font-bold text-xs text-slate-700 mb-1">Ícono Representativo</label>
+          <select id="new-deck-icon" class="w-full bg-white border border-amber-300 rounded-xl p-2.5 font-bold text-slate-800">
+            <option value="fa-calculator">📐 Matemáticas y Álgebra</option>
+            <option value="fa-flask">🧪 Ciencias y Experimentos</option>
+            <option value="fa-book-open">📚 Lengua y Literatura</option>
+            <option value="fa-scroll">📜 Historia y Sociedad</option>
+            <option value="fa-layer-group">🎴 Mazo Estándar</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeModal('modal-add-deck')" id="i18n-adddeck-btn-cancel" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl font-bold text-xs cursor-pointer">Cancelar</button>
+        <button onclick="saveCustomDeck()" id="i18n-adddeck-btn-save" class="px-4 py-2 bg-yellow-400 text-slate-900 rounded-xl font-bold text-xs shadow cursor-pointer">Crear Mazo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Custom Quiz Builder Modal -->
+  <div id="modal-create-quiz" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-notebook-card border-2 border-yellow-500 rounded-2xl p-6 max-w-2xl w-full shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
+      <div class="flex justify-between items-center border-b border-amber-200 pb-2 shrink-0">
+        <h3 id="i18n-builder-title" class="font-handwriting text-2xl font-bold text-slate-900">Crear Cuestionario Personalizado</h3>
+        <button onclick="closeModal('modal-create-quiz')" class="text-slate-400 hover:text-slate-700 cursor-pointer"><i class="fa-solid fa-xmark text-xl"></i></button>
+      </div>
+
+      <div class="overflow-y-auto space-y-4 pr-1 flex-1">
+        <div>
+          <label id="i18n-builder-lbl-title" class="block font-bold text-xs text-slate-700 mb-1">Título del Cuestionario</label>
+          <input type="text" id="custom-quiz-title" placeholder="ej. Examen de Álgebra y Ciencias - 9.º Grado" class="w-full bg-white border border-amber-300 rounded-xl p-2.5 text-sm focus:ring-2 focus:ring-yellow-500">
+        </div>
+
+        <div class="border-t border-amber-200 pt-3">
+          <div class="flex justify-between items-center mb-2">
+            <h4 id="i18n-builder-lbl-questions" class="font-bold text-sm text-slate-800">Preguntas del Cuestionario</h4>
+            <button onclick="addQuizQuestionBuilderRow()" class="bg-amber-200 hover:bg-amber-300 text-slate-800 text-xs font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1 cursor-pointer">
+              <i class="fa-solid fa-plus"></i> <span id="i18n-builder-btn-addq">Añadir Pregunta</span>
+            </button>
+          </div>
+
+          <div id="custom-quiz-questions-container" class="space-y-4">
+            <!-- Question builder items injected via JS -->
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-3 border-t border-amber-200 shrink-0">
+        <button onclick="closeModal('modal-create-quiz')" id="i18n-builder-btn-cancel" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl font-bold text-xs cursor-pointer">Cancelar</button>
+        <button onclick="saveCustomQuiz()" id="i18n-builder-btn-save" class="px-5 py-2 bg-yellow-400 text-slate-900 rounded-xl font-bold text-xs shadow cursor-pointer">Guardar Cuestionario</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       TRANSLATION / I18N DICTIONARIES
+       ========================================================================== */
+    let currentLang = localStorage.getItem('notebook_lang') || 'es';
+
+    const TRANSLATIONS = {
+      es: {
+        appTitle: "Cuaderno de Estudio Multidisciplinario",
+        appSubtitle: "Historia, Matemáticas, Ciencias e Inglés (9.° Grado)",
+        navHome: "Inicio",
+        navCards: "Tarjetas",
+        navQuiz: "Cuestionarios",
+        navTimer: "Reloj de Estudio",
+        btnTheme: "Tema y Fondos",
+        labelSubject: "Materia:",
+        heroTitle: "¡Bienvenido al Cuaderno de Estudio! 🎓",
+        heroDesc: "Domina tus asignaturas de 9.° grado: Historia Universal y Moderna, Matemáticas (Álgebra I), Ciencias Naturales (Biología y Física) y Lengua e Inglés (Análisis Literario y Redacción).",
+        heroBtnCards: "Estudiar Tarjetas",
+        heroBtnTimer: "Sesión de Estudio (25 min)",
+        statStreakLabel: "Racha Diaria",
+        statQuizzesLabel: "Exámenes Completados",
+        statCardsLabel: "Tarjetas Dominadas",
+        statTimeLabel: "Tiempo de Enfoque",
+        subjectsHeading: "Materias del Cuaderno",
+        btnAddSubject: "Añadir Materia",
+        fcTitle: "Tarjetas de Memorización",
+        fcSubtitle: "Repasa conceptos clave de 9.° grado o crea nuevos mazos de tarjetas.",
+        btnCreateDeck: "Crear Mazo",
+        btnAddCard: "Crear Tarjeta",
+        cardBadgeFront: "Pregunta / Concepto",
+        cardBadgeBack: "Respuesta / Explicación",
+        cardSolution: "Solución",
+        cardFlipPrompt: "Haz clic para Voltear 🔄",
+        cardFlipBack: "Haz clic para Voltear de nuevo",
+        btnPrevCard: "Anter.",
+        btnReviewCard: "Repasar",
+        btnMasteredCard: "Dominado",
+        btnNextCard: "Siguiente",
+        quizEngineTitle: "Motor de Cuestionarios",
+        quizEngineSubtitle: "Pone a prueba tus conocimientos con cuestionarios por materia de 9.° grado o personalizados.",
+        btnCreateQuiz: "Crear Cuestionario",
+        labelQuizSource: "Origen del Cuestionario",
+        optSrcSubject: "Materia / Tema Estándar",
+        optSrcCustom: "Mis Cuestionarios Creados",
+        labelQuizSub: "Materia",
+        labelCustomQuiz: "Seleccionar Cuestionario Creado",
+        labelQuizDiff: "Dificultad",
+        optDiffEasy: "Fácil (Fundamentos)",
+        optDiffMed: "Intermedio (Estándar)",
+        optDiffHard: "Avanzado (Desafío)",
+        btnStartQuiz: "Iniciar Cuestionario",
+        btnNextQuizQ: "Siguiente Pregunta",
+        quizDoneTitle: "¡Cuestionario Completado!",
+        btnRetakeQuiz: "Tomar Otro Cuestionario",
+        timerTitle: "Reloj de Enfoque",
+        timerSubtitle: "Mantén la concentración con intervalos de estudio Pomodoro.",
+        timerSessionsDone: "Completadas hoy:",
+        themeModalTitle: "Personalizar Fondos y Temas",
+        themeModalSubtitle: "Selecciona temas predefinidos, patrones de hojas o crea tu propia combinación.",
+        themeSec1: "Temas Predefinidos",
+        themeSec2: "Estilo de Trama / Fondo",
+        themeSec3: "Elementos Decorativos",
+        themeSec4: "Personalizador Manual de Colores",
+        presetClassicTag: "📜 Clásico",
+        presetClassicLbl: "Cuaderno Clásico",
+        presetParchmentTag: "🏛️ Antiguo",
+        presetParchmentLbl: "Pergamino",
+        presetGridTag: "📐 Cuadrícula",
+        presetGridLbl: "Papel Milimetrado",
+        presetChalkTag: "✏️ Pizarra",
+        presetChalkLbl: "Pizarra Escolar",
+        presetSunsetTag: "🌅 Atardecer",
+        presetSunsetLbl: "Gradiente Cálido",
+        presetNightTag: "🌌 Noche",
+        presetNightLbl: "Gradiente Oscuro",
+        presetMintTag: "🌿 Menta",
+        presetMintLbl: "Menta Vintage",
+        presetMinimalTag: "📑 Limpio",
+        presetMinimalLbl: "Minimalista",
+        patLines: "Líneas de Cuaderno",
+        patGrid: "Cuadrícula",
+        patDots: "Puntos (Bullet)",
+        patNone: "Liso Sin Trama",
+        togMargin: "Línea de Margen Roja",
+        togBinder: "Espiral de Encuadernación",
+        togVignette: "Efecto Textura/Sombra",
+        clrPaper: "Color de Fondo del Papel",
+        clrLines: "Color de Líneas/Trama",
+        clrHeader: "Color del Encabezado",
+        btnResetTheme: "Restablecer Defecto",
+        btnDoneTheme: "Listo",
+        addsubTitle: "Añadir Materia",
+        addsubLblName: "Nombre de la Materia",
+        addsubLblDesc: "Descripción",
+        addsubLblUnits: "Unidades (Separadas por comas)",
+        addsubBtnCancel: "Cancelar",
+        addsubBtnSave: "Guardar Materia",
+        manualfcTitle: "Crear Tarjeta Manualmente",
+        manualfcLblQ: "Pregunta / Término",
+        manualfcLblA: "Respuesta / Explicación",
+        manualfcBtnCancel: "Cancelar",
+        manualfcBtnSave: "Guardar Tarjeta",
+        adddeckTitle: "Crear Nuevo Mazo de Tarjetas",
+        adddeckLblTitle: "Nombre del Mazo",
+        adddeckLblDesc: "Descripción",
+        adddeckLblIcon: "Ícono Representativo",
+        adddeckBtnCancel: "Cancelar",
+        adddeckBtnSave: "Crear Mazo",
+        builderTitle: "Crear Cuestionario Personalizado",
+        builderLblTitle: "Título del Cuestionario",
+        builderLblQuestions: "Preguntas del Cuestionario",
+        builderBtnAddq: "Añadir Pregunta",
+        builderBtnCancel: "Cancelar",
+        builderBtnSave: "Guardar Cuestionario",
+        daysUnit: "Días",
+        dayUnit: "Día",
+        sessionsUnit: "sesiones",
+        studySession: "Sesión de Estudio",
+        shortBreak: "Descanso Corto",
+        longBreak: "Descanso Largo",
+        noCardsMsg: "¡No hay tarjetas en esta materia! Haz clic en 'Crear Tarjeta'.",
+        cardNumOf: "Tarjeta {curr} de {total}",
+        pointsLabel: "Puntos: {score}",
+        correctMsg: "🎉 ¡Correcto!",
+        histExplanation: "💡 Explicación Educativa:",
+        quizScoreText: "Puntuación: {score} / {total}",
+        quizEncouragementPerfect: "¡Excelente trabajo! Has logrado la puntuación máxima.",
+        quizEncouragementGood: "¡Buen esfuerzo! Repasa las tarjetas para afianzar los conceptos.",
+        btnStudyCards: "Estudiar Tarjetas",
+        unitsLabel: "Unidades"
+      },
+      en: {
+        appTitle: "Multi-Subject Study Notebook",
+        appSubtitle: "History, Mathematics, Science & English (9th Grade)",
+        navHome: "Home",
+        navCards: "Flashcards",
+        navQuiz: "Quizzes",
+        navTimer: "Study Timer",
+        btnTheme: "Themes & Backgrounds",
+        labelSubject: "Subject:",
+        heroTitle: "Welcome to the Study Notebook! 🎓",
+        heroDesc: "Master 9th Grade core subjects: Modern & World History, Mathematics (Algebra I), Natural Sciences (Biology & Physics), and English Language Arts (Literary Analysis & Writing).",
+        heroBtnCards: "Study Flashcards",
+        heroBtnTimer: "Study Session (25 min)",
+        statStreakLabel: "Daily Streak",
+        statQuizzesLabel: "Quizzes Completed",
+        statCardsLabel: "Cards Mastered",
+        statTimeLabel: "Focus Time",
+        subjectsHeading: "Notebook Subjects",
+        btnAddSubject: "Add Subject",
+        fcTitle: "Flashcards",
+        fcSubtitle: "Review 9th Grade core concepts or create custom card decks.",
+        btnCreateDeck: "Create Deck",
+        btnAddCard: "Create Card",
+        cardBadgeFront: "Question / Concept",
+        cardBadgeBack: "Answer / Explanation",
+        cardSolution: "Solution",
+        cardFlipPrompt: "Click to Flip 🔄",
+        cardFlipBack: "Click to Flip back",
+        btnPrevCard: "Prev",
+        btnReviewCard: "Review",
+        btnMasteredCard: "Mastered",
+        btnNextCard: "Next",
+        quizEngineTitle: "Quiz Engine",
+        quizEngineSubtitle: "Test your knowledge with 9th grade subject quizzes or custom quizzes.",
+        btnCreateQuiz: "Create Quiz",
+        labelQuizSource: "Quiz Source",
+        optSrcSubject: "Standard Subject / Topic",
+        optSrcCustom: "My Custom Quizzes",
+        labelQuizSub: "Subject",
+        labelCustomQuiz: "Select Custom Quiz",
+        labelQuizDiff: "Difficulty",
+        optDiffEasy: "Easy (Fundamentals)",
+        optDiffMed: "Intermediate (Standard)",
+        optDiffHard: "Advanced (Challenge)",
+        btnStartQuiz: "Start Quiz",
+        btnNextQuizQ: "Next Question",
+        quizDoneTitle: "Quiz Completed!",
+        btnRetakeQuiz: "Take Another Quiz",
+        timerTitle: "Focus Timer",
+        timerSubtitle: "Stay focused with Pomodoro study intervals.",
+        timerSessionsDone: "Completed today:",
+        themeModalTitle: "Customize Themes & Backgrounds",
+        themeModalSubtitle: "Select preset themes, paper patterns, or create your custom combination.",
+        themeSec1: "Preset Themes",
+        themeSec2: "Pattern / Background Style",
+        themeSec3: "Decorative Elements",
+        themeSec4: "Manual Color Customizer",
+        presetClassicTag: "📜 Classic",
+        presetClassicLbl: "Classic Notebook",
+        presetParchmentTag: "🏛️ Ancient",
+        presetParchmentLbl: "Parchment",
+        presetGridTag: "📐 Grid",
+        presetGridLbl: "Graph Paper",
+        presetChalkTag: "✏ Chalkboard",
+        presetChalkLbl: "School Chalkboard",
+        presetSunsetTag: "🌅 Sunset",
+        presetSunsetLbl: "Warm Gradient",
+        presetNightTag: "🌌 Night",
+        presetNightLbl: "Dark Gradient",
+        presetMintTag: "🌿 Mint",
+        presetMintLbl: "Vintage Mint",
+        presetMinimalTag: "📑 Clean",
+        presetMinimalLbl: "Minimalist",
+        patLines: "Notebook Lines",
+        patGrid: "Grid",
+        patDots: "Dot Grid",
+        patNone: "Plain / Blank",
+        togMargin: "Red Margin Line",
+        togBinder: "Spiral Binding",
+        togVignette: "Texture/Vignette Effect",
+        clrPaper: "Paper Background Color",
+        clrLines: "Lines/Pattern Color",
+        clrHeader: "Header Color",
+        btnResetTheme: "Reset Default",
+        btnDoneTheme: "Done",
+        addsubTitle: "Add Subject",
+        addsubLblName: "Subject Name",
+        addsubLblDesc: "Description",
+        addsubLblUnits: "Units (Comma separated)",
+        addsubBtnCancel: "Cancel",
+        addsubBtnSave: "Save Subject",
+        manualfcTitle: "Create Card Manually",
+        manualfcLblQ: "Question / Term",
+        manualfcLblA: "Answer / Explanation",
+        manualfcBtnCancel: "Cancel",
+        manualfcBtnSave: "Save Card",
+        adddeckTitle: "Create New Flashcard Deck",
+        adddeckLblTitle: "Deck Title",
+        adddeckLblDesc: "Description",
+        adddeckLblIcon: "Icon",
+        adddeckBtnCancel: "Cancel",
+        adddeckBtnSave: "Create Deck",
+        builderTitle: "Create Custom Quiz",
+        builderLblTitle: "Quiz Title",
+        builderLblQuestions: "Quiz Questions",
+        builderBtnAddq: "Add Question",
+        builderBtnCancel: "Cancel",
+        builderBtnSave: "Save Quiz",
+        daysUnit: "Days",
+        dayUnit: "Day",
+        sessionsUnit: "sessions",
+        studySession: "Study Session",
+        shortBreak: "Short Break",
+        longBreak: "Long Break",
+        noCardsMsg: "No cards in this subject! Click 'Create Card'.",
+        cardNumOf: "Card {curr} of {total}",
+        pointsLabel: "Score: {score}",
+        correctMsg: "🎉 Correct!",
+        histExplanation: "💡 Educational Explanation:",
+        quizScoreText: "Score: {score} / {total}",
+        quizEncouragementPerfect: "Outstanding job! You got a perfect score.",
+        quizEncouragementGood: "Great effort! Review the flashcards to reinforce key concepts.",
+        btnStudyCards: "Study Cards",
+        unitsLabel: "Units"
+      }
+    };
+
+    /* DEFAULT THEME PRESETS */
+    const THEME_PRESETS = {
+      classic: { bg: '#FFFDF0', lines: '#e2e8f0', headerBg: '#fef08a', pattern: 'lines', margin: true, binder: true, vignette: true, isDark: false },
+      parchment: { bg: '#fef3c7', lines: '#fde68a', headerBg: '#fcd34d', pattern: 'lines', margin: true, binder: true, vignette: true, isDark: false },
+      grid_paper: { bg: '#f8fafc', lines: '#cbd5e1', headerBg: '#e2e8f0', pattern: 'grid', margin: false, binder: true, vignette: false, isDark: false },
+      chalkboard: { bg: '#0f172a', lines: '#334155', headerBg: '#1e293b', pattern: 'grid', margin: false, binder: true, vignette: true, isDark: true },
+      sunset: { bg: 'linear-gradient(135deg, #fef3c7 0%, #ffe4e6 50%, #f3e8ff 100%)', lines: '#fbcfe8', headerBg: '#fecdd3', pattern: 'dots', margin: false, binder: true, vignette: false, isDark: false },
+      midnight: { bg: 'linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e1b4b 100%)', lines: '#312e81', headerBg: '#1e1b4b', pattern: 'dots', margin: false, binder: true, vignette: true, isDark: true },
+      mint: { bg: '#ecfdf5', lines: '#a7f3d0', headerBg: '#6ee7b7', pattern: 'lines', margin: true, binder: true, vignette: false, isDark: false },
+      minimal: { bg: '#ffffff', lines: '#f1f5f9', headerBg: '#f8fafc', pattern: 'none', margin: false, binder: false, vignette: false, isDark: false }
+    };
+
+    let themeConfig = JSON.parse(localStorage.getItem('notebook_theme_config')) || { ...THEME_PRESETS.classic };
+
+    /* ==========================================================================
+       SUBJECTS & FLASHCARDS (INCLUDES MATH, SCIENCE, ENGLISH - 9TH GRADE)
+       ========================================================================== */
+
+    const SUBJECTS_I18N = {
+      es: [
+        {
+          id: 'math_9th',
+          name: 'Matemáticas (Álgebra I - 9.° Grado)',
+          icon: 'fa-calculator',
+          color: 'border-blue-500 bg-blue-50/60',
+          description: 'Ecuaciones lineales, sistemas de ecuaciones, funciones cuadráticas, factorización y propiedades de exponentes.',
+          units: ['Ecuaciones y Desigualdades Lineales', 'Sistemas de Ecuaciones y Exponentes', 'Funciones Cuadráticas y Factorización']
+        },
+        {
+          id: 'science_9th',
+          name: 'Ciencias Naturales (Biología y Física)',
+          icon: 'fa-flask',
+          color: 'border-emerald-500 bg-emerald-50/60',
+          description: 'Estructura celular y ADN, tabla periódica de elementos, leyes de Newton, fuerza, movimiento y energía.',
+          units: ['Biología Celular y Genética', 'Estructura Atómica y Tabla Periódica', 'Leyes de Newton y Conservación de Energía']
+        },
+        {
+          id: 'english_9th',
+          name: 'Lengua Castellana e Inglés (9.° Grado)',
+          icon: 'fa-book-open',
+          color: 'border-purple-500 bg-purple-50/60',
+          description: 'Recursos literarios (símil, metáfora, ironía), estructura del ensayo argumentativo, gramática y retórica.',
+          units: ['Análisis de Figuras Literarias', 'Redacción de Ensayos y Tesis', 'Retórica: Ethos, Pathos y Logos']
+        },
+        {
+          id: 'renacimiento',
+          name: 'El Renacimiento y Humanismo',
+          icon: 'fa-palette',
+          color: 'border-amber-500 bg-amber-50/60',
+          description: 'El florecimiento cultural, artístico y filosófico de los siglos XIV al XVI. Antropocentrismo, imprenta y perspectiva.',
+          units: ['Humanismo e Italia Renacentista', 'La Revolución Científica Temprana']
+        },
+        {
+          id: 'siglo_de_oro',
+          name: 'España: Siglo de Oro',
+          icon: 'fa-crown',
+          color: 'border-yellow-500 bg-yellow-50/60',
+          description: 'Unificación peninsular (1492), los Austrias Mayores y el apogeo cultural de Velázquez, Cervantes y Lope.',
+          units: ['1492: Granada, Colón y Nebrija', 'Los Austrias y la Hegemonía', 'Literatura y Arte Barroco']
+        },
+        {
+          id: 'imperio',
+          name: 'Era de los Descubrimientos e Imperio',
+          icon: 'fa-ship',
+          color: 'border-orange-500 bg-orange-50/60',
+          description: 'La expansión atlántica, el Tratado de Tordesillas, virreinatos en América y rutas de comercio global.',
+          units: ['Rutas Atlánticas y Navegación', 'Virreinatos y Casa de Contratación', 'Comercio Global y Galión de Manila']
+        },
+        {
+          id: 'ilustracion',
+          name: 'La Ilustración y el Siglo XVIII',
+          icon: 'fa-lightbulb',
+          color: 'border-amber-600 bg-amber-100/50',
+          description: 'Llegada de los Borbones, el Despotismo Ilustrado, reformas económicas y el pensamiento racionalista.',
+          units: ['Guerra de Sucesión (1700-1715)', 'Despotismo Ilustrado y Carlos III', 'Sociedades Económicas y Reformas']
+        },
+        {
+          id: 'contemporanea',
+          name: 'Edad Contemporánea (Siglo XIX)',
+          icon: 'fa-landmark-flag',
+          color: 'border-stone-500 bg-stone-50/60',
+          description: 'Guerra de la Independencia (1808), la Constitución de Cádiz de 1812 ("La Pepa") y el nacimiento del Estado liberal.',
+          units: ['Las Cortes de Cádiz de 1812', 'El Estado Liberal y Transformaciones']
+        }
+      ],
+      en: [
+        {
+          id: 'math_9th',
+          name: 'Mathematics (Algebra I - 9th Grade)',
+          icon: 'fa-calculator',
+          color: 'border-blue-500 bg-blue-50/60',
+          description: 'Linear equations, systems of equations, quadratic functions, factoring, and exponent rules.',
+          units: ['Linear Equations & Inequalities', 'Systems of Equations & Exponents', 'Quadratic Functions & Factoring']
+        },
+        {
+          id: 'science_9th',
+          name: 'Natural Science (Biology & Physics)',
+          icon: 'fa-flask',
+          color: 'border-emerald-500 bg-emerald-50/60',
+          description: 'Cell structure & DNA, periodic table of elements, Newton\'s laws of motion, force, and energy conservation.',
+          units: ['Cell Biology & Genetics', 'Atomic Structure & Periodic Table', 'Newton\'s Laws & Energy Conservation']
+        },
+        {
+          id: 'english_9th',
+          name: 'English Language Arts (9th Grade)',
+          icon: 'fa-book-open',
+          color: 'border-purple-500 bg-purple-50/60',
+          description: 'Literary devices (simile, metaphor, irony), persuasive essay structure, thesis statements, and rhetoric.',
+          units: ['Literary Devices & Imagery', 'Essay Writing & Thesis Statements', 'Rhetorical Appeals: Ethos, Pathos, Logos']
+        },
+        {
+          id: 'renacimiento',
+          name: 'The Renaissance & Humanism',
+          icon: 'fa-palette',
+          color: 'border-amber-500 bg-amber-50/60',
+          description: 'The cultural, artistic, and philosophical flourishing of the 14th to 16th centuries: Anthropocentrism & printing press.',
+          units: ['Humanism & Renaissance Italy', 'Early Scientific Revolution']
+        },
+        {
+          id: 'siglo_de_oro',
+          name: 'Spain: Spanish Golden Age',
+          icon: 'fa-crown',
+          color: 'border-yellow-500 bg-yellow-50/60',
+          description: 'Peninsular unification (1492), the Habsburg Monarchs (Charles V and Philip II), and literary & artistic splendor.',
+          units: ['1492: Granada, Columbus & Nebrija', 'Habsburg Hegemony', 'Baroque Literature & Art']
+        },
+        {
+          id: 'imperio',
+          name: 'Age of Discovery & Empire',
+          icon: 'fa-ship',
+          color: 'border-orange-500 bg-orange-50/60',
+          description: 'Atlantic expansion, Treaty of Tordesillas, American Viceroyalties, and global trade routes.',
+          units: ['Atlantic Routes & Navigation', 'Viceroyalties & House of Trade', 'Global Trade & Manila Galleon']
+        },
+        {
+          id: 'ilustracion',
+          name: 'The Enlightenment & 18th Century',
+          icon: 'fa-lightbulb',
+          color: 'border-amber-600 bg-amber-100/50',
+          description: 'Arrival of the Bourbons, Enlightened Absolutism, structural reforms, and rationalist philosophy.',
+          units: ['War of the Spanish Succession (1700-1715)', 'Enlightened Despotism & Charles III', 'Economic Societies & Reforms']
+        },
+        {
+          id: 'contemporanea',
+          name: 'Contemporary Era (19th Century)',
+          icon: 'fa-landmark-flag',
+          color: 'border-stone-500 bg-stone-50/60',
+          description: 'Peninsular War (1808), the Constitution of Cádiz of 1812 ("La Pepa"), and the emergence of the liberal state.',
+          units: ['The Cortes of Cádiz of 1812', 'The Liberal State & Transformations']
+        }
+      ]
+    };
+
+    const FLASHCARDS_I18N = {
+      es: {
+        math_9th: [
+          { q: "¿Cuál es la fórmula para calcular la pendiente ($m$) de una recta que pasa por dos puntos $(x_1, y_1)$ y $(x_2, y_2)$?", a: "La fórmula de la pendiente es $m = \\frac{y_2 - y_1}{x_2 - x_1}$, donde $x_2 \\neq x_1$." },
+          { q: "¿Cuál es la Fórmula Cuadrática para resolver $ax^2 + bx + c = 0$?", a: "La fórmula es $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$." },
+          { q: "¿Qué dice la Ley de Exponentes para la multiplicación de bases iguales: $a^m \\cdot a^n$?", a: "Se conserva la base y se suman los exponentes: $a^m \\cdot a^n = a^{m+n}$." },
+          { q: "¿Qué establece el Teorema de Pitágoras para un triángulo rectángulo con catetos $a$ y $b$ e hipotenusa $c$?", a: "El teorema establece que $a^2 + b^2 = c^2$." },
+          { q: "¿Cómo se define el discriminante $\\Delta$ de una ecuación cuadrática y qué indica?", a: "El discriminante es $\\Delta = b^2 - 4ac$. Si $\\Delta > 0$ hay dos soluciones reales; si $\\Delta = 0$ hay una solución real; si $\\Delta < 0$ hay dos soluciones complejas." }
+        ],
+        science_9th: [
+          { q: "¿Cuál es la ecuación química general de la fotosíntesis en plantas?", a: "La ecuación balanceada es $6\\text{CO}_2 + 6\\text{H}_2\\text{O} \\xrightarrow{\\text{luz}} \\text{C}_6\\text{H}_{12}\\text{O}_6 + 6\\text{O}_2$." },
+          { q: "¿Qué establece la Segunda Ley de Newton sobre la fuerza $F$, la masa $m$ y la aceleración $a$?", a: "Establece que la fuerza neta es igual al producto de la masa por la aceleración: $F = m \\cdot a$." },
+          { q: "¿Cuáles son las 4 bases nitrogenadas del ADN y cómo se aparean?", a: "Adenina ($A$), Timina ($T$), Citosina ($C$) y Guanina ($G$). Se aparean mediante enlaces de hidrógeno: $A-T$ y $C-G$." },
+          { q: "¿Qué diferencia a un elemento químico de un compuesto?", a: "Un elemento está formado por un solo tipo de átomo (ej. $\\text{O}_2$, $\\text{Fe}$), mientras que un compuesto contiene dos o más elementos combinados químicamente (ej. $\\text{H}_2\\text{O}$)." },
+          { q: "¿Cuál es la diferencia entre Energía Cinética ($E_k$) y Energía Potencial Gravitatoria ($E_p$)?", a: "La energía cinética depende del movimiento ($E_k = \\frac{1}{2}m v^2$) y la potencial depende de la posición o altura ($E_p = m \\cdot g \\cdot h$)." }
+        ],
+        english_9th: [
+          { q: "¿Cuál es la diferencia entre un Símil y una Metáfora?", a: "El símil compara dos cosas usando palabras de enlace como 'como' o 'parece' (ej. 'fuerte como un roble'), mientras que la metáfora afirma la comparación directamente sin conectores (ej. 'sus ojos son luceros')." },
+          { q: "¿Qué es una Declaración de Tesis (Thesis Statement) en un ensayo?", a: "Es una oración central en la introducción que resume la postura u argumento principal que el autor defenderá con evidencia en el desarrollo del texto." },
+          { q: "¿En qué consisten las apelaciones retóricas de Aristóteles: Ethos, Pathos y Logos?", a: "• Ethos: Apelación a la credibilidad y ética del autor.\n• Pathos: Apelación a las emociones y empatía del lector.\n• Logos: Apelación a la lógica, evidencias y datos." },
+          { q: "¿Qué es la Ironía Dramática en una obra literaria o teatral?", a: "Ocurre cuando los lectores u espectadores conocen información crucial sobre la trama que los propios personajes en escena desconocen." },
+          { q: "¿Qué es la Personificación o Prosopopeya?", a: "Es la figura literaria que atribuye cualidades o acciones humanas a animales, objetos inanimados o conceptos abstractos (ej. 'el viento susurraba entre los árboles')." }
+        ],
+        renacimiento: [
+          { q: "¿Qué caracteriza principalmente al Humanismo renacentista?", a: "Un cambio sociocultural que sitúa al ser humano en el centro del pensamiento (antropocentrismo), rescatando los valores éticos y estéticos de la Antigüedad clásica." },
+          { q: "¿Quién perfeccionó la imprenta de tipos móviles en Europa?", a: "Johannes Gutenberg (c. 1440). Permitió la difusión masiva de las ideas humanistas y científicas." },
+          { q: "¿Qué innovación geométrica revolucionó la pintura del Renacimiento?", a: "La perspectiva lineal, que permitió representar el espacio tridimensional sobre una superficie plana." }
+        ],
+        siglo_de_oro: [
+          { q: "¿Qué tres acontecimientos fundamentales ocurrieron en España en 1492?", a: "1. La toma de Granada.\n2. La llegada de Cristóbal Colón a América.\n3. La publicación de la Gramática castellana de Nebrija." },
+          { q: "¿Quiénes fueron los llamados 'Austrias Mayores'?", a: "Carlos I de España (Carlos V) y su hijo Felipe II." },
+          { q: "Menciona grandes exponentes del arte y la literatura del Siglo de Oro.", a: "Literatura: Miguel de Cervantes y Lope de Vega. Pintura: Velázquez y El Greco." }
+        ],
+        imperio: [
+          { q: "¿Qué acordaron en el Tratado de Tordesillas (1494)?", a: "Establecieron un meridiano a 370 leguas al oeste de Cabo Verde para repartir las zonas de exploración entre Castilla y Portugal." },
+          { q: "¿Cuál era la función de la Casa de la Contratación de Sevilla?", a: "Organizar y fiscalizar el monopolio del comercio marítimo y pasajeros entre España y América." }
+        ],
+        ilustracion: [
+          { q: "¿Qué cambio dinástico vivió España en el Siglo XVIII?", a: "Tras la Guerra de Sucesión, comenzó la dinastía de los Borbones con Felipe V." },
+          { q: "¿En qué consistió el 'Despotismo Ilustrado'?", a: "Sintetizado en 'Todo para el pueblo, pero sin el pueblo': reformas de modernización sin ceder soberanía política." }
+        ],
+        contemporanea: [
+          { q: "¿Qué significó la Constitución española de 1812 ('La Pepa')?", a: "Proclamada en Cádiz, consagró la soberanía nacional, la división de poderes y la libertad de prensa." }
+        ]
+      },
+      en: {
+        math_9th: [
+          { q: "What is the formula to calculate slope ($m$) between two points $(x_1, y_1)$ and $(x_2, y_2)$?", a: "The slope formula is $m = \\frac{y_2 - y_1}{x_2 - x_1}$, where $x_2 \\neq x_1$." },
+          { q: "What is the Quadratic Formula to solve $ax^2 + bx + c = 0$?", a: "The formula is $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$." },
+          { q: "What is the Product Rule of Exponents for $a^m \\cdot a^n$?", a: "Keep the base and add exponents: $a^m \\cdot a^n = a^{m+n}$." },
+          { q: "What is the Pythagorean Theorem for a right triangle with legs $a, b$ and hypotenuse $c$?", a: "The theorem states that $a^2 + b^2 = c^2$." },
+          { q: "How is the discriminant $\\Delta$ defined and what does it indicate?", a: "The discriminant is $\\Delta = b^2 - 4ac$. If $\\Delta > 0$, there are two real roots; if $\\Delta = 0$, one real root; if $\\Delta < 0$, two complex roots." }
+        ],
+        science_9th: [
+          { q: "What is the balanced general chemical equation for photosynthesis?", a: "The equation is $6\\text{CO}_2 + 6\\text{H}_2\\text{O} \\xrightarrow{\\text{light}} \\text{C}_6\\text{H}_{12}\\text{O}_6 + 6\\text{O}_2$." },
+          { q: "What is Newton's Second Law of Motion regarding force $F$, mass $m$, and acceleration $a$?", a: "Net force equals mass times acceleration: $F = m \\cdot a$." },
+          { q: "What are the 4 nitrogenous bases of DNA and how do they pair?", a: "Adenine ($A$), Thymine ($T$), Cytosine ($C$), and Guanine ($G$). Base pairing is $A-T$ and $C-G$." },
+          { q: "What is the difference between an element and a compound?", a: "An element consists of a single type of atom (e.g. $\\text{O}_2$, $\\text{Fe}$), while a compound contains two or more elements chemically combined (e.g. $\\text{H}_2\\text{O}$)." },
+          { q: "What is the key distinction between Kinetic Energy ($E_k$) and Potential Energy ($E_p$)?", a: "Kinetic energy depends on motion ($E_k = \\frac{1}{2}m v^2$) while gravitational potential energy depends on position or height ($E_p = m \\cdot g \\cdot h$)." }
+        ],
+        english_9th: [
+          { q: "What is the key difference between a Simile and a Metaphor?", a: "A simile compares two things using connectors like 'like' or 'as' (e.g., 'as brave as a lion'), while a metaphor states the comparison directly without connectors (e.g., 'time is a thief')." },
+          { q: "What is a Thesis Statement in essay writing?", a: "A single central claim in the introductory paragraph that outlines the author's main argument supported by evidence." },
+          { q: "What are Aristotle's three rhetorical appeals: Ethos, Pathos, and Logos?", a: "• Ethos: Appeals to ethics, authority, and credibility.\n• Pathos: Appeals to emotions and feelings.\n• Logos: Appeals to logic, statistics, and clear reasoning." },
+          { q: "What is Dramatic Irony in literature and drama?", a: "Dramatic irony occurs when the audience or reader knows important information that characters in the story do not." },
+          { q: "What is Personification?", a: "A literary device that gives human characteristics or behaviors to non-human objects, animals, or abstract concepts." }
+        ],
+        renacimiento: [
+          { q: "What primarily characterizes Renaissance Humanism?", a: "A sociocultural shift placing the human being at the center of thought (anthropocentrism), reviving classical Antiquity values." },
+          { q: "Who perfected moveable type printing in Europe?", a: "Johannes Gutenberg (c. 1440). It enabled the mass dissemination of humanist and scientific ideas." },
+          { q: "What geometric innovation revolutionized Renaissance painting?", a: "Linear perspective, which allowed representing 3D space on a flat surface." }
+        ],
+        siglo_de_oro: [
+          { q: "What three major events occurred in Spain in 1492?", a: "1. Conquest of Granada.\n2. Columbus reaching the Americas.\n3. Publication of Nebrija's Spanish Grammar." },
+          { q: "Who were the primary Habsburg monarchs ('Austrias Mayores')?", a: "Charles I of Spain (Charles V) and his son Philip II." },
+          { q: "Name key figures of Golden Age art and literature.", a: "Literature: Miguel de Cervantes & Lope de Vega. Painting: Velázquez & El Greco." }
+        ],
+        imperio: [
+          { q: "What was agreed in the Treaty of Tordesillas (1494)?", a: "It drew a meridian 370 leagues west of Cape Verde to divide exploration zones between Spain and Portugal." },
+          { q: "What was the main function of the House of Trade (Casa de Contratación) in Seville?", a: "To organize and regulate the trade monopoly and travel between Spain and the Americas." }
+        ],
+        ilustracion: [
+          { q: "What dynastic shift took place in 18th-century Spain?", a: "Following the War of the Spanish Succession, the Bourbon dynasty ascended with Philip V." },
+          { q: "What was 'Enlightened Despotism'?", a: "Summarized as 'Everything for the people, nothing by the people': modernizing reforms without diluting absolute political authority." }
+        ],
+        contemporanea: [
+          { q: "What was the significance of the Spanish Constitution of 1812 ('La Pepa')?", a: "Enacted in Cádiz, it established national sovereignty, separation of powers, and freedom of the press." }
+        ]
+      }
+    };
+
+    /* SAMPLE QUIZ QUESTIONS POOL FOR QUIZ ENGINE */
+    const QUIZ_QUESTIONS_POOL = {
+      es: {
+        math_9th: [
+          {
+            q: "Dada la función lineal $y = 3x - 5$, ¿cuál es la pendiente de la recta?",
+            options: ["3", "-5", "5/3", "1/3"],
+            correct: 0,
+            exp: "En la forma pendiente-intersección $y = mx + b$, el coeficiente de $x$ es la pendiente $m$. Por lo tanto, $m = 3$."
+          },
+          {
+            q: "¿Cuáles son las soluciones de la ecuación cuadrática $x^2 - 9 = 0$?",
+            options: ["$x = 3$ y $x = -3$", "$x = 9$ y $x = -9$", "$x = 0$", "$x = 81$"],
+            correct: 0,
+            exp: "Factorizando como diferencia de cuadrados $(x-3)(x+3) = 0$, obtenemos $x = 3$ y $x = -3$."
+          },
+          {
+            q: "Simplifica la expresión con exponentes: $(2x^3)^2$",
+            options: ["$4x^6$", "$2x^6$", "$4x^5$", "$2x^5$"],
+            correct: 0,
+            exp: "Aplicando las leyes de exponentes, $(2x^3)^2 = 2^2 \\cdot (x^3)^2 = 4x^{3 \\cdot 2} = 4x^6$."
+          }
+        ],
+        science_9th: [
+          {
+            q: "Si un objeto de masa $m = 5\\text{ kg}$ se acelera a $a = 2\\text{ m/s}^2$, ¿cuál es la fuerza neta aplicada según la Segunda Ley de Newton?",
+            options: ["$10\\text{ N}$", "$2.5\\text{ N}$", "$7\\text{ N}$", "$25\\text{ N}$"],
+            correct: 0,
+            exp: "Utilizando la fórmula $F = m \\cdot a$, tenemos $F = 5\\text{ kg} \\cdot 2\\text{ m/s}^2 = 10\\text{ N}$."
+          },
+          {
+            q: "¿En qué organelo celular se lleva a cabo la fotosíntesis?",
+            options: ["Cloroplasto", "Mitocondria", "Núcleo", "Ribosoma"],
+            correct: 0,
+            exp: "Los cloroplastos contienen clorofila y son los encargados de transformar la energía lumínica en glucosa."
+          }
+        ],
+        english_9th: [
+          {
+            q: "Identifica el recurso literario en la frase: 'El tiempo es un ladrón que se lleva los recuerdos'.",
+            options: ["Metáfora", "Símil", "Onomatopeya", "Hipérbole"],
+            correct: 0,
+            exp: "Es una metáfora porque equipara directamente el 'tiempo' con un 'ladrón' sin utilizar conectores como 'como' o 'parece'."
+          },
+          {
+            q: "¿Qué recurso retórico se basa en presentar datos estadísticos, evidencias comprobables y razonamiento lógico?",
+            options: ["Logos", "Ethos", "Pathos", "Kairos"],
+            correct: 0,
+            exp: "Logos proviene del griego para 'lógica' y apela a la razón a través de hechos y argumentos fundamentados."
+          }
+        ]
+      },
+      en: {
+        math_9th: [
+          {
+            q: "In the linear equation $y = 3x - 5$, what is the slope of the line?",
+            options: ["3", "-5", "5/3", "1/3"],
+            correct: 0,
+            exp: "In slope-intercept form $y = mx + b$, the coefficient of $x$ represents the slope $m = 3$."
+          },
+          {
+            q: "What are the roots of the quadratic equation $x^2 - 9 = 0$?",
+            options: ["$x = 3$ and $x = -3$", "$x = 9$ and $x = -9$", "$x = 0$", "$x = 81$"],
+            correct: 0,
+            exp: "Factoring as a difference of squares gives $(x-3)(x+3) = 0$, so $x = 3$ and $x = -3$."
+          }
+        ],
+        science_9th: [
+          {
+            q: "If an object with mass $m = 5\\text{ kg}$ accelerates at $a = 2\\text{ m/s}^2$, what is the net force according to Newton's 2nd Law?",
+            options: ["$10\\text{ N}$", "$2.5\\text{ N}$", "$7\\text{ N}$", "$25\\text{ N}$"],
+            correct: 0,
+            exp: "Applying $F = m \\cdot a$, we get $F = 5\\text{ kg} \\cdot 2\\text{ m/s}^2 = 10\\text{ N}$."
+          }
+        ],
+        english_9th: [
+          {
+            q: "Identify the literary device: 'Time is a thief that steals our memories.'",
+            options: ["Metaphor", "Simile", "Onomatopoeia", "Hyperbole"],
+            correct: 0,
+            exp: "This is a metaphor because it directly equates 'time' to a 'thief' without using 'like' or 'as'."
+          }
+        ]
+      }
+    };
+
+    /* STATE VARIABLES */
+    let subjects = JSON.parse(localStorage.getItem('notebook_subjects')) || SUBJECTS_I18N[currentLang];
+    let flashcards = JSON.parse(localStorage.getItem('notebook_flashcards')) || FLASHCARDS_I18N[currentLang];
+    let customQuizzes = JSON.parse(localStorage.getItem('notebook_custom_quizzes')) || [];
+    let activeSubjectId = localStorage.getItem('notebook_active_sub') || 'math_9th';
+    let currentCardIndex = 0;
+    let isFlipped = false;
+
+    // Active Quiz Engine State
+    let activeQuizQuestions = [];
+    let currentQuizIndex = 0;
+    let quizScore = 0;
+
+    // Stats
+    let stats = JSON.parse(localStorage.getItem('notebook_stats')) || {
+      streak: 1,
+      lastLogin: new Date().toDateString(),
+      quizzes: 0,
+      cardsReviewed: 0,
+      focusMinutes: 0
+    };
+
+    // Timer Variables
+    let timerInterval = null;
+    let timerSeconds = 25 * 60;
+    let isTimerRunning = false;
+    let completedSessions = 0;
+
+    window.onload = function() {
+      checkStreak();
+      applyLanguage(currentLang);
+      populateSubjectDropdowns();
+      populateCustomQuizDropdown();
+      renderDashboardSubjects();
+      loadFlashcards();
+      updateStatsUI();
+      applyThemeConfig();
+    };
+
+    /* Helper function to trigger KaTeX math rendering if available */
+    function renderMathInElement(elementId) {
+      if (window.katex) {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        let html = el.innerHTML;
+        // Simple inline math replace $ ... $ with KaTeX rendered HTML
+        html = html.replace(/\$([^\$]+)\$/g, function(match, expr) {
+          try {
+            return katex.renderToString(expr, { displayMode: false, throwOnError: false });
+          } catch(e) { return match; }
+        });
+        el.innerHTML = html;
+      }
+    }
+
+    /* ==========================================================================
+       LANGUAGE / I18N LOGIC
+       ========================================================================== */
+    function toggleLanguage() {
+      currentLang = currentLang === 'es' ? 'en' : 'es';
+      localStorage.setItem('notebook_lang', currentLang);
+      
+      subjects = SUBJECTS_I18N[currentLang];
+      flashcards = FLASHCARDS_I18N[currentLang];
+
+      applyLanguage(currentLang);
+      populateSubjectDropdowns();
+      renderDashboardSubjects();
+      loadFlashcards();
+      updateStatsUI();
+    }
+
+    function t(key) {
+      return (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key]) ? TRANSLATIONS[currentLang][key] : key;
+    }
+
+    function applyLanguage(lang) {
+      document.documentElement.lang = lang;
+      const langBtnText = document.getElementById('lang-toggle-text');
+      if (langBtnText) langBtnText.innerText = lang === 'es' ? 'ES / EN' : 'EN / ES';
+
+      const mappings = {
+        'i18n-app-title': t('appTitle'),
+        'i18n-app-subtitle': t('appSubtitle'),
+        'i18n-nav-home': t('navHome'),
+        'i18n-nav-cards': t('navCards'),
+        'i18n-nav-quiz': t('navQuiz'),
+        'i18n-nav-timer': t('navTimer'),
+        'i18n-btn-theme': t('btnTheme'),
+        'i18n-label-subject': t('labelSubject'),
+        'i18n-hero-title': t('heroTitle'),
+        'i18n-hero-desc': t('heroDesc'),
+        'i18n-hero-btn-cards': t('heroBtnCards'),
+        'i18n-hero-btn-timer': t('heroBtnTimer'),
+        'i18n-stat-streak-label': t('statStreakLabel'),
+        'i18n-stat-quizzes-label': t('statQuizzesLabel'),
+        'i18n-stat-cards-label': t('statCardsLabel'),
+        'i18n-stat-time-label': t('statTimeLabel'),
+        'i18n-subjects-heading': t('subjectsHeading'),
+        'i18n-btn-add-subject': t('btnAddSubject'),
+        'i18n-fc-title': t('fcTitle'),
+        'i18n-fc-subtitle': t('fcSubtitle'),
+        'i18n-btn-create-deck': t('btnCreateDeck'),
+        'i18n-btn-add-card': t('btnAddCard'),
+        'i18n-card-badge-front': t('cardBadgeFront'),
+        'i18n-card-badge-back': t('cardBadgeBack'),
+        'i18n-card-solution': t('cardSolution'),
+        'i18n-card-flip-prompt': t('cardFlipPrompt'),
+        'i18n-card-flip-back': t('cardFlipBack'),
+        'i18n-btn-prev-card': t('btnPrevCard'),
+        'i18n-btn-review-card': t('btnReviewCard'),
+        'i18n-btn-mastered-card': t('btnMasteredCard'),
+        'i18n-btn-next-card': t('btnNextCard'),
+        'i18n-quiz-engine-title': t('quizEngineTitle'),
+        'i18n-quiz-engine-subtitle': t('quizEngineSubtitle'),
+        'i18n-btn-create-quiz': t('btnCreateQuiz'),
+        'i18n-label-quiz-source': t('labelQuizSource'),
+        'i18n-opt-src-subject': t('optSrcSubject'),
+        'i18n-opt-src-custom': t('optSrcCustom'),
+        'i18n-label-quiz-sub': t('labelQuizSub'),
+        'i18n-label-custom-quiz': t('labelCustomQuiz'),
+        'i18n-label-quiz-diff': t('labelQuizDiff'),
+        'i18n-opt-diff-easy': t('optDiffEasy'),
+        'i18n-opt-diff-med': t('optDiffMed'),
+        'i18n-opt-diff-hard': t('optDiffHard'),
+        'i18n-btn-start-quiz': t('btnStartQuiz'),
+        'i18n-btn-next-quiz-q': t('btnNextQuizQ'),
+        'i18n-quiz-done-title': t('quizDoneTitle'),
+        'i18n-btn-retake-quiz': t('btnRetakeQuiz'),
+        'i18n-timer-title': t('timerTitle'),
+        'i18n-timer-subtitle': t('timerSubtitle'),
+        'i18n-timer-sessions-done': t('timerSessionsDone'),
+        'i18n-theme-modal-title': t('themeModalTitle'),
+        'i18n-theme-modal-subtitle': t('themeModalSubtitle'),
+        'i18n-theme-sec-1': t('themeSec1'),
+        'i18n-theme-sec-2': t('themeSec2'),
+        'i18n-theme-sec-3': t('themeSec3'),
+        'i18n-theme-sec-4': t('themeSec4'),
+        'i18n-preset-classic-tag': t('presetClassicTag'),
+        'i18n-preset-classic-lbl': t('presetClassicLbl'),
+        'i18n-preset-parchment-tag': t('presetParchmentTag'),
+        'i18n-preset-parchment-lbl': t('presetParchmentLbl'),
+        'i18n-preset-grid-tag': t('presetGridTag'),
+        'i18n-preset-grid-lbl': t('presetGridLbl'),
+        'i18n-preset-chalk-tag': t('presetChalkTag'),
+        'i18n-preset-chalk-lbl': t('presetChalkLbl'),
+        'i18n-preset-sunset-tag': t('presetSunsetTag'),
+        'i18n-preset-sunset-lbl': t('presetSunsetLbl'),
+        'i18n-preset-night-tag': t('presetNightTag'),
+        'i18n-preset-night-lbl': t('presetNightLbl'),
+        'i18n-preset-mint-tag': t('presetMintTag'),
+        'i18n-preset-mint-lbl': t('presetMintLbl'),
+        'i18n-preset-minimal-tag': t('presetMinimalTag'),
+        'i18n-preset-minimal-lbl': t('presetMinimalLbl'),
+        'i18n-pat-lines': t('patLines'),
+        'i18n-pat-grid': t('patGrid'),
+        'i18n-pat-dots': t('patDots'),
+        'i18n-pat-none': t('patNone'),
+        'i18n-tog-margin': t('togMargin'),
+        'i18n-tog-binder': t('togBinder'),
+        'i18n-tog-vignette': t('togVignette'),
+        'i18n-clr-paper': t('clrPaper'),
+        'i18n-clr-lines': t('clrLines'),
+        'i18n-clr-header': t('clrHeader'),
+        'i18n-btn-reset-theme': t('btnResetTheme'),
+        'i18n-btn-done-theme': t('btnDoneTheme'),
+        'i18n-addsub-title': t('addsubTitle'),
+        'i18n-addsub-lbl-name': t('addsubLblName'),
+        'i18n-addsub-lbl-desc': t('addsubLblDesc'),
+        'i18n-addsub-lbl-units': t('addsubLblUnits'),
+        'i18n-addsub-btn-cancel': t('addsubBtnCancel'),
+        'i18n-addsub-btn-save': t('addsubBtnSave'),
+        'i18n-manualfc-title': t('manualfcTitle'),
+        'i18n-manualfc-lbl-q': t('manualfcLblQ'),
+        'i18n-manualfc-lbl-a': t('manualfcLblA'),
+        'i18n-manualfc-btn-cancel': t('manualfcBtnCancel'),
+        'i18n-manualfc-btn-save': t('manualfcBtnSave'),
+        'i18n-adddeck-title': t('adddeckTitle'),
+        'i18n-adddeck-lbl-title': t('adddeckLblTitle'),
+        'i18n-adddeck-lbl-desc': t('adddeckLblDesc'),
+        'i18n-adddeck-lbl-icon': t('adddeckLblIcon'),
+        'i18n-adddeck-btn-cancel': t('adddeckBtnCancel'),
+        'i18n-adddeck-btn-save': t('adddeckBtnSave'),
+        'i18n-builder-title': t('builderTitle'),
+        'i18n-builder-lbl-title': t('builderLblTitle'),
+        'i18n-builder-lbl-questions': t('builderLblQuestions'),
+        'i18n-builder-btn-addq': t('builderBtnAddq'),
+        'i18n-builder-btn-cancel': t('builderBtnCancel'),
+        'i18n-builder-btn-save': t('builderBtnSave')
+      };
+
+      for (let id in mappings) {
+        const el = document.getElementById(id);
+        if (el) el.innerText = mappings[id];
+      }
+    }
+
+    /* ==========================================================================
+       TAB SWITCHING
+       ========================================================================== */
+    function switchTab(tabId) {
+      ['dashboard', 'flashcards', 'quiz', 'timer'].forEach(tName => {
+        const view = document.getElementById('view-' + tName);
+        const tabBtn = document.getElementById('tab-' + tName);
+        if (view) view.classList.add('hidden');
+        if (tabBtn) {
+          tabBtn.className = "nav-tab px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all hover:bg-yellow-300/60 text-slate-700 cursor-pointer";
+        }
+      });
+
+      const targetView = document.getElementById('view-' + tabId);
+      const targetBtn = document.getElementById('tab-' + tabId);
+      if (targetView) targetView.classList.remove('hidden');
+      if (targetBtn) {
+        targetBtn.className = "nav-tab px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-all bg-yellow-400 text-slate-900 shadow-sm cursor-pointer";
+      }
+
+      if (tabId === 'flashcards') loadFlashcards();
+    }
+
+    /* ==========================================================================
+       SUBJECT MANAGEMENT
+       ========================================================================== */
+    function populateSubjectDropdowns() {
+      const globalSelect = document.getElementById('global-subject-select');
+      const quizSelect = document.getElementById('quiz-subject-select');
+      
+      if (!globalSelect) return;
+      globalSelect.innerHTML = '';
+      if (quizSelect) quizSelect.innerHTML = '';
+
+      subjects.forEach(sub => {
+        const opt1 = document.createElement('option');
+        opt1.value = sub.id;
+        opt1.innerText = sub.name;
+        if (sub.id === activeSubjectId) opt1.selected = true;
+        globalSelect.appendChild(opt1);
+
+        if (quizSelect) {
+          const opt2 = document.createElement('option');
+          opt2.value = sub.id;
+          opt2.innerText = sub.name;
+          quizSelect.appendChild(opt2);
+        }
+      });
+    }
+
+    function changeActiveSubject(id) {
+      activeSubjectId = id;
+      localStorage.setItem('notebook_active_sub', id);
+      currentCardIndex = 0;
+      isFlipped = false;
+      loadFlashcards();
+    }
+
+    function renderDashboardSubjects() {
+      const grid = document.getElementById('subjects-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      subjects.forEach(sub => {
+        const card = document.createElement('div');
+        card.className = `bg-notebook-card border-2 ${sub.color || 'border-amber-400'} rounded-2xl p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between`;
+        
+        let unitsHtml = '';
+        if (sub.units && sub.units.length > 0) {
+          unitsHtml = `
+            <div class="mt-3 pt-3 border-t border-amber-200/80">
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">${t('unitsLabel')}:</span>
+              <ul class="text-xs text-slate-700 mt-1 space-y-1">
+                ${sub.units.map(u => `<li class="flex items-start gap-1.5"><i class="fa-solid fa-chevron-right text-[10px] text-amber-600 mt-0.5"></i> ${u}</li>`).join('')}
+              </ul>
+            </div>
+          `;
+        }
+
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center gap-3 mb-2">
+              <div class="w-10 h-10 rounded-xl bg-amber-200 text-amber-900 border border-amber-400 flex items-center justify-center text-xl shrink-0">
+                <i class="fa-solid ${sub.icon || 'fa-book'}"></i>
+              </div>
+              <h4 class="font-bold text-base text-slate-900 leading-snug">${sub.name}</h4>
+            </div>
+            <p class="text-xs text-slate-600 font-medium">${sub.description || ''}</p>
+            ${unitsHtml}
+          </div>
+          <div class="mt-4 pt-2 flex justify-end">
+            <button onclick="selectSubjectAndGoToCards('${sub.id}')" class="bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-bold text-xs px-3 py-1.5 rounded-lg border border-yellow-600 shadow-xs cursor-pointer flex items-center gap-1">
+              <i class="fa-solid fa-layer-group"></i> ${t('btnStudyCards')}
+            </button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function selectSubjectAndGoToCards(subId) {
+      changeActiveSubject(subId);
+      const globalSelect = document.getElementById('global-subject-select');
+      if (globalSelect) globalSelect.value = subId;
+      switchTab('flashcards');
+    }
+
+    function openAddSubjectModal() { openModal('modal-add-subject'); }
+
+    function saveCustomSubject() {
+      const name = document.getElementById('new-sub-name').value.trim();
+      const desc = document.getElementById('new-sub-desc').value.trim();
+      const unitsRaw = document.getElementById('new-sub-units').value.trim();
+
+      if (!name) return alert('Ingresa un nombre para la materia');
+
+      const id = 'custom_sub_' + Date.now();
+      const units = unitsRaw ? unitsRaw.split(',').map(u => u.trim()).filter(Boolean) : [];
+
+      const newSub = {
+        id,
+        name,
+        description: desc,
+        units,
+        icon: 'fa-book-open',
+        color: 'border-yellow-500 bg-yellow-50/60'
+      };
+
+      subjects.push(newSub);
+      localStorage.setItem('notebook_subjects', JSON.stringify(subjects));
+      
+      flashcards[id] = [];
+      localStorage.setItem('notebook_flashcards', JSON.stringify(flashcards));
+
+      populateSubjectDropdowns();
+      renderDashboardSubjects();
+      closeModal('modal-add-subject');
+      
+      document.getElementById('new-sub-name').value = '';
+      document.getElementById('new-sub-desc').value = '';
+      document.getElementById('new-sub-units').value = '';
+    }
+
+    /* ==========================================================================
+       FLASHCARDS ENGINE
+       ========================================================================== */
+    function loadFlashcards() {
+      const currentList = flashcards[activeSubjectId] || [];
+      if (currentCardIndex >= currentList.length) currentCardIndex = 0;
+      updateCardUI();
+    }
+
+    function updateCardUI() {
+      const currentList = flashcards[activeSubjectId] || [];
+      const cardInner = document.getElementById('flashcard-inner');
+      const qText = document.getElementById('card-question');
+      const aText = document.getElementById('card-answer');
+      const progressNum = document.getElementById('card-progress-num');
+
+      if (isFlipped) {
+        cardInner.classList.remove('rotate-y-180');
+        isFlipped = false;
+      }
+
+      if (currentList.length === 0) {
+        qText.innerText = t('noCardsMsg');
+        aText.innerText = "...";
+        progressNum.innerText = "0 / 0";
+        return;
+      }
+
+      const card = currentList[currentCardIndex];
+      qText.innerHTML = card.q;
+      aText.innerHTML = card.a;
+      
+      const pattern = t('cardNumOf') || "Tarjeta {curr} de {total}";
+      progressNum.innerText = pattern.replace('{curr}', currentCardIndex + 1).replace('{total}', currentList.length);
+
+      renderMathInElement('card-question');
+      renderMathInElement('card-answer');
+    }
+
+    function flipCard() {
+      const currentList = flashcards[activeSubjectId] || [];
+      if (currentList.length === 0) return;
+      const cardInner = document.getElementById('flashcard-inner');
+      isFlipped = !isFlipped;
+      if (isFlipped) cardInner.classList.add('rotate-y-180');
+      else cardInner.classList.remove('rotate-y-180');
+    }
+
+    function nextCard() {
+      const currentList = flashcards[activeSubjectId] || [];
+      if (currentList.length === 0) return;
+      currentCardIndex = (currentCardIndex + 1) % currentList.length;
+      updateCardUI();
+    }
+
+    function prevCard() {
+      const currentList = flashcards[activeSubjectId] || [];
+      if (currentList.length === 0) return;
+      currentCardIndex = (currentCardIndex - 1 + currentList.length) % currentList.length;
+      updateCardUI();
+    }
+
+    function rateCard(mastered) {
+      const currentList = flashcards[activeSubjectId] || [];
+      if (currentList.length === 0) return;
+      
+      if (mastered) {
+        stats.cardsReviewed++;
+        saveStats();
+        updateStatsUI();
+      }
+      nextCard();
+    }
+
+    function openAddFlashcardModal() { openModal('modal-add-flashcard'); }
+
+    function saveManualFlashcard() {
+      const q = document.getElementById('manual-q').value.trim();
+      const a = document.getElementById('manual-a').value.trim();
+
+      if (!q || !a) return alert('Ingresa la pregunta y la respuesta');
+
+      if (!flashcards[activeSubjectId]) flashcards[activeSubjectId] = [];
+      flashcards[activeSubjectId].push({ q, a });
+
+      localStorage.setItem('notebook_flashcards', JSON.stringify(flashcards));
+      
+      closeModal('modal-add-flashcard');
+      document.getElementById('manual-q').value = '';
+      document.getElementById('manual-a').value = '';
+
+      currentCardIndex = flashcards[activeSubjectId].length - 1;
+      updateCardUI();
+    }
+
+    function openAddDeckModal() { openModal('modal-add-deck'); }
+
+    function saveCustomDeck() {
+      const title = document.getElementById('new-deck-title').value.trim();
+      const desc = document.getElementById('new-deck-desc').value.trim();
+      const icon = document.getElementById('new-deck-icon').value;
+
+      if (!title) return alert('Ingresa el título del mazo');
+
+      const id = 'deck_' + Date.now();
+      const newSub = {
+        id,
+        name: title,
+        description: desc,
+        units: [],
+        icon,
+        color: 'border-yellow-500 bg-yellow-50/60'
+      };
+
+      subjects.push(newSub);
+      localStorage.setItem('notebook_subjects', JSON.stringify(subjects));
+      
+      flashcards[id] = [];
+      localStorage.setItem('notebook_flashcards', JSON.stringify(flashcards));
+
+      populateSubjectDropdowns();
+      renderDashboardSubjects();
+      changeActiveSubject(id);
+      closeModal('modal-add-deck');
+
+      document.getElementById('new-deck-title').value = '';
+      document.getElementById('new-deck-desc').value = '';
+    }
+
+    /* ==========================================================================
+       QUIZ ENGINE
+       ========================================================================== */
+    function toggleQuizSource(val) {
+      const subGroup = document.getElementById('quiz-subject-group');
+      const customGroup = document.getElementById('quiz-custom-group');
+
+      if (val === 'custom') {
+        subGroup.classList.add('hidden');
+        customGroup.classList.remove('hidden');
+      } else {
+        subGroup.classList.remove('hidden');
+        customGroup.classList.add('hidden');
+      }
+    }
+
+    function populateCustomQuizDropdown() {
+      const select = document.getElementById('quiz-custom-select');
+      if (!select) return;
+      select.innerHTML = '';
+
+      if (customQuizzes.length === 0) {
+        const opt = document.createElement('option');
+        opt.value = "";
+        opt.innerText = "No hay cuestionarios personalizados creados";
+        select.appendChild(opt);
+        return;
+      }
+
+      customQuizzes.forEach((q, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.innerText = q.title;
+        select.appendChild(opt);
+      });
+    }
+
+    function startQuizEngine() {
+      const source = document.getElementById('quiz-source-select').value;
+      
+      if (source === 'custom') {
+        const selectedIdx = document.getElementById('quiz-custom-select').value;
+        if (selectedIdx === "" || !customQuizzes[selectedIdx]) {
+          return alert('Por favor crea o selecciona un cuestionario personalizado válido.');
+        }
+        activeQuizQuestions = customQuizzes[selectedIdx].questions;
+      } else {
+        const subId = document.getElementById('quiz-subject-select').value;
+        const pool = (QUIZ_QUESTIONS_POOL[currentLang] && QUIZ_QUESTIONS_POOL[currentLang][subId]) 
+                     ? QUIZ_QUESTIONS_POOL[currentLang][subId] 
+                     : null;
+
+        if (!pool || pool.length === 0) {
+          // Generate fallback quiz items from flashcards
+          const cards = flashcards[subId] || [];
+          if (cards.length === 0) return alert('No hay preguntas disponibles para esta materia. ¡Agrega tarjetas primero!');
+          
+          activeQuizQuestions = cards.map(c => ({
+            q: c.q,
+            options: [c.a, "Opción Incorrecta 1", "Opción Incorrecta 2", "Opción Incorrecta 3"],
+            correct: 0,
+            exp: c.a
+          }));
+        } else {
+          activeQuizQuestions = pool;
+        }
+      }
+
+      currentQuizIndex = 0;
+      quizScore = 0;
+
+      document.getElementById('quiz-setup-panel').classList.add('hidden');
+      document.getElementById('quiz-results-panel').classList.add('hidden');
+      document.getElementById('quiz-active-panel').classList.remove('hidden');
+
+      renderQuizQuestion();
+    }
+
+    function renderQuizQuestion() {
+      const qNumEl = document.getElementById('quiz-q-num');
+      const scoreBadge = document.getElementById('quiz-score-badge');
+      const qText = document.getElementById('quiz-question-text');
+      const optionsContainer = document.getElementById('quiz-options-container');
+      const feedbackBox = document.getElementById('quiz-feedback-box');
+      const nextBtn = document.getElementById('btn-next-quiz-q');
+
+      feedbackBox.classList.add('hidden');
+      nextBtn.classList.add('hidden');
+
+      const q = activeQuizQuestions[currentQuizIndex];
+      qNumEl.innerText = `Pregunta ${currentQuizIndex + 1} de ${activeQuizQuestions.length}`;
+      
+      const scorePattern = t('pointsLabel') || "Puntos: {score}";
+      scoreBadge.innerText = scorePattern.replace('{score}', quizScore);
+
+      qText.innerHTML = q.q;
+      renderMathInElement('quiz-question-text');
+
+      optionsContainer.innerHTML = '';
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = "w-full text-left p-3.5 rounded-xl border-2 border-amber-300 bg-white hover:bg-amber-50 font-semibold text-sm text-slate-800 transition cursor-pointer shadow-xs";
+        btn.innerHTML = `<span class="inline-block w-6 font-bold text-amber-700">${String.fromCharCode(65 + idx)}.</span> ${opt}`;
+        btn.onclick = () => checkQuizAnswer(idx);
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function checkQuizAnswer(selectedIdx) {
+      const q = activeQuizQuestions[currentQuizIndex];
+      const feedbackBox = document.getElementById('quiz-feedback-box');
+      const feedbackTitle = document.getElementById('quiz-feedback-title');
+      const feedbackBody = document.getElementById('quiz-feedback-body');
+      const nextBtn = document.getElementById('btn-next-quiz-q');
+
+      const optionBtns = document.getElementById('quiz-options-container').children;
+      for (let btn of optionBtns) {
+        btn.disabled = true;
+        btn.classList.add('opacity-70', 'cursor-not-allowed');
+      }
+
+      if (selectedIdx === q.correct) {
+        quizScore++;
+        optionBtns[selectedIdx].className = "w-full text-left p-3.5 rounded-xl border-2 border-emerald-500 bg-emerald-100 font-bold text-sm text-emerald-900 shadow-xs";
+        feedbackBox.className = "p-4 rounded-xl border-2 border-emerald-400 bg-emerald-50 text-sm space-y-1";
+        feedbackTitle.className = "font-bold text-emerald-800";
+        feedbackTitle.innerText = t('correctMsg');
+      } else {
+        optionBtns[selectedIdx].className = "w-full text-left p-3.5 rounded-xl border-2 border-rose-500 bg-rose-100 font-bold text-sm text-rose-900 shadow-xs";
+        optionBtns[q.correct].className = "w-full text-left p-3.5 rounded-xl border-2 border-emerald-500 bg-emerald-100 font-bold text-sm text-emerald-900 shadow-xs";
+        
+        feedbackBox.className = "p-4 rounded-xl border-2 border-rose-400 bg-rose-50 text-sm space-y-1";
+        feedbackTitle.className = "font-bold text-rose-800";
+        feedbackTitle.innerText = "❌ Incorrecto";
+      }
+
+      feedbackBody.innerHTML = `<strong>${t('histExplanation')}</strong> ${q.exp || q.options[q.correct]}`;
+      feedbackBox.classList.remove('hidden');
+      nextBtn.classList.remove('hidden');
+
+      renderMathInElement('quiz-feedback-body');
+    }
+
+    function nextQuizQuestion() {
+      currentQuizIndex++;
+      if (currentQuizIndex >= activeQuizQuestions.length) {
+        finishQuiz();
+      } else {
+        renderQuizQuestion();
+      }
+    }
+
+    function finishQuiz() {
+      document.getElementById('quiz-active-panel').classList.add('hidden');
+      document.getElementById('quiz-results-panel').classList.remove('hidden');
+
+      const scoreText = document.getElementById('quiz-final-score');
+      const encouragement = document.getElementById('quiz-encouragement');
+
+      const pattern = t('quizScoreText') || "Puntuación: {score} / {total}";
+      scoreText.innerText = pattern.replace('{score}', quizScore).replace('{total}', activeQuizQuestions.length);
+
+      if (quizScore === activeQuizQuestions.length) {
+        encouragement.innerText = t('quizEncouragementPerfect');
+      } else {
+        encouragement.innerText = t('quizEncouragementGood');
+      }
+
+      stats.quizzes++;
+      saveStats();
+      updateStatsUI();
+    }
+
+    function resetQuizState() {
+      document.getElementById('quiz-results-panel').classList.add('hidden');
+      document.getElementById('quiz-setup-panel').classList.remove('hidden');
+    }
+
+    function openCreateQuizModal() {
+      const container = document.getElementById('custom-quiz-questions-container');
+      container.innerHTML = '';
+      addQuizQuestionBuilderRow();
+      openModal('modal-create-quiz');
+    }
+
+    function addQuizQuestionBuilderRow() {
+      const container = document.getElementById('custom-quiz-questions-container');
+      const qIdx = container.children.length;
+
+      const div = document.createElement('div');
+      div.className = "p-4 border-2 border-amber-300 rounded-xl bg-notebook-card space-y-3 relative";
+      div.innerHTML = `
+        <div class="font-bold text-xs text-amber-800 uppercase">Pregunta #${qIdx + 1}</div>
+        <input type="text" class="builder-q w-full bg-white border border-amber-300 rounded-lg p-2 text-sm" placeholder="Texto de la pregunta">
+        <div class="grid grid-cols-2 gap-2">
+          <input type="text" class="builder-opt-0 w-full bg-white border border-emerald-400 rounded-lg p-2 text-xs font-semibold" placeholder="Opción A (Correcta)">
+          <input type="text" class="builder-opt-1 w-full bg-white border border-amber-200 rounded-lg p-2 text-xs" placeholder="Opción B (Incorrecta)">
+          <input type="text" class="builder-opt-2 w-full bg-white border border-amber-200 rounded-lg p-2 text-xs" placeholder="Opción C (Incorrecta)">
+          <input type="text" class="builder-opt-3 w-full bg-white border border-amber-200 rounded-lg p-2 text-xs" placeholder="Opción D (Incorrecta)">
+        </div>
+        <input type="text" class="builder-exp w-full bg-white border border-amber-200 rounded-lg p-2 text-xs" placeholder="Explicación educativa">
+      `;
+      container.appendChild(div);
+    }
+
+    function saveCustomQuiz() {
+      const title = document.getElementById('custom-quiz-title').value.trim();
+      if (!title) return alert('Ingresa un título para el cuestionario');
+
+      const container = document.getElementById('custom-quiz-questions-container');
+      const qRows = container.children;
+      const questions = [];
+
+      for (let row of qRows) {
+        const q = row.querySelector('.builder-q').value.trim();
+        const o0 = row.querySelector('.builder-opt-0').value.trim();
+        const o1 = row.querySelector('.builder-opt-1').value.trim();
+        const o2 = row.querySelector('.builder-opt-2').value.trim();
+        const o3 = row.querySelector('.builder-opt-3').value.trim();
+        const exp = row.querySelector('.builder-exp').value.trim();
+
+        if (q && o0 && o1) {
+          questions.push({
+            q,
+            options: [o0, o1, o2 || "Opción N/A", o3 || "Opción N/A"],
+            correct: 0,
+            exp
+          });
+        }
+      }
+
+      if (questions.length === 0) return alert('Añade al menos una pregunta válida');
+
+      customQuizzes.push({ title, questions });
+      localStorage.setItem('notebook_custom_quizzes', JSON.stringify(customQuizzes));
+
+      populateCustomQuizDropdown();
+      closeModal('modal-create-quiz');
+      document.getElementById('custom-quiz-title').value = '';
+    }
+
+    /* ==========================================================================
+       FOCUS TIMER (POMODORO)
+       ========================================================================== */
+    function toggleTimer() {
+      const btn = document.getElementById('timer-toggle-btn');
+      if (isTimerRunning) {
+        clearInterval(timerInterval);
+        isTimerRunning = false;
+        btn.innerHTML = '<i class="fa-solid fa-play ml-1"></i>';
+      } else {
+        isTimerRunning = true;
+        btn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+        timerInterval = setInterval(() => {
+          if (timerSeconds > 0) {
+            timerSeconds--;
+            updateTimerDisplay();
+          } else {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            btn.innerHTML = '<i class="fa-solid fa-play ml-1"></i>';
+            completedSessions++;
+            document.getElementById('completed-sessions-count').innerText = `${completedSessions} ${t('sessionsUnit') || 'sesiones'}`;
+            
+            stats.focusMinutes += 25;
+            saveStats();
+            updateStatsUI();
+            
+            alert('⏰ ¡Tiempo completado! Buen trabajo.');
+          }
+        }, 1000);
+      }
+    }
+
+    function resetTimer() {
+      clearInterval(timerInterval);
+      isTimerRunning = false;
+      timerSeconds = 25 * 60;
+      document.getElementById('timer-toggle-btn').innerHTML = '<i class="fa-solid fa-play ml-1"></i>';
+      document.getElementById('timer-mode').innerText = t('studySession');
+      updateTimerDisplay();
+    }
+
+    function setTimerMode(minutes, modeName) {
+      clearInterval(timerInterval);
+      isTimerRunning = false;
+      timerSeconds = minutes * 60;
+      document.getElementById('timer-toggle-btn').innerHTML = '<i class="fa-solid fa-play ml-1"></i>';
+      document.getElementById('timer-mode').innerText = modeName;
+      updateTimerDisplay();
+    }
+
+    function startSession25() {
+      switchTab('timer');
+      setTimerMode(25, t('studySession'));
+    }
+
+    function updateTimerDisplay() {
+      const mins = Math.floor(timerSeconds / 60);
+      const secs = timerSeconds % 60;
+      document.getElementById('timer-display').innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    /* ==========================================================================
+       THEME CUSTOMIZER
+       ========================================================================== */
+    function openThemeModal() { openModal('modal-theme-settings'); }
+
+    function applyThemePreset(presetKey) {
+      if (THEME_PRESETS[presetKey]) {
+        themeConfig = { ...THEME_PRESETS[presetKey] };
+        saveThemeConfig();
+        applyThemeConfig();
+      }
+    }
+
+    function setThemePattern(pattern) {
+      themeConfig.pattern = pattern;
+      saveThemeConfig();
+      applyThemeConfig();
+    }
+
+    function toggleMarginLine(show) {
+      themeConfig.margin = show;
+      saveThemeConfig();
+      applyThemeConfig();
+    }
+
+    function toggleBinder(show) {
+      themeConfig.binder = show;
+      saveThemeConfig();
+      applyThemeConfig();
+    }
+
+    function toggleVignette(show) {
+      themeConfig.vignette = show;
+      saveThemeConfig();
+      applyThemeConfig();
+    }
+
+    function updateCustomColors() {
+      themeConfig.bg = document.getElementById('picker-bg').value;
+      themeConfig.lines = document.getElementById('picker-lines').value;
+      themeConfig.headerBg = document.getElementById('picker-header').value;
+      
+      document.getElementById('picker-bg-hex').innerText = themeConfig.bg;
+      document.getElementById('picker-lines-hex').innerText = themeConfig.lines;
+      document.getElementById('picker-header-hex').innerText = themeConfig.headerBg;
+
+      saveThemeConfig();
+      applyThemeConfig();
+    }
+
+    function resetThemeToDefault() {
+      themeConfig = { ...THEME_PRESETS.classic };
+      saveThemeConfig();
+      applyThemeConfig();
+    }
+
+    function saveThemeConfig() {
+      localStorage.setItem('notebook_theme_config', JSON.stringify(themeConfig));
+    }
+
+    function applyThemeConfig() {
+      const container = document.getElementById('main-notebook-container');
+      const header = document.getElementById('notebook-header');
+      const binder = document.getElementById('spiral-binder-aside');
+
+      if (!container) return;
+
+      container.style.setProperty('--theme-bg', themeConfig.bg);
+      container.style.setProperty('--theme-lines', themeConfig.lines);
+      if (header) header.style.backgroundColor = themeConfig.headerBg;
+
+      container.className = `flex-1 flex flex-col max-w-7xl mx-auto w-full min-h-screen lined-paper pattern-${themeConfig.pattern} shadow-2xl relative border-l-0 md:border-l border-amber-300`;
+      
+      if (themeConfig.margin) container.classList.add('show-margin');
+      if (themeConfig.vignette) container.classList.add('paper-vignette');
+      
+      if (binder) {
+        if (themeConfig.binder) binder.classList.remove('hidden');
+        else binder.classList.add('hidden');
+      }
+
+      document.getElementById('toggle-margin').checked = themeConfig.margin;
+      document.getElementById('toggle-binder').checked = themeConfig.binder;
+      document.getElementById('toggle-vignette').checked = themeConfig.vignette;
+    }
+
+    /* ==========================================================================
+       STATS & STREAK
+       ========================================================================== */
+    function checkStreak() {
+      const today = new Date().toDateString();
+      if (stats.lastLogin !== today) {
+        const last = new Date(stats.lastLogin);
+        const now = new Date();
+        const diffDays = Math.round((now - last) / (1000 * 3600 * 24));
+        
+        if (diffDays === 1) stats.streak++;
+        else if (diffDays > 1) stats.streak = 1;
+        
+        stats.lastLogin = today;
+        saveStats();
+      }
+    }
+
+    function saveStats() {
+      localStorage.setItem('notebook_stats', JSON.stringify(stats));
+    }
+
+    function updateStatsUI() {
+      const sUnit = stats.streak === 1 ? (t('dayUnit') || 'Día') : (t('daysUnit') || 'Días');
+      document.getElementById('stat-streak').innerText = `${stats.streak} ${sUnit}`;
+      document.getElementById('stat-quizzes').innerText = stats.quizzes;
+      document.getElementById('stat-cards').innerText = stats.cardsReviewed;
+      document.getElementById('stat-time').innerText = `${stats.focusMinutes} min`;
+    }
+
+    /* ==========================================================================
+       UTILITY / MODAL HANDLERS
+       ========================================================================== */
+    function openModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('hidden');
+    }
+
+    function closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('hidden');
+    }
+  </script>
+</body>
+</html>

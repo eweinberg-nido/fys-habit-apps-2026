@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusFlow - Mindful Focus Workspace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#2563eb',
+                            600: '#1d4ed8',
+                            700: '#1e40af',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.35s ease, color 0.35s ease;
+        }
+
+        /* Dynamic Theme Palette - Enhanced Colors */
+        body.theme-minimal { background-color: #f1f5f9; color: #0f172a; }
+        .dark body.theme-minimal { background-color: #151d2a; color: #f1f5f9; }
+
+        body.theme-cherry { background-color: #fce7f3; color: #701a35; }
+        .dark body.theme-cherry { background-color: #2e101a; color: #ffe4e6; }
+
+        body.theme-electric { background-color: #e0e7ff; color: #1e1b4b; }
+        .dark body.theme-electric { background-color: #151933; color: #f8fafc; }
+
+        body.theme-forest { background-color: #dcfce7; color: #064e3b; }
+        .dark body.theme-forest { background-color: #0c2e21; color: #ecfdf5; }
+
+        /* Progress Ring Animation */
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.3s ease;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        /* Card container styling */
+        .app-card {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 1.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
+        }
+        .dark .app-card {
+            background-color: #111827;
+            border-color: #1f2937;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Nav Pills active style */
+        .nav-pill-active {
+            background-color: #2563eb !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        }
+        .dark .nav-pill-active {
+            background-color: #3b82f6 !important;
+            color: #ffffff !important;
+        }
+
+        /* Custom input style */
+        .clean-input {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            transition: all 0.2s ease;
+        }
+        .clean-input:focus-within, .clean-input:focus {
+            border-color: #3b82f6;
+            background-color: #ffffff;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .dark .clean-input {
+            background-color: #1f2937;
+            border-color: #374151;
+            color: #f9fafb;
+        }
+        .dark .clean-input:focus-within, .dark .clean-input:focus {
+            border-color: #60a5fa;
+            background-color: #111827;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.3); border-radius: 99px; }
+    </style>
+</head>
+<body class="theme-minimal bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen flex flex-col max-w-full overflow-x-hidden selection:bg-blue-100 selection:text-blue-800">
+
+    <header class="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 w-full overflow-x-hidden">
+        <div class="max-w-6xl mx-auto px-3 sm:px-6 w-full">
+            <div class="flex flex-wrap lg:flex-nowrap items-center justify-between min-h-[4.5rem] py-2 gap-3">
+                
+                <!-- Brand Logo -->
+                <div class="flex items-center gap-3 shrink-0">
+                    <button onclick="switchMode('home')" class="flex items-center gap-2.5 text-left group">
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-tr from-cyan-400 to-blue-600 text-white flex items-center justify-center font-black text-base sm:text-lg shadow-md shadow-blue-500/20 group-hover:scale-105 transition-all">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white leading-none">FocusFlow</span>
+                            <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-cyan-600 dark:text-cyan-400 mt-0.5">MINDFUL FOCUS</span>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Desktop Navigation Bar -->
+                <nav class="hidden lg:flex items-center gap-1 bg-slate-100/80 dark:bg-slate-800/80 p-1 rounded-full border border-slate-200/70 dark:border-slate-700/70 text-xs font-bold">
+                    <button id="nav-btn-home" onclick="switchMode('home')" class="px-3.5 py-1.5 rounded-full transition-all flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
+                        <i class="fa-solid fa-house"></i>
+                        <span>Home</span>
+                    </button>
+                    <button id="nav-btn-timer" onclick="switchMode('timer')" class="px-3.5 py-1.5 rounded-full transition-all flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
+                        <i class="fa-solid fa-stopwatch"></i>
+                        <span>Focus Timer</span>
+                    </button>
+                    <button id="nav-btn-planner" onclick="switchMode('planner')" class="px-3.5 py-1.5 rounded-full transition-all flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
+                        <i class="fa-regular fa-calendar-check"></i>
+                        <span>Day Planner</span>
+                    </button>
+                    <button id="nav-btn-urge" onclick="switchMode('urge')" class="px-3.5 py-1.5 rounded-full transition-all flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
+                        <i class="fa-solid fa-brain"></i>
+                        <span>Reflection</span>
+                    </button>
+                    <button id="nav-btn-timebank" onclick="switchMode('timebank')" class="px-3.5 py-1.5 rounded-full transition-all flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white">
+                        <i class="fa-solid fa-gamepad"></i>
+                        <span>Gaming Vault</span>
+                    </button>
+                </nav>
+
+                <!-- Header Actions -->
+                <div class="flex items-center gap-2 shrink-0">
+                    
+                    <!-- Ambient Sound Selector -->
+                    <div class="hidden md:flex items-center gap-1 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-full border border-slate-200 dark:border-slate-700">
+                        <select id="header-sound-select" onchange="changeSoundscape(this.value)" class="bg-transparent text-slate-700 dark:text-slate-200 text-xs font-bold px-1.5 py-0.5 focus:outline-none cursor-pointer">
+                            <option value="none">Audio Off</option>
+                            <option value="rain">Gentle Rain</option>
+                            <option value="brown">Deep Brown Noise</option>
+                            <option value="binaural">432Hz Focus Tone</option>
+                        </select>
+                        <button id="header-sound-toggle" onclick="toggleSoundscape()" class="w-5 h-5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center hover:bg-blue-500/20 transition text-[9px]">
+                            <i class="fa-solid fa-play" id="header-sound-icon"></i>
+                        </button>
+                    </div>
+
+                    <!-- Theme Selector Dropdown -->
+                    <div class="relative">
+                        <select id="bg-theme-select" onchange="changeBgTheme(this.value)" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold px-2.5 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 focus:outline-none cursor-pointer hover:border-blue-400 transition">
+                            <option value="minimal">Minimal Theme</option>
+                            <option value="cherry">Cherry Blossom</option>
+                            <option value="electric">Electric Cyber</option>
+                            <option value="forest">Forest Serenity</option>
+                        </select>
+                    </div>
+
+                    <!-- Gaming Credits Badge -->
+                    <button onclick="switchMode('timebank')" class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 rounded-full text-emerald-700 dark:text-emerald-300 text-xs font-bold hover:bg-emerald-100/80 transition" title="View Gaming Credits">
+                        <i class="fa-solid fa-gamepad text-emerald-500 text-xs"></i>
+                        <span id="header-time-bank-credits">0m</span>
+                    </button>
+
+                    <!-- Dark Mode Toggle Circle -->
+                    <button onclick="toggleDarkMode()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 flex items-center justify-center transition border border-slate-200 dark:border-slate-700" title="Toggle Light / Dark Mode">
+                        <i class="fa-solid fa-moon text-xs" id="theme-toggle-icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-6 py-6 space-y-6 overflow-x-hidden">
+
+        <!-- Mobile Navigation Bar -->
+        <section class="lg:hidden app-card p-1.5">
+            <div class="grid grid-cols-5 gap-1 text-center text-[10px] font-bold">
+                <button id="mobile-nav-btn-home" onclick="switchMode('home')" class="p-2 rounded-xl transition flex flex-col items-center gap-1">
+                    <i class="fa-solid fa-house text-xs"></i> <span>Home</span>
+                </button>
+                <button id="mobile-nav-btn-timer" onclick="switchMode('timer')" class="p-2 rounded-xl transition flex flex-col items-center gap-1">
+                    <i class="fa-solid fa-stopwatch text-xs"></i> <span>Timer</span>
+                </button>
+                <button id="mobile-nav-btn-planner" onclick="switchMode('planner')" class="p-2 rounded-xl transition flex flex-col items-center gap-1">
+                    <i class="fa-regular fa-calendar-check text-xs"></i> <span>Planner</span>
+                </button>
+                <button id="mobile-nav-btn-urge" onclick="switchMode('urge')" class="p-2 rounded-xl transition flex flex-col items-center gap-1">
+                    <i class="fa-solid fa-brain text-xs"></i> <span>Reflect</span>
+                </button>
+                <button id="mobile-nav-btn-timebank" onclick="switchMode('timebank')" class="p-2 rounded-xl transition flex flex-col items-center gap-1">
+                    <i class="fa-solid fa-gamepad text-xs"></i> <span>Vault</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Day Planner Workspace -->
+        <section id="workspace-planner" class="tool-workspace space-y-6">
+            
+            <!-- Header Banner Card -->
+            <div class="bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900/60 p-5 sm:p-6 rounded-2xl flex items-center gap-4">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-bold text-lg sm:text-xl shadow-md shrink-0">
+                    <i class="fa-regular fa-calendar-check"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Day Schedule & Free Time Planner</h1>
+                    <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">Set your arrival home, bedtime, and estimated routine time to calculate exact free downtime.</p>
+                </div>
+            </div>
+
+            <!-- Main Schedule Card -->
+            <div class="app-card p-5 sm:p-7 space-y-7">
+                
+                <!-- Arrival Home & Bedtime Inputs -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="clean-input p-4 space-y-1">
+                        <label class="text-[11px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-house-user text-indigo-500"></i> Arrival Home Time
+                        </label>
+                        <div class="flex items-center justify-between">
+                            <input type="time" id="planner-arrival-time" value="15:30" onchange="updateFreeTimeCalc()" class="bg-transparent font-extrabold text-lg sm:text-xl text-slate-800 dark:text-slate-100 focus:outline-none w-full cursor-pointer">
+                            <i class="fa-regular fa-clock text-slate-400 text-sm pl-2"></i>
+                        </div>
+                    </div>
+
+                    <div class="clean-input p-4 space-y-1">
+                        <label class="text-[11px] font-black text-slate-400 dark:text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-bed text-purple-500"></i> Target Bedtime
+                        </label>
+                        <div class="flex items-center justify-between">
+                            <input type="time" id="planner-bedtime" value="22:00" onchange="updateFreeTimeCalc()" class="bg-transparent font-extrabold text-lg sm:text-xl text-slate-800 dark:text-slate-100 focus:outline-none w-full cursor-pointer">
+                            <i class="fa-regular fa-clock text-slate-400 text-sm pl-2"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estimated Routine Time Section -->
+                <div class="p-5 rounded-2xl bg-slate-50/90 dark:bg-slate-900/80 border border-slate-200/70 dark:border-slate-800 space-y-2">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                            <h3 class="text-sm font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                                <i class="fa-solid fa-arrows-spin text-amber-500"></i> Estimated Routine & Break Time
+                            </h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Total estimated minutes for non-study activities (dinner, shower, chores, family breaks).</p>
+                        </div>
+                        <div class="clean-input px-3 py-2 flex items-center gap-2 shrink-0">
+                            <input type="number" id="planner-routine-mins" value="75" min="0" max="480" step="5" onchange="updateFreeTimeCalc()" oninput="updateFreeTimeCalc()" class="bg-transparent text-sm font-extrabold text-center text-slate-800 dark:text-slate-100 focus:outline-none w-16">
+                            <span class="text-xs font-bold text-slate-400">mins</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4 Summary Stat Cards Row -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                    
+                    <div class="p-4 rounded-2xl bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800 space-y-1">
+                        <span class="text-[10px] font-black uppercase tracking-wider text-slate-400 block">HOME WINDOW</span>
+                        <span id="stat-total-window" class="text-xl sm:text-2xl font-black text-slate-800 dark:text-slate-100">6h 30m</span>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-amber-50/60 dark:bg-amber-950/30 border border-amber-100/70 dark:border-amber-900/50 space-y-1">
+                        <span class="text-[10px] font-black uppercase tracking-wider text-amber-500 dark:text-amber-400 block">ROUTINES</span>
+                        <span id="stat-routines-time" class="text-xl sm:text-2xl font-black text-amber-600 dark:text-amber-400">1h 15m</span>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100/70 dark:border-indigo-900/50 space-y-1">
+                        <span class="text-[10px] font-black uppercase tracking-wider text-indigo-500 dark:text-indigo-400 block">PLANNED WORK</span>
+                        <span id="stat-planned-work" class="text-xl sm:text-2xl font-black text-indigo-600 dark:text-indigo-400">1h 15m</span>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-100/70 dark:border-emerald-900/50 space-y-1">
+                        <span class="text-[10px] font-black uppercase tracking-wider text-emerald-500 dark:text-emerald-400 block">FREE TIME</span>
+                        <span id="stat-free-time" class="text-xl sm:text-2xl font-black text-emerald-500 dark:text-emerald-400">4h 00m</span>
+                    </div>
+
+                </div>
+
+                <!-- Segmented Progress Bar -->
+                <div class="space-y-2">
+                    <div class="flex flex-wrap justify-between text-xs font-bold gap-1">
+                        <div class="flex items-center gap-3">
+                            <span class="flex items-center gap-1 text-amber-600 dark:text-amber-400"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span> Routines</span>
+                            <span class="flex items-center gap-1 text-indigo-600 dark:text-indigo-400"><span class="w-2.5 h-2.5 rounded-full bg-indigo-600 inline-block"></span> Homework</span>
+                            <span class="flex items-center gap-1 text-emerald-500"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block"></span> Free Time</span>
+                        </div>
+                        <span id="pct-free-time-label" class="text-emerald-500 font-extrabold">61% free play left</span>
+                    </div>
+                    <div class="w-full h-3.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden flex">
+                        <div id="progress-routine-bar" class="h-full bg-amber-500 transition-all duration-300" style="width: 20%;"></div>
+                        <div id="progress-work-bar" class="h-full bg-indigo-600 transition-all duration-300" style="width: 20%;"></div>
+                        <div id="progress-free-bar" class="h-full bg-emerald-400 transition-all duration-300" style="width: 60%;"></div>
+                    </div>
+                </div>
+
+                <!-- Add Assignment Form -->
+                <form onsubmit="handleAddTask(event)" class="flex flex-col sm:flex-row gap-3">
+                    <div class="clean-input flex-1 px-4 py-3 flex items-center">
+                        <input type="text" id="planner-task-name" placeholder="Add assignment or homework task..." required class="bg-transparent text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-100 focus:outline-none w-full">
+                    </div>
+                    
+                    <div class="clean-input px-3 py-2 flex items-center gap-2 justify-between shrink-0">
+                        <input type="number" id="planner-task-mins" value="30" min="5" max="300" step="5" class="bg-transparent text-xs sm:text-sm font-bold text-center text-slate-800 dark:text-slate-100 focus:outline-none w-14 sm:w-16">
+                        <span class="text-xs text-slate-400 font-bold">mins</span>
+                    </div>
+
+                    <button type="submit" class="px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs sm:text-sm transition shadow-md flex items-center justify-center gap-2 shrink-0">
+                        <i class="fa-solid fa-plus"></i> Add Homework
+                    </button>
+                </form>
+
+                <!-- Homework Tasks List -->
+                <div id="planner-task-list" class="space-y-3">
+                    <!-- Tasks dynamically generated here -->
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Home Landing Workspace -->
+        <section id="workspace-home" class="tool-workspace hidden space-y-8">
+            <div class="app-card p-10 sm:p-14 text-center space-y-6 bg-gradient-to-br from-blue-50/50 via-indigo-50/30 to-purple-50/50 dark:from-slate-900 dark:to-slate-950">
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-black uppercase tracking-wider border border-blue-200/50">
+                    <i class="fa-solid fa-feather text-blue-500"></i> Low Friction Workspace
+                </div>
+                <h1 class="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
+                    Let's start small today.
+                </h1>
+                <p class="text-sm sm:text-base text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed font-medium">
+                    Studying doesn't have to feel like an impossible chore. FocusFlow gives you micro-tools designed to beat procrastination without stress, guilt, or overwhelm.
+                </p>
+                <div class="pt-2 flex flex-wrap items-center justify-center gap-4">
+                    <button onclick="startSmallTimer()" class="px-8 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-sm shadow-md transition flex items-center gap-2">
+                        <i class="fa-solid fa-bolt"></i> Start with 5 Minutes
+                    </button>
+                    <button onclick="switchMode('urge')" class="px-8 py-3.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 font-extrabold text-sm hover:bg-slate-50 transition shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-brain text-purple-500"></i> Mindful Reflection
+                    </button>
+                </div>
+            </div>
+
+            <!-- AI Task Deconstructor Card -->
+            <div class="app-card p-8 space-y-6 border-blue-200/60 dark:border-blue-900/50">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold text-lg shadow">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-black text-slate-900 dark:text-white">AI Micro-Task Breakdown</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Have a large assignment? Let AI slice it into easy 10-minute micro-steps.</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <div class="clean-input flex-1 px-4 py-3 flex items-center">
+                        <input type="text" id="ai-task-input" placeholder="e.g., Write a 500 word essay on World War 2..." class="bg-transparent text-sm font-medium text-slate-800 dark:text-slate-100 focus:outline-none w-full">
+                    </div>
+                    <button onclick="breakdownTaskWithAI()" id="ai-breakdown-btn" class="px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm transition shadow-md flex items-center justify-center gap-2 shrink-0">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Deconstruct Task
+                    </button>
+                </div>
+
+                <div id="ai-task-output" class="hidden p-5 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 space-y-3 text-sm">
+                    <div class="font-bold text-slate-800 dark:text-slate-200 flex items-center justify-between">
+                        <span><i class="fa-solid fa-list-check text-blue-500 mr-2"></i> Suggested Micro Steps:</span>
+                        <button onclick="addAiStepsToPlanner()" class="text-xs font-extrabold text-blue-600 hover:underline">
+                            + Add All To Day Planner
+                        </button>
+                    </div>
+                    <ul id="ai-steps-list" class="space-y-2 text-slate-600 dark:text-slate-300 list-disc list-inside text-xs sm:text-sm"></ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Focus Timer Workspace -->
+        <section id="workspace-timer" class="tool-workspace hidden space-y-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <div class="lg:col-span-8 app-card p-8 text-center space-y-6">
+                    
+                    <!-- Start Small Warmup Banner -->
+                    <div class="space-y-1.5 bg-amber-50/80 dark:bg-amber-950/40 p-4 rounded-2xl border border-amber-200/60 dark:border-amber-900/40 max-w-lg mx-auto">
+                        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-black uppercase">
+                            <i class="fa-solid fa-bolt"></i> Low Willpower Warmup
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
+                            Work for just 5 minutes.
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                            Commit to doing just 5 minutes of work. When time is up, you have full permission to stop with zero guilt.
+                        </p>
+                    </div>
+
+                    <!-- Presets Nav Pills -->
+                    <div class="inline-flex p-1 bg-slate-100 dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 text-xs font-bold gap-1">
+                        <button id="preset-btn-5" onclick="setTimerDuration(5)" class="timer-preset-btn px-4 py-2 rounded-full transition bg-blue-600 text-white font-extrabold">5m Start Small</button>
+                        <button id="preset-btn-15" onclick="setTimerDuration(15)" class="timer-preset-btn px-4 py-2 rounded-full transition text-slate-600 dark:text-slate-300">15m Steady</button>
+                        <button id="preset-btn-25" onclick="setTimerDuration(25)" class="timer-preset-btn px-4 py-2 rounded-full transition text-slate-600 dark:text-slate-300">25m Deep Work</button>
+                    </div>
+
+                    <div class="max-w-md mx-auto clean-input px-4 py-3">
+                        <input type="text" id="focus-task-title" placeholder="What task are you focusing on?" class="w-full bg-transparent text-sm font-bold text-center focus:outline-none dark:text-white">
+                    </div>
+
+                    <!-- SVG Circular Timer -->
+                    <div class="relative w-64 h-64 sm:w-72 sm:h-72 mx-auto flex items-center justify-center my-2">
+                        <svg class="w-full h-full" viewBox="0 0 100 100">
+                            <circle class="text-slate-100 dark:text-slate-800" stroke-width="5" stroke="currentColor" fill="transparent" r="43" cx="50" cy="50"/>
+                            <circle id="focus-progress-circle" class="progress-ring__circle text-blue-600" stroke-width="5" stroke-dasharray="270" stroke-dashoffset="0" stroke-linecap="round" stroke="currentColor" fill="transparent" r="43" cx="50" cy="50"/>
+                        </svg>
+                        <div class="absolute text-center flex flex-col items-center">
+                            <span id="focus-timer-display" class="text-5xl sm:text-6xl font-black text-slate-900 dark:text-white">05:00</span>
+                            <span id="focus-timer-status" class="text-xs font-extrabold text-blue-600 dark:text-blue-400 uppercase tracking-widest mt-2">Ready to Focus</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-center gap-3">
+                        <button id="focus-start-btn" onclick="toggleFocusTimer()" class="px-10 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-sm shadow-md transition">
+                            <i class="fa-solid fa-play mr-2"></i> Start Focus
+                        </button>
+                        <button onclick="resetFocusTimer()" class="p-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold hover:bg-slate-200 transition">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </button>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs max-w-sm mx-auto text-left">
+                        <div class="flex items-center gap-2.5">
+                            <i class="fa-solid fa-shield-halved text-blue-500 text-base"></i>
+                            <div>
+                                <span class="font-bold text-slate-800 dark:text-slate-200 block">Tab Switch Shield</span>
+                                <span class="text-slate-400">Track focus interruptions</span>
+                            </div>
+                        </div>
+                        <input type="checkbox" id="tab-shield-toggle" class="w-4 h-4 accent-blue-600 rounded cursor-pointer" checked>
+                    </div>
+
+                </div>
+
+                <div class="lg:col-span-4 space-y-6">
+                    <div class="app-card p-6 space-y-4">
+                        <h3 class="text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-chart-simple text-blue-500"></i> Sprint Stats
+                        </h3>
+                        <div class="grid grid-cols-2 gap-3 text-center">
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+                                <span class="text-[10px] text-slate-400 font-bold block uppercase">Today's Focus</span>
+                                <span id="stat-minutes-today" class="text-2xl font-black text-blue-600">0m</span>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
+                                <span class="text-[10px] text-slate-400 font-bold block uppercase">Tab Switches</span>
+                                <span id="stat-tab-switches" class="text-2xl font-black text-amber-500">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Reflection Workspace -->
+        <section id="workspace-urge" class="tool-workspace hidden space-y-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- Procrastination Reflection Tool -->
+                <div class="app-card p-7 space-y-5">
+                    <div>
+                        <h2 class="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+                            <i class="fa-solid fa-brain text-purple-500"></i> Procrastination Self-Reflection
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Reflect on why you're delaying and reframe your mindset to realize starting now is better.</p>
+                    </div>
+
+                    <!-- Reflective Questions List -->
+                    <div class="p-4 rounded-xl bg-purple-50/70 dark:bg-purple-950/30 border border-purple-100 dark:border-purple-900/40 space-y-2">
+                        <span class="text-[11px] font-black uppercase text-purple-600 dark:text-purple-400 tracking-wider block">Questions to Ask Yourself:</span>
+                        <ul class="text-xs text-slate-700 dark:text-slate-300 space-y-1.5 list-disc list-inside font-medium">
+                            <li>What specifically feels overwhelming or hard about starting right now?</li>
+                            <li>Am I expecting perfection instead of just making progress?</li>
+                            <li>How will I feel 1 hour from now if I start now vs. if I delay?</li>
+                            <li>What is the absolute smallest action I can take in just 5 minutes?</li>
+                        </ul>
+                    </div>
+
+                    <!-- Reflection Text Input -->
+                    <div class="space-y-3">
+                        <label class="text-[11px] font-black uppercase text-slate-400 tracking-wider block">Your Reflection & Realization:</label>
+                        <textarea id="reflection-textarea" rows="3" placeholder="Write down your reflection (e.g., 'I'm delaying because it feels long, but doing just 5 minutes will get it off my mind and make me feel relieved...')" class="clean-input w-full p-3 text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-100 focus:outline-none resize-none"></textarea>
+                        
+                        <button onclick="saveReflection()" class="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-extrabold text-xs transition flex items-center justify-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-lightbulb"></i> Save Reflection & Build Momentum
+                        </button>
+                    </div>
+
+                    <!-- Saved Realization Banner -->
+                    <div id="reflection-banner" class="hidden p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-xs space-y-2">
+                        <div class="font-extrabold flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-check text-emerald-500"></i> Mindset Reframed!
+                        </div>
+                        <p id="reflection-saved-text" class="italic text-slate-600 dark:text-slate-300 font-medium"></p>
+                        <button onclick="startSmallTimer()" class="px-4 py-2 rounded-lg bg-emerald-600 text-white font-extrabold text-xs hover:bg-emerald-700 transition inline-flex items-center gap-1.5 mt-1">
+                            <i class="fa-solid fa-play"></i> Start 5-Minute Timer Now
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Guided Calm Breathing Ring -->
+                <div class="app-card p-7 text-center space-y-6 flex flex-col justify-between">
+                    <div>
+                        <h2 class="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-wind text-cyan-500"></i> 1-Minute Mindful Reset
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Reset stress or anxiety with rhythmic breathing before starting your 5-minute focus.</p>
+                    </div>
+
+                    <div class="relative w-40 h-40 mx-auto flex items-center justify-center">
+                        <div id="breath-circle-outer" class="absolute w-32 h-32 rounded-full bg-cyan-400/20 transition-all duration-1000 ease-in-out"></div>
+                        <div id="breath-circle-inner" class="w-24 h-24 rounded-full bg-cyan-500 text-white flex items-center justify-center font-bold text-xs shadow-md z-10">
+                            <span id="breath-status-text">Breathe</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <button id="breath-start-btn" onclick="toggleUrgeSurfer()" class="px-6 py-2.5 rounded-xl bg-slate-900 dark:bg-slate-100 dark:text-slate-900 text-white font-extrabold text-xs transition">
+                            Start 60s Breathing
+                        </button>
+                        <p id="breath-countdown" class="text-xs font-bold text-cyan-600">Ready</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Time Bank Workspace -->
+        <section id="workspace-timebank" class="tool-workspace hidden space-y-8">
+            <div class="app-card p-10 text-center space-y-6 bg-gradient-to-br from-emerald-50/60 to-teal-50/40 dark:from-slate-900 dark:to-slate-950">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-xs font-black uppercase">
+                    <i class="fa-solid fa-piggy-bank"></i> Guilt-Free Gaming Vault
+                </div>
+
+                <div class="space-y-1">
+                    <span class="text-xs text-slate-400 font-bold block uppercase">Available Gaming Credits</span>
+                    <h2 id="bank-credits-display" class="text-4xl sm:text-6xl font-black text-emerald-600 dark:text-emerald-400">0 Minutes</h2>
+                    <p class="text-xs text-slate-500 max-w-md mx-auto pt-1">
+                        Earned from completed focus sprints! Spend these credits guilt-free on gaming, videos, or scrolling.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left max-w-4xl mx-auto pt-4">
+                    
+                    <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <i class="fa-solid fa-gamepad text-2xl text-emerald-500"></i>
+                            <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 font-black text-xs">20 Mins</span>
+                        </div>
+                        <div>
+                            <h4 class="font-extrabold text-sm text-slate-800 dark:text-slate-100">Gaming Session</h4>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Play your favorite game guilt-free.</p>
+                        </div>
+                        <button onclick="redeemCredit(20, '20 Min Gaming Session')" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs transition">
+                            Redeem
+                        </button>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <i class="fa-solid fa-tv text-2xl text-emerald-500"></i>
+                            <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 font-black text-xs">30 Mins</span>
+                        </div>
+                        <div>
+                            <h4 class="font-extrabold text-sm text-slate-800 dark:text-slate-100">Watch Episode</h4>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Enjoy one anime or show episode.</p>
+                        </div>
+                        <button onclick="redeemCredit(30, '30 Min Show Episode')" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs transition">
+                            Redeem
+                        </button>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3 shadow-sm">
+                        <div class="flex items-center justify-between">
+                            <i class="fa-solid fa-mug-hot text-2xl text-emerald-500"></i>
+                            <span class="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 font-black text-xs">15 Mins</span>
+                        </div>
+                        <div>
+                            <h4 class="font-extrabold text-sm text-slate-800 dark:text-slate-100">Snack Break</h4>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Grab a treat and recharge.</p>
+                        </div>
+                        <button onclick="redeemCredit(15, '15 Min Snack Break')" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs transition">
+                            Redeem
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Custom Toast Container -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        // Core Application State
+        const state = {
+            mode: 'planner',
+            theme: 'minimal',
+            darkMode: false,
+            timeBankCredits: 0,
+            todayFocusMinutes: 0,
+            tabSwitches: 0,
+            
+            // Focus Timer (Default 5 min Start Small)
+            focusDurationMins: 5,
+            focusTimeRemaining: 5 * 60,
+            focusInterval: null,
+            focusIsRunning: false,
+
+            // Day Planner Tasks
+            plannerTasks: [
+                { id: '1', title: 'Math / Science Homework', mins: 45, completed: false },
+                { id: '2', title: 'Reading & Writing Draft', mins: 30, completed: false }
+            ],
+
+            // Breathing / Urge Surfer state
+            breathInterval: null,
+            breathTimeLeft: 60,
+            breathIsRunning: false,
+
+            // Audio Context
+            audioCtx: null,
+            audioNode: null,
+            isAudioPlaying: false
+        };
+
+        // Utility: Escape HTML
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, function(m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+            });
+        }
+
+        // Toast Notification Display
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            const bgClass = type === 'success' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-white';
+            const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-info';
+
+            toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-lg font-bold text-xs ${bgClass} transition-all duration-300 transform translate-y-4 opacity-0`;
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${escapeHtml(message)}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-4', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Navigation Switching
+        function switchMode(targetMode) {
+            state.mode = targetMode;
+
+            document.querySelectorAll('.tool-workspace').forEach(el => el.classList.add('hidden'));
+            const targetEl = document.getElementById(`workspace-${targetMode}`);
+            if (targetEl) targetEl.classList.remove('hidden');
+
+            const navIds = ['home', 'timer', 'planner', 'urge', 'timebank'];
+            
+            navIds.forEach(id => {
+                const btn = document.getElementById(`nav-btn-${id}`);
+                const mBtn = document.getElementById(`mobile-nav-btn-${id}`);
+                const isActive = (id === targetMode);
+
+                if (btn) {
+                    if (isActive) {
+                        btn.className = 'px-3.5 py-1.5 rounded-full transition-all flex items-center gap-1.5 bg-blue-600 text-white font-extrabold shadow-sm';
+                    } else {
+                        btn.className = 'px-3.5 py-1.5 rounded-full transition-all flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-700/50';
+                    }
+                }
+
+                if (mBtn) {
+                    if (isActive) {
+                        mBtn.className = 'p-2 rounded-xl bg-blue-600 text-white font-black flex flex-col items-center gap-1 shadow-sm';
+                    } else {
+                        mBtn.className = 'p-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex flex-col items-center gap-1';
+                    }
+                }
+            });
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Theme and Dark Mode Controllers
+        function changeBgTheme(themeName) {
+            state.theme = themeName;
+            document.body.className = `theme-${themeName} ${state.darkMode ? 'dark' : ''} bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen flex flex-col max-w-full overflow-x-hidden selection:bg-blue-100 selection:text-blue-800`;
+        }
+
+        function toggleDarkMode() {
+            state.darkMode = !state.darkMode;
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-toggle-icon');
+
+            if (state.darkMode) {
+                html.classList.add('dark');
+                if (icon) icon.className = 'fa-solid fa-sun text-xs text-amber-400';
+            } else {
+                html.classList.remove('dark');
+                if (icon) icon.className = 'fa-solid fa-moon text-xs';
+            }
+            changeBgTheme(state.theme);
+        }
+
+        // Day Planner Tasks Engine
+        function renderPlannerTasks() {
+            const listEl = document.getElementById('planner-task-list');
+            if (!listEl) return;
+
+            if (state.plannerTasks.length === 0) {
+                listEl.innerHTML = `<div class="text-center py-6 text-slate-400 text-xs font-medium border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl">No homework tasks added yet. Add one above!</div>`;
+                return;
+            }
+
+            listEl.innerHTML = state.plannerTasks.map(task => `
+                <div class="flex items-center justify-between p-3.5 sm:p-4 rounded-2xl border ${task.completed ? 'bg-slate-50/50 dark:bg-slate-900/40 border-slate-200/50 dark:border-slate-800/50 opacity-60' : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 shadow-sm'} transition">
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" ${task.completed ? 'checked' : ''} onchange="togglePlannerTask('${task.id}')" class="w-4 h-4 accent-indigo-600 rounded cursor-pointer">
+                        <span class="text-xs sm:text-sm font-bold ${task.completed ? 'line-through text-slate-400 dark:text-slate-500' : 'text-slate-800 dark:text-slate-100'}">${escapeHtml(task.title)}</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-indigo-50 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/50">${task.mins} min${task.mins > 1 ? 's' : ''}</span>
+                        <button onclick="deletePlannerTask('${task.id}')" class="text-slate-400 hover:text-red-500 transition text-xs p-1" title="Delete task">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function handleAddTask(event) {
+            event.preventDefault();
+            const nameInput = document.getElementById('planner-task-name');
+            const minsInput = document.getElementById('planner-task-mins');
+
+            const title = nameInput.value.trim();
+            const mins = parseInt(minsInput.value, 10) || 30;
+
+            if (!title) return;
+
+            state.plannerTasks.push({
+                id: Date.now().toString(),
+                title,
+                mins,
+                completed: false
+            });
+
+            nameInput.value = '';
+            renderPlannerTasks();
+            updateFreeTimeCalc();
+            showToast('Homework task added to day schedule!', 'success');
+        }
+
+        function togglePlannerTask(id) {
+            const task = state.plannerTasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                renderPlannerTasks();
+                updateFreeTimeCalc();
+            }
+        }
+
+        function deletePlannerTask(id) {
+            state.plannerTasks = state.plannerTasks.filter(t => t.id !== id);
+            renderPlannerTasks();
+            updateFreeTimeCalc();
+            showToast('Task removed.');
+        }
+
+        function updateFreeTimeCalc() {
+            const arrivalTimeStr = document.getElementById('planner-arrival-time')?.value || "15:30";
+            const bedtimeStr = document.getElementById('planner-bedtime')?.value || "22:00";
+            const routineMins = parseInt(document.getElementById('planner-routine-mins')?.value, 10) || 75;
+
+            const [startH, startM] = arrivalTimeStr.split(':').map(Number);
+            const [endH, endM] = bedtimeStr.split(':').map(Number);
+
+            let arrivalMinutes = startH * 60 + startM;
+            let bedtimeMinutes = endH * 60 + endM;
+
+            if (bedtimeMinutes <= arrivalMinutes) {
+                bedtimeMinutes += 24 * 60;
+            }
+
+            const totalHomeWindowMins = bedtimeMinutes - arrivalMinutes;
+
+            // Sum active planned homework tasks
+            const activeTasks = state.plannerTasks.filter(t => !t.completed);
+            const plannedWorkMins = activeTasks.reduce((acc, t) => acc + t.mins, 0);
+
+            const guaranteedFreeMins = Math.max(0, totalHomeWindowMins - routineMins - plannedWorkMins);
+            const freePercent = totalHomeWindowMins > 0 ? Math.round((guaranteedFreeMins / totalHomeWindowMins) * 100) : 0;
+
+            const formatHM = (mins) => {
+                const h = Math.floor(mins / 60);
+                const m = mins % 60;
+                return h > 0 ? `${h}h ${m}m` : `${m}m`;
+            };
+
+            // Update UI Displays
+            const totalWinEl = document.getElementById('stat-total-window');
+            const routineTimeEl = document.getElementById('stat-routines-time');
+            const plannedWorkEl = document.getElementById('stat-planned-work');
+            const freeTimeEl = document.getElementById('stat-free-time');
+            const pctLabelEl = document.getElementById('pct-free-time-label');
+
+            if (totalWinEl) totalWinEl.innerText = formatHM(totalHomeWindowMins);
+            if (routineTimeEl) routineTimeEl.innerText = formatHM(routineMins);
+            if (plannedWorkEl) plannedWorkEl.innerText = formatHM(plannedWorkMins);
+            if (freeTimeEl) freeTimeEl.innerText = formatHM(guaranteedFreeMins);
+            if (pctLabelEl) pctLabelEl.innerText = `${freePercent}% free play left`;
+
+            // Progress Bar Widths
+            if (totalHomeWindowMins > 0) {
+                const routinePct = Math.min(100, Math.round((routineMins / totalHomeWindowMins) * 100));
+                const workPct = Math.min(100 - routinePct, Math.round((plannedWorkMins / totalHomeWindowMins) * 100));
+                const freePct = Math.max(0, 100 - routinePct - workPct);
+
+                const barRoutine = document.getElementById('progress-routine-bar');
+                const barWork = document.getElementById('progress-work-bar');
+                const barFree = document.getElementById('progress-free-bar');
+
+                if (barRoutine) barRoutine.style.width = `${routinePct}%`;
+                if (barWork) barWork.style.width = `${workPct}%`;
+                if (barFree) barFree.style.width = `${freePct}%`;
+            }
+        }
+
+        // Focus Timer Engine
+        function setTimerDuration(mins) {
+            state.focusDurationMins = mins;
+            state.focusTimeRemaining = mins * 60;
+
+            [5, 15, 25].forEach(m => {
+                const btn = document.getElementById(`preset-btn-${m}`);
+                if (btn) {
+                    if (m === mins) {
+                        btn.className = "timer-preset-btn px-4 py-2 rounded-full transition bg-blue-600 text-white font-extrabold";
+                    } else {
+                        btn.className = "timer-preset-btn px-4 py-2 rounded-full transition text-slate-600 dark:text-slate-300";
+                    }
+                }
+            });
+
+            renderFocusTimer();
+        }
+
+        function toggleFocusTimer() {
+            const btn = document.getElementById('focus-start-btn');
+            const statusLabel = document.getElementById('focus-timer-status');
+
+            if (state.focusIsRunning) {
+                clearInterval(state.focusInterval);
+                state.focusIsRunning = false;
+                if (btn) btn.innerHTML = '<i class="fa-solid fa-play mr-2"></i> Resume Focus';
+                if (statusLabel) statusLabel.innerText = 'Paused';
+            } else {
+                state.focusIsRunning = true;
+                if (btn) btn.innerHTML = '<i class="fa-solid fa-pause mr-2"></i> Pause Focus';
+                if (statusLabel) statusLabel.innerText = 'In Focus';
+                state.focusInterval = setInterval(updateFocusTimer, 1000);
+            }
+        }
+
+        function updateFocusTimer() {
+            if (state.focusTimeRemaining > 0) {
+                state.focusTimeRemaining--;
+                renderFocusTimer();
+            } else {
+                clearInterval(state.focusInterval);
+                state.focusIsRunning = false;
+                
+                const earned = state.focusDurationMins;
+                state.todayFocusMinutes += earned;
+                addCredits(earned);
+
+                const statMin = document.getElementById('stat-minutes-today');
+                const btn = document.getElementById('focus-start-btn');
+                const statusLabel = document.getElementById('focus-timer-status');
+
+                if (statMin) statMin.innerText = `${state.todayFocusMinutes}m`;
+                if (btn) btn.innerHTML = '<i class="fa-solid fa-play mr-2"></i> Start Focus';
+                if (statusLabel) statusLabel.innerText = 'Sprint Complete!';
+
+                showToast(`Sprint Complete! You earned +${earned} Gaming Credits!`, 'success');
+            }
+        }
+
+        function renderFocusTimer() {
+            const mins = Math.floor(state.focusTimeRemaining / 60);
+            const secs = state.focusTimeRemaining % 60;
+            const display = document.getElementById('focus-timer-display');
+            if (display) display.innerText = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+            
+            const circle = document.getElementById('focus-progress-circle');
+            if (circle) {
+                const totalSecs = state.focusDurationMins * 60;
+                const offset = 270 * (1 - state.focusTimeRemaining / totalSecs);
+                circle.style.strokeDashoffset = offset;
+            }
+        }
+
+        function resetFocusTimer() {
+            clearInterval(state.focusInterval);
+            state.focusIsRunning = false;
+            state.focusTimeRemaining = state.focusDurationMins * 60;
+            const btn = document.getElementById('focus-start-btn');
+            const statusLabel = document.getElementById('focus-timer-status');
+            if (btn) btn.innerHTML = '<i class="fa-solid fa-play mr-2"></i> Start Focus';
+            if (statusLabel) statusLabel.innerText = 'Ready to Focus';
+            renderFocusTimer();
+        }
+
+        function startSmallTimer() {
+            switchMode('timer');
+            setTimerDuration(5);
+            toggleFocusTimer();
+            showToast('Started 5-minute warm-up timer!', 'success');
+        }
+
+        // Procrastination Reflection
+        function saveReflection() {
+            const textarea = document.getElementById('reflection-textarea');
+            const banner = document.getElementById('reflection-banner');
+            const savedText = document.getElementById('reflection-saved-text');
+
+            if (!textarea || !textarea.value.trim()) {
+                showToast('Write a quick reflection first!');
+                return;
+            }
+
+            if (savedText) savedText.innerText = `"${textarea.value.trim()}"`;
+            if (banner) banner.classList.remove('hidden');
+            showToast('Reflection saved! You are ready to start small.', 'success');
+        }
+
+        // Guided Breathing
+        function toggleUrgeSurfer() {
+            const btn = document.getElementById('breath-start-btn');
+            const statusText = document.getElementById('breath-status-text');
+            const countdownText = document.getElementById('breath-countdown');
+            const outerCircle = document.getElementById('breath-circle-outer');
+
+            if (state.breathIsRunning) {
+                clearInterval(state.breathInterval);
+                state.breathIsRunning = false;
+                if (btn) btn.innerText = 'Start 60s Breathing';
+                if (statusText) statusText.innerText = 'Breathe';
+                if (countdownText) countdownText.innerText = 'Ready';
+                if (outerCircle) outerCircle.style.transform = 'scale(1)';
+                return;
+            }
+
+            state.breathIsRunning = true;
+            state.breathTimeLeft = 60;
+            if (btn) btn.innerText = 'Pause Breathing';
+
+            let phase = 0; // 0: Inhale (4s), 1: Hold (4s), 2: Exhale (4s)
+            let phaseTimer = 0;
+
+            state.breathInterval = setInterval(() => {
+                state.breathTimeLeft--;
+                phaseTimer++;
+
+                if (phaseTimer >= 4) {
+                    phase = (phase + 1) % 3;
+                    phaseTimer = 0;
+                }
+
+                if (phase === 0) {
+                    if (statusText) statusText.innerText = 'Inhale...';
+                    if (outerCircle) outerCircle.style.transform = 'scale(1.35)';
+                } else if (phase === 1) {
+                    if (statusText) statusText.innerText = 'Hold...';
+                } else {
+                    if (statusText) statusText.innerText = 'Exhale...';
+                    if (outerCircle) outerCircle.style.transform = 'scale(0.9)';
+                }
+
+                if (countdownText) countdownText.innerText = `${state.breathTimeLeft}s remaining`;
+
+                if (state.breathTimeLeft <= 0) {
+                    clearInterval(state.breathInterval);
+                    state.breathIsRunning = false;
+                    if (btn) btn.innerText = 'Start 60s Breathing';
+                    if (statusText) statusText.innerText = 'Centered';
+                    if (countdownText) countdownText.innerText = 'Completed!';
+                    if (outerCircle) outerCircle.style.transform = 'scale(1)';
+                    showToast('1-minute breathing reset finished!', 'success');
+                }
+            }, 1000);
+        }
+
+        // Gaming Credits Engine
+        function addCredits(amount) {
+            state.timeBankCredits += amount;
+            updateCreditDisplays();
+        }
+
+        function redeemCredit(cost, title) {
+            if (state.timeBankCredits < cost) {
+                showToast(`Not enough credits! You need ${cost} mins. Complete more sprints first!`);
+                return;
+            }
+
+            state.timeBankCredits -= cost;
+            updateCreditDisplays();
+            showToast(`Redeemed "${title}"! Enjoy your guilt-free break!`, 'success');
+        }
+
+        function updateCreditDisplays() {
+            const headerCredits = document.getElementById('header-time-bank-credits');
+            const bankDisplay = document.getElementById('bank-credits-display');
+
+            if (headerCredits) headerCredits.innerText = `${state.timeBankCredits}m`;
+            if (bankDisplay) bankDisplay.innerText = `${state.timeBankCredits} Minutes`;
+        }
+
+        // AI Micro-Task Deconstructor
+        function breakdownTaskWithAI() {
+            const input = document.getElementById('ai-task-input');
+            const output = document.getElementById('ai-task-output');
+            const stepsList = document.getElementById('ai-steps-list');
+
+            if (!input || !input.value.trim()) {
+                showToast('Type a homework or study assignment first!');
+                return;
+            }
+
+            const taskText = input.value.trim();
+
+            const sampleSteps = [
+                `Open project document and set up basic outline (10 mins)`,
+                `Gather reference materials and bullet point main topics for ${taskText.slice(0, 20)}... (15 mins)`,
+                `Write the first initial rough draft draft paragraph (15 mins)`,
+                `Review and clean up final revisions (10 mins)`
+            ];
+
+            if (stepsList) {
+                stepsList.innerHTML = sampleSteps.map(step => `<li>${escapeHtml(step)}</li>`).join('');
+            }
+
+            if (output) output.classList.remove('hidden');
+            showToast('Task deconstructed into micro-steps!', 'success');
+        }
+
+        function addAiStepsToPlanner() {
+            const steps = [
+                { title: 'Outline & Intro Setup', mins: 15 },
+                { title: 'Drafting Main Content', mins: 25 },
+                { title: 'Final Review & Formatting', mins: 15 }
+            ];
+
+            steps.forEach(s => {
+                state.plannerTasks.push({
+                    id: Date.now().toString() + Math.random().toString(36).substr(2, 4),
+                    title: s.title,
+                    mins: s.mins,
+                    completed: false
+                });
+            });
+
+            renderPlannerTasks();
+            updateFreeTimeCalc();
+            switchMode('planner');
+            showToast('Added micro steps to your Day Planner!', 'success');
+        }
+
+        // Web Audio Synthesizer Engine
+        function changeSoundscape(soundType) {
+            if (soundType === 'none') {
+                stopAmbientSound();
+                return;
+            }
+            playAmbientSound(soundType);
+        }
+
+        function toggleSoundscape() {
+            const select = document.getElementById('header-sound-select');
+            if (state.isAudioPlaying) {
+                stopAmbientSound();
+                if (select) select.value = 'none';
+            } else {
+                const type = select ? select.value : 'rain';
+                playAmbientSound(type === 'none' ? 'rain' : type);
+                if (select && select.value === 'none') select.value = 'rain';
+            }
+        }
+
+        function playAmbientSound(type) {
+            try {
+                if (!state.audioCtx) {
+                    state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                stopAmbientSound();
+
+                const ctx = state.audioCtx;
+                if (ctx.state === 'suspended') {
+                    ctx.resume();
+                }
+
+                if (type === 'binaural') {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(432, ctx.currentTime);
+                    gain.gain.setValueAtTime(0.05, ctx.currentTime);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start();
+                    state.audioNode = osc;
+                } else {
+                    // White/Brown Noise synthesis for Rain / Brown noise
+                    const bufferSize = ctx.sampleRate * 2;
+                    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                    const output = noiseBuffer.getChannelData(0);
+                    let lastOut = 0.0;
+
+                    for (let i = 0; i < bufferSize; i++) {
+                        const white = Math.random() * 2 - 1;
+                        if (type === 'brown') {
+                            output[i] = (lastOut + (0.02 * white)) / 1.02;
+                            lastOut = output[i];
+                            output[i] *= 3.5;
+                        } else { // rain filter
+                            output[i] = white * 0.1;
+                        }
+                    }
+
+                    const whiteNoise = ctx.createBufferSource();
+                    whiteNoise.buffer = noiseBuffer;
+                    whiteNoise.loop = true;
+
+                    const gain = ctx.createGain();
+                    gain.gain.setValueAtTime(0.04, ctx.currentTime);
+
+                    whiteNoise.connect(gain);
+                    gain.connect(ctx.destination);
+                    whiteNoise.start();
+                    state.audioNode = whiteNoise;
+                }
+
+                state.isAudioPlaying = true;
+                const icon = document.getElementById('header-sound-icon');
+                if (icon) icon.className = 'fa-solid fa-pause';
+            } catch (e) {
+                console.error("Audio playback error:", e);
+            }
+        }
+
+        function stopAmbientSound() {
+            if (state.audioNode) {
+                try {
+                    state.audioNode.stop();
+                    state.audioNode.disconnect();
+                } catch(e) {}
+                state.audioNode = null;
+            }
+            state.isAudioPlaying = false;
+            const icon = document.getElementById('header-sound-icon');
+            if (icon) icon.className = 'fa-solid fa-play';
+        }
+
+        // Tab Switch Shield Handler
+        document.addEventListener('visibilitychange', () => {
+            const toggle = document.getElementById('tab-shield-toggle');
+            if (document.hidden && state.focusIsRunning && toggle && toggle.checked) {
+                state.tabSwitches++;
+                const tabDisplay = document.getElementById('stat-tab-switches');
+                if (tabDisplay) tabDisplay.innerText = state.tabSwitches;
+            }
+        });
+
+        // Initialize App on Window Load
+        window.onload = function() {
+            switchMode(state.mode);
+            renderPlannerTasks();
+            updateFreeTimeCalc();
+            renderFocusTimer();
+            updateCreditDisplays();
+        };
+    </script>
+</body>
+</html>

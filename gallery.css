@@ -1,0 +1,176 @@
+/* 1996-style gallery theme, built on the Nido brand variables in style.css */
+
+body {
+  background: #c0c0c0;
+  font-family: "Times New Roman", Times, serif;
+  color: #000;
+  margin: 0 auto;
+  padding: 16px;
+  max-width: 960px;
+}
+
+h1, h2, h3 {
+  font-family: "Times New Roman", Times, serif;
+  color: var(--nido-blue);
+}
+
+h1 { font-size: 2.2em; margin: 0.3em 0; }
+h2 { text-align: center; color: var(--nido-red); }
+
+a { color: #0000ee; }
+a:visited { color: #551a8b; }
+a:active { color: #ff0000; }
+
+hr {
+  border: 0;
+  border-top: 2px groove #fff;
+  border-bottom: 2px groove #808080;
+  margin: 18px 0;
+}
+
+.center { text-align: center; }
+.small { font-size: 0.8em; }
+.subtitle { max-width: 600px; font-size: 1.05em; }
+
+/* Logo */
+.logo {
+  width: 240px;
+  max-width: 70%;
+  height: auto;
+  margin-top: 4px;
+}
+.logo-text {
+  display: inline-block;
+  background: var(--nido-blue);
+  color: #fff;
+  font-weight: bold;
+  padding: 10px 18px;
+  border: 3px outset var(--nido-red);
+  font-family: var(--font-gotham);
+  letter-spacing: 1px;
+}
+
+/* Class picker: chunky beveled Win95 buttons */
+.picker {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+.picker button {
+  font-family: "Times New Roman", Times, serif;
+  background: #c0c0c0;
+  border: 3px outset #fff;
+  padding: 8px 20px;
+  cursor: pointer;
+  min-width: 150px;
+  color: #000;
+}
+.picker button:active,
+.picker button[aria-pressed="true"] {
+  border-style: inset;
+  background: var(--nido-blue);
+  color: #fff;
+}
+.picker button:focus-visible { outline: 1px dotted #000; outline-offset: -6px; }
+.picker .teacher { display: block; font-size: 1.25em; font-weight: bold; }
+.picker .count { display: block; font-size: 0.85em; }
+
+/* Block headings */
+.block-title {
+  background: var(--nido-blue);
+  color: #fff;
+  padding: 3px 8px;
+  margin: 24px 0 12px;
+  font-size: 1.15em;
+}
+
+/* App cards */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+.card {
+  background: #fff;
+  border: 2px outset #fff;
+  padding: 6px;
+}
+.preview {
+  display: block;
+  position: relative;
+  height: 180px;
+  overflow: hidden;
+  border: 2px inset #808080;
+  background: #fff;
+}
+/* Render the app at desktop size, then shrink it down to a thumbnail */
+.preview iframe {
+  width: 1200px;
+  height: 900px;
+  border: 0;
+  transform: scale(0.2);
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+.preview::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.preview:hover { border-color: var(--nido-red); }
+
+.info { padding: 6px 2px 2px; }
+.app-name { font-weight: bold; font-size: 1.1em; }
+.tagline { font-size: 0.9em; margin-top: 2px; }
+.students { font-size: 0.85em; font-style: italic; color: var(--nido-dark-gray); margin-top: 4px; }
+
+.construction {
+  display: inline-block;
+  background: #ffff00;
+  color: #000;
+  font-weight: bold;
+  padding: 4px 10px;
+  border: 2px dashed #000;
+  margin-bottom: 6px;
+}
+
+.footer { font-size: 0.9em; }
+
+.sr {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+.subtitle, .footer p { overflow-wrap: break-word; }
+@media (max-width: 600px) {
+  body { padding: 12px; }
+  h1 { font-size: 1.7em; }
+  .picker button { min-width: 0; flex: 1 1 40%; }
+}
+
+/* Topic filter bar */
+.topic-label { margin: 18px 0 6px; }
+.topics { max-width: 760px; line-height: 1.7; }
+.topics a, .topics b, .topics span { white-space: nowrap; }
+.topic-on { color: var(--nido-red); }
+.topic-off { color: #808080; }
+.summary { font-style: italic; margin: 0; }
+
+/* Topic tags on cards */
+.tags { margin-top: 6px; font-size: 0.8em; }
+.tag {
+  display: inline-block;
+  margin: 2px 4px 0 0;
+  padding: 0 4px;
+  background: #ffffcc;
+  border: 1px solid #808080;
+  text-decoration: none;
+  color: #000;
+}
+.tag:visited { color: #000; }
+.tag:hover { background: var(--nido-blue); color: #fff; }
+.said { font-size: 0.8em; color: #555; margin-top: 4px; }

@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WarmFocus - Unwind & Homework Companion</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        warmBg: '#FAF6F0',
+                        warmCard: '#FFFDF9',
+                        warmBorder: '#EFE6D8',
+                        terracotta: {
+                            DEFAULT: '#E07A5F',
+                            hover: '#D0674C',
+                            light: '#F8ECE8'
+                        },
+                        amberWarm: {
+                            DEFAULT: '#F2CC8F',
+                            dark: '#D89A3B',
+                            light: '#FEF8EE'
+                        },
+                        cocoa: {
+                            DEFAULT: '#3D405B',
+                            muted: '#6C708D',
+                            light: '#9DA2B8'
+                        },
+                        sage: '#81B29A',
+                        sand: '#F3E9DC'
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #FAF6F0;
+            color: #3D405B;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FAF6F0;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #EFE6D8;
+            border-radius: 999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #E07A5F;
+        }
+
+        .soft-shadow {
+            box-shadow: 0 10px 25px -5px rgba(224, 122, 95, 0.05), 0 8px 10px -6px rgba(61, 64, 91, 0.03);
+        }
+
+        .tab-active {
+            background-color: #E07A5F;
+            color: white;
+            box-shadow: 0 4px 12px rgba(224, 122, 95, 0.25);
+        }
+
+        /* Pulsing warm glow for active timer */
+        @keyframes warmPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(224, 122, 95, 0.2); }
+            50% { box-shadow: 0 0 0 16px rgba(224, 122, 95, 0); }
+        }
+        .timer-active-glow {
+            animation: warmPulse 3s infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-terracotta-light selection:text-terracotta">
+
+    <header class="border-b border-warmBorder bg-warmBg/80 backdrop-blur-md sticky top-0 z-40 px-4 py-3 sm:px-8">
+        <div class="max-w-4xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-terracotta flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                    <i data-lucide="sun" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-base sm:text-lg tracking-tight text-cocoa">WarmFocus</h1>
+                    <p class="text-xs text-cocoa-muted hidden sm:block">Gentle homework transitions for after school</p>
+                </div>
+            </div>
+
+            <!-- Streak & Daily Energy Badge -->
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amberWarm-light border border-amberWarm/30 text-amberWarm-dark text-xs font-semibold">
+                    <i data-lucide="flame" class="w-4 h-4 text-amberWarm-dark"></i>
+                    <span id="streakCount">0</span> Day Streak
+                </div>
+                <button onclick="toggleEnergyModal()" title="Log Energy Level" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-sand hover:bg-warmBorder text-cocoa text-xs font-medium transition-colors">
+                    <span id="currentEnergyIcon">⚡</span>
+                    <span id="currentEnergyText" class="hidden md:inline">Energy: Okay</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl w-full mx-auto px-4 py-6 sm:px-8 flex-1 flex flex-col gap-6">
+
+        <!-- Navigation Tabs -->
+        <nav class="flex p-1.5 bg-sand/60 rounded-2xl gap-1 border border-warmBorder text-xs sm:text-sm font-medium">
+            <button onclick="switchTab('decompress')" id="tab-decompress" class="tab-btn flex-1 py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 text-cocoa-muted hover:text-cocoa">
+                <i data-lucide="coffee" class="w-4 h-4"></i>
+                <span>After-School Bridge</span>
+            </button>
+            <button onclick="switchTab('sprint')" id="tab-sprint" class="tab-btn flex-1 py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 text-cocoa-muted hover:text-cocoa">
+                <i data-lucide="timer" class="w-4 h-4"></i>
+                <span>5-Min Micro-Start</span>
+            </button>
+            <button onclick="switchTab('tasks')" id="tab-tasks" class="tab-btn flex-1 py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 text-cocoa-muted hover:text-cocoa">
+                <i data-lucide="check-square" class="w-4 h-4"></i>
+                <span>Bite-Sized Work</span>
+            </button>
+            <button onclick="switchTab('audit')" id="tab-audit" class="tab-btn flex-1 py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 text-cocoa-muted hover:text-cocoa">
+                <i data-lucide="smartphone" class="w-4 h-4"></i>
+                <span>Scroll Audit</span>
+            </button>
+        </nav>
+
+        <section id="view-decompress" class="view-content flex-1 flex flex-col gap-6">
+            <div class="bg-warmCard rounded-3xl p-6 sm:p-8 border border-warmBorder soft-shadow flex flex-col justify-between relative overflow-hidden">
+                <div class="absolute -right-8 -top-8 w-40 h-40 bg-amberWarm/20 rounded-full blur-2xl pointer-events-none"></div>
+
+                <div class="mb-6">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-terracotta-light text-terracotta text-xs font-semibold uppercase tracking-wider mb-3">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                        Post-School Buffer Zone
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-cocoa mb-2">Just got home? Don't hit the bed yet.</h2>
+                    <p class="text-cocoa-muted text-sm sm:text-base max-w-xl">
+                        School drained your battery. Scrolling in bed feels relaxing, but it actually leaves you more exhausted and stressed later. Take 3 minutes for this transition ritual instead.
+                    </p>
+                </div>
+
+                <!-- Interactive Reset Steps -->
+                <div class="space-y-4 my-2">
+                    <div id="step-1" class="decomp-step border border-warmBorder rounded-2xl p-4 bg-warmBg flex items-start gap-4 transition-all">
+                        <div class="step-num w-8 h-8 rounded-full bg-amberWarm text-cocoa font-bold flex items-center justify-center flex-shrink-0 text-sm">1</div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-cocoa text-sm sm:text-base">Change Out of School Clothes & Drink Water</h3>
+                            <p class="text-xs sm:text-sm text-cocoa-muted mt-0.5">Physical signal to your brain that school is done. Hydration offsets afternoon brain fog.</p>
+                        </div>
+                        <button onclick="toggleStep(1)" class="step-check border border-warmBorder bg-warmCard text-cocoa-muted p-2 rounded-xl hover:text-terracotta">
+                            <i data-lucide="check" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+
+                    <div id="step-2" class="decomp-step border border-warmBorder rounded-2xl p-4 bg-warmBg flex items-start gap-4 transition-all">
+                        <div class="step-num w-8 h-8 rounded-full bg-amberWarm text-cocoa font-bold flex items-center justify-center flex-shrink-0 text-sm">2</div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-cocoa text-sm sm:text-base">Set Phone in Another Room or Face Down</h3>
+                            <p class="text-xs sm:text-sm text-cocoa-muted mt-0.5">If it's in your hand, algorithms win. Put it out of arm's reach while you decompress.</p>
+                        </div>
+                        <button onclick="toggleStep(2)" class="step-check border border-warmBorder bg-warmCard text-cocoa-muted p-2 rounded-xl hover:text-terracotta">
+                            <i data-lucide="check" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+
+                    <div id="step-3" class="decomp-step border border-warmBorder rounded-2xl p-4 bg-warmBg flex items-start gap-4 transition-all">
+                        <div class="step-num w-8 h-8 rounded-full bg-amberWarm text-cocoa font-bold flex items-center justify-center flex-shrink-0 text-sm">3</div>
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-cocoa text-sm sm:text-base">Sit at Desk or Table (Not Bed!)</h3>
+                            <p class="text-xs sm:text-sm text-cocoa-muted mt-0.5">Bed is for sleep. Sitting upright keeps your energy awake for just 15-20 minutes of quick work.</p>
+                        </div>
+                        <button onclick="toggleStep(3)" class="step-check border border-warmBorder bg-warmCard text-cocoa-muted p-2 rounded-xl hover:text-terracotta">
+                            <i data-lucide="check" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-warmBorder">
+                    <div class="text-xs text-cocoa-muted flex items-center gap-2">
+                        <i data-lucide="shield-check" class="w-4 h-4 text-sage"></i>
+                        <span>Goal: Zero guilt. Just 5 minutes of low-effort start.</span>
+                    </div>
+                    <button onclick="switchTab('sprint')" class="w-full sm:w-auto px-6 py-3 bg-terracotta hover:bg-terracotta-hover text-white rounded-xl font-semibold text-sm transition-all shadow-md flex items-center justify-center gap-2">
+                        <span>I'm Ready - Start 5-Min Timer</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-sprint" class="view-content flex-1 flex-col gap-6 hidden">
+            <div class="bg-warmCard rounded-3xl p-6 sm:p-10 border border-warmBorder soft-shadow text-center flex flex-col items-center justify-center relative overflow-hidden">
+                
+                <div class="max-w-md w-full">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amberWarm-light text-amberWarm-dark text-xs font-semibold uppercase tracking-wider mb-4">
+                        <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+                        The "Rule of 5 Minutes"
+                    </span>
+                    <h2 class="text-xl sm:text-2xl font-bold text-cocoa mb-1">Commit to ONLY 5 Minutes</h2>
+                    <p class="text-xs sm:text-sm text-cocoa-muted mb-8">
+                        If you still feel too tired after 5 minutes, you have permission to stop. The hardest part is just starting!
+                    </p>
+
+                    <!-- Circular Progress & Timer Display -->
+                    <div class="relative w-56 h-56 sm:w-64 sm:h-64 mx-auto mb-8 flex items-center justify-center">
+                        <svg class="w-full h-full transform -rotate-90">
+                            <circle cx="50%" cy="50%" r="42%" class="stroke-warmBorder" stroke-width="8" fill="transparent" />
+                            <circle id="timerProgress" cx="50%" cy="50%" r="42%" class="stroke-terracotta transition-all duration-1000" stroke-width="8" stroke-dasharray="700" stroke-dashoffset="0" stroke-linecap="round" fill="transparent" />
+                        </svg>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center">
+                            <span id="timeDisplay" class="text-4xl sm:text-5xl font-bold tracking-tight text-cocoa">05:00</span>
+                            <span id="timerStatus" class="text-xs font-medium text-cocoa-muted mt-2">Ready when you are</span>
+                        </div>
+                    </div>
+
+                    <!-- Preset Selector -->
+                    <div class="flex justify-center gap-2 mb-6">
+                        <button onclick="setTimerDuration(5)" class="preset-btn active text-xs font-semibold px-4 py-2 rounded-xl border border-warmBorder bg-sand text-cocoa hover:bg-terracotta-light">5 Min Micro</button>
+                        <button onclick="setTimerDuration(15)" class="preset-btn text-xs font-semibold px-4 py-2 rounded-xl border border-warmBorder bg-warmBg text-cocoa-muted hover:bg-terracotta-light">15 Min Sprint</button>
+                        <button onclick="setTimerDuration(25)" class="preset-btn text-xs font-semibold px-4 py-2 rounded-xl border border-warmBorder bg-warmBg text-cocoa-muted hover:bg-terracotta-light">25 Min Deep</button>
+                    </div>
+
+                    <!-- Timer Controls -->
+                    <div class="flex items-center justify-center gap-3">
+                        <button id="startBtn" onclick="toggleTimer()" class="px-8 py-3.5 bg-terracotta hover:bg-terracotta-hover text-white font-semibold rounded-xl text-sm transition-all shadow-md flex items-center gap-2">
+                            <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+                            <span>Start 5-Min Sprint</span>
+                        </button>
+                        <button onclick="resetTimer()" class="p-3.5 border border-warmBorder rounded-xl text-cocoa-muted hover:text-cocoa hover:bg-sand transition-colors" title="Reset Timer">
+                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <!-- Ambient Noise Generator -->
+                    <div class="mt-8 pt-6 border-t border-warmBorder flex items-center justify-between">
+                        <div class="flex items-center gap-2 text-left">
+                            <i data-lucide="waves" class="w-4 h-4 text-terracotta"></i>
+                            <div>
+                                <p class="text-xs font-semibold text-cocoa">Warm Focus Noise</p>
+                                <p class="text-[10px] text-cocoa-muted">Soft sound to block background distractions</p>
+                            </div>
+                        </div>
+                        <button id="soundToggle" onclick="toggleAmbientSound()" class="px-3 py-1.5 rounded-lg border border-warmBorder text-xs font-medium text-cocoa-muted hover:text-cocoa flex items-center gap-1.5">
+                            <i data-lucide="volume-x" class="w-3.5 h-3.5"></i>
+                            <span>Off</span>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="view-tasks" class="view-content flex-1 flex-col gap-6 hidden">
+            <div class="bg-warmCard rounded-3xl p-6 sm:p-8 border border-warmBorder soft-shadow">
+                
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h2 class="text-xl sm:text-2xl font-bold text-cocoa">Task Atomizer</h2>
+                        <p class="text-xs sm:text-sm text-cocoa-muted mt-0.5">Big homework looks intimidating. Break it into tiny 2-minute actions.</p>
+                    </div>
+                    <button onclick="openAtomizeModal()" class="px-4 py-2 bg-amberWarm hover:bg-amberWarm-dark text-cocoa font-semibold text-xs sm:text-sm rounded-xl transition-all flex items-center gap-2 shadow-sm">
+                        <i data-lucide="wand-2" class="w-4 h-4"></i>
+                        <span>Auto-Break Assignment</span>
+                    </button>
+                </div>
+
+                <!-- Fast Task Input -->
+                <form id="addTaskForm" onsubmit="handleAddTask(event)" class="flex gap-2 mb-6">
+                    <input type="text" id="taskInput" placeholder="Add a quick task (e.g., 'Open Math doc and write title')..." class="flex-1 bg-warmBg border border-warmBorder rounded-xl px-4 py-3 text-sm text-cocoa focus:outline-none focus:border-terracotta transition-colors placeholder:text-cocoa-light">
+                    <button type="submit" class="px-5 py-3 bg-terracotta hover:bg-terracotta-hover text-white rounded-xl text-sm font-semibold transition-colors flex items-center gap-1">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Add</span>
+                    </button>
+                </form>
+
+                <!-- Task Filter / Quick Categories -->
+                <div class="flex items-center justify-between text-xs text-cocoa-muted mb-4 px-1">
+                    <span>Active Homework Micro-Tasks</span>
+                    <span id="taskCountText">0 items remaining</span>
+                </div>
+
+                <!-- Task List Container -->
+                <div id="taskList" class="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
+                    <!-- Dynamic task items inserted here -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyTaskState" class="py-12 text-center border-2 border-dashed border-warmBorder rounded-2xl my-2">
+                    <div class="w-12 h-12 rounded-full bg-sand flex items-center justify-center mx-auto mb-3 text-terracotta">
+                        <i data-lucide="smile" class="w-6 h-6"></i>
+                    </div>
+                    <p class="text-sm font-semibold text-cocoa">No micro-tasks queued up</p>
+                    <p class="text-xs text-cocoa-muted mt-1">Add a tiny step or use the "Auto-Break Assignment" button above.</p>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="view-audit" class="view-content flex-1 flex-col gap-6 hidden">
+            <div class="bg-warmCard rounded-3xl p-6 sm:p-8 border border-warmBorder soft-shadow flex flex-col gap-6">
+                
+                <div>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sage/20 text-sage text-xs font-semibold uppercase tracking-wider mb-2">
+                        <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                        Honest Reality Check
+                    </span>
+                    <h2 class="text-xl sm:text-2xl font-bold text-cocoa">Did TikTok actually cure your tiredness?</h2>
+                    <p class="text-xs sm:text-sm text-cocoa-muted mt-1">
+                        When you get home exhausted, doomscrolling *feels* like resting. But screen overstimulation keeps your brain stressed while homework sits in the back of your mind.
+                    </p>
+                </div>
+
+                <!-- Interactive Comparison Card -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-5 rounded-2xl bg-warmBg border border-warmBorder flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs font-bold uppercase text-terracotta">Option A: 1 Hour Scrolling Bed Trap</span>
+                                <i data-lucide="smartphone" class="w-4 h-4 text-terracotta"></i>
+                            </div>
+                            <ul class="text-xs space-y-2 text-cocoa-muted">
+                                <li class="flex items-start gap-2">
+                                    <span class="text-terracotta font-bold">✕</span>
+                                    <span>Energy level drops from tired to drained.</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-terracotta font-bold">✕</span>
+                                    <span>Guilt grows as evening wears on.</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-terracotta font-bold">✕</span>
+                                    <span>Late night rush to do homework badly at 10 PM.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="p-5 rounded-2xl bg-amberWarm-light/50 border border-amberWarm/30 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs font-bold uppercase text-amberWarm-dark">Option B: 15-Min Micro-Finish</span>
+                                <i data-lucide="check-circle-2" class="w-4 h-4 text-amberWarm-dark"></i>
+                            </div>
+                            <ul class="text-xs space-y-2 text-cocoa-muted">
+                                <li class="flex items-start gap-2">
+                                    <span class="text-amberWarm-dark font-bold">✓</span>
+                                    <span>Finish 1 urgent piece of homework right away.</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-amberWarm-dark font-bold">✓</span>
+                                    <span>Rest for the rest of the night with zero guilt.</span>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <span class="text-amberWarm-dark font-bold">✓</span>
+                                    <span>Sleep better knowing you're prepped for tomorrow.</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daily Phone Log Tool -->
+                <div class="mt-2 pt-6 border-t border-warmBorder">
+                    <h3 class="font-bold text-cocoa text-sm sm:text-base mb-3">Log Today's Screen vs Focus Balance</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-xs font-medium text-cocoa-muted mb-1">Estimated After-School Screen Time</label>
+                            <select id="scrollingHours" class="w-full bg-warmBg border border-warmBorder rounded-xl p-2.5 text-xs text-cocoa focus:outline-none focus:border-terracotta">
+                                <option value="0.5">30 Minutes</option>
+                                <option value="1">1 Hour</option>
+                                <option value="2">2 Hours</option>
+                                <option value="3">3+ Hours</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-cocoa-muted mb-1">How did you feel afterwards?</label>
+                            <select id="scrollingFeeling" class="w-full bg-warmBg border border-warmBorder rounded-xl p-2.5 text-xs text-cocoa focus:outline-none focus:border-terracotta">
+                                <option value="More Tired">More Tired & Stressed</option>
+                                <option value="Numb">Brain Numb / Brain Fog</option>
+                                <option value="Refreshed">Actually Refreshed</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button onclick="saveAuditLog()" class="w-full sm:w-auto px-5 py-2.5 bg-cocoa hover:bg-cocoa-muted text-white font-medium text-xs rounded-xl transition-colors">
+                        Save Today's Reflection
+                    </button>
+                    
+                    <div id="auditLogFeedback" class="hidden mt-3 p-3 rounded-xl bg-sand text-xs text-cocoa">
+                        <!-- Dynamic feedback response -->
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="border-t border-warmBorder bg-warmBg py-4 px-4 text-center">
+        <p class="text-xs text-cocoa-muted italic max-w-md mx-auto" id="quoteText">
+            "You don't need motivation to start for 5 minutes. You just need momentum."
+        </p>
+    </footer>
+
+    <!-- Energy Check-in Modal -->
+    <div id="energyModal" class="fixed inset-0 bg-cocoa/30 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-warmCard rounded-3xl p-6 max-w-sm w-full border border-warmBorder soft-shadow animate-in fade-in zoom-in-95 duration-150">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-bold text-cocoa text-base">How exhausted are you?</h3>
+                <button onclick="toggleEnergyModal()" class="text-cocoa-muted hover:text-cocoa"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </div>
+            <p class="text-xs text-cocoa-muted mb-4">Be honest! We adapt your work expectations based on how you feel right now.</p>
+            
+            <div class="space-y-2 mb-6">
+                <button onclick="setEnergy('Drained', '😫', 5)" class="w-full p-3 rounded-xl border border-warmBorder hover:border-terracotta bg-warmBg flex items-center gap-3 text-left transition-all">
+                    <span class="text-xl">😫</span>
+                    <div>
+                        <p class="text-xs font-semibold text-cocoa">100% Brain Fried</p>
+                        <p class="text-[10px] text-cocoa-muted">Target: Just 5 minutes total today</p>
+                    </div>
+                </button>
+
+                <button onclick="setEnergy('Okay', '⚡', 15)" class="w-full p-3 rounded-xl border border-warmBorder hover:border-terracotta bg-warmBg flex items-center gap-3 text-left transition-all">
+                    <span class="text-xl">⚡</span>
+                    <div>
+                        <p class="text-xs font-semibold text-cocoa">Slightly Tired</p>
+                        <p class="text-[10px] text-cocoa-muted">Target: 15-minute quick sprint</p>
+                    </div>
+                </button>
+
+                <button onclick="setEnergy('Good', '🌟', 25)" class="w-full p-3 rounded-xl border border-warmBorder hover:border-terracotta bg-warmBg flex items-center gap-3 text-left transition-all">
+                    <span class="text-xl">🌟</span>
+                    <div>
+                        <p class="text-xs font-semibold text-cocoa">Surprisingly Good</p>
+                        <p class="text-[10px] text-cocoa-muted">Target: 25-minute focus session</p>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Atomizer Modal -->
+    <div id="atomizeModal" class="fixed inset-0 bg-cocoa/30 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-warmCard rounded-3xl p-6 max-w-md w-full border border-warmBorder soft-shadow">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="font-bold text-cocoa text-base flex items-center gap-2">
+                    <i data-lucide="wand-2" class="w-4 h-4 text-terracotta"></i>
+                    Homework Atomizer
+                </h3>
+                <button onclick="closeAtomizeModal()" class="text-cocoa-muted hover:text-cocoa"><i data-lucide="x" class="w-4 h-4"></i></button>
+            </div>
+            <p class="text-xs text-cocoa-muted mb-4">Select what homework is stressing you out, and we'll break it into 3 painless step-by-step tasks.</p>
+
+            <div class="space-y-3 mb-6">
+                <div>
+                    <label class="block text-xs font-medium text-cocoa mb-1">Subject / Task Type</label>
+                    <select id="atomizeType" class="w-full bg-warmBg border border-warmBorder rounded-xl p-2.5 text-xs text-cocoa focus:outline-none focus:border-terracotta">
+                        <option value="essay">Essay or Long Writing</option>
+                        <option value="math">Math Worksheets / Problems</option>
+                        <option value="reading">Textbook Reading / Chapter</option>
+                        <option value="slides">Presentation / Project Slides</option>
+                    </select>
+                </div>
+            </div>
+
+            <button onclick="generateSubtasks()" class="w-full py-3 bg-terracotta hover:bg-terracotta-hover text-white font-semibold text-xs rounded-xl transition-all shadow-sm">
+                Generate 3 Micro-Steps
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // State variables
+        let appState = {
+            streak: 1,
+            energy: { label: 'Okay', icon: '⚡', suggestedTime: 5 },
+            activeTab: 'decompress',
+            timer: {
+                totalSeconds: 300,
+                remainingSeconds: 300,
+                isRunning: false,
+                interval: null
+            },
+            decompSteps: [false, false, false],
+            tasks: [
+                { id: 1, title: 'Open Google Docs and write assignment title', completed: false, isMicro: true },
+                { id: 2, title: 'Read page 42 to 45 (Just skim headings)', completed: false, isMicro: true }
+            ],
+            audioCtx: null,
+            noiseNode: null,
+            isSoundPlaying: false
+        };
+
+        // Initialize App on load
+        window.onload = function() {
+            lucide.createIcons();
+            loadLocalStorage();
+            renderTasks();
+            updateTimerDisplay();
+            updateStreakUI();
+            
+            // Random encouraging quote
+            const quotes = [
+                '"You don\'t need motivation to start for 5 minutes. You just need momentum."',
+                '"Doing 1% of your homework today is better than feeling 100% guilty all night."',
+                '"Beds are for relaxing after work, not for stressing while scrolling."',
+                '"Break the monster assignment into tiny 2-minute steps."'
+            ];
+            document.getElementById('quoteText').innerText = quotes[Math.floor(Math.random() * quotes.length)];
+        };
+
+        function switchTab(tabId) {
+            appState.activeTab = tabId;
+            
+            // Hide all view contents
+            document.querySelectorAll('.view-content').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('flex');
+            });
+            
+            // Show active view
+            const target = document.getElementById(`view-${tabId}`);
+            if (target) {
+                target.classList.remove('hidden');
+                target.classList.add('flex');
+            }
+
+            // Update tab button styles
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('tab-active');
+                btn.classList.add('text-cocoa-muted');
+            });
+
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            if (activeBtn) {
+                activeBtn.classList.add('tab-active');
+                activeBtn.classList.remove('text-cocoa-muted');
+            }
+        }
+
+        function toggleStep(stepNum) {
+            const index = stepNum - 1;
+            appState.decompSteps[index] = !appState.decompSteps[index];
+            
+            const stepEl = document.getElementById(`step-${stepNum}`);
+            if (appState.decompSteps[index]) {
+                stepEl.classList.add('bg-amberWarm-light/40', 'border-amberWarm');
+                stepEl.querySelector('.step-check').classList.add('bg-terracotta', 'text-white');
+            } else {
+                stepEl.classList.remove('bg-amberWarm-light/40', 'border-amberWarm');
+                stepEl.querySelector('.step-check').classList.remove('bg-terracotta', 'text-white');
+            }
+
+            saveLocalStorage();
+        }
+
+        function setTimerDuration(minutes) {
+            if (appState.timer.isRunning) toggleTimer();
+            appState.timer.totalSeconds = minutes * 60;
+            appState.timer.remainingSeconds = minutes * 60;
+            
+            // Highlight active preset button
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.classList.remove('bg-sand', 'text-cocoa');
+                btn.classList.add('bg-warmBg', 'text-cocoa-muted');
+            });
+            event.target.classList.add('bg-sand', 'text-cocoa');
+            event.target.classList.remove('bg-warmBg', 'text-cocoa-muted');
+
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(appState.timer.remainingSeconds / 60);
+            const secs = appState.timer.remainingSeconds % 60;
+            const formatted = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            document.getElementById('timeDisplay').innerText = formatted;
+
+            // Circle SVG Dash offset update
+            const circle = document.getElementById('timerProgress');
+            const circumference = 2 * Math.PI * (264 * 0.42); // roughly 700
+            const progress = appState.timer.remainingSeconds / appState.timer.totalSeconds;
+            const offset = circumference * (1 - progress);
+            circle.style.strokeDashoffset = offset;
+        }
+
+        function toggleTimer() {
+            const startBtn = document.getElementById('startBtn');
+            const statusEl = document.getElementById('timerStatus');
+
+            if (appState.timer.isRunning) {
+                // Pause
+                clearInterval(appState.timer.interval);
+                appState.timer.isRunning = false;
+                startBtn.innerHTML = `<i data-lucide="play" class="w-4 h-4 fill-current"></i><span>Resume Sprint</span>`;
+                statusEl.innerText = "Paused - Take a breath";
+            } else {
+                // Start
+                appState.timer.isRunning = true;
+                startBtn.innerHTML = `<i data-lucide="pause" class="w-4 h-4 fill-current"></i><span>Pause Sprint</span>`;
+                statusEl.innerText = "Focusing... You're doing great!";
+
+                appState.timer.interval = setInterval(() => {
+                    if (appState.timer.remainingSeconds > 0) {
+                        appState.timer.remainingSeconds--;
+                        updateTimerDisplay();
+                    } else {
+                        // Timer completed!
+                        clearInterval(appState.timer.interval);
+                        appState.timer.isRunning = false;
+                        playCompletionChime();
+                        startBtn.innerHTML = `<i data-lucide="play" class="w-4 h-4 fill-current"></i><span>Start Sprint</span>`;
+                        statusEl.innerText = "🎉 5 Minutes done! Want to stop or keep going?";
+                        
+                        // Increment streak
+                        appState.streak++;
+                        updateStreakUI();
+                        saveLocalStorage();
+                    }
+                }, 1000);
+            }
+            lucide.createIcons();
+        }
+
+        function resetTimer() {
+            if (appState.timer.isRunning) toggleTimer();
+            appState.timer.remainingSeconds = appState.timer.totalSeconds;
+            document.getElementById('timerStatus').innerText = "Ready when you are";
+            updateTimerDisplay();
+        }
+
+        /* Ambient Brown Noise Audio Generator using Web Audio API */
+        function toggleAmbientSound() {
+            const soundBtn = document.getElementById('soundToggle');
+            if (!appState.isSoundPlaying) {
+                try {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    appState.audioCtx = new AudioContext();
+
+                    const bufferSize = appState.audioCtx.sampleRate * 2;
+                    const noiseBuffer = appState.audioCtx.createBuffer(1, bufferSize, appState.audioCtx.sampleRate);
+                    const output = noiseBuffer.getChannelData(0);
+
+                    let lastOut = 0.0;
+                    for (let i = 0; i < bufferSize; i++) {
+                        const white = Math.random() * 2 - 1;
+                        output[i] = (lastOut + (0.02 * white)) / 1.02; // Warm Brown Noise Filter
+                        lastOut = output[i];
+                        output[i] *= 3.5; 
+                    }
+
+                    appState.noiseNode = appState.audioCtx.createBufferSource();
+                    appState.noiseNode.buffer = noiseBuffer;
+                    appState.noiseNode.loop = true;
+
+                    // Lowpass filter for warm cozy tone
+                    const filter = appState.audioCtx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(400, appState.audioCtx.currentTime);
+
+                    const gainNode = appState.audioCtx.createGain();
+                    gainNode.gain.setValueAtTime(0.15, appState.audioCtx.currentTime);
+
+                    appState.noiseNode.connect(filter);
+                    filter.connect(gainNode);
+                    gainNode.connect(appState.audioCtx.destination);
+
+                    appState.noiseNode.start();
+                    appState.isSoundPlaying = true;
+
+                    soundBtn.innerHTML = `<i data-lucide="volume-2" class="w-3.5 h-3.5 text-terracotta"></i><span class="text-terracotta font-bold">Playing</span>`;
+                } catch(e) {
+                    console.log("Audio not supported or blocked", e);
+                }
+            } else {
+                if (appState.noiseNode) appState.noiseNode.stop();
+                appState.isSoundPlaying = false;
+                soundBtn.innerHTML = `<i data-lucide="volume-x" class="w-3.5 h-3.5"></i><span>Off</span>`;
+            }
+            lucide.createIcons();
+        }
+
+        function playCompletionChime() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+                osc.frequency.exponentialRampToValueAtTime(659.25, ctx.currentTime + 0.3); // E5
+                gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.8);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.8);
+            } catch(e){}
+        }
+
+        function handleAddTask(e) {
+            e.preventDefault();
+            const input = document.getElementById('taskInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            appState.tasks.push({
+                id: Date.now(),
+                title: text,
+                completed: false,
+                isMicro: true
+            });
+
+            input.value = '';
+            renderTasks();
+            saveLocalStorage();
+        }
+
+        function toggleTask(id) {
+            appState.tasks = appState.tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+            renderTasks();
+            saveLocalStorage();
+        }
+
+        function deleteTask(id) {
+            appState.tasks = appState.tasks.filter(t => t.id !== id);
+            renderTasks();
+            saveLocalStorage();
+        }
+
+        function renderTasks() {
+            const list = document.getElementById('taskList');
+            const emptyState = document.getElementById('emptyTaskState');
+            const countText = document.getElementById('taskCountText');
+
+            list.innerHTML = '';
+            const pendingTasks = appState.tasks.filter(t => !t.completed);
+            countText.innerText = `${pendingTasks.length} items remaining`;
+
+            if (appState.tasks.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                
+                appState.tasks.forEach(task => {
+                    const div = document.createElement('div');
+                    div.className = `p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-3 ${task.completed ? 'bg-warmBg/50 border-warmBorder opacity-60' : 'bg-warmBg border-warmBorder hover:border-amberWarm'}`;
+                    
+                    div.innerHTML = `
+                        <div class="flex items-center gap-3 flex-1 min-w-0">
+                            <button onclick="toggleTask(${task.id})" class="w-5 h-5 rounded-lg border border-warmBorder flex items-center justify-center transition-colors ${task.completed ? 'bg-sage text-white border-sage' : 'bg-warmCard'}">
+                                ${task.completed ? '<i data-lucide="check" class="w-3.5 h-3.5"></i>' : ''}
+                            </button>
+                            <span class="text-xs sm:text-sm text-cocoa truncate ${task.completed ? 'line-through text-cocoa-muted' : 'font-medium'}">${escapeHtml(task.title)}</span>
+                        </div>
+                        <button onclick="deleteTask(${task.id})" class="text-cocoa-light hover:text-terracotta p-1 transition-colors">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    `;
+                    list.appendChild(div);
+                });
+                lucide.createIcons();
+            }
+        }
+
+        function openAtomizeModal() {
+            document.getElementById('atomizeModal').classList.remove('hidden');
+        }
+        function closeAtomizeModal() {
+            document.getElementById('atomizeModal').classList.add('hidden');
+        }
+
+        function generateSubtasks() {
+            const type = document.getElementById('atomizeType').value;
+            let newTasks = [];
+
+            if (type === 'essay') {
+                newTasks = [
+                    'Open essay document & type 1 sentence title',
+                    'Write 3 bullet points for paragraph ideas',
+                    'Draft just the first 2 sentences of Intro'
+                ];
+            } else if (type === 'math') {
+                newTasks = [
+                    'Clear desk and open math book to assigned page',
+                    'Solve ONLY Question #1 (or 1 example)',
+                    'Set timer for 10 minutes to finish 3 more'
+                ];
+            } else if (type === 'reading') {
+                newTasks = [
+                    'Read bold headings & look at diagrams on assigned pages',
+                    'Read first paragraph of section 1',
+                    'Jot down 2 key terms on a sticky note'
+                ];
+            } else if (type === 'slides') {
+                newTasks = [
+                    'Create blank presentation & name it',
+                    'Add 3 slide titles (Intro, Body, Summary)',
+                    'Find 1 picture for the first slide'
+                ];
+            }
+
+            newTasks.forEach(title => {
+                appState.tasks.push({
+                    id: Date.now() + Math.random(),
+                    title: title,
+                    completed: false,
+                    isMicro: true
+                });
+            });
+
+            renderTasks();
+            saveLocalStorage();
+            closeAtomizeModal();
+        }
+
+        function toggleEnergyModal() {
+            const modal = document.getElementById('energyModal');
+            modal.classList.toggle('hidden');
+        }
+
+        function setEnergy(label, icon, suggestedTime) {
+            appState.energy = { label, icon, suggestedTime };
+            document.getElementById('currentEnergyIcon').innerText = icon;
+            document.getElementById('currentEnergyText').innerText = `Energy: ${label}`;
+            setTimerDuration(suggestedTime);
+            toggleEnergyModal();
+            saveLocalStorage();
+        }
+
+        function saveAuditLog() {
+            const hours = document.getElementById('scrollingHours').value;
+            const feeling = document.getElementById('scrollingFeeling').value;
+            const feedback = document.getElementById('auditLogFeedback');
+
+            feedback.classList.remove('hidden');
+            if (feeling === 'More Tired' || feeling === 'Numb') {
+                feedback.innerHTML = `<strong>Noticed that?</strong> Spending ${hours} hours scrolling left you feeling ${feeling.toLowerCase()}. Next time, try doing <strong>5 minutes of focus</strong> right as you get home so you can rest guilt-free for the rest of the evening!`;
+            } else {
+                feedback.innerHTML = `Great awareness! Balance is key. Keep protecting your after-school decompression time!`;
+            }
+        }
+
+        function updateStreakUI() {
+            document.getElementById('streakCount').innerText = appState.streak;
+        }
+
+        // Local Storage Helpers
+        function saveLocalStorage() {
+            const data = {
+                streak: appState.streak,
+                tasks: appState.tasks,
+                energy: appState.energy
+            };
+            localStorage.setItem('warm_focus_data', JSON.stringify(data));
+        }
+
+        function loadLocalStorage() {
+            const data = localStorage.getItem('warm_focus_data');
+            if (data) {
+                try {
+                    const parsed = JSON.parse(data);
+                    appState.streak = parsed.streak || 1;
+                    appState.tasks = parsed.tasks || [];
+                    if (parsed.energy) {
+                        appState.energy = parsed.energy;
+                        document.getElementById('currentEnergyIcon').innerText = appState.energy.icon;
+                        document.getElementById('currentEnergyText').innerText = `Energy: ${appState.energy.label}`;
+                    }
+                } catch(e){}
+            }
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/[&<>"']/g, function(m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+            });
+        }
+    </script>
+</body>
+</html>

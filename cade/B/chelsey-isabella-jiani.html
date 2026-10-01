@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Periwinkle & Rose - Olivia & Ale's Aesthetic Focus Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        // Dynamic Palette CSS Variable Tokens
+                        theme: {
+                            50: 'var(--color-50)',
+                            100: 'var(--color-100)',
+                            200: 'var(--color-200)',
+                            300: 'var(--color-300)',
+                            400: 'var(--color-400)',
+                            500: 'var(--color-500)',
+                            600: 'var(--color-600)',
+                            700: 'var(--color-700)',
+                            800: 'var(--color-800)',
+                            900: 'var(--color-900)',
+                        },
+                        dustyrose: {
+                            50: '#FAF4F5',
+                            100: '#F4E8EA',
+                            200: '#E6CFD4',
+                            300: '#D5B2BB',
+                            400: '#C1939F',
+                            500: '#A97583',
+                            600: '#8E5A68',
+                            700: '#734451',
+                            800: '#5A323E',
+                            900: '#43232C',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                        serif: ['Cormorant Garamond', 'Playfair Display', 'Georgia', 'serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    },
+                    boxShadow: {
+                        'soft-mood': '0 10px 30px -5px var(--color-200), 0 4px 12px -2px var(--color-100)',
+                        'polaroid': '0 10px 25px -6px rgba(0, 0, 0, 0.08)',
+                        'glow-soft': '0 0 20px -3px var(--color-300)',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root, body.theme-dusty-rose {
+            --color-50: #FAF4F5;
+            --color-100: #F4E8EA;
+            --color-200: #E6CFD4;
+            --color-300: #D5B2BB;
+            --color-400: #C1939F;
+            --color-500: #A97583;
+            --color-600: #8E5A68;
+            --color-700: #734451;
+            --color-800: #5A323E;
+            --color-900: #43232C;
+            --bg-main: #FAF5F6;
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --border-color: #EBDCE0;
+            --font-display: 'Cormorant Garamond', serif;
+            --pattern-color: rgba(193, 147, 159, 0.22);
+        }
+
+        /* Ballet Slipper Blush Theme */
+        body.theme-ballet-slipper {
+            --color-50: #FCF6F7;
+            --color-100: #F9ECF0;
+            --color-200: #F0D5DD;
+            --color-300: #E4B7C5;
+            --color-400: #D592A6;
+            --color-500: #C2718A;
+            --color-600: #A6536D;
+            --color-700: #883F56;
+            --color-800: #6E3345;
+            --color-900: #4B212D;
+            --bg-main: #FCF6F7;
+            --bg-card: rgba(255, 255, 255, 0.96);
+            --border-color: #F0D5DD;
+            --pattern-color: rgba(213, 146, 166, 0.25);
+        }
+
+        /* Soft Baby Blue & Powder Theme */
+        body.theme-baby-blue {
+            --color-50: #F2F7FA;
+            --color-100: #E4EEF5;
+            --color-200: #C9DDEB;
+            --color-300: #A6C5DC;
+            --color-400: #7EA8CB;
+            --color-500: #5E8CB7;
+            --color-600: #46719B;
+            --color-700: #375A7E;
+            --color-800: #2E4B69;
+            --color-900: #1E3146;
+            --bg-main: #F2F7FA;
+            --bg-card: rgba(255, 255, 255, 0.96);
+            --border-color: #C9DDEB;
+            --pattern-color: rgba(126, 168, 203, 0.22);
+        }
+
+        /* Muted Sage & Rosewater Theme */
+        body.theme-muted-sage-rose {
+            --color-50: #F4F7F5;
+            --color-100: #E6ECE8;
+            --color-200: #CCD9CF;
+            --color-300: #A9BEAE;
+            --color-400: #859F8B;
+            --color-500: #68836F;
+            --color-600: #516A58;
+            --color-700: #405446;
+            --color-800: #334338;
+            --color-900: #222D26;
+            --bg-main: #F4F7F5;
+            --bg-card: rgba(255, 255, 255, 0.96);
+            --border-color: #CCD9CF;
+            --pattern-color: rgba(133, 159, 139, 0.22);
+        }
+
+        /* Desaturated Aesthetic Patterns */
+        .pattern-polka-dots {
+            background-image: radial-gradient(var(--pattern-color) 1.5px, transparent 1.5px);
+            background-size: 20px 20px;
+        }
+
+        .pattern-gingham {
+            background-image: linear-gradient(90deg, var(--pattern-color) 50%, transparent 50%),
+                              linear-gradient(var(--pattern-color) 50%, transparent 50%);
+            background-size: 26px 26px;
+        }
+
+        .pattern-mini-stars {
+            background-image: radial-gradient(var(--pattern-color) 1.2px, transparent 1.2px),
+                              radial-gradient(var(--pattern-color) 1.2px, transparent 1.2px);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--color-900);
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* Smooth Font Color & Border Transitions Across Palette Changes */
+        *, *::before, *::after {
+            transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .font-serif-display {
+            font-family: var(--font-display);
+        }
+
+        .aesthetic-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.4s ease, border-color 0.4s ease;
+        }
+
+        .aesthetic-card:hover {
+            box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.06);
+        }
+
+        .polaroid-card {
+            background: #ffffff;
+            padding: 10px 10px 22px 10px;
+            box-shadow: 0 10px 25px -8px rgba(0, 0, 0, 0.1);
+            transform: rotate(-1.5deg);
+            transition: transform 0.3s ease;
+        }
+        .polaroid-card:hover {
+            transform: rotate(0deg) scale(1.02);
+        }
+
+        /* Custom Soft Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--color-300);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col theme-dusty-rose pattern-polka-dots transition-all duration-300 pb-16">
+
+    <header class="sticky top-0 z-40 bg-white/85 backdrop-blur-md border-b border-theme-200/80 px-4 lg:px-8 py-3">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            
+            <!-- Logo & Active Client Selector -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-theme-50 border border-theme-200 text-theme-600 flex items-center justify-center text-lg shadow-sm">
+                    <i class="fa-solid fa-ribbon text-theme-500"></i>
+                </div>
+                <div>
+                    <h1 class="font-serif-display font-bold text-2xl text-theme-900 tracking-tight flex items-center gap-2">
+                        Periwinkle & Rose <span class="text-[11px] font-sans font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full bg-theme-100 text-theme-800 border border-theme-200">Olivia & Ale Studio</span>
+                    </h1>
+                    <p class="text-[11px] text-theme-600/90 font-medium">Desaturated Aesthetic Time Pacing & Focus Workspace</p>
+                </div>
+            </div>
+
+            <!-- Main Profile Switcher Tabs (Olivia vs. Ale) -->
+            <div class="flex items-center bg-theme-100/70 p-1 rounded-2xl border border-theme-200">
+                <button id="tab-ale" onclick="switchProfile('ale')" class="px-4 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-white text-theme-900 shadow-sm">
+                    <i class="fa-solid fa-wand-magic-sparkles text-theme-400"></i>
+                    <span>Ale's Profile</span>
+                    <span class="text-[10px] bg-theme-100 text-theme-800 px-1.5 rounded-md font-semibold">Finish On Time</span>
+                </button>
+                <button id="tab-olivia" onclick="switchProfile('olivia')" class="px-4 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-theme-700 hover:text-theme-950">
+                    <i class="fa-solid fa-football text-theme-500"></i>
+                    <span>Olivia's Profile</span>
+                    <span class="text-[10px] bg-theme-100 text-theme-800 px-1.5 rounded-md font-semibold">Chill & Shield</span>
+                </button>
+            </div>
+
+            <!-- Right Controls: Muted Theme Dropdown -->
+            <div class="flex items-center gap-3">
+                
+                <!-- Theme Dropdown -->
+                <div class="relative">
+                    <button onclick="toggleThemeMenu()" class="px-3.5 py-2 rounded-2xl bg-white border border-theme-200 hover:border-theme-300 text-xs font-bold text-theme-900 flex items-center gap-2 shadow-sm transition">
+                        <span id="theme-color-dot" class="w-3.5 h-3.5 rounded-full bg-theme-400 inline-block border border-white"></span>
+                        <span class="hidden sm:inline text-theme-600">Palette:</span>
+                        <span id="current-theme-name" class="font-serif-display italic text-sm text-theme-900">Dusty Rose & Silk</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] text-theme-400"></i>
+                    </button>
+
+                    <div id="theme-menu" class="hidden absolute right-0 mt-2 w-72 bg-white/95 backdrop-blur-xl border border-theme-200 rounded-3xl p-3.5 shadow-xl z-50 animate-fadeIn">
+                        
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-theme-400 px-3 py-1 border-b border-theme-100 mb-1">
+                            Soft Low-Saturation Palettes
+                        </div>
+                        <div class="space-y-1 mb-3">
+                            <button onclick="setTheme('dusty-rose', 'Dusty Rose & Silk')" class="w-full text-left px-3 py-1.5 rounded-2xl hover:bg-theme-50 flex items-center justify-between text-xs font-semibold text-theme-900 transition">
+                                <span class="flex items-center gap-2">
+                                    <span class="w-3.5 h-3.5 rounded-full bg-[#A97583]"></span> Dusty Rose & Silk
+                                </span>
+                                <i class="fa-solid fa-check text-theme-600 text-xs opacity-100" id="check-dusty-rose"></i>
+                            </button>
+                            <button onclick="setTheme('ballet-slipper', 'Ballet Slipper Blush')" class="w-full text-left px-3 py-1.5 rounded-2xl hover:bg-theme-50 flex items-center justify-between text-xs font-semibold text-theme-900 transition">
+                                <span class="flex items-center gap-2">
+                                    <span class="w-3.5 h-3.5 rounded-full bg-[#C1939F]"></span> Ballet Slipper Blush
+                                </span>
+                                <i class="fa-solid fa-check text-theme-600 text-xs opacity-0" id="check-ballet-slipper"></i>
+                            </button>
+                            <button onclick="setTheme('baby-blue', 'Soft Baby Blue & Powder')" class="w-full text-left px-3 py-1.5 rounded-2xl hover:bg-theme-50 flex items-center justify-between text-xs font-semibold text-theme-900 transition">
+                                <span class="flex items-center gap-2">
+                                    <span class="w-3.5 h-3.5 rounded-full bg-[#7EA8CB]"></span> Soft Baby Blue & Powder
+                                </span>
+                                <i class="fa-solid fa-check text-theme-600 text-xs opacity-0" id="check-baby-blue"></i>
+                            </button>
+                            <button onclick="setTheme('muted-sage-rose', 'Muted Sage & Rosewater')" class="w-full text-left px-3 py-1.5 rounded-2xl hover:bg-theme-50 flex items-center justify-between text-xs font-semibold text-theme-900 transition">
+                                <span class="flex items-center gap-2">
+                                    <span class="w-3.5 h-3.5 rounded-full bg-[#859F8B]"></span> Muted Sage & Rosewater
+                                </span>
+                                <i class="fa-solid fa-check text-theme-600 text-xs opacity-0" id="check-muted-sage-rose"></i>
+                            </button>
+                        </div>
+
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-theme-400 px-3 py-1 border-b border-theme-100 mb-1">
+                            Aesthetic Patterns
+                        </div>
+                        <div class="grid grid-cols-2 gap-1.5 pt-1">
+                            <button onclick="setPattern('polka-dots')" class="px-2.5 py-1.5 rounded-xl border border-theme-200 text-[11px] font-bold text-theme-800 bg-white hover:bg-theme-50 flex items-center gap-1.5">
+                                <i class="fa-solid fa-circle text-[7px] text-theme-400"></i> Polka Dots
+                            </button>
+                            <button onclick="setPattern('gingham')" class="px-2.5 py-1.5 rounded-xl border border-theme-200 text-[11px] font-bold text-theme-800 bg-white hover:bg-theme-50 flex items-center gap-1.5">
+                                <i class="fa-solid fa-border-all text-xs text-theme-400"></i> Soft Gingham
+                            </button>
+                            <button onclick="setPattern('mini-stars')" class="px-2.5 py-1.5 rounded-xl border border-theme-200 text-[11px] font-bold text-theme-800 bg-white hover:bg-theme-50 flex items-center gap-1.5">
+                                <i class="fa-solid fa-sparkles text-xs text-theme-400"></i> Soft Sparkles
+                            </button>
+                            <button onclick="setPattern('none')" class="px-2.5 py-1.5 rounded-xl border border-theme-200 text-[11px] font-semibold text-theme-500 bg-white hover:bg-theme-50 flex items-center gap-1.5">
+                                <i class="fa-solid fa-ban text-xs"></i> Clean Solid
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto w-full px-4 lg:px-8 mt-6 flex-1">
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            <aside class="lg:col-span-3 space-y-4 lg:sticky lg:top-20 z-30">
+                <div class="bg-white/90 backdrop-blur-xl border border-theme-200/80 rounded-3xl p-4 shadow-sm space-y-3">
+                    <div class="px-3 py-1 text-[11px] font-bold text-theme-400 uppercase tracking-wider flex items-center justify-between">
+                        <span>Navigation</span>
+                        <i class="fa-solid fa-compass text-theme-300"></i>
+                    </div>
+
+                    <nav class="space-y-1" id="sidebar-nav">
+                        <button id="sidebar-all" onclick="switchSubTab('all')" class="w-full px-3.5 py-2.5 rounded-2xl text-xs font-bold transition flex items-center justify-between bg-theme-600 text-white shadow-sm">
+                            <div class="flex items-center gap-2.5">
+                                <i class="fa-solid fa-border-all text-sm"></i>
+                                <span>All Workspaces</span>
+                            </div>
+                            <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded-full">Overview</span>
+                        </button>
+
+                        <button id="sidebar-timer" onclick="switchSubTab('timer')" class="w-full px-3.5 py-2.5 rounded-2xl text-xs font-semibold text-theme-800 hover:bg-theme-50 transition flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <i class="fa-solid fa-stopwatch text-theme-500 text-sm"></i>
+                                <span>Pacing Timer</span>
+                            </div>
+                            <span class="text-[10px] text-theme-400">20m</span>
+                        </button>
+
+                        <button id="sidebar-calculator" onclick="switchSubTab('calculator')" class="w-full px-3.5 py-2.5 rounded-2xl text-xs font-semibold text-theme-800 hover:bg-theme-50 transition flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <i class="fa-solid fa-calculator text-theme-500 text-sm"></i>
+                                <span>Deadline Estimator</span>
+                            </div>
+                            <span id="sidebar-calc-tag" class="text-[10px] text-theme-400">Ale's Tool</span>
+                        </button>
+
+                        <button id="sidebar-shield" onclick="switchSubTab('shield')" class="w-full px-3.5 py-2.5 rounded-2xl text-xs font-semibold text-theme-800 hover:bg-theme-50 transition flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <i class="fa-solid fa-shield-halved text-theme-500 text-sm"></i>
+                                <span>Distraction Shield</span>
+                            </div>
+                            <span class="text-[10px] bg-theme-100 text-theme-700 px-1.5 py-0.5 rounded-md font-bold">18 Held</span>
+                        </button>
+
+                        <button id="sidebar-coach" onclick="switchSubTab('coach')" class="w-full px-3.5 py-2.5 rounded-2xl text-xs font-semibold text-theme-800 hover:bg-theme-50 transition flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <i class="fa-solid fa-comments text-theme-500 text-sm"></i>
+                                <span>AI Coach & Quests</span>
+                            </div>
+                            <span class="text-[10px] text-theme-500">Gemini</span>
+                        </button>
+                    </nav>
+
+                    <div class="pt-3 border-t border-theme-100 space-y-2">
+                        <div class="px-3 text-[10px] font-bold uppercase tracking-wider text-theme-400">Focus Mood</div>
+                        <div class="p-3 bg-theme-50/80 rounded-2xl border border-theme-100 flex items-center gap-2.5">
+                            <div class="w-7 h-7 rounded-xl bg-white border border-theme-200 flex items-center justify-center text-xs text-theme-600">
+                                <i class="fa-solid fa-cloud-sun"></i>
+                            </div>
+                            <div class="text-[11px]">
+                                <div class="font-bold text-theme-900" id="sidebar-status-title">On Track Mode</div>
+                                <div class="text-theme-500 text-[10px]" id="sidebar-status-sub">2/3 Homework Done</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- RIGHT MAIN CONTENT AREA -->
+            <div class="lg:col-span-9 space-y-6">
+
+                <div class="bg-white/90 backdrop-blur-xl border border-theme-200/80 rounded-3xl p-6 shadow-soft-mood relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div class="space-y-2 z-10 max-w-xl">
+                        <div id="hero-badge" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-theme-50 border border-theme-200 text-theme-800 text-xs font-semibold">
+                            <i class="fa-solid fa-flower text-theme-400"></i> Ale's Pacing & Deadline Assistant
+                        </div>
+                        <h2 id="hero-title" class="font-serif-display text-3xl font-bold text-theme-900 leading-tight">
+                            Finish your homework on time without the panic stress, Ale!
+                        </h2>
+                        <p id="hero-desc" class="text-xs md:text-sm text-theme-700/80 leading-relaxed">
+                            We broke down your work into manageable 15-to-25 minute bite-sized sprints so you never get stuck halfway or miss submission deadlines.
+                        </p>
+                        
+                        <!-- Quick Action Presets -->
+                        <div id="hero-actions" class="pt-2 flex flex-wrap items-center gap-2">
+                            <button onclick="setShieldPreset('finish_homework')" class="px-4 py-2 bg-theme-600 hover:bg-theme-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm">
+                                <i class="fa-solid fa-stopwatch"></i> Ale's Deadline Sprint (20m)
+                            </button>
+                            <button onclick="setShieldPreset('task_pacer')" class="px-4 py-2 bg-theme-50 hover:bg-theme-100 text-theme-900 rounded-xl text-xs font-bold transition border border-theme-200 flex items-center gap-2">
+                                <i class="fa-solid fa-layer-group"></i> 3-Task Homework Estimator
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Right Polaroid Illustration -->
+                    <div class="relative shrink-0 hidden md:block z-10 pr-2">
+                        <div class="polaroid-card w-44 text-center">
+                            <div class="h-36 bg-theme-50 rounded-lg overflow-hidden relative flex items-center justify-center border border-theme-100">
+                                <svg class="w-24 h-24" viewBox="0 0 100 100" fill="none">
+                                    <circle cx="50" cy="35" r="14" fill="var(--color-200)" />
+                                    <circle cx="35" cy="50" r="14" fill="var(--color-400)" />
+                                    <circle cx="65" cy="50" r="14" fill="var(--color-400)" />
+                                    <circle cx="50" cy="65" r="14" fill="var(--color-200)" />
+                                    <circle cx="50" cy="50" r="10" fill="var(--color-500)" />
+                                    <path d="M35 75 C45 68, 45 82, 50 75 C55 82, 55 68, 65 75 C60 85, 40 85, 35 75 Z" fill="var(--color-600)" opacity="0.8"/>
+                                </svg>
+                            </div>
+                            <p id="polaroid-caption" class="font-serif-display italic text-xs text-theme-900 font-semibold mt-2">dusty rose & silk vibe</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MAIN WORKSPACE GRID -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+
+                    <!-- LEFT COLUMN: Homework Pacing Engine & Deadline Calculator -->
+                    <div class="md:col-span-7 space-y-6" id="left-column">
+
+                        <div id="section-timer" class="aesthetic-card rounded-3xl p-6 shadow-sm">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-theme-400 animate-pulse"></span>
+                                    <span class="text-xs font-bold uppercase tracking-wider text-theme-600">Active Pacing Timer</span>
+                                </div>
+                                <span class="text-xs font-serif-display italic text-theme-900 bg-theme-100 border border-theme-200 px-3 py-1 rounded-full font-bold" id="active-preset-badge">
+                                    Ale's Deadline Sprint (20m)
+                                </span>
+                            </div>
+
+                            <!-- Clean Muted Aesthetic Timer -->
+                            <div class="flex flex-col items-center justify-center py-6 border-y border-theme-200/80 my-2">
+                                <div class="relative w-52 h-52 flex items-center justify-center mb-4">
+                                    <!-- Circular SVG Progress Ring -->
+                                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                        <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="6" class="text-theme-100" fill="transparent" />
+                                        <circle id="timer-progress-circle" cx="50" cy="50" r="42" stroke="currentColor" stroke-width="6" class="text-theme-400 transition-all duration-1000" fill="transparent" stroke-dasharray="263.89" stroke-dashoffset="0" stroke-linecap="round" />
+                                    </svg>
+
+                                    <!-- Inner Time Text -->
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                                        <span class="text-5xl font-serif-display font-bold text-theme-900 tracking-tight" id="timer-display">20:00</span>
+                                        <span class="text-xs text-theme-600 font-semibold mt-1" id="timer-label">Homework Sprint 1 of 3</span>
+                                    </div>
+                                </div>
+
+                                <!-- Timer Controls -->
+                                <div class="flex items-center gap-3">
+                                    <button id="start-timer-btn" onclick="toggleTimer()" class="px-6 py-3 bg-theme-600 hover:bg-theme-700 text-white font-bold text-xs rounded-2xl shadow-sm transition flex items-center gap-2">
+                                        <i class="fa-solid fa-play" id="timer-icon"></i> <span id="timer-btn-text">Start Sprint Timer</span>
+                                    </button>
+                                    <button onclick="resetTimer()" class="p-3 bg-theme-100 hover:bg-theme-200 text-theme-800 rounded-2xl text-xs font-bold transition">
+                                        <i class="fa-solid fa-rotate-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Pacing Indicator Banner -->
+                            <div id="pacing-status-banner" class="bg-theme-50/80 border border-theme-200/60 p-3 rounded-2xl flex items-center justify-between text-xs">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-xl bg-theme-100 text-theme-700 flex items-center justify-center font-bold">
+                                        <i class="fa-solid fa-check-double"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-bold text-theme-900">Target Completion</div>
+                                        <div class="text-[11px] text-theme-700" id="target-completion-text">Finish current subject before 8:30 PM</div>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] bg-theme-200/80 text-theme-900 font-bold px-2 py-1 rounded-lg">Pacing: ON TRACK</span>
+                            </div>
+                        </div>
+
+                        <div id="section-calculator" class="aesthetic-card rounded-3xl p-5 shadow-sm">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-calculator text-theme-500"></i>
+                                    <h3 class="font-serif-display font-bold text-lg text-theme-900" id="calc-header-title">Homework Deadline Calculator</h3>
+                                </div>
+                                <span id="calc-header-tag" class="text-xs bg-theme-100 text-theme-800 font-bold px-2.5 py-0.5 rounded-full">Ale's Pacing Tool</span>
+                            </div>
+                            <p class="text-xs text-theme-700/80 mb-4 leading-relaxed" id="calc-header-desc">
+                                Unsure if you'll finish on time? Enter your tasks below, and we'll calculate exact timed blocks so you finish before bed!
+                            </p>
+
+                            <!-- Homework Task Breakdown Input -->
+                            <div class="space-y-3">
+                                <div class="grid grid-cols-1 sm:grid-cols-12 gap-2">
+                                    <input type="text" id="task-name-input" placeholder="e.g., Math Homework Sheet" class="sm:col-span-7 bg-white border border-theme-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-theme-400">
+                                    <input type="number" id="task-mins-input" placeholder="Mins" class="sm:col-span-3 bg-white border border-theme-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-theme-400">
+                                    <button onclick="addHomeworkTask()" class="sm:col-span-2 bg-theme-600 hover:bg-theme-700 text-white font-bold text-xs rounded-xl py-2 transition">
+                                        Add
+                                    </button>
+                                </div>
+
+                                <!-- Dynamic Task List -->
+                                <div id="homework-task-list" class="space-y-2 max-h-40 overflow-y-auto pr-1">
+                                    <!-- Tasks populated via JavaScript -->
+                                </div>
+
+                                <!-- Calculation Result -->
+                                <div class="p-3 bg-theme-50 border border-theme-200 rounded-2xl flex items-center justify-between text-xs font-bold text-theme-900">
+                                    <span id="total-time-calc">Total Homework Time: 45 Mins</span>
+                                    <span id="estimated-finish-calc" class="text-theme-600">Estimated Finish: 8:45 PM</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="section-shield" class="aesthetic-card rounded-3xl p-5 shadow-sm">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="font-serif-display font-bold text-lg text-theme-900 flex items-center gap-2">
+                                    <i class="fa-solid fa-shield-halved text-theme-500"></i> Distraction Traps Blocked
+                                </h3>
+                                <span class="text-xs text-theme-500 font-medium">18 notifications held</span>
+                            </div>
+
+                            <div class="space-y-2 max-h-40 overflow-y-auto pr-1" id="notification-feed">
+                                <div class="p-2.5 bg-white border border-theme-200/60 rounded-2xl flex items-center justify-between text-xs hover:border-theme-300 transition">
+                                    <div class="flex items-center gap-2.5">
+                                        <span class="w-7 h-7 rounded-lg bg-theme-100 text-theme-700 flex items-center justify-center text-xs font-bold">
+                                            <i class="fa-brands fa-instagram"></i>
+                                        </span>
+                                        <div>
+                                            <span class="font-bold text-theme-900">Instagram DM</span>
+                                            <span class="text-theme-500 ml-1">"Did you finish problem #4?"</span>
+                                        </div>
+                                    </div>
+                                    <span class="text-[10px] text-theme-400 font-medium">Held for 20m sprint</span>
+                                </div>
+
+                                <div class="p-2.5 bg-white border border-theme-200/60 rounded-2xl flex items-center justify-between text-xs hover:border-theme-300 transition">
+                                    <div class="flex items-center gap-2.5">
+                                        <span class="w-7 h-7 rounded-lg bg-theme-100 text-theme-700 flex items-center justify-center text-xs font-bold">
+                                            <i class="fa-brands fa-tiktok"></i>
+                                        </span>
+                                        <div>
+                                            <span class="font-bold text-theme-900">TikTok</span>
+                                            <span class="text-theme-500 ml-1">"New trending sound..."</span>
+                                        </div>
+                                    </div>
+                                    <span class="text-[10px] text-theme-400 font-medium">Blocked</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="md:col-span-5 space-y-6" id="right-column">
+
+                        <div id="section-quests" class="aesthetic-card rounded-3xl p-5 shadow-sm">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="font-serif-display font-bold text-lg text-theme-900 flex items-center gap-2">
+                                    <i class="fa-solid fa-list-check text-theme-600"></i> Daily Completion Quests
+                                </h3>
+                                <span class="text-xs text-theme-800 font-bold bg-theme-100 border border-theme-200 px-2.5 py-0.5 rounded-full">+140 XP</span>
+                            </div>
+
+                            <div class="space-y-2.5" id="quest-list">
+                                <!-- Quest 1 -->
+                                <div class="p-3 bg-white border border-theme-200/80 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-theme-50/50 transition" onclick="completeQuest(this, 40)">
+                                    <div class="flex items-center gap-3">
+                                        <div class="quest-checkbox w-5 h-5 rounded-lg border-2 border-theme-300 flex items-center justify-center text-xs text-white"></div>
+                                        <div>
+                                            <div id="quest-1-title" class="text-xs font-bold text-theme-900">Set 20m Timer for Task 1</div>
+                                            <div id="quest-1-sub" class="text-[11px] text-theme-500">Break work into small chunks</div>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs font-bold text-theme-700 bg-theme-50 px-2 py-0.5 rounded-md">+40 XP</span>
+                                </div>
+
+                                <!-- Quest 2 -->
+                                <div class="p-3 bg-white border border-theme-200/80 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-theme-50/50 transition" onclick="completeQuest(this, 50)">
+                                    <div class="flex items-center gap-3">
+                                        <div class="quest-checkbox w-5 h-5 rounded-lg border-2 border-theme-300 flex items-center justify-center text-xs text-white"></div>
+                                        <div>
+                                            <div id="quest-2-title" class="text-xs font-bold text-theme-900">Complete Homework Task Before 8:30 PM</div>
+                                            <div id="quest-2-sub" class="text-[11px] text-theme-500">Finish work without rushing</div>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs font-bold text-theme-700 bg-theme-50 px-2 py-0.5 rounded-md">+50 XP</span>
+                                </div>
+
+                                <!-- Quest 3 -->
+                                <div class="p-3 bg-white border border-theme-200/80 rounded-2xl flex items-center justify-between cursor-pointer hover:bg-theme-50/50 transition" onclick="completeQuest(this, 50)">
+                                    <div class="flex items-center gap-3">
+                                        <div class="quest-checkbox w-5 h-5 rounded-lg border-2 border-theme-300 flex items-center justify-center text-xs text-white"></div>
+                                        <div>
+                                            <div id="quest-3-title" class="text-xs font-bold text-theme-900">Hydrate & 5m Stretch</div>
+                                            <div id="quest-3-sub" class="text-[11px] text-theme-500">Keep energy high while studying</div>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs font-bold text-theme-700 bg-theme-50 px-2 py-0.5 rounded-md">+50 XP</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Periwinkle & Rose AI Coach Box -->
+                        <div id="section-coach" class="aesthetic-card rounded-3xl p-5 shadow-sm flex flex-col h-[420px]">
+                            <div class="flex items-center justify-between pb-3 border-b border-theme-200/80 mb-3">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-8 h-8 rounded-xl bg-theme-50 border border-theme-200 text-theme-600 flex items-center justify-center text-xs">
+                                        <i class="fa-solid fa-sparkles text-theme-400"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-serif-display font-bold text-base text-theme-900">Periwinkle & Rose AI Coach</h3>
+                                        <p class="text-[10px] text-theme-400">Pacing & focus assistant for Ale & Olivia</p>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] bg-theme-50 border border-theme-200 text-theme-800 font-bold px-2 py-0.5 rounded-full">Gemini Powered</span>
+                            </div>
+
+                            <!-- Chat Message Area -->
+                            <div class="flex-1 overflow-y-auto space-y-3 pr-1 text-xs" id="chat-messages">
+                                <div class="bg-theme-50/80 border border-theme-200/60 p-3 rounded-2xl text-theme-900 max-w-[90%]">
+                                    🌸 Hi Ale! Stressed about finishing your homework on time tonight? Tell me what tasks you have, and I will help you pace them step-by-step so you get everything done on time!
+                                </div>
+                            </div>
+
+                            <!-- Quick Prompt Suggestions -->
+                            <div class="flex items-center gap-1.5 overflow-x-auto py-2 border-t border-theme-200/80 my-1 scrollbar-none" id="quick-prompt-container">
+                                <button onclick="sendQuickPrompt('Help me break my 3 homework tasks into 15 min sprints')" class="shrink-0 px-2.5 py-1 bg-white border border-theme-200 text-theme-800 text-[11px] rounded-full hover:bg-theme-50 transition">
+                                    ⏰ Break tasks into 15m sprints
+                                </button>
+                                <button onclick="sendQuickPrompt('I am taking too long on my essay and falling behind')" class="shrink-0 px-2.5 py-1 bg-white border border-theme-200 text-theme-800 text-[11px] rounded-full hover:bg-theme-50 transition">
+                                    📝 Essay deadline rescue
+                                </button>
+                            </div>
+
+                            <!-- Form Input -->
+                            <form onsubmit="handleChatSubmit(event)" class="flex items-center gap-2 mt-1">
+                                <input type="text" id="chat-input" placeholder="Ask AI coach for homework pacing advice..." class="flex-1 bg-white border border-theme-200 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-theme-400 transition">
+                                <button type="submit" class="p-2 bg-theme-600 hover:bg-theme-700 text-white rounded-xl text-xs font-bold transition shadow-sm">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                </button>
+                            </form>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <div id="rescue-modal" class="fixed inset-0 bg-theme-950/40 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-theme-200 relative text-center">
+            <div class="w-14 h-14 rounded-2xl bg-theme-100 text-theme-700 flex items-center justify-center text-xl mx-auto mb-3">
+                <i class="fa-solid fa-stopwatch text-theme-600"></i>
+            </div>
+            <h3 class="font-serif-display font-bold text-2xl text-theme-900">Homework Deadline Circuit Breaker!</h3>
+            <p class="text-xs text-theme-700 mt-2 leading-relaxed">
+                Falling behind on time? Don't panic, Ale! Let's regroup so you still finish before bed:
+            </p>
+
+            <div class="my-4 p-4 bg-theme-50 rounded-2xl text-left space-y-2 border border-theme-200/80">
+                <div class="text-xs font-bold text-theme-900 flex items-center gap-2">
+                    <i class="fa-solid fa-scissors text-theme-500"></i> Cut non-essential perfectionism (80% done is great!)
+                </div>
+                <div class="text-xs font-bold text-theme-900 flex items-center gap-2">
+                    <i class="fa-solid fa-bolt text-theme-500"></i> Do a 10-minute rapid finish sprint
+                </div>
+                <div class="text-xs font-bold text-theme-900 flex items-center gap-2">
+                    <i class="fa-solid fa-mug-hot text-theme-500"></i> Take a 2m drink break
+                </div>
+            </div>
+
+            <button onclick="closeModal('rescue-modal')" class="w-full py-2.5 bg-theme-600 hover:bg-theme-700 text-white rounded-xl text-xs font-bold transition shadow-sm">
+                Restart Pacing Sprint (+20 XP)
+            </button>
+        </div>
+    </div>
+
+    <script>
+        /* State Variables */
+        let activeProfile = 'ale'; // 'ale' or 'olivia'
+        let activeSubTab = 'all'; // 'all', 'timer', 'calculator', 'shield', 'coach'
+        let timerInterval = null;
+        let timerSeconds = 20 * 60;
+        let initialSeconds = 20 * 60;
+        let isTimerRunning = false;
+        let userXp = 420;
+        let userLevel = 4;
+
+        // Ale's Homework Tasks
+        let homeworkTasks = [
+            { id: 1, name: 'Math Homework Sheet', mins: 20, done: false },
+            { id: 2, name: 'English Essay Outline', mins: 25, done: false }
+        ];
+
+        window.onload = function() {
+            renderHomeworkTasks();
+            updateTimerDisplay();
+            updateProgressCircle();
+            setTheme('dusty-rose', 'Dusty Rose & Silk');
+            setPattern('polka-dots');
+        };
+
+        /* Sub Tab Switcher Functionality */
+        function switchSubTab(tab) {
+            activeSubTab = tab;
+
+            const tabs = ['all', 'timer', 'calculator', 'shield', 'coach'];
+            tabs.forEach(t => {
+                const sidebarBtn = document.getElementById(`sidebar-${t}`);
+                if (sidebarBtn) {
+                    if (t === tab) {
+                        sidebarBtn.className = "w-full px-3.5 py-2.5 rounded-2xl text-xs font-bold transition flex items-center justify-between bg-theme-600 text-white shadow-sm";
+                    } else {
+                        sidebarBtn.className = "w-full px-3.5 py-2.5 rounded-2xl text-xs font-semibold text-theme-800 hover:bg-theme-50 transition flex items-center justify-between";
+                    }
+                }
+            });
+
+            const leftCol = document.getElementById('left-column');
+            const rightCol = document.getElementById('right-column');
+
+            const sectionTimer = document.getElementById('section-timer');
+            const sectionCalc = document.getElementById('section-calculator');
+            const sectionShield = document.getElementById('section-shield');
+            const sectionQuests = document.getElementById('section-quests');
+            const sectionCoach = document.getElementById('section-coach');
+
+            if (tab === 'all') {
+                leftCol.className = "md:col-span-7 space-y-6";
+                rightCol.className = "md:col-span-5 space-y-6";
+
+                sectionTimer.classList.remove('hidden');
+                sectionCalc.classList.remove('hidden');
+                sectionShield.classList.remove('hidden');
+                sectionQuests.classList.remove('hidden');
+                sectionCoach.classList.remove('hidden');
+            } else if (tab === 'timer') {
+                leftCol.className = "md:col-span-12 space-y-6";
+                rightCol.className = "hidden";
+
+                sectionTimer.classList.remove('hidden');
+                sectionCalc.classList.add('hidden');
+                sectionShield.classList.add('hidden');
+            } else if (tab === 'calculator') {
+                leftCol.className = "md:col-span-12 space-y-6";
+                rightCol.className = "hidden";
+
+                sectionTimer.classList.add('hidden');
+                sectionCalc.classList.remove('hidden');
+                sectionShield.classList.add('hidden');
+            } else if (tab === 'shield') {
+                leftCol.className = "md:col-span-12 space-y-6";
+                rightCol.className = "hidden";
+
+                sectionTimer.classList.add('hidden');
+                sectionCalc.classList.add('hidden');
+                sectionShield.classList.remove('hidden');
+            } else if (tab === 'coach') {
+                leftCol.className = "hidden";
+                rightCol.className = "md:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-6";
+
+                sectionQuests.classList.remove('hidden');
+                sectionCoach.classList.remove('hidden');
+            }
+        }
+
+        /* Profile Switcher Function */
+        function switchProfile(profile) {
+            activeProfile = profile;
+            const tabAle = document.getElementById('tab-ale');
+            const tabOlivia = document.getElementById('tab-olivia');
+
+            const heroBadge = document.getElementById('hero-badge');
+            const heroTitle = document.getElementById('hero-title');
+            const heroDesc = document.getElementById('hero-desc');
+            const heroActions = document.getElementById('hero-actions');
+            const polaroidCap = document.getElementById('polaroid-caption');
+            const promptContainer = document.getElementById('quick-prompt-container');
+
+            if (profile === 'ale') {
+                tabAle.className = "px-4 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-white text-theme-900 shadow-sm";
+                tabOlivia.className = "px-4 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-theme-700 hover:text-theme-950";
+
+                heroBadge.innerHTML = `<i class="fa-solid fa-flower text-theme-400"></i> Ale's Pacing & Deadline Assistant`;
+                heroTitle.innerText = `Finish your homework on time without the panic stress, Ale!`;
+                heroDesc.innerText = `We broke down your work into manageable 15-to-25 minute bite-sized sprints so you never get stuck halfway or miss submission deadlines.`;
+
+                heroActions.innerHTML = `
+                    <button onclick="setShieldPreset('finish_homework')" class="px-4 py-2 bg-theme-600 hover:bg-theme-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm">
+                        <i class="fa-solid fa-stopwatch"></i> Ale's Deadline Sprint (20m)
+                    </button>
+                    <button onclick="setShieldPreset('task_pacer')" class="px-4 py-2 bg-theme-50 hover:bg-theme-100 text-theme-900 rounded-xl text-xs font-bold transition border border-theme-200 flex items-center gap-2">
+                        <i class="fa-solid fa-layer-group"></i> 3-Task Homework Estimator
+                    </button>
+                `;
+
+                polaroidCap.innerText = "dusty rose & silk vibe";
+
+                document.getElementById('sidebar-calc-tag').innerText = "Ale's Tool";
+                document.getElementById('calc-header-tag').innerText = "Ale's Pacing Tool";
+                document.getElementById('calc-header-title').innerText = "Homework Deadline Calculator";
+                document.getElementById('calc-header-desc').innerText = "Unsure if you'll finish on time? Enter your tasks below, and we'll calculate exact timed blocks so you finish before bed!";
+                document.getElementById('sidebar-status-title').innerText = "On Track Mode";
+                document.getElementById('sidebar-status-sub').innerText = "2/3 Homework Done";
+
+                document.getElementById('quest-1-title').innerText = "Set 20m Timer for Task 1";
+                document.getElementById('quest-1-sub').innerText = "Break work into small chunks";
+                document.getElementById('quest-2-title').innerText = "Complete Homework Task Before 8:30 PM";
+                document.getElementById('quest-2-sub').innerText = "Finish work without rushing";
+
+                promptContainer.innerHTML = `
+                    <button onclick="sendQuickPrompt('Help me break my 3 homework tasks into 15 min sprints')" class="shrink-0 px-2.5 py-1 bg-white border border-theme-200 text-theme-800 text-[11px] rounded-full hover:bg-theme-50 transition">
+                        ⏰ Break tasks into 15m sprints
+                    </button>
+                    <button onclick="sendQuickPrompt('I am taking too long on my essay and falling behind')" class="shrink-0 px-2.5 py-1 bg-white border border-theme-200 text-theme-800 text-[11px] rounded-full hover:bg-theme-50 transition">
+                        📝 Essay deadline rescue
+                    </button>
+                `;
+
+                setShieldPreset('finish_homework');
+
+            } else {
+                tabOlivia.className = "px-4 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 bg-white text-theme-900 shadow-sm";
+                tabAle.className = "px-4 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-theme-700 hover:text-theme-950";
+
+                heroBadge.innerHTML = `<i class="fa-solid fa-football text-theme-500"></i> Olivia's Post-Football Chill Zone`;
+                heroTitle.innerText = `Unwind & recharge without doomscrolling, Olivia!`;
+                heroDesc.innerText = `Tired after football practice or a long school day? We filtered out notification traps so you can rest and recharge without falling asleep over homework.`;
+
+                heroActions.innerHTML = `
+                    <button onclick="setShieldPreset('post_football')" class="px-4 py-2 bg-theme-600 hover:bg-theme-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm">
+                        <i class="fa-solid fa-football"></i> Post-Football Recharge (15m)
+                    </button>
+                    <button onclick="setShieldPreset('homework_sprint')" class="px-4 py-2 bg-theme-50 hover:bg-theme-100 text-theme-900 rounded-xl text-xs font-bold transition border border-theme-200 flex items-center gap-2">
+                        <i class="fa-solid fa-book-open"></i> Homework Sprint (25m)
+                    </button>
+                `;
+
+                polaroidCap.innerText = "soft aesthetic mood";
+
+                document.getElementById('sidebar-calc-tag').innerText = "Olivia's Tool";
+                document.getElementById('calc-header-tag').innerText = "Olivia's Study Tool";
+                document.getElementById('calc-header-title').innerText = "Post-Practice Homework Estimator";
+                document.getElementById('calc-header-desc').innerText = "Tired after football practice? Plan short study blocks so you can rest and recharge without staying up late!";
+                document.getElementById('sidebar-status-title').innerText = "Post-Football Chill Mode";
+                document.getElementById('sidebar-status-sub').innerText = "1/3 Focus Block Done";
+
+                document.getElementById('quest-1-title').innerText = "Hydrate & 5m Post-Football Stretch";
+                document.getElementById('quest-1-sub').innerText = "Rest before touching phone";
+                document.getElementById('quest-2-title').innerText = "Finish 1 Homework Task Distraction-Free";
+                document.getElementById('quest-2-sub').innerText = "25m focus block";
+
+                promptContainer.innerHTML = `
+                    <button onclick="sendQuickPrompt('I am super tired after football practice')" class="shrink-0 px-2.5 py-1 bg-white border border-theme-200 text-theme-800 text-[11px] rounded-full hover:bg-theme-50 transition">
+                        ⚽ Tired after football
+                    </button>
+                    <button onclick="sendQuickPrompt('Give me a 10-minute non-sleepy homework trick')" class="shrink-0 px-2.5 py-1 bg-white border border-theme-200 text-theme-800 text-[11px] rounded-full hover:bg-theme-50 transition">
+                        📚 10m homework trick
+                    </button>
+                `;
+
+                setShieldPreset('post_football');
+            }
+        }
+
+        /* Homework Deadline Calculator Functions */
+        function addHomeworkTask() {
+            const nameInput = document.getElementById('task-name-input');
+            const minsInput = document.getElementById('task-mins-input');
+            const name = nameInput.value.trim();
+            const mins = parseInt(minsInput.value) || 20;
+
+            if (!name) return;
+
+            homeworkTasks.push({
+                id: Date.now(),
+                name: name,
+                mins: mins,
+                done: false
+            });
+
+            nameInput.value = '';
+            minsInput.value = '';
+            renderHomeworkTasks();
+        }
+
+        function removeTask(id) {
+            homeworkTasks = homeworkTasks.filter(t => t.id !== id);
+            renderHomeworkTasks();
+        }
+
+        function toggleTaskDone(id) {
+            const task = homeworkTasks.find(t => t.id === id);
+            if (task) task.done = !task.done;
+            renderHomeworkTasks();
+        }
+
+        function renderHomeworkTasks() {
+            const container = document.getElementById('homework-task-list');
+            container.innerHTML = '';
+
+            let totalMins = 0;
+            homeworkTasks.forEach(task => {
+                if (!task.done) totalMins += task.mins;
+
+                const div = document.createElement('div');
+                div.className = `p-2.5 rounded-xl border flex items-center justify-between text-xs transition ${task.done ? 'bg-theme-50/50 border-theme-100 opacity-60 line-through' : 'bg-white border-theme-200'}`;
+                div.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <button onclick="toggleTaskDone(${task.id})" class="w-4 h-4 rounded border border-theme-300 flex items-center justify-center text-[10px] text-theme-600">
+                            ${task.done ? '<i class="fa-solid fa-check"></i>' : ''}
+                        </button>
+                        <span class="font-bold text-theme-900">${task.name}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[11px] font-semibold text-theme-700 bg-theme-50 px-2 py-0.5 rounded-md">${task.mins} mins</span>
+                        <button onclick="removeTask(${task.id})" class="text-theme-400 hover:text-theme-600 text-xs">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            document.getElementById('total-time-calc').innerText = `Remaining Homework Time: ${totalMins} Mins`;
+            
+            const now = new Date();
+            now.setMinutes(now.getMinutes() + totalMins);
+            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('estimated-finish-calc').innerText = `Est. Finish: ${timeStr}`;
+        }
+
+        /* Dynamic Theme Customizer Functions */
+        function toggleThemeMenu() {
+            const menu = document.getElementById('theme-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function setTheme(themeKey, themeName) {
+            const currentPattern = document.body.dataset.pattern || 'polka-dots';
+            document.body.className = `min-h-screen flex flex-col transition-all duration-300 pb-16 theme-${themeKey} pattern-${currentPattern}`;
+            document.getElementById('current-theme-name').innerText = themeName;
+
+            ['dusty-rose', 'ballet-slipper', 'baby-blue', 'muted-sage-rose'].forEach(k => {
+                const check = document.getElementById(`check-${k}`);
+                if (check) check.classList.add('opacity-0');
+            });
+            const activeCheck = document.getElementById(`check-${themeKey}`);
+            if (activeCheck) activeCheck.classList.remove('opacity-0');
+
+            document.getElementById('theme-menu').classList.add('hidden');
+        }
+
+        function setPattern(patternKey) {
+            document.body.dataset.pattern = patternKey;
+            document.body.classList.remove('pattern-polka-dots', 'pattern-gingham', 'pattern-mini-stars', 'pattern-none');
+            if (patternKey !== 'none') {
+                document.body.classList.add(`pattern-${patternKey}`);
+            }
+        }
+
+        /* Timer Functions */
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timerSeconds / 60);
+            const seconds = timerSeconds % 60;
+            document.getElementById('timer-display').innerText = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function updateProgressCircle() {
+            const circle = document.getElementById('timer-progress-circle');
+            const circumference = 2 * Math.PI * 42;
+            const offset = circumference - (timerSeconds / initialSeconds) * circumference;
+            circle.style.strokeDashoffset = offset;
+        }
+
+        function toggleTimer() {
+            const btnText = document.getElementById('timer-btn-text');
+            const icon = document.getElementById('timer-icon');
+
+            if (isTimerRunning) {
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+                btnText.innerText = "Resume Sprint Timer";
+                icon.className = "fa-solid fa-play";
+            } else {
+                isTimerRunning = true;
+                btnText.innerText = "Pause Timer";
+                icon.className = "fa-solid fa-pause";
+
+                timerInterval = setInterval(() => {
+                    if (timerSeconds > 0) {
+                        timerSeconds--;
+                        updateTimerDisplay();
+                        updateProgressCircle();
+                    } else {
+                        clearInterval(timerInterval);
+                        isTimerRunning = false;
+                        addXp(50);
+                        resetTimer();
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            timerSeconds = initialSeconds;
+            document.getElementById('timer-btn-text').innerText = "Start Sprint Timer";
+            document.getElementById('timer-icon').className = "fa-solid fa-play";
+            updateTimerDisplay();
+            updateProgressCircle();
+        }
+
+        function setShieldPreset(preset) {
+            const badge = document.getElementById('active-preset-badge');
+            const label = document.getElementById('timer-label');
+
+            if (preset === 'finish_homework') {
+                badge.innerText = "Ale's Deadline Sprint";
+                label.innerText = "Homework Sprint (20m)";
+                initialSeconds = 20 * 60;
+            } else if (preset === 'task_pacer') {
+                badge.innerText = "Quick Task Pacer";
+                label.innerText = "Task Chunk (15m)";
+                initialSeconds = 15 * 60;
+            } else if (preset === 'post_football') {
+                badge.innerText = "Olivia's Cooldown Block";
+                label.innerText = "Rest & Hydrate (15m)";
+                initialSeconds = 15 * 60;
+            } else if (preset === 'homework_sprint') {
+                badge.innerText = "Olivia's Homework Sprint";
+                label.innerText = "25m Sprint";
+                initialSeconds = 25 * 60;
+            }
+            resetTimer();
+        }
+
+        /* Gamification & Rescue Functions */
+        function addXp(amount) {
+            userXp += amount;
+            if (userXp >= 500) {
+                userLevel++;
+                userXp -= 500;
+            }
+        }
+
+        function completeQuest(element, xpAmount) {
+            const checkbox = element.querySelector('.quest-checkbox');
+            if (!checkbox.classList.contains('bg-theme-600')) {
+                checkbox.classList.add('bg-theme-600');
+                checkbox.innerHTML = '<i class="fa-solid fa-check"></i>';
+                element.classList.add('opacity-50', 'line-through');
+                addXp(xpAmount);
+            }
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+            addXp(20);
+        }
+
+        /* Gemini AI Coach Integration */
+        async function handleChatSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            appendChatMessage('user', msg);
+            input.value = '';
+            await callGeminiCoach(msg);
+        }
+
+        function sendQuickPrompt(promptText) {
+            appendChatMessage('user', promptText);
+            callGeminiCoach(promptText);
+        }
+
+        function appendChatMessage(role, text) {
+            const chatContainer = document.getElementById('chat-messages');
+            const msgDiv = document.createElement('div');
+            
+            if (role === 'user') {
+                msgDiv.className = "bg-theme-600 text-white p-3 rounded-2xl text-xs max-w-[85%] ml-auto shadow-sm";
+            } else {
+                msgDiv.className = "bg-theme-50/80 border border-theme-200/60 p-3 rounded-2xl text-theme-900 max-w-[90%]";
+            }
+            msgDiv.innerText = text;
+            chatContainer.appendChild(msgDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        async function callGeminiCoach(userText) {
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            const systemPrompt = `You are "Periwinkle & Rose AI", an encouraging focus and homework coach for two high school students: Ale (Alejandra) and Olivia.
+            Active profile context: ${activeProfile.toUpperCase()}.
+            Ale's challenge: Struggling to finish homework on time, getting distracted or perfectionist, needing realistic pacing.
+            Olivia's challenge: Post-football fatigue, phone doomscrolling, getting sleepy during homework.
+            Tone: Warm, soft desaturated aesthetic, encouraging, concise (2-3 short actionable sentences max).`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userText }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] }
+            };
+
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = "text-[11px] text-theme-400 italic p-2";
+            loadingDiv.id = "chat-loading";
+            loadingDiv.innerText = "Periwinkle & Rose AI thinking...";
+            document.getElementById('chat-messages').appendChild(loadingDiv);
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || "You've got this! Let's do a quick 15-minute timer sprint right now so you finish early.";
+                document.getElementById('chat-loading')?.remove();
+                appendChatMessage('assistant', replyText);
+            } catch (err) {
+                document.getElementById('chat-loading')?.remove();
+                appendChatMessage('assistant', "I'm right here with you! Take a deep breath, grab your water, and let's complete a 15-minute focus chunk together!");
+            }
+        }
+    </script>
+</body>
+</html>

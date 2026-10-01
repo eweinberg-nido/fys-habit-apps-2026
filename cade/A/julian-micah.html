@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Quest - HW & SMART Goal Companion</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tone.js for synthesized audio chimes -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif']
+                    },
+                    colors: {
+                        brand: {
+                            purple: '#6C5CE7',
+                            pink: '#FD79A8',
+                            yellow: '#FDCB6E',
+                            green: '#00B894',
+                            blue: '#0984E3',
+                            dark: '#2D3436'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Fredoka', sans-serif; }
+        .gradient-bg {
+            background: linear-gradient(135deg, #6C5CE7 0%, #a29bfe 50%, #74b9ff 100%);
+        }
+        .bounce-slow {
+            animation: bounce 2.5s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .pulse-glow {
+            animation: pulseGlow 2s infinite alternate;
+        }
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 10px rgba(108, 92, 231, 0.4); }
+            100% { box-shadow: 0 0 25px rgba(253, 121, 168, 0.8); }
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #6C5CE7; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a29bfe; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col">
+
+    <!-- Navigation Header -->
+    <header class="bg-slate-800/95 backdrop-blur border-b border-slate-700 sticky top-0 z-30 px-4 py-3 shadow-md">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-3">
+            <!-- App Logo & Title -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-purple to-brand-pink flex items-center justify-center text-white text-xl shadow-lg">
+                    <i class="fa-solid font-bold fa-clock"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-yellow-300">
+                        TIME QUEST
+                    </h1>
+                    <p class="text-xs text-slate-400">SMART HW & Time Companion</p>
+                </div>
+            </div>
+
+            <!-- Profile Selector, Coins & Streaks -->
+            <div class="flex items-center gap-3 flex-wrap">
+                <!-- User Profile Selector (Rendered Dynamically) -->
+                <div id="profileSelectorContainer" class="flex bg-slate-900 p-1 rounded-xl border border-slate-700">
+                    <!-- Dynamic buttons injected via JS -->
+                </div>
+
+                <!-- Edit Student Names Button -->
+                <button onclick="openProfileNameModal()" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-purple-300 border border-purple-500/30 text-xs font-semibold flex items-center gap-1.5 transition shadow" title="Customize Student Names">
+                    <i class="fa-solid fa-user-pen text-brand-pink"></i> Edit Names
+                </button>
+
+                <!-- Coins Display -->
+                <div class="bg-slate-900/90 px-3.5 py-1.5 rounded-xl border border-yellow-500/30 flex items-center gap-2">
+                    <i class="fa-solid fa-coins text-yellow-400 text-lg animate-bounce"></i>
+                    <span id="userCoins" class="font-extrabold text-yellow-400 text-lg">0</span>
+                    <span class="text-xs text-yellow-500/80 font-medium">Coins</span>
+                </div>
+
+                <!-- Day Streak Badge -->
+                <div class="bg-slate-900/90 px-3.5 py-1.5 rounded-xl border border-orange-500/30 flex items-center gap-2">
+                    <i class="fa-solid fa-fire text-orange-500 text-lg"></i>
+                    <span id="userStreak" class="font-extrabold text-orange-400 text-lg">0</span>
+                    <span class="text-xs text-slate-400 font-medium">Streak</span>
+                </div>
+
+                <!-- Settings Button -->
+                <button onclick="toggleModal('settingsModal')" class="p-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-200 transition" title="Reminder Settings">
+                    <i class="fa-solid fa-gear"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- LEFT COLUMN: Live Clock, Time Reminders, SMART Goal Card, Companion Mascot (4 cols) -->
+        <section class="lg:col-span-4 flex flex-col gap-6">
+            
+            <!-- Live Digital Clock & Time Reminders Widget -->
+            <div class="bg-slate-800 rounded-3xl p-6 border border-slate-700 shadow-xl relative overflow-hidden flex flex-col items-center text-center">
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-brand-purple/10 rounded-full blur-2xl pointer-events-none"></div>
+                
+                <span class="px-3 py-1 rounded-full bg-slate-700/60 text-xs font-semibold text-purple-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Live Time Chime Broadcast
+                </span>
+
+                <!-- Giant Digital Clock -->
+                <div id="clockTime" class="text-5xl font-black text-white tracking-tight my-1 font-mono">
+                    12:00:00 PM
+                </div>
+                <div id="clockDate" class="text-sm font-medium text-slate-400 mb-4">
+                    Loading Date...
+                </div>
+
+                <!-- Time Announcement Controller -->
+                <div class="w-full bg-slate-900/80 p-4 rounded-2xl border border-slate-700/80 flex flex-col gap-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-volume-high text-brand-purple"></i> Audio Time Voice Reminder
+                        </span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggleChime" class="sr-only peer" checked onchange="updateChimeSettings()">
+                            <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-purple"></div>
+                        </label>
+                    </div>
+
+                    <div class="flex items-center justify-between text-xs text-slate-400 gap-2">
+                        <span>Broadcast Interval:</span>
+                        <select id="chimeInterval" onchange="updateChimeSettings()" class="bg-slate-800 text-slate-200 border border-slate-600 rounded-lg px-2 py-1 focus:outline-none focus:border-brand-purple">
+                            <option value="15">Every 15 Mins</option>
+                            <option value="30" selected>Every 30 Mins</option>
+                            <option value="60">Every 1 Hour</option>
+                        </select>
+                    </div>
+
+                    <button onclick="speakCurrentTime()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-purple-300 font-semibold text-xs rounded-xl transition border border-purple-500/20 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-bullhorn"></i> Test Time Announcement
+                    </button>
+                </div>
+            </div>
+
+            <!-- SMART Goal Quick Progress Card -->
+            <div class="bg-slate-800 rounded-3xl p-5 border border-slate-700 shadow-xl flex flex-col gap-3">
+                <div class="flex justify-between items-center border-b border-slate-700/80 pb-2">
+                    <h3 class="font-bold text-sm text-slate-200 flex items-center gap-2">
+                        <i class="fa-solid fa-bullseye text-brand-pink"></i> SMART Goal Weekly Progress
+                    </h3>
+                    <button onclick="switchTab('smart')" class="text-xs text-purple-400 hover:underline">View Details</button>
+                </div>
+
+                <div>
+                    <div class="flex justify-between text-xs mb-1">
+                        <span class="text-slate-400">Weekly Completed Tasks:</span>
+                        <span id="smartGoalRatio" class="font-bold text-emerald-400">0 / 5 Quests</span>
+                    </div>
+                    <div class="w-full bg-slate-900 rounded-full h-3 overflow-hidden border border-slate-700">
+                        <div id="smartGoalProgressBar" class="bg-gradient-to-r from-brand-purple to-brand-pink h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="text-[11px] text-slate-400 bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/50">
+                    <span class="font-semibold text-slate-300">Goal:</span> Complete assigned homework before 6 PM daily to earn rewards and build focus habits.
+                </div>
+            </div>
+
+            <!-- Mascot Companion & Motivation Card -->
+            <div class="bg-gradient-to-br from-slate-800 to-purple-950/40 rounded-3xl p-6 border border-purple-500/20 shadow-xl flex flex-col items-center text-center relative">
+                <div id="mascotAvatar" class="text-6xl mb-3 bounce-slow transition-all duration-300 transform hover:scale-110 cursor-pointer" onclick="triggerMascotReaction()" title="Click mascot for encouragement!">
+                    🤖
+                </div>
+                <h3 id="mascotGreeting" class="font-bold text-lg text-white mb-1">
+                    Ready to crush homework, Olivia?
+                </h3>
+                <p id="mascotSpeech" class="text-xs text-slate-300 bg-slate-900/90 p-3 rounded-2xl border border-slate-700 w-full italic relative">
+                    "Doing your HW now means more fun time later! Plus, prizes are waiting for you!"
+                </p>
+            </div>
+
+            <!-- Pomodoro Quick HW Focus Timer -->
+            <div class="bg-slate-800 rounded-3xl p-6 border border-slate-700 shadow-xl flex flex-col gap-4">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-bold text-slate-200 flex items-center gap-2 text-sm">
+                        <i class="fa-solid fa-stopwatch text-brand-yellow"></i> HW Focus Timer
+                    </h3>
+                    <span id="timerStatus" class="text-xs text-slate-400 font-medium">Ready</span>
+                </div>
+
+                <div class="text-center py-2">
+                    <span id="timerDisplay" class="text-4xl font-extrabold text-brand-yellow font-mono">25:00</span>
+                </div>
+
+                <div class="flex gap-2">
+                    <button id="btnTimerStart" onclick="startFocusTimer()" class="flex-1 py-2.5 bg-brand-green hover:bg-emerald-600 text-slate-900 font-bold rounded-xl text-sm transition shadow flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-play"></i> Start Work
+                    </button>
+                    <button id="btnTimerPause" onclick="pauseFocusTimer()" class="hidden flex-1 py-2.5 bg-yellow-600 hover:bg-yellow-700 text-white font-bold rounded-xl text-sm transition shadow flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-pause"></i> Pause
+                    </button>
+                    <button onclick="resetFocusTimer()" class="px-3.5 py-2.5 bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold rounded-xl text-sm transition">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- RIGHT COLUMN: Homework Tasks, Prize Arcade & SMART Goal Details (8 cols) -->
+        <section class="lg:col-span-8 flex flex-col gap-6">
+
+            <!-- Navigation Tabs -->
+            <div class="flex bg-slate-800 p-1.5 rounded-2xl border border-slate-700 shadow-inner flex-wrap gap-1">
+                <button id="tabTasksBtn" onclick="switchTab('tasks')" class="flex-1 min-w-[120px] py-2.5 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 bg-brand-purple text-white shadow-lg">
+                    <i class="fa-solid fa-list-check"></i> Homework Quests (<span id="pendingCount">0</span>)
+                </button>
+                <button id="tabPrizeBtn" onclick="switchTab('prizes')" class="flex-1 min-w-[120px] py-2.5 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-gift text-brand-yellow"></i> Prize Arcade & Wheel
+                </button>
+                <button id="tabSmartBtn" onclick="switchTab('smart')" class="flex-1 min-w-[120px] py-2.5 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-chart-line text-brand-pink"></i> SMART Goal
+                </button>
+            </div>
+
+            <!-- TAB 1: HOMEWORK TASKS VIEW -->
+            <div id="tabTasks" class="flex flex-col gap-4">
+                
+                <!-- Add Homework Task Form -->
+                <div class="bg-slate-800 rounded-2xl p-4 border border-slate-700 shadow-md">
+                    <form id="hwForm" onsubmit="addHomeworkTask(event)" class="flex flex-col md:flex-row gap-3">
+                        <div class="flex-1">
+                            <input type="text" id="hwTitle" placeholder="e.g. Math Worksheet Page 42, Reading Ch. 3..." required
+                                class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-purple">
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <select id="hwSubject" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-brand-purple">
+                                <option value="Math">📐 Math</option>
+                                <option value="Reading">📚 Reading & English</option>
+                                <option value="Science">🧪 Science</option>
+                                <option value="Social Studies">🌍 Social Studies</option>
+                                <option value="Art">🎨 Art & Music</option>
+                                <option value="Tech">💻 Tech & Coding</option>
+                                <option value="PE">🏋️ PE & Health</option>
+                            </select>
+                            
+                            <select id="hwPrizeCoins" class="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-yellow-400 font-bold focus:outline-none focus:border-brand-purple">
+                                <option value="20">+20 Coins</option>
+                                <option value="50" selected>+50 Coins</option>
+                                <option value="100">+100 Coins</option>
+                            </select>
+
+                            <button type="submit" class="bg-gradient-to-r from-brand-purple to-brand-pink hover:opacity-90 text-white font-bold px-5 py-2.5 rounded-xl transition shadow-lg flex items-center gap-2 shrink-0 text-sm">
+                                <i class="fa-solid fa-plus"></i> Add Quest
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- 7 Class Folders Overview -->
+                <div class="bg-slate-800/80 rounded-2xl p-4 border border-slate-700 shadow-md flex flex-col gap-3">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+                            <i class="fa-solid fa-folder-open text-brand-yellow"></i> 7 Class Folders
+                        </h3>
+                        <span id="activeFolderLabel" class="text-xs text-purple-400 font-semibold">Showing: All Folders</span>
+                    </div>
+
+                    <!-- Folders Grid (7 Folders + All) -->
+                    <div id="classFoldersGrid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+                        <!-- Rendered dynamically by JS -->
+                    </div>
+                </div>
+
+                <!-- Active Tasks Heading -->
+                <div class="flex justify-between items-center px-1">
+                    <h2 class="text-lg font-bold text-slate-200 flex items-center gap-2">
+                        <i class="fa-solid fa-scroll text-purple-400"></i> Active Homework Quests
+                    </h2>
+                    <span class="text-xs text-slate-400">Saved to LocalStorage automatically</span>
+                </div>
+
+                <div id="homeworkList" class="flex flex-col gap-3 min-h-[300px]">
+                    <!-- Dynamic tasks inserted via JS -->
+                </div>
+
+            </div>
+
+            <!-- TAB 2: PRIZE ARCADE & SPIN WHEEL VIEW -->
+            <div id="tabPrizes" class="hidden flex-col gap-6">
+                
+                <!-- Spin the Wheel Section -->
+                <div class="bg-slate-800 rounded-3xl p-6 border border-slate-700 shadow-xl flex flex-col md:flex-row items-center gap-6">
+                    <div class="relative flex flex-col items-center">
+                        <canvas id="wheelCanvas" width="280" height="280" class="rounded-full shadow-2xl border-4 border-slate-700"></canvas>
+                        <!-- Pointer Arrow -->
+                        <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[14px] border-l-transparent border-r-[14px] border-r-transparent border-t-[24px] border-t-red-500 z-10 filter drop-shadow"></div>
+                    </div>
+
+                    <div class="flex-1 text-center md:text-left flex flex-col gap-3">
+                        <h3 class="text-xl font-bold text-white flex items-center justify-center md:justify-start gap-2">
+                            <i class="fa-solid fa-dharmachakra text-brand-yellow"></i> Homework Prize Wheel
+                        </h3>
+                        <p class="text-xs text-slate-300">
+                            Completed your homework? Spin the wheel using <b>30 Coins</b> to win extra coins or fun reward privileges!
+                        </p>
+                        
+                        <div class="pt-2">
+                            <button id="btnSpinWheel" onclick="spinWheel()" class="w-full md:w-auto px-6 py-3 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-400 hover:to-amber-500 text-slate-900 font-black rounded-xl text-sm transition shadow-xl flex items-center justify-center gap-2 border border-yellow-300">
+                                <i class="fa-solid fa-arrows-spin text-lg"></i> Spin Wheel (30 Coins)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prize Shop Listing -->
+                <div class="bg-slate-800 rounded-3xl p-6 border border-slate-700 shadow-xl flex flex-col gap-4">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-store text-emerald-400"></i> Redeemable Prize Shop
+                            </h3>
+                            <p class="text-xs text-slate-400">Trade hard-earned coins for real rewards!</p>
+                        </div>
+                        <button onclick="toggleModal('addPrizeModal')" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-purple-300 font-semibold rounded-lg text-xs transition border border-purple-500/30 flex items-center gap-1.5">
+                            <i class="fa-solid fa-plus"></i> Add Custom Prize
+                        </button>
+                    </div>
+
+                    <div id="prizeShopList" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Dynamic Prize Cards inserted here -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- TAB 3: SMART GOAL BREAKDOWN & ANALYTICS VIEW -->
+            <div id="tabSmart" class="hidden flex-col gap-6">
+                <div class="bg-slate-800 rounded-3xl p-6 border border-slate-700 shadow-xl flex flex-col gap-6">
+                    <div class="border-b border-slate-700 pb-4">
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-bullseye text-brand-pink"></i> SMART Homework Goal Strategy
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">
+                            This app is structured specifically around the SMART goal criteria to make homework stress-free and rewarding.
+                        </p>
+                    </div>
+
+                    <!-- SMART Breakdown Cards Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-slate-900/80 p-4 rounded-2xl border border-purple-500/30">
+                            <div class="flex items-center gap-2 text-purple-400 font-bold text-sm mb-1">
+                                <span class="px-2 py-0.5 rounded bg-purple-500/20 text-xs">S</span> Specific
+                            </div>
+                            <p class="text-xs text-slate-300">
+                                Complete all assigned daily homework assignments (Math, Reading, Science, History) by breaking them into manageable single quests.
+                            </p>
+                        </div>
+
+                        <div class="bg-slate-900/80 p-4 rounded-2xl border border-pink-500/30">
+                            <div class="flex items-center gap-2 text-pink-400 font-bold text-sm mb-1">
+                                <span class="px-2 py-0.5 rounded bg-pink-500/20 text-xs">M</span> Measurable
+                            </div>
+                            <p class="text-xs text-slate-300">
+                                Track progress through the completion ratio (<span id="smartMetricRatio" class="text-yellow-400 font-bold">0/5</span> weekly quests) and earned coin totals.
+                            </p>
+                        </div>
+
+                        <div class="bg-slate-900/80 p-4 rounded-2xl border border-emerald-500/30">
+                            <div class="flex items-center gap-2 text-emerald-400 font-bold text-sm mb-1">
+                                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-xs">A</span> Achievable
+                            </div>
+                            <p class="text-xs text-slate-300">
+                                Use 25-minute Pomodoro focus blocks and constant time announcements to prevent burnout and keep work manageable.
+                            </p>
+                        </div>
+
+                        <div class="bg-slate-900/80 p-4 rounded-2xl border border-amber-500/30">
+                            <div class="flex items-center gap-2 text-amber-400 font-bold text-sm mb-1">
+                                <span class="px-2 py-0.5 rounded bg-amber-500/20 text-xs">R</span> Relevant
+                            </div>
+                            <p class="text-xs text-slate-300">
+                                Connect homework completion directly to real-life motivating prizes (gaming time, dessert trips, privileges) chosen by parents and kids.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Time-Bound Card -->
+                    <div class="bg-slate-900/80 p-4 rounded-2xl border border-blue-500/30">
+                        <div class="flex items-center gap-2 text-blue-400 font-bold text-sm mb-1">
+                            <span class="px-2 py-0.5 rounded bg-blue-500/20 text-xs">T</span> Time-Bound
+                        </div>
+                        <p class="text-xs text-slate-300">
+                            Complete homework by <b class="text-white">6:00 PM</b> every school day using 30-minute interval chime broadcasts as pacing reminders.
+                        </p>
+                    </div>
+
+                    <!-- SMART Target Adjuster -->
+                    <div class="bg-slate-900 p-4 rounded-2xl border border-slate-700 flex flex-col gap-3">
+                        <h4 class="font-bold text-sm text-slate-200">Adjust Weekly Target Quests</h4>
+                        <div class="flex items-center gap-3">
+                            <input type="number" id="weeklyTargetInput" min="1" max="50" value="5" class="bg-slate-800 border border-slate-600 rounded-xl px-3 py-2 text-sm text-yellow-400 font-bold w-24">
+                            <button onclick="updateWeeklyTarget()" class="px-4 py-2 bg-brand-purple hover:bg-purple-600 text-white font-bold text-xs rounded-xl transition">
+                                Save Target Goal
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- MODAL: Settings & Voice Configuration -->
+    <div id="settingsModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-800 rounded-3xl border border-slate-700 max-w-md w-full p-6 shadow-2xl flex flex-col gap-5">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-brand-purple"></i> Reminder & Sound Settings
+                </h3>
+                <button onclick="toggleModal('settingsModal')" class="text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="flex flex-col gap-4 text-sm text-slate-300">
+                <!-- Homework Audio Reminder Toggle -->
+                <div class="flex justify-between items-center bg-slate-900 p-3.5 rounded-2xl border border-slate-700">
+                    <div>
+                        <p class="font-semibold text-slate-200">HW Audio Reminders</p>
+                        <p class="text-xs text-slate-400">Voice encouragement when adding tasks</p>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="toggleHwAudio" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-purple"></div>
+                    </label>
+                </div>
+
+                <!-- Voice Speech Selection -->
+                <div class="flex flex-col gap-1.5">
+                    <label class="font-semibold text-xs text-slate-400">Voice Announcement Style</label>
+                    <select id="voiceSelect" class="bg-slate-900 border border-slate-700 text-slate-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-brand-purple">
+                        <option value="default">System Default Voice</option>
+                    </select>
+                </div>
+
+                <!-- Sound Tests & LocalStorage Reset -->
+                <div class="flex gap-2">
+                    <button onclick="playCelebrationSound()" class="flex-1 py-2.5 bg-slate-700 hover:bg-slate-600 rounded-xl font-semibold text-xs text-purple-300 transition flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-music"></i> Test Chime
+                    </button>
+                    <button onclick="resetProfileData()" class="px-4 py-2.5 bg-red-500/20 hover:bg-red-500/30 text-red-300 font-semibold rounded-xl text-xs transition border border-red-500/30">
+                        Reset Local Data
+                    </button>
+                </div>
+            </div>
+
+            <button onclick="toggleModal('settingsModal')" class="w-full py-2.5 bg-brand-purple hover:bg-purple-600 text-white font-bold rounded-xl text-sm transition">
+                Done & Save
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL: Add Custom Prize -->
+    <div id="addPrizeModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-800 rounded-3xl border border-slate-700 max-w-md w-full p-6 shadow-2xl flex flex-col gap-5">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                    <i class="fa-solid fa-gift text-brand-pink"></i> Add Custom Reward Prize
+                </h3>
+                <button onclick="toggleModal('addPrizeModal')" class="text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+    <!-- MODAL: Set / Customize Student Names -->
+    <div id="setupNamesModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-slate-800 rounded-3xl border border-slate-700 max-w-md w-full p-6 shadow-2xl flex flex-col gap-5">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-3">
+                <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                    <i class="fa-solid fa-user-gear text-brand-purple"></i> Set Student Names
+                </h3>
+                <button onclick="toggleModal('setupNamesModal')" class="text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <p class="text-xs text-slate-300">
+                Type the names of the students who will be using Time Quest to personalize their homework quests, audio reminders, and rewards!
+            </p>
+
+            <form onsubmit="saveStudentNames(event)" class="flex flex-col gap-4 text-sm">
+                <div>
+                    <label class="text-xs font-semibold text-purple-300 mb-1 block flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-ninja"></i> Student 1 Name
+                    </label>
+                    <input type="text" id="inputStudent1" placeholder="e.g. Olivia, Sarah, Alex..." required
+                           class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 font-bold placeholder-slate-500 focus:outline-none focus:border-brand-purple">
+                </div>
+
+                <div>
+                    <label class="text-xs font-semibold text-pink-300 mb-1 block flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-astronaut"></i> Student 2 Name
+                    </label>
+                    <input type="text" id="inputStudent2" placeholder="e.g. Diego, Liam, Noah..." required
+                           class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-slate-100 font-bold placeholder-slate-500 focus:outline-none focus:border-brand-pink">
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="toggleModal('setupNamesModal')" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold rounded-xl text-xs transition">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-5 py-2 bg-gradient-to-r from-brand-purple to-brand-pink hover:opacity-90 text-white font-bold rounded-xl text-xs transition shadow-lg flex items-center gap-1.5">
+                        <i class="fa-solid fa-check"></i> Save Names
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Celebration / Prize Claimed Notification -->
+    <div id="rewardModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-gradient-to-b from-slate-800 to-purple-950/90 rounded-3xl border-2 border-yellow-400/50 max-w-sm w-full p-6 shadow-2xl text-center flex flex-col items-center gap-4 relative overflow-hidden">
+            <div class="text-6xl my-2 animate-bounce" id="rewardModalEmoji">🎉</div>
+            <h3 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-300" id="rewardModalTitle">
+                GREAT JOB!
+            </h3>
+            <p class="text-sm text-slate-200" id="rewardModalMessage">
+                You earned 50 coins for completing your HW!
+            </p>
+            <button onclick="toggleModal('rewardModal')" class="w-full py-3 bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-slate-900 font-black rounded-xl text-sm transition shadow-lg">
+                CLAIM & CONTINUE 🚀
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'TIME_QUEST_APP_STATE_V1';
+        let currentProfile = 'Olivia';
+        let selectedFolder = 'All'; // Track current active class folder filter
+        let profileKeys = ['Olivia', 'Diego']; // Active profile names list
+
+        // Default profile template
+        function createDefaultProfile(name, avatar, coins = 100) {
+            return {
+                displayName: name,
+                avatar: avatar,
+                coins: coins,
+                streak: 3,
+                weeklyTarget: 5,
+                tasks: [
+                    { id: 't1_' + name, title: 'Multiplying Fractions Worksheet', subject: 'Math', coins: 50, completed: false, addedAt: Date.now() },
+                    { id: 't2_' + name, title: 'Read Chapter 4 & Vocabulary', subject: 'Reading', coins: 50, completed: false, addedAt: Date.now() },
+                    { id: 't3_' + name, title: 'Solar System Diagram', subject: 'Science', coins: 50, completed: false, addedAt: Date.now() },
+                    { id: 't4_' + name, title: 'Map Coloring Geography', subject: 'Social Studies', coins: 50, completed: false, addedAt: Date.now() },
+                    { id: 't5_' + name, title: 'Color Wheel Painting Practice', subject: 'Art', coins: 20, completed: false, addedAt: Date.now() },
+                    { id: 't6_' + name, title: 'Scratch Coding Project Level 1', subject: 'Tech', coins: 50, completed: false, addedAt: Date.now() },
+                    { id: 't7_' + name, title: '20-Minute Fitness Journal Log', subject: 'PE', coins: 20, completed: false, addedAt: Date.now() }
+                ],
+                prizes: [
+                    { id: 'p1_' + name, title: '30 Mins iPad / Video Games', cost: 100, emoji: '🎮' },
+                    { id: 'p2_' + name, title: 'Ice Cream or Dessert Trip', cost: 150, emoji: '🍦' },
+                    { id: 'p3_' + name, title: 'Pick Friday Movie Night', cost: 80, emoji: '🎬' }
+                ]
+            };
+        }
+
+        const defaultProfileData = {
+            Olivia: createDefaultProfile('Olivia', '🦄', 120),
+            Diego: createDefaultProfile('Diego', '🤖', 90)
+        };
+
+        // Class Folder Metadata for 7 Classes
+        const CLASS_FOLDERS = [
+            { id: 'All', name: 'All Folders', icon: 'fa-folder', color: 'slate' },
+            { id: 'Math', name: 'Math', icon: 'fa-calculator', color: 'blue' },
+            { id: 'Reading', name: 'Reading', icon: 'fa-book-open', color: 'pink' },
+            { id: 'Science', name: 'Science', icon: 'fa-flask', color: 'emerald' },
+            { id: 'Social Studies', name: 'Social St.', icon: 'fa-earth-americas', color: 'amber' },
+            { id: 'Art', name: 'Art/Music', icon: 'fa-palette', color: 'purple' },
+            { id: 'Tech', name: 'Tech/Code', icon: 'fa-laptop-code', color: 'indigo' },
+            { id: 'PE', name: 'PE/Health', icon: 'fa-heart-pulse', color: 'rose' }
+        ];
+
+        let profileData = {};
+
+        function loadStateFromLocalStorage() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    profileData = JSON.parse(saved);
+                    profileKeys = Object.keys(profileData);
+                    if (profileKeys.length > 0) {
+                        currentProfile = profileKeys[0];
+                    }
+                } else {
+                    profileData = JSON.parse(JSON.stringify(defaultProfileData));
+                    profileKeys = ['Olivia', 'Diego'];
+                    currentProfile = 'Olivia';
+                    saveStateToLocalStorage();
+                    // Open modal on first launch to set custom names
+                    setTimeout(() => openProfileNameModal(), 600);
+                }
+            } catch (e) {
+                console.error("Failed to load from LocalStorage", e);
+                profileData = JSON.parse(JSON.stringify(defaultProfileData));
+                profileKeys = ['Olivia', 'Diego'];
+            }
+        }
+
+        function saveStateToLocalStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(profileData));
+            } catch (e) {
+                console.error("Failed to save to LocalStorage", e);
+            }
+        }
+
+        function openProfileNameModal() {
+            const p1 = profileKeys[0] || 'Olivia';
+            const p2 = profileKeys[1] || 'Diego';
+
+            document.getElementById('inputStudent1').value = profileData[p1]?.displayName || p1;
+            document.getElementById('inputStudent2').value = profileData[p2]?.displayName || p2;
+
+            toggleModal('setupNamesModal');
+        }
+
+        function saveStudentNames(e) {
+            e.preventDefault();
+            const name1 = document.getElementById('inputStudent1').value.trim();
+            const name2 = document.getElementById('inputStudent2').value.trim();
+
+            if (!name1 || !name2) return;
+
+            const oldKeys = [...profileKeys];
+            const newKeys = [name1, name2];
+
+            const updatedData = {};
+
+            // Migrate or initialize profile 1
+            if (profileData[oldKeys[0]]) {
+                updatedData[name1] = profileData[oldKeys[0]];
+                updatedData[name1].displayName = name1;
+            } else {
+                updatedData[name1] = createDefaultProfile(name1, '🦄', 100);
+            }
+
+            // Migrate or initialize profile 2
+            if (profileData[oldKeys[1]]) {
+                updatedData[name2] = profileData[oldKeys[1]];
+                updatedData[name2].displayName = name2;
+            } else {
+                updatedData[name2] = createDefaultProfile(name2, '🤖', 100);
+            }
+
+            profileData = updatedData;
+            profileKeys = newKeys;
+            currentProfile = name1;
+
+            saveStateToLocalStorage();
+            toggleModal('setupNamesModal');
+            renderProfileButtons();
+            renderAll();
+
+            showRewardModal('Names Updated!', `Student profiles set to ${name1} and ${name2}!`, '👋');
+        }
+
+        function renderProfileButtons() {
+            const container = document.getElementById('profileSelectorContainer');
+            if (!container) return;
+
+            container.innerHTML = profileKeys.map((key, idx) => {
+                const isActive = currentProfile === key;
+                const icon = idx === 0 ? 'fa-user-ninja' : 'fa-user-astronaut';
+                
+                return `
+                    <button onclick="switchProfile('${key}')" class="px-3 py-1.5 rounded-lg text-sm font-semibold transition flex items-center gap-1.5 ${
+                        isActive 
+                            ? 'bg-brand-purple text-white shadow' 
+                            : 'text-slate-400 hover:text-white'
+                    }">
+                        <i class="fa-solid ${icon} text-xs"></i> ${escapeHtml(profileData[key]?.displayName || key)}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        // TIME & CHIME STATE
+        let lastChimeMinute = -1;
+        let chimeEnabled = true;
+        let chimeIntervalMins = 30;
+
+        // FOCUS TIMER STATE
+        let timerInterval = null;
+        let timerTimeLeft = 25 * 60; // 25 mins
+        let timerRunning = false;
+
+        // TONE.JS AUDIO SYNTHESIS
+        let synth = null;
+
+        function initAudio() {
+            if (!synth && window.Tone) {
+                synth = new Tone.PolySynth(Tone.Synth).toDestination();
+            }
+        }
+
+        function playCoinSound() {
+            try {
+                initAudio();
+                if (synth) {
+                    const now = Tone.now();
+                    synth.triggerAttackRelease("C5", "8n", now);
+                    synth.triggerAttackRelease("G5", "8n", now + 0.1);
+                    synth.triggerAttackRelease("E6", "8n", now + 0.2);
+                }
+            } catch (e) {
+                console.log('Audio playback prevented');
+            }
+        }
+
+        function playCelebrationSound() {
+            try {
+                initAudio();
+                if (synth) {
+                    const now = Tone.now();
+                    synth.triggerAttackRelease("C4", "8n", now);
+                    synth.triggerAttackRelease("E4", "8n", now + 0.1);
+                    synth.triggerAttackRelease("G4", "8n", now + 0.2);
+                    synth.triggerAttackRelease("C5", "4n", now + 0.3);
+                }
+            } catch (e) {
+                console.log('Audio playback prevented');
+            }
+        }
+
+        function speakCurrentTime() {
+            if (!('speechSynthesis' in window)) return;
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = now.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12;
+
+            const timeStr = minutes === 0 
+                ? `Hey ${currentProfile}! It is exactly ${hours} o'clock ${ampm}. Homework check time!`
+                : `Time check ${currentProfile}! It is ${hours}:${minutes < 10 ? '0' : ''}${minutes} ${ampm}. Stay focused on your goals!`;
+
+            const utterance = new SpeechSynthesisUtterance(timeStr);
+            utterance.rate = 1.0;
+            utterance.pitch = 1.1;
+
+            const selectedVoiceIndex = document.getElementById('voiceSelect').value;
+            const voices = window.speechSynthesis.getVoices();
+            if (voices[selectedVoiceIndex]) {
+                utterance.voice = voices[selectedVoiceIndex];
+            }
+
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const minutes = now.getMinutes();
+            
+            const formattedTime = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            document.getElementById('clockTime').textContent = formattedTime;
+
+            const options = { weekday: 'long', month: 'short', day: 'numeric' };
+            document.getElementById('clockDate').textContent = now.toLocaleDateString(undefined, options);
+
+            // Audio interval chime
+            if (chimeEnabled && minutes !== lastChimeMinute) {
+                if (minutes % chimeIntervalMins === 0) {
+                    lastChimeMinute = minutes;
+                    playCoinSound();
+                    speakCurrentTime();
+                }
+            }
+        }
+
+        function updateChimeSettings() {
+            chimeEnabled = document.getElementById('toggleChime').checked;
+            chimeIntervalMins = parseInt(document.getElementById('chimeInterval').value, 10);
+        }
+
+        function populateVoices() {
+            if (!('speechSynthesis' in window)) return;
+            const voiceSelect = document.getElementById('voiceSelect');
+            const voices = window.speechSynthesis.getVoices();
+            voiceSelect.innerHTML = '';
+            voices.forEach((voice, i) => {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = `${voice.name} (${voice.lang})`;
+                voiceSelect.appendChild(option);
+            });
+        }
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = populateVoices;
+        }
+
+        function switchProfile(name) {
+            if (!profileData[name]) return;
+            currentProfile = name;
+            
+            renderProfileButtons();
+
+            const mascotAvatar = document.getElementById('mascotAvatar');
+            const mascotGreeting = document.getElementById('mascotGreeting');
+            const displayName = profileData[name]?.displayName || name;
+
+            if (mascotAvatar && mascotGreeting) {
+                mascotAvatar.textContent = profileData[name]?.avatar || '🤖';
+                mascotGreeting.textContent = `Ready to crush homework, ${displayName}?`;
+            }
+
+            renderAll();
+        }
+
+        function renderAll() {
+            const data = profileData[currentProfile];
+            if (!data) return;
+
+            renderProfileButtons();
+
+            document.getElementById('userCoins').textContent = data.coins;
+            document.getElementById('userStreak').textContent = data.streak;
+
+            // Update SMART Goal calculations
+            const completedCount = data.tasks.filter(t => t.completed).length;
+            const target = data.weeklyTarget || 5;
+            const percent = Math.min(100, Math.round((completedCount / target) * 100));
+
+            document.getElementById('smartGoalRatio').textContent = `${completedCount} / ${target} Quests`;
+            document.getElementById('smartMetricRatio').textContent = `${completedCount} / ${target}`;
+            document.getElementById('smartGoalProgressBar').style.width = `${percent}%`;
+            document.getElementById('weeklyTargetInput').value = target;
+
+            renderClassFolders();
+            renderHomeworkList();
+            renderPrizeShop();
+            drawPrizeWheel();
+        }
+
+        function renderClassFolders() {
+            const foldersContainer = document.getElementById('classFoldersGrid');
+            if (!foldersContainer) return;
+
+            const tasks = profileData[currentProfile]?.tasks || [];
+
+            foldersContainer.innerHTML = CLASS_FOLDERS.map(folder => {
+                const count = folder.id === 'All' 
+                    ? tasks.filter(t => !t.completed).length 
+                    : tasks.filter(t => t.subject === folder.id && !t.completed).length;
+
+                const isSelected = selectedFolder === folder.id;
+
+                return `
+                    <button onclick="selectFolder('${folder.id}')" 
+                            class="flex flex-col items-center justify-center p-2 rounded-xl transition border text-center relative ${
+                                isSelected 
+                                    ? 'bg-brand-purple text-white border-purple-400 shadow-md ring-2 ring-purple-400/50' 
+                                    : 'bg-slate-900/80 text-slate-300 border-slate-700/80 hover:bg-slate-700/60'
+                            }">
+                        <i class="fa-solid ${folder.icon} text-base mb-1 ${isSelected ? 'text-white' : 'text-purple-300'}"></i>
+                        <span class="text-[11px] font-bold leading-tight truncate w-full">${folder.name}</span>
+                        ${count > 0 ? `
+                            <span class="absolute -top-1.5 -right-1.5 bg-yellow-400 text-slate-900 font-extrabold text-[10px] w-5 h-5 rounded-full flex items-center justify-center shadow">
+                                ${count}
+                            </span>
+                        ` : ''}
+                    </button>
+                `;
+            }).join('');
+
+            const labelEl = document.getElementById('activeFolderLabel');
+            if (labelEl) {
+                labelEl.textContent = `Folder: ${selectedFolder === 'All' ? 'All Folders' : selectedFolder}`;
+            }
+        }
+
+        function selectFolder(folderId) {
+            selectedFolder = folderId;
+            renderClassFolders();
+            renderHomeworkList();
+        }
+
+        function renderHomeworkList() {
+            const listEl = document.getElementById('homeworkList');
+            const data = profileData[currentProfile];
+            
+            // Filter tasks based on selected class folder
+            let activeTasks = data.tasks.filter(t => !t.completed);
+            if (selectedFolder !== 'All') {
+                activeTasks = activeTasks.filter(t => t.subject === selectedFolder);
+            }
+            
+            document.getElementById('pendingCount').textContent = data.tasks.filter(t => !t.completed).length;
+
+            if (activeTasks.length === 0) {
+                listEl.innerHTML = `
+                    <div class="text-center py-12 bg-slate-800/50 rounded-2xl border border-dashed border-slate-700 text-slate-400">
+                        <i class="fa-solid fa-folder-open text-4xl text-purple-400 mb-2"></i>
+                        <p class="font-bold text-slate-200">No Homework Quests in ${selectedFolder === 'All' ? 'any folder' : selectedFolder}!</p>
+                        <p class="text-xs">Add a task above or switch folders to view quests.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const visibleTasks = selectedFolder === 'All' 
+                ? data.tasks 
+                : data.tasks.filter(t => t.subject === selectedFolder);
+
+            listEl.innerHTML = visibleTasks.map(task => `
+                <div class="bg-slate-800 p-4 rounded-2xl border ${task.completed ? 'border-emerald-500/30 bg-slate-800/40 opacity-75' : 'border-slate-700'} shadow-md flex items-center justify-between gap-4 transition hover:border-slate-600">
+                    <div class="flex items-center gap-3 flex-1">
+                        <button onclick="toggleTaskComplete('${task.id}')" class="w-7 h-7 rounded-lg border-2 ${task.completed ? 'bg-emerald-500 border-emerald-400 text-slate-900' : 'border-slate-500 hover:border-brand-purple'} flex items-center justify-center transition shrink-0">
+                            ${task.completed ? '<i class="fa-solid fa-check text-sm font-bold"></i>' : ''}
+                        </button>
+                        <div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${getSubjectBadgeClass(task.subject)}">
+                                    ${task.subject}
+                                </span>
+                                <h4 class="font-bold text-sm ${task.completed ? 'line-through text-slate-400' : 'text-slate-100'}">
+                                    ${escapeHtml(task.title)}
+                                </h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs font-bold text-yellow-400 bg-yellow-400/10 px-2.5 py-1 rounded-xl border border-yellow-500/20 flex items-center gap-1">
+                            <i class="fa-solid fa-coins text-yellow-400"></i> +${task.coins}
+                        </span>
+                        <button onclick="deleteTask('${task.id}')" class="text-slate-500 hover:text-red-400 transition p-1" title="Delete Task">
+                            <i class="fa-solid fa-trash-can text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getSubjectBadgeClass(subject) {
+            switch(subject) {
+                case 'Math': return 'bg-blue-500/20 text-blue-300 border border-blue-500/30';
+                case 'Reading': return 'bg-pink-500/20 text-pink-300 border border-pink-500/30';
+                case 'Science': return 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+                case 'Social Studies': return 'bg-amber-500/20 text-amber-300 border border-amber-500/30';
+                case 'Art': return 'bg-purple-500/20 text-purple-300 border border-purple-500/30';
+                case 'Tech': return 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30';
+                case 'PE': return 'bg-rose-500/20 text-rose-300 border border-rose-500/30';
+                default: return 'bg-slate-500/20 text-slate-300 border border-slate-500/30';
+            }
+        }
+
+        function addHomeworkTask(e) {
+            e.preventDefault();
+            const title = document.getElementById('hwTitle').value.trim();
+            const subject = document.getElementById('hwSubject').value;
+            const coins = parseInt(document.getElementById('hwPrizeCoins').value, 10);
+
+            if (!title) return;
+
+            const newTask = {
+                id: 't_' + Date.now(),
+                title: title,
+                subject: subject,
+                coins: coins,
+                completed: false,
+                addedAt: Date.now()
+            };
+
+            profileData[currentProfile].tasks.unshift(newTask);
+            saveStateToLocalStorage();
+            document.getElementById('hwTitle').value = '';
+
+            renderAll();
+            
+            if (document.getElementById('toggleHwAudio').checked && 'speechSynthesis' in window) {
+                const utter = new SpeechSynthesisUtterance(`New quest added for ${currentProfile}! Earn ${coins} coins upon finishing!`);
+                window.speechSynthesis.speak(utter);
+            }
+        }
+
+        function toggleTaskComplete(taskId) {
+            const data = profileData[currentProfile];
+            const task = data.tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            task.completed = !task.completed;
+
+            if (task.completed) {
+                data.coins += task.coins;
+                playCelebrationSound();
+                
+                if (window.confetti) {
+                    confetti({ particleCount: 80, spread: 60, origin: { y: 0.6 } });
+                }
+
+                showRewardModal('🎉 QUEST COMPLETE!', `Woohoo! You completed "${task.title}" and earned +${task.coins} coins!`, '🪙');
+            } else {
+                data.coins = Math.max(0, data.coins - task.coins);
+            }
+
+            saveStateToLocalStorage();
+            renderAll();
+        }
+
+        function deleteTask(taskId) {
+            profileData[currentProfile].tasks = profileData[currentProfile].tasks.filter(t => t.id !== taskId);
+            saveStateToLocalStorage();
+            renderAll();
+        }
+
+        function renderPrizeShop() {
+            const listEl = document.getElementById('prizeShopList');
+            const data = profileData[currentProfile];
+
+            listEl.innerHTML = data.prizes.map(prize => `
+                <div class="bg-slate-900 p-4 rounded-2xl border border-slate-700 flex items-center justify-between gap-3 shadow">
+                    <div class="flex items-center gap-3">
+                        <span class="text-3xl p-2 bg-slate-800 rounded-xl border border-slate-700 shrink-0">${prize.emoji}</span>
+                        <div>
+                            <h4 class="font-bold text-sm text-slate-100">${escapeHtml(prize.title)}</h4>
+                            <span class="text-xs font-extrabold text-yellow-400 flex items-center gap-1 mt-0.5">
+                                <i class="fa-solid fa-coins"></i> ${prize.cost} Coins
+                            </span>
+                        </div>
+                    </div>
+                    <button onclick="redeemPrize('${prize.id}')" 
+                            class="px-3.5 py-2 rounded-xl text-xs font-bold transition shadow ${data.coins >= prize.cost ? 'bg-emerald-500 hover:bg-emerald-600 text-slate-900' : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'}">
+                        Redeem
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addCustomPrize(e) {
+            e.preventDefault();
+            const title = document.getElementById('prizeTitle').value.trim();
+            const cost = parseInt(document.getElementById('prizeCost').value, 10);
+            const emoji = document.getElementById('prizeEmoji').value;
+
+            if (!title) return;
+
+            const newPrize = {
+                id: 'p_' + Date.now(),
+                title: title,
+                cost: cost,
+                emoji: emoji
+            };
+
+            profileData[currentProfile].prizes.push(newPrize);
+            saveStateToLocalStorage();
+            toggleModal('addPrizeModal');
+            document.getElementById('prizeTitle').value = '';
+            renderAll();
+        }
+
+        function redeemPrize(prizeId) {
+            const data = profileData[currentProfile];
+            const prize = data.prizes.find(p => p.id === prizeId);
+            if (!prize) return;
+
+            if (data.coins < prize.cost) {
+                showRewardModal('Need More Coins!', `You need ${prize.cost - data.coins} more coins to claim this reward. Complete more HW tasks!`, '🔒');
+                return;
+            }
+
+            data.coins -= prize.cost;
+            playCelebrationSound();
+
+            if (window.confetti) {
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.5 } });
+            }
+
+            saveStateToLocalStorage();
+            showRewardModal('REWARD UNLOCKED! 🎁', `Congratulations ${currentProfile}! You redeemed: "${prize.title}"! Show this screen to your parents!`, prize.emoji);
+            renderAll();
+        }
+
+        // CANVAS SPIN WHEEL LOGIC
+        const wheelPrizes = ["+20 Coins", "15m Gaming", "Double Coins", "+50 Coins", "Ice Cream", "Mystery Box"];
+        const wheelColors = ["#6C5CE7", "#FD79A8", "#FDCB6E", "#00B894", "#0984E3", "#e17055"];
+        let wheelAngle = 0;
+        let isSpinning = false;
+
+        function drawPrizeWheel() {
+            const canvas = document.getElementById('wheelCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const numSegments = wheelPrizes.length;
+            const segmentAngle = (2 * Math.PI) / numSegments;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = canvas.width / 2 - 10;
+
+            for (let i = 0; i < numSegments; i++) {
+                const start = wheelAngle + i * segmentAngle;
+                const end = start + segmentAngle;
+
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, start, end);
+                ctx.fillStyle = wheelColors[i % wheelColors.length];
+                ctx.fill();
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#2D3436';
+                ctx.stroke();
+
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate(start + segmentAngle / 2);
+                ctx.textAlign = "right";
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 12px Fredoka, sans-serif";
+                ctx.fillText(wheelPrizes[i], radius - 15, 4);
+                ctx.restore();
+            }
+
+            // Center Hub
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 20, 0, 2 * Math.PI);
+            ctx.fillStyle = '#2D3436';
+            ctx.fill();
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#FDCB6E';
+            ctx.stroke();
+        }
+
+        function spinWheel() {
+            const data = profileData[currentProfile];
+            if (isSpinning) return;
+            if (data.coins < 30) {
+                showRewardModal('Not Enough Coins', 'You need at least 30 Coins to spin the wheel! Complete a HW quest first.', '🪙');
+                return;
+            }
+
+            data.coins -= 30;
+            saveStateToLocalStorage();
+            renderAll();
+            isSpinning = true;
+
+            const spinDuration = 3000;
+            const startRotation = wheelAngle;
+            const extraRounds = 5 + Math.random() * 3;
+            const totalSpin = extraRounds * 2 * Math.PI;
+            const startTime = performance.now();
+
+            function animateSpin(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / spinDuration, 1);
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+
+                wheelAngle = startRotation + easeOut * totalSpin;
+                drawPrizeWheel();
+
+                if (progress < 1) {
+                    requestAnimationFrame(animateSpin);
+                } else {
+                    isSpinning = false;
+                    const normalized = (wheelAngle % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+                    const segmentAngle = (2 * Math.PI) / wheelPrizes.length;
+                    const pointerAngle = (3 * Math.PI / 2 - normalized + 4 * Math.PI) % (2 * Math.PI);
+                    const winningIndex = Math.floor(pointerAngle / segmentAngle) % wheelPrizes.length;
+                    const wonPrize = wheelPrizes[winningIndex];
+
+                    playCelebrationSound();
+                    if (window.confetti) {
+                        confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
+                    }
+
+                    if (wonPrize.includes('Coins')) {
+                        const amount = parseInt(wonPrize.replace(/\D/g, ''), 10) || 50;
+                        data.coins += amount;
+                    }
+
+                    saveStateToLocalStorage();
+                    showRewardModal('WHEEL WINNER! 🎡', `You landed on: "${wonPrize}"!`, '🎁');
+                    renderAll();
+                }
+            }
+
+            requestAnimationFrame(animateSpin);
+        }
+
+        function startFocusTimer() {
+            if (timerRunning) return;
+            timerRunning = true;
+            document.getElementById('timerStatus').textContent = 'Working...';
+            document.getElementById('btnTimerStart').classList.add('hidden');
+            document.getElementById('btnTimerPause').classList.remove('hidden');
+
+            timerInterval = setInterval(() => {
+                if (timerTimeLeft > 0) {
+                    timerTimeLeft--;
+                    updateTimerDisplay();
+                } else {
+                    clearInterval(timerInterval);
+                    timerRunning = false;
+                    playCelebrationSound();
+                    profileData[currentProfile].coins += 25;
+                    saveStateToLocalStorage();
+                    showRewardModal('FOCUS TIMER DONE! ⏱️', 'Awesome work staying focused for 25 minutes! +25 Coins earned!', '🧠');
+                    resetFocusTimer();
+                    renderAll();
+                }
+            }, 1000);
+        }
+
+        function pauseFocusTimer() {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            document.getElementById('timerStatus').textContent = 'Paused';
+            document.getElementById('btnTimerStart').classList.remove('hidden');
+            document.getElementById('btnTimerPause').classList.add('hidden');
+        }
+
+        function resetFocusTimer() {
+            pauseFocusTimer();
+            timerTimeLeft = 25 * 60;
+            document.getElementById('timerStatus').textContent = 'Ready';
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timerTimeLeft / 60);
+            const secs = timerTimeLeft % 60;
+            document.getElementById('timerDisplay').textContent = `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        function switchTab(tab) {
+            const tasksTab = document.getElementById('tabTasks');
+            const prizesTab = document.getElementById('tabPrizes');
+            const smartTab = document.getElementById('tabSmart');
+
+            const tasksBtn = document.getElementById('tabTasksBtn');
+            const prizeBtn = document.getElementById('tabPrizeBtn');
+            const smartBtn = document.getElementById('tabSmartBtn');
+
+            tasksTab.classList.add('hidden');
+            prizesTab.classList.add('hidden');
+            smartTab.classList.add('hidden');
+
+            tasksBtn.className = 'flex-1 min-w-[120px] py-2.5 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 text-slate-400 hover:text-white';
+            prizeBtn.className = 'flex-1 min-w-[120px] py-2.5 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 text-slate-400 hover:text-white';
+            smartBtn.className = 'flex-1 min-w-[120px] py-2.5 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 text-slate-400 hover:text-white';
+
+            if (tab === 'tasks') {
+                tasksTab.classList.remove('hidden');
+                tasksBtn.className = 'flex-1 min-w-[120px] py-2.5 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 bg-brand-purple text-white shadow-lg';
+            } else if (tab === 'prizes') {
+                prizesTab.classList.remove('hidden');
+                prizeBtn.className = 'flex-1 min-w-[120px] py-2.5 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 bg-brand-purple text-white shadow-lg';
+                drawPrizeWheel();
+            } else if (tab === 'smart') {
+                smartTab.classList.remove('hidden');
+                smartBtn.className = 'flex-1 min-w-[120px] py-2.5 rounded-xl font-bold text-sm transition flex items-center justify-center gap-2 bg-brand-purple text-white shadow-lg';
+            }
+        }
+
+        function updateWeeklyTarget() {
+            const val = parseInt(document.getElementById('weeklyTargetInput').value, 10);
+            if (val && val > 0) {
+                profileData[currentProfile].weeklyTarget = val;
+                saveStateToLocalStorage();
+                renderAll();
+                showRewardModal('Target Saved!', `Weekly SMART target set to ${val} completed quests per week!`, '🎯');
+            }
+        }
+
+        function triggerMascotReaction() {
+            const quotes = [
+                "You're doing super awesome! Keep up the good work!",
+                "Remember to check off your HW tasks to earn shiny coins!",
+                "Time check! Are you staying focused on your goals?",
+                "Prizes await! Finishing HW early leaves plenty of free play time!"
+            ];
+            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            document.getElementById('mascotSpeech').textContent = `"${randomQuote}"`;
+            playCoinSound();
+        }
+
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.toggle('hidden');
+            }
+        }
+
+        function showRewardModal(title, msg, emoji = '🎉') {
+            document.getElementById('rewardModalTitle').textContent = title;
+            document.getElementById('rewardModalMessage').textContent = msg;
+            document.getElementById('rewardModalEmoji').textContent = emoji;
+            toggleModal('rewardModal');
+        }
+
+        function resetProfileData() {
+            profileData[currentProfile] = JSON.parse(JSON.stringify(defaultProfileData[currentProfile]));
+            saveStateToLocalStorage();
+            renderAll();
+            toggleModal('settingsModal');
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, function(m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+            });
+        }
+
+        window.onload = function() {
+            loadStateFromLocalStorage();
+            updateClock();
+            setInterval(updateClock, 1000);
+            renderProfileButtons();
+            switchProfile(currentProfile);
+        };
+    </script>
+</body>
+</html>
