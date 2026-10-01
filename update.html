@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FYS Habit Apps Gallery</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* Modern gallery theme, built on the Nido brand variables in style.css */
+:root {
+  --page-bg: #f4f6fa;
+  --card-bg: var(--nido-white);
+  --line: #dde2ec;
+  --muted: #5d6576;
+  --blue-tint: #e8edf6;
+  --red-tint: #f6e9ea;
+  --radius: 12px;
+  --shadow: 0 1px 2px rgba(0, 35, 101, 0.06), 0 4px 14px rgba(0, 35, 101, 0.06);
+  --shadow-hover: 0 2px 4px rgba(0, 35, 101, 0.08), 0 12px 28px rgba(0, 35, 101, 0.14);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--page-bg);
+  line-height: 1.5;
+}
+
+.wrap { max-width: 1160px; margin: 0 auto; padding: 0 24px; }
+
+/* ---- Header band ---- */
+.hero { position: relative; overflow: hidden; }
+.hero::after {               /* red accent echoing the swoosh in the logo */
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 6px;
+  background: var(--nido-red);
+}
+.hero .wrap {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding-top: 40px;
+  padding-bottom: 46px;
+}
+.hero-logo {
+  flex: none;
+  width: 168px;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+.hero-logo img { display: block; width: 100%; height: auto; }
+.eyebrow {
+  margin: 0 0 6px;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+.hero h1 { margin: 0; font-size: clamp(1.8rem, 4vw, 2.7rem); line-height: 1.15; }
+.hero .lede { margin: 12px 0 0; max-width: 620px; font-size: 1.05rem; opacity: 0.9; }
+.stats { display: flex; flex-wrap: wrap; gap: 28px; margin: 22px 0 0; padding: 0; list-style: none; }
+.stats b { display: block; font-size: 1.6rem; line-height: 1.1; }
+.stats span { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0.8; }
+
+/* ---- Filter panel ---- */
+.filters {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: rgba(244, 246, 250, 0.94);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+.filters .wrap { padding-top: 16px; padding-bottom: 14px; }
+.filter-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.filter-row + .filter-row { margin-top: 12px; }
+.filter-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  min-width: 52px;
+}
+
+.classes { display: flex; flex-wrap: wrap; gap: 8px; }
+.classes button {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 0.5rem 1.1rem;
+  background: var(--nido-white);
+  color: var(--nido-blue);
+  box-shadow: inset 0 0 0 1.5px var(--nido-blue);
+}
+.classes button[aria-pressed="true"] { background: var(--nido-blue); color: var(--nido-white); }
+.classes .count { font-weight: 400; font-size: 0.85em; opacity: 0.75; }
+
+.search {
+  margin-left: auto;
+  flex: 0 1 260px;
+  font: inherit;
+  padding: 0.5rem 0.9rem;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: var(--nido-white);
+  color: var(--nido-dark-gray);
+}
+.search:focus { outline: none; border-color: var(--nido-blue); }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  font-family: var(--font-open-sans);
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid var(--line);
+  background: var(--nido-white);
+  color: var(--nido-dark-gray);
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.chip:hover:not(:disabled) { border-color: var(--nido-red); color: var(--nido-red); }
+.chip[aria-pressed="true"] { background: var(--nido-red); border-color: var(--nido-red); color: var(--nido-white); }
+.chip:disabled { opacity: 0.4; cursor: default; }
+.chip .n { opacity: 0.65; margin-left: 2px; }
+
+button:focus-visible, a:focus-visible { outline: 3px solid var(--nido-red); outline-offset: 2px; }
+
+/* ---- Gallery ---- */
+main { padding-top: 8px; padding-bottom: 56px; }
+.summary { color: var(--muted); margin: 20px 0 0; }
+
+.class-title {
+  margin: 36px 0 4px;
+  font-size: 1.6rem;
+  color: var(--nido-blue);
+}
+.block-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0 14px;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--nido-red);
+}
+.block-title::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 22px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+
+.preview {
+  display: block;
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--blue-tint);
+  border-bottom: 1px solid var(--line);
+}
+/* Render the app at desktop size, then shrink it down to a thumbnail */
+.preview iframe {
+  width: 1200px;
+  height: 900px;
+  border: 0;
+  transform: scale(0.2);
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+.preview::after {
+  content: "Open app ↗";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: var(--nido-white);
+  background: rgba(0, 35, 101, 0.72);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.preview:hover::after, .preview:focus-visible::after { opacity: 1; }
+
+.info { display: flex; flex-direction: column; flex: 1; padding: 16px 18px 18px; }
+.app-name {
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: var(--nido-blue);
+  text-decoration: none;
+  line-height: 1.3;
+}
+.app-name:hover { text-decoration: underline; }
+.tagline { margin-top: 4px; font-size: 0.9rem; color: var(--nido-dark-gray); }
+.students { margin-top: 8px; font-size: 0.85rem; color: var(--muted); }
+.said {
+  margin: 12px 0 0;
+  padding-left: 10px;
+  border-left: 3px solid var(--red-tint);
+  font-size: 0.82rem;
+  font-style: italic;
+  color: var(--muted);
+}
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 14px; }
+.tag {
+  font-family: var(--font-open-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  background: var(--blue-tint);
+  color: var(--nido-blue);
+  cursor: pointer;
+}
+.tag:hover { background: var(--nido-blue); color: var(--nido-white); }
+
+.empty {
+  margin: 40px auto;
+  max-width: 460px;
+  padding: 32px 24px;
+  text-align: center;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.empty h2 { margin: 0 0 6px; color: var(--nido-blue); font-size: 1.3rem; }
+.empty p { margin: 0 0 16px; color: var(--muted); }
+
+footer { padding: 26px 0; font-size: 0.85rem; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; }
+footer p { margin: 0; opacity: 0.85; }
+footer a { color: inherit; }
+
+.sr {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .wrap { padding: 0 16px; }
+  .hero .wrap { flex-direction: column; align-items: flex-start; gap: 18px; padding-top: 28px; padding-bottom: 34px; }
+  .hero-logo { width: 124px; padding: 10px 12px; }
+  .filters { position: static; }
+  .search { margin-left: 0; flex: 1 1 100%; }
+  .filter-label { min-width: 0; flex: 1 1 100%; }
+  .grid { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card, .preview::after, .chip { transition: none; }
+  .card:hover { transform: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="hero bg-nido-blue text-white">
+  <div class="wrap">
+    <div class="hero-logo bg-white"><img src="logo.png" alt="The International School Nido de Aguilas"></div>
+    <div>
+      <p class="eyebrow font-medium">First Year Seminar · 2026</p>
+      <h1 class="font-bold">Habit App Gallery</h1>
+      <p class="lede font-light">
+        Ninth graders interviewed a classmate about their habits and challenges,
+        then designed an app with Gemini to help that classmate reach their goals.
+      </p>
+      <ul class="stats" id="stats"></ul>
+    </div>
+  </div>
+</header>
+
+<section class="filters" aria-label="Filter apps">
+  <div class="wrap">
+    <div class="filter-row">
+      <span class="filter-label font-bold">Class</span>
+      <div class="classes" id="class-picker"></div>
+      <label class="sr" for="search">Search apps or students</label>
+      <input class="search" id="search" type="search" placeholder="Search apps or students…">
+    </div>
+    <div class="filter-row">
+      <span class="filter-label font-bold">Topic</span>
+      <div class="chips" id="topic-picker"></div>
+    </div>
+  </div>
+</section>
+
+<main class="wrap">
+  <p id="summary" class="summary" aria-live="polite"></p>
+  <div id="gallery"></div>
+</main>
+
+<footer class="bg-nido-dark text-white">
+  <div class="wrap">
+    <p>The International School Nido de Aguilas · First Year Seminar</p>
+    <p><a href="index.html">View the 1996 edition</a></p>
+  </div>
+</footer>
+
+<script src="apps.js"></script>
+<script>
+(function () {
+  var data = window.GALLERY || { classes: [], topics: [] };
+  var classPicker = document.getElementById("class-picker");
+  var topicPicker = document.getElementById("topic-picker");
+  var search = document.getElementById("search");
+  var summary = document.getElementById("summary");
+  var gallery = document.getElementById("gallery");
+  var topicNames = {};
+  data.topics.forEach(function (t) { topicNames[t.id] = t.name; });
+
+  function el(tag, attrs, text) {
+    var n = document.createElement(tag);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  function plural(n) { return n + (n === 1 ? " app" : " apps"); }
+
+  // ---- State lives in the URL hash (#class=seavey&topic=sleep); search is live-only ----
+  function readState() {
+    var h = location.hash.replace(/^#/, ""), st = { cls: "", topic: "" };
+    if (h && h.indexOf("=") < 0) { st.cls = h; return st; }
+    h.split("&").forEach(function (pair) {
+      var kv = pair.split("=");
+      if (kv[0] === "class") st.cls = decodeURIComponent(kv[1] || "");
+      if (kv[0] === "topic") st.topic = decodeURIComponent(kv[1] || "");
+    });
+    return st;
+  }
+  function hashFor(st) {
+    var parts = [];
+    if (st.cls) parts.push("class=" + st.cls);
+    if (st.topic) parts.push("topic=" + st.topic);
+    return "#" + parts.join("&");
+  }
+  function go(change) {
+    var st = readState();
+    for (var k in change) st[k] = change[k];
+    location.hash = hashFor(st);
+  }
+
+  function matchesQuery(a, q) {
+    if (!q) return true;
+    return (a.name + " " + a.tagline + " " + a.students + " " + a.studentLabel).toLowerCase().indexOf(q) >= 0;
+  }
+  function appsIn(classes, topic, q) {
+    var out = [];
+    classes.forEach(function (c) {
+      c.blocks.forEach(function (b) {
+        b.apps.forEach(function (a) {
+          if ((!topic || a.topics.indexOf(topic) >= 0) && matchesQuery(a, q)) out.push(a);
+        });
+      });
+    });
+    return out;
+  }
+
+  // ---- Header stats ----
+  var stats = document.getElementById("stats");
+  var activeClasses = data.classes.filter(function (c) { return c.blocks.length; }).length;
+  [[appsIn(data.classes, "", "").length, "Apps"],
+   [activeClasses, activeClasses === 1 ? "Class" : "Classes"],
+   [data.topics.length, "Topics"]].forEach(function (s) {
+    var li = el("li");
+    li.appendChild(el("b", {}, String(s[0])));
+    li.appendChild(el("span", {}, s[1]));
+    stats.appendChild(li);
+  });
+
+  // ---- Class buttons ----
+  [{ id: "", teacher: "All classes" }].concat(data.classes).forEach(function (c) {
+    var btn = el("button", { type: "button", "class": "btn-nido-blue", "data-id": c.id });
+    btn.appendChild(el("span", {}, c.teacher));
+    btn.appendChild(el("span", { "class": "count" }, ""));
+    btn.addEventListener("click", function () { go({ cls: c.id }); });
+    classPicker.appendChild(btn);
+  });
+
+  function renderPickers(st, selectedClasses, q) {
+    Array.prototype.forEach.call(classPicker.children, function (b) {
+      var id = b.getAttribute("data-id");
+      var cs = id ? data.classes.filter(function (c) { return c.id === id; }) : data.classes;
+      b.setAttribute("aria-pressed", id === st.cls ? "true" : "false");
+      b.lastChild.textContent = appsIn(cs, st.topic, q).length;
+    });
+
+    topicPicker.innerHTML = "";
+    [{ id: "", name: "All topics" }].concat(data.topics).forEach(function (t) {
+      var n = appsIn(selectedClasses, t.id, q).length;
+      var chip = el("button", { type: "button", "class": "chip", "aria-pressed": t.id === st.topic ? "true" : "false" }, t.name);
+      chip.appendChild(el("span", { "class": "n" }, " " + n));
+      if (!n && t.id !== st.topic) chip.disabled = true;
+      chip.addEventListener("click", function () { go({ topic: t.id }); });
+      topicPicker.appendChild(chip);
+    });
+  }
+
+  function card(a) {
+    var card = el("article", { "class": "card" });
+
+    var link = el("a", { href: a.path, target: "_blank", rel: "noopener", "class": "preview" });
+    link.appendChild(el("iframe", {
+      src: a.path,
+      title: "Preview of " + a.name,
+      loading: "lazy",
+      sandbox: "allow-scripts",
+      tabindex: "-1",
+      "aria-hidden": "true",
+      scrolling: "no"
+    }));
+    link.appendChild(el("span", { "class": "sr" }, "Open " + a.name + " in a new tab"));
+    card.appendChild(link);
+
+    var info = el("div", { "class": "info" });
+    info.appendChild(el("a", { href: a.path, target: "_blank", rel: "noopener", "class": "app-name" }, a.name));
+    if (a.tagline) info.appendChild(el("div", { "class": "tagline" }, a.tagline));
+    info.appendChild(el("div", { "class": "students" }, "by " + a.students));
+    if (a.studentLabel) info.appendChild(el("p", { "class": "said" }, "“" + a.studentLabel + "”"));
+
+    if (a.topics.length) {
+      var tags = el("div", { "class": "tags" });
+      a.topics.forEach(function (t) {
+        var tag = el("button", { type: "button", "class": "tag", title: "Show all " + topicNames[t] + " apps" }, topicNames[t]);
+        tag.addEventListener("click", function () { go({ topic: t }); window.scrollTo({ top: 0, behavior: "smooth" }); });
+        tags.appendChild(tag);
+      });
+      info.appendChild(tags);
+    }
+    card.appendChild(info);
+    return card;
+  }
+
+  function emptyBox(title, text, btnLabel, onClick) {
+    var box = el("div", { "class": "empty" });
+    box.appendChild(el("h2", {}, title));
+    box.appendChild(el("p", {}, text));
+    if (btnLabel) {
+      var b = el("button", { type: "button", "class": "btn-nido-red" }, btnLabel);
+      b.addEventListener("click", onClick);
+      box.appendChild(b);
+    }
+    gallery.appendChild(box);
+  }
+
+  function render() {
+    var st = readState();
+    var q = search.value.trim().toLowerCase();
+    if (!data.classes.some(function (c) { return c.id === st.cls; })) st.cls = "";
+    if (st.topic && !topicNames[st.topic]) st.topic = "";
+
+    var selected = st.cls ? data.classes.filter(function (c) { return c.id === st.cls; }) : data.classes;
+    renderPickers(st, selected, q);
+    gallery.innerHTML = "";
+
+    var n = appsIn(selected, st.topic, q).length;
+    summary.textContent = "Showing " + plural(n) +
+      (st.topic ? " about " + topicNames[st.topic] : "") +
+      (q ? " matching “" + search.value.trim() + "”" : "") +
+      " from " + (st.cls ? selected[0].teacher + "’s class" : "all classes") + ".";
+
+    if (st.cls && !selected[0].blocks.length) {
+      emptyBox(selected[0].teacher + "’s class", "Apps from this class are coming soon.", "Browse all classes", function () { go({ cls: "" }); });
+      return;
+    }
+    if (!n) {
+      emptyBox("No apps match", "Try a different topic or search.", "Clear filters", function () {
+        search.value = "";
+        if (st.topic) go({ topic: "" }); else render();
+      });
+      return;
+    }
+
+    selected.forEach(function (c) {
+      if (!appsIn([c], st.topic, q).length) return;
+      gallery.appendChild(el("h2", { "class": "class-title" }, c.teacher + "’s class"));
+      c.blocks.forEach(function (b) {
+        var apps = appsIn([{ blocks: [b] }], st.topic, q);
+        if (!apps.length) return;
+        gallery.appendChild(el("h3", { "class": "block-title" }, "Block " + b.block));
+        var grid = el("div", { "class": "grid" });
+        apps.forEach(function (a) { grid.appendChild(card(a)); });
+        gallery.appendChild(grid);
+      });
+    });
+    scalePreviews();
+  }
+
+  // Shrink each 1200px-wide app render to fit its thumbnail box
+  function scalePreviews() {
+    var boxes = gallery.querySelectorAll(".preview");
+    for (var i = 0; i < boxes.length; i++) {
+      boxes[i].firstChild.style.transform = "scale(" + (boxes[i].clientWidth / 1200) + ")";
+    }
+  }
+  window.addEventListener("resize", scalePreviews);
+  window.addEventListener("hashchange", render);
+  search.addEventListener("input", render);
+  render();
+})();
+</script>
+</body>
+</html>
