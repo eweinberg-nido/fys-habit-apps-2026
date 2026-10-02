@@ -213,14 +213,6 @@ main { padding-top: 8px; padding-bottom: 56px; }
 .app-name:hover { text-decoration: underline; }
 .tagline { margin-top: 4px; font-size: 0.9rem; color: var(--nido-dark-gray); }
 .students { margin-top: 8px; font-size: 0.85rem; color: var(--muted); }
-.said {
-  margin: 12px 0 0;
-  padding-left: 10px;
-  border-left: 3px solid var(--red-tint);
-  font-size: 0.82rem;
-  font-style: italic;
-  color: var(--muted);
-}
 .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: 14px; }
 .tag {
   font-family: var(--font-open-sans);
@@ -260,23 +252,6 @@ footer a { color: inherit; }
   font-family: "Times New Roman", Times, serif;
 }
 .counter p { margin: 0 0 6px; font-size: 0.95rem; opacity: 1; }
-.odometer {
-  display: inline-flex;
-  gap: 2px;
-  padding: 3px;
-  background: #c0c0c0;
-  border: 2px outset #fff;
-}
-.odometer span {
-  width: 1.15em;
-  padding: 1px 0;
-  background: #000;
-  border: 1px inset #555;
-  color: #39ff14;
-  font: bold 1.35rem/1.1 "Courier New", Courier, monospace;
-  text-align: center;
-  text-shadow: 0 0 4px rgba(57, 255, 20, 0.8);
-}
 .counter .since { margin: 6px 0 0; font-size: 0.75rem; opacity: 0.6; }
 
 .sr {
@@ -346,13 +321,14 @@ footer a { color: inherit; }
     <p><a href="index.html">View the 1996 edition</a></p>
     <div class="counter">
       <p>You are visitor number</p>
-      <div class="odometer" id="odometer" role="img" aria-label="Visitor counter: 2026"></div>
+      <div class="hitcounter" data-value="2026"></div>
       <p class="since">since 1996</p>
     </div>
   </div>
 </footer>
 
 <script src="apps.js"></script>
+<script src="counter.js"></script>
 <script>
 (function () {
   var data = window.GALLERY || { classes: [], topics: [] };
@@ -398,7 +374,7 @@ footer a { color: inherit; }
 
   function matchesQuery(a, q) {
     if (!q) return true;
-    return (a.name + " " + a.tagline + " " + a.students + " " + a.studentLabel).toLowerCase().indexOf(q) >= 0;
+    return (a.name + " " + a.tagline + " " + a.students + " " + a.topics.map(function (t) { return topicNames[t]; }).join(" ")).toLowerCase().indexOf(q) >= 0;
   }
   function appsIn(classes, topic, q) {
     var out = [];
@@ -472,7 +448,6 @@ footer a { color: inherit; }
     info.appendChild(el("a", { href: a.path, target: "_blank", rel: "noopener", "class": "app-name" }, a.name));
     if (a.tagline) info.appendChild(el("div", { "class": "tagline" }, a.tagline));
     info.appendChild(el("div", { "class": "students" }, "by " + a.students));
-    if (a.studentLabel) info.appendChild(el("p", { "class": "said" }, "“" + a.studentLabel + "”"));
 
     if (a.topics.length) {
       var tags = el("div", { "class": "tags" });
@@ -549,28 +524,6 @@ footer a { color: inherit; }
       boxes[i].firstChild.style.transform = "scale(" + (boxes[i].clientWidth / 1200) + ")";
     }
   }
-  // ---- Visitor counter: rolls up to a fixed number, Angelfire style ----
-  (function () {
-    var target = 2026, digits = 6, odo = document.getElementById("odometer");
-    function show(n) {
-      var s = String(n);
-      while (s.length < digits) s = "0" + s;
-      odo.innerHTML = "";
-      for (var i = 0; i < s.length; i++) odo.appendChild(el("span", { "aria-hidden": "true" }, s[i]));
-    }
-    var still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (still) { show(target); return; }
-    var start = null;
-    function step(t) {
-      if (!start) start = t;
-      var p = Math.min((t - start) / 1400, 1);
-      show(Math.round(target * (1 - Math.pow(1 - p, 3))));
-      if (p < 1) requestAnimationFrame(step);
-    }
-    show(0);
-    requestAnimationFrame(step);
-  })();
-
   window.addEventListener("resize", scalePreviews);
   window.addEventListener("hashchange", render);
   search.addEventListener("input", render);
