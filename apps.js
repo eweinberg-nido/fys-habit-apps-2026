@@ -348,7 +348,53 @@ window.GALLERY = {
     {
       "id": "kim",
       "teacher": "Ms. Kim",
-      "blocks": []
+      "blocks": [
+        {
+          "block": "H",
+          "apps": [
+            {
+              "name": "NutriHydro",
+              "tagline": "Balanced Nutrition & Hydration Companion",
+              "students": "Benja & Xuran",
+              "path": "kim/H/benja-xuran.html",
+              "topics": [
+                "food"
+              ],
+              "studentLabel": "eating drinking"
+            },
+            {
+              "name": "FocusQuest",
+              "tagline": "Simple 9th Grade Study Companion",
+              "students": "Jacobo, Joshua & Alejandra",
+              "path": "kim/H/jacobo-joshua-alejandra.html",
+              "topics": [
+                "studying"
+              ],
+              "studentLabel": "Studying more"
+            },
+            {
+              "name": "PIVOT x NoxRest",
+              "tagline": "AI-Verified Mindful Dopamine Rewire",
+              "students": "Lucas, Pedro & Rebecca",
+              "path": "kim/H/lucas-pedro-rebecca.html",
+              "topics": [
+                "screen-time"
+              ],
+              "studentLabel": "doomscrolling"
+            },
+            {
+              "name": "FocusPal",
+              "tagline": "Screen Time & Focus Sanctuary",
+              "students": "Santi, Atharva & Inaki",
+              "path": "kim/H/santi-atharva-inaki.html",
+              "topics": [
+                "screen-time"
+              ],
+              "studentLabel": "doom scrolling"
+            }
+          ]
+        }
+      ]
     }
   ]
 };

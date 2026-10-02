@@ -30,7 +30,7 @@ CATEGORIES_FILE = "categories.MD"
 # keywords found in a label onto one standard topic. A label can match several
 # topics. Topics appear on the site in this order.
 TOPICS = [
-    ("procrastination", "Procrastination & Motivation", ["procrastinat", "get started", "motivat"]),
+    ("procrastination", "Procrastination & Motivation", ["procrastinat", "procastinat", "get started", "motivat"]),
     ("screen-time", "Screen Time & Doomscrolling", ["screen", "doom", "scroll", "phone"]),
     ("focus", "Focus & Distraction", ["focus", "distract", "concentrat"]),
     ("studying", "Studying & Homework", ["study", "homework"]),

@@ -252,6 +252,33 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
 footer p { margin: 0; opacity: 0.85; }
 footer a { color: inherit; }
 
+/* Angelfire-style hit counter (decorative; the number is fixed) */
+.counter {
+  flex: 1 1 100%;
+  margin-top: 18px;
+  text-align: center;
+  font-family: "Times New Roman", Times, serif;
+}
+.counter p { margin: 0 0 6px; font-size: 0.95rem; opacity: 1; }
+.odometer {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  background: #c0c0c0;
+  border: 2px outset #fff;
+}
+.odometer span {
+  width: 1.15em;
+  padding: 1px 0;
+  background: #000;
+  border: 1px inset #555;
+  color: #39ff14;
+  font: bold 1.35rem/1.1 "Courier New", Courier, monospace;
+  text-align: center;
+  text-shadow: 0 0 4px rgba(57, 255, 20, 0.8);
+}
+.counter .since { margin: 6px 0 0; font-size: 0.75rem; opacity: 0.6; }
+
 .sr {
   position: absolute;
   width: 1px; height: 1px;
@@ -285,8 +312,8 @@ footer a { color: inherit; }
       <p class="eyebrow font-medium">First Year Seminar · 2026</p>
       <h1 class="font-bold">Habit App Gallery</h1>
       <p class="lede font-light">
-        Ninth graders interviewed a classmate about their habits and challenges,
-        then designed an app with Gemini to help that classmate reach their goals.
+        Ninth graders interviewed classmates about their habits and challenges,
+        then designed an app with Gemini to help students with the same habits and challenges reach their goals.
       </p>
       <ul class="stats" id="stats"></ul>
     </div>
@@ -317,6 +344,11 @@ footer a { color: inherit; }
   <div class="wrap">
     <p>The International School Nido de Aguilas · First Year Seminar</p>
     <p><a href="index.html">View the 1996 edition</a></p>
+    <div class="counter">
+      <p>You are visitor number</p>
+      <div class="odometer" id="odometer" role="img" aria-label="Visitor counter: 2026"></div>
+      <p class="since">since 1996</p>
+    </div>
   </div>
 </footer>
 
@@ -517,6 +549,28 @@ footer a { color: inherit; }
       boxes[i].firstChild.style.transform = "scale(" + (boxes[i].clientWidth / 1200) + ")";
     }
   }
+  // ---- Visitor counter: rolls up to a fixed number, Angelfire style ----
+  (function () {
+    var target = 2026, digits = 6, odo = document.getElementById("odometer");
+    function show(n) {
+      var s = String(n);
+      while (s.length < digits) s = "0" + s;
+      odo.innerHTML = "";
+      for (var i = 0; i < s.length; i++) odo.appendChild(el("span", { "aria-hidden": "true" }, s[i]));
+    }
+    var still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (still) { show(target); return; }
+    var start = null;
+    function step(t) {
+      if (!start) start = t;
+      var p = Math.min((t - start) / 1400, 1);
+      show(Math.round(target * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) requestAnimationFrame(step);
+    }
+    show(0);
+    requestAnimationFrame(step);
+  })();
+
   window.addEventListener("resize", scalePreviews);
   window.addEventListener("hashchange", render);
   search.addEventListener("input", render);

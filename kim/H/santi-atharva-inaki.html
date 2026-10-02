@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusPal — Screen Time & Focus Sanctuary</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Nunito & Fredoka -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <!-- React 18 & Babel Standalone -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Nunito', 'sans-serif'],
+                        display: ['Fredoka', 'cursive'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            yellow: '#fbbf24',
+                            purple: '#a855f7',
+                            pink: '#ec4899',
+                            coral: '#f43f5e',
+                            dark: '#0f172a'
+                        }
+                    },
+                    animation: {
+                        'float': 'float 3.5s ease-in-out infinite',
+                        'bounce-slow': 'bounce 2s infinite',
+                        'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
+                        'wiggle': 'wiggle 0.6s ease-in-out infinite',
+                        'yawn': 'yawn 4s ease-in-out infinite',
+                        'shiver': 'shiver 0.25s infinite',
+                        'sparkle-float': 'sparkleFloat 2.2s linear infinite',
+                        'breathe-ring': 'breatheRing 8s ease-in-out infinite',
+                        'spin-slow': 'spin 12s linear infinite'
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-12px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { filter: 'drop-shadow(0 0 10px rgba(74, 222, 128, 0.6))' },
+                            '50%': { filter: 'drop-shadow(0 0 22px rgba(74, 222, 128, 0.95))' },
+                        },
+                        wiggle: {
+                            '0%, 100%': { transform: 'rotate(-4deg)' },
+                            '50%': { transform: 'rotate(4deg)' },
+                        },
+                        yawn: {
+                            '0%, 100%': { transform: 'scale(1)' },
+                            '50%': { transform: 'scale(1.06) translateY(3px)' },
+                        },
+                        shiver: {
+                            '0%, 100%': { transform: 'translateX(-3px)' },
+                            '50%': { transform: 'translateX(3px)' },
+                        },
+                        sparkleFloat: {
+                            '0%': { transform: 'translateY(0) scale(0)', opacity: 0 },
+                            '50%': { opacity: 1, transform: 'translateY(-18px) scale(1.1)' },
+                            '100%': { transform: 'translateY(-36px) scale(0)', opacity: 0 }
+                        },
+                        breatheRing: {
+                            '0%, 100%': { transform: 'scale(0.85)', opacity: 0.4 },
+                            '50%': { transform: 'scale(1.3)', opacity: 0.95 }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #070a12 0%, #0f172a 50%, #030712 100%);
+            min-height: 100vh;
+            color: #f8fafc;
+            user-select: none;
+        }
+
+        .btn-3d {
+            transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 5px 0 var(--tw-shadow-color, #1e293b);
+        }
+        .btn-3d:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 var(--tw-shadow-color, #1e293b);
+        }
+
+        .btn-3d-green { --tw-shadow-color: #15803d; background-color: #22c55e; color: white; }
+        .btn-3d-green:hover { background-color: #4ade80; }
+
+        .btn-3d-purple { --tw-shadow-color: #6b21a8; background-color: #a855f7; color: white; }
+        .btn-3d-purple:hover { background-color: #c084fc; }
+
+        .btn-3d-amber { --tw-shadow-color: #b45309; background-color: #f59e0b; color: white; }
+        .btn-3d-amber:hover { background-color: #fbbf24; }
+
+        .btn-3d-rose { --tw-shadow-color: #be123c; background-color: #f43f5e; color: white; }
+        .btn-3d-rose:hover { background-color: #fb7185; }
+
+        .btn-3d-cyan { --tw-shadow-color: #0e7490; background-color: #06b6d4; color: white; }
+        .btn-3d-cyan:hover { background-color: #22d3ee; }
+
+        .btn-3d-slate { --tw-shadow-color: #334155; background-color: #475569; color: white; }
+        .btn-3d-slate:hover { background-color: #64748b; }
+
+        .glass-card {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .phone-container {
+            max-width: 440px;
+            height: 900px;
+            max-height: 95vh;
+            border-radius: 46px;
+            box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.85), 0 0 0 12px #334155, 0 0 0 15px #1e293b;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .mac-container {
+            width: 100%;
+            max-width: 1020px;
+            height: 840px;
+            max-height: 92vh;
+            border-radius: 20px;
+            box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.15);
+            overflow: hidden;
+            position: relative;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.25); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.45); }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-2 md:p-6 overflow-x-hidden">
+
+    <div id="root" class="w-full max-w-7xl flex flex-col items-center"></div>
+
+    <script type="text/babel">
+        class AudioFX {
+            constructor() {
+                this.ctx = null;
+                this.ambientOsc = null;
+                this.ambientGain = null;
+                this.soundEnabled = true;
+            }
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+            playTone(freq, type = 'sine', duration = 0.15, gainVal = 0.12) {
+                if (!this.soundEnabled) return;
+                try {
+                    this.init();
+                    if (!this.ctx) return;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                    gain.gain.setValueAtTime(gainVal, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                } catch(e) {}
+            }
+            pop() { this.playTone(650, 'sine', 0.08, 0.15); }
+            coin() {
+                this.playTone(987.77, 'sine', 0.08, 0.12);
+                setTimeout(() => this.playTone(1318.51, 'sine', 0.25, 0.15), 80);
+            }
+            success() {
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((n, idx) => {
+                    setTimeout(() => this.playTone(n, 'triangle', 0.2, 0.15), idx * 90);
+                });
+            }
+            error() {
+                this.playTone(220, 'sawtooth', 0.2, 0.15);
+                setTimeout(() => this.playTone(180, 'sawtooth', 0.3, 0.15), 150);
+            }
+            levelUp() {
+                const notes = [440, 554.37, 659.25, 880, 1108.73];
+                notes.forEach((n, idx) => {
+                    setTimeout(() => this.playTone(n, 'sine', 0.28, 0.2), idx * 100);
+                });
+            }
+            startAmbient(type) {
+                this.stopAmbient();
+                if (!this.soundEnabled) return;
+                this.init();
+                if (!this.ctx) return;
+                
+                if (type === 'rain' || type === 'white' || type === 'waves') {
+                    const bufferSize = this.ctx.sampleRate * 2;
+                    const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                    const output = noiseBuffer.getChannelData(0);
+                    for (let i = 0; i < bufferSize; i++) {
+                        output[i] = Math.random() * 2 - 1;
+                    }
+                    const whiteNoise = this.ctx.createBufferSource();
+                    whiteNoise.buffer = noiseBuffer;
+                    whiteNoise.loop = true;
+
+                    const filter = this.ctx.createBiquadFilter();
+                    filter.type = type === 'rain' ? 'lowpass' : (type === 'waves' ? 'lowpass' : 'bandpass');
+                    filter.frequency.value = type === 'rain' ? 700 : (type === 'waves' ? 400 : 1200);
+
+                    this.ambientGain = this.ctx.createGain();
+                    this.ambientGain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+
+                    whiteNoise.connect(filter);
+                    filter.connect(this.ambientGain);
+                    this.ambientGain.connect(this.ctx.destination);
+
+                    whiteNoise.start();
+                    this.ambientOsc = whiteNoise;
+                }
+            }
+            stopAmbient() {
+                if (this.ambientOsc) {
+                    try { this.ambientOsc.stop(); } catch(e) {}
+                    this.ambientOsc = null;
+                }
+            }
+        }
+
+        const sound = new AudioFX();
+
+        const PET_SPECIES = [
+            { id: 'sparky', name: 'Sparky the Sloth', icon: '🦥', color: '#4ade80', desc: 'Chill companion who loves steady focus' },
+            { id: 'ember', name: 'Ember the Dragon', icon: '🐉', color: '#f43f5e', desc: 'Fiery motivation for deep study sprints' },
+            { id: 'pebble', name: 'Pebble the Owl', icon: '🦉', color: '#a855f7', desc: 'Wise master of distraction-free productivity' },
+            { id: 'bubbles', name: 'Bubbles the Otter', icon: '🦦', color: '#38bdf8', desc: 'Playful pal who loves mindful study breaks' },
+            { id: 'luna', name: 'Luna the Bunny', icon: '🐰', color: '#f472b6', desc: 'Gentle spirit who flourishes on high streaks' }
+        ];
+
+        const COSMETICS_HATS = [
+            { id: 'none', name: 'Bare Companion', price: 0, icon: '🚫', description: 'Natural unadorned charm' },
+            { id: 'crown', name: 'Focus Crown', price: 150, icon: '👑', description: 'Fit for screen time royalty' },
+            { id: 'wizard', name: 'Arcane Hat', price: 250, icon: '🧙‍♂️', description: '+100 Wisdom & Deep Focus' },
+            { id: 'party', name: 'Party Cone', price: 80, icon: '🎉', description: 'Always celebrating milestone wins' },
+            { id: 'headphones', name: 'Pro Headset', price: 200, icon: '🎧', description: 'Maximum noise cancellation' },
+            { id: 'glasses', name: 'Pixel Shades', price: 120, icon: '🕶️', description: 'Cool factors off the charts' },
+            { id: 'halo', name: 'Zen Halo', price: 300, icon: '😇', description: 'Pure tranquility and mindfulness' }
+        ];
+
+        const BACKGROUND_THEMES = [
+            { id: 'sanctuary', name: 'Forest Sanctuary', price: 0, bgClass: 'from-emerald-950 via-teal-950 to-slate-950', accentColor: '#22c55e', icon: '🌲' },
+            { id: 'cosmic', name: 'Cosmic Void', price: 180, bgClass: 'from-purple-950 via-indigo-950 to-slate-950', accentColor: '#a855f7', icon: '🌌' },
+            { id: 'sunset', name: 'Sunset Beach', price: 220, bgClass: 'from-amber-950 via-rose-950 to-slate-950', accentColor: '#f59e0b', icon: '🌅' },
+            { id: 'cyber', name: 'Cyber Neon', price: 300, bgClass: 'from-cyan-950 via-fuchsia-950 to-slate-950', accentColor: '#06b6d4', icon: '🏙️' },
+            { id: 'cozy', name: 'Cozy Attic', price: 120, bgClass: 'from-stone-950 via-amber-950 to-slate-950', accentColor: '#fbbf24', icon: '☕' },
+            { id: 'cherry_blossom', name: 'Cherry Blossom', price: 250, bgClass: 'from-pink-950 via-rose-950 to-slate-950', accentColor: '#f472b6', icon: '🌸' },
+            { id: 'aurora', name: 'Aurora Borealis', price: 320, bgClass: 'from-teal-950 via-sky-950 to-slate-950', accentColor: '#2dd4bf', icon: '🌌' },
+            { id: 'neon_arcade', name: 'Retro Arcade', price: 350, bgClass: 'from-fuchsia-950 via-indigo-950 to-slate-950', accentColor: '#e879f9', icon: '🕹️' }
+        ];
+
+        const FOOD_ITEMS = [
+            { id: 'apple', name: 'Focus Berry', price: 20, icon: '🍎', hungerGain: 25, happyGain: 15 },
+            { id: 'boba', name: 'Energy Boba', price: 35, icon: '🧋', hungerGain: 40, happyGain: 25 },
+            { id: 'golden_apple', name: 'Golden Apple', price: 75, icon: '🍏', hungerGain: 80, happyGain: 50 },
+            { id: 'cupcake', name: 'Star Cupcake', price: 45, icon: '🧁', hungerGain: 50, happyGain: 35 }
+        ];
+
+        const INITIAL_APPS_LIST = [
+            { id: 'tiktok', name: 'TikTok', icon: 'fa-brands fa-tiktok', color: 'bg-slate-900 text-cyan-400', usageMins: 45, limitMins: 30, blocked: false, category: 'Social' },
+            { id: 'instagram', name: 'Instagram', icon: 'fa-brands fa-instagram', color: 'bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 text-white', usageMins: 55, limitMins: 45, blocked: false, category: 'Social' },
+            { id: 'youtube', name: 'YouTube', icon: 'fa-brands fa-youtube', color: 'bg-red-600 text-white', usageMins: 35, limitMins: 40, blocked: false, category: 'Media' },
+            { id: 'x', name: 'X / Twitter', icon: 'fa-brands fa-x-twitter', color: 'bg-slate-800 text-white', usageMins: 15, limitMins: 20, blocked: false, category: 'Social' },
+            { id: 'discord', name: 'Discord', icon: 'fa-brands fa-discord', color: 'bg-indigo-600 text-white', usageMins: 25, limitMins: 30, blocked: false, category: 'Chat' },
+            { id: 'roblox', name: 'Roblox', icon: 'fa-solid fa-gamepad', color: 'bg-red-700 text-white', usageMins: 40, limitMins: 30, blocked: true, category: 'Gaming' }
+        ];
+
+        const FRIENDS_DATA = [
+            { id: 1, name: 'Maya & Pixel', petIcon: '🦥', streak: 12, focusMins: 210, level: 6, avatarColor: 'bg-emerald-500' },
+            { id: 2, name: 'Leo & Ember', petIcon: '🐉', streak: 9, focusMins: 165, level: 5, avatarColor: 'bg-rose-500' },
+            { id: 3, name: 'Sam & Pebble', petIcon: '🦉', streak: 15, focusMins: 240, level: 7, avatarColor: 'bg-purple-500' },
+            { id: 4, name: 'Chloe & Bubbles', petIcon: '🦦', streak: 5, focusMins: 110, level: 3, avatarColor: 'bg-sky-500' }
+        ];
+
+        function generateMathProblem(difficulty = 'easy') {
+            let a, b, op, ans, text;
+            if (difficulty === 'easy') {
+                const ops = ['+', '-'];
+                op = ops[Math.floor(Math.random() * ops.length)];
+                if (op === '+') {
+                    a = Math.floor(Math.random() * 25) + 5;
+                    b = Math.floor(Math.random() * 25) + 5;
+                    ans = a + b;
+                } else {
+                    a = Math.floor(Math.random() * 30) + 15;
+                    b = Math.floor(Math.random() * a);
+                    ans = a - b;
+                }
+                text = `${a} ${op} ${b}`;
+            } else if (difficulty === 'medium') {
+                const ops = ['×', '+', '-'];
+                op = ops[Math.floor(Math.random() * ops.length)];
+                if (op === '×') {
+                    a = Math.floor(Math.random() * 12) + 2;
+                    b = Math.floor(Math.random() * 12) + 2;
+                    ans = a * b;
+                } else if (op === '+') {
+                    a = Math.floor(Math.random() * 80) + 20;
+                    b = Math.floor(Math.random() * 80) + 20;
+                    ans = a + b;
+                } else {
+                    a = Math.floor(Math.random() * 90) + 40;
+                    b = Math.floor(Math.random() * 40) + 10;
+                    ans = a - b;
+                }
+                text = `${a} ${op} ${b}`;
+            } else {
+                const coeff = Math.floor(Math.random() * 5) + 2;
+                ans = Math.floor(Math.random() * 10) + 1;
+                const constVal = Math.floor(Math.random() * 15) + 3;
+                const total = (coeff * ans) + constVal;
+                text = `${coeff}x + ${constVal} = ${total}  (find x)`;
+            }
+            return { text, ans };
+        }
+
+        function MascotDisplay({ state, hatId, speciesId, onClick }) {
+            const usageRatio = state.screenTimeMins / state.dailyLimitMins;
+            let moodKey = 'HAPPY';
+
+            if (state.forcedMood) {
+                moodKey = state.forcedMood.toUpperCase();
+            } else {
+                if (usageRatio < 0.25) moodKey = 'ECSTATIC';
+                else if (usageRatio < 0.50) moodKey = 'HAPPY';
+                else if (usageRatio < 0.75) moodKey = 'MILD_TIRED';
+                else if (usageRatio < 0.95) moodKey = 'DROWSY';
+                else if (usageRatio < 1.00) moodKey = 'STRESSED';
+                else moodKey = 'EXHAUSTED';
+            }
+
+            const activePet = PET_SPECIES.find(p => p.id === speciesId) || PET_SPECIES[0];
+            let bodyColor = activePet.color;
+            let animationClass = 'animate-float';
+            let moodStatusText = '✨ Thriving & Energized';
+            let statusColor = 'text-emerald-400';
+
+            if (moodKey === 'ECSTATIC') {
+                animationClass = 'animate-float';
+                moodStatusText = '🌟 Zen & Pure Harmony!';
+                statusColor = 'text-cyan-300';
+            } else if (moodKey === 'HAPPY') {
+                animationClass = 'animate-float';
+                moodStatusText = '😃 Happy & Steady';
+                statusColor = 'text-emerald-400';
+            } else if (moodKey === 'MILD_TIRED') {
+                bodyColor = '#facc15';
+                animationClass = 'animate-wiggle';
+                moodStatusText = '😐 Slightly Distracted';
+                statusColor = 'text-yellow-400';
+            } else if (moodKey === 'DROWSY') {
+                bodyColor = '#f59e0b';
+                animationClass = 'animate-yawn';
+                moodStatusText = '🥱 Drowsy — Needs Study Break';
+                statusColor = 'text-amber-400';
+            } else if (moodKey === 'STRESSED') {
+                bodyColor = '#fb7185';
+                animationClass = 'animate-shiver';
+                moodStatusText = '😰 Overstimulated Screen Time!';
+                statusColor = 'text-rose-400';
+            } else if (moodKey === 'EXHAUSTED') {
+                bodyColor = '#f43f5e';
+                animationClass = 'animate-shiver';
+                moodStatusText = '💔 Limit Exceeded! Pet Exhausted';
+                statusColor = 'text-rose-500 font-black animate-pulse';
+            }
+
+            return (
+                <div 
+                    onClick={onClick}
+                    className="relative flex flex-col items-center justify-center cursor-pointer group py-2 select-none"
+                    title="Tap your pet for a reaction!"
+                >
+                    <div 
+                        className="absolute w-44 h-44 rounded-full blur-2xl opacity-60 transition-all duration-500"
+                        style={{ backgroundColor: bodyColor }}
+                    ></div>
+
+                    {(moodKey === 'HAPPY' || moodKey === 'ECSTATIC') && (
+                        <div className="absolute inset-0 pointer-events-none">
+                            <span className="absolute top-1 left-8 text-yellow-300 animate-sparkle-float text-lg">✨</span>
+                            <span className="absolute top-6 right-6 text-yellow-300 animate-sparkle-float text-xl" style={{animationDelay: '0.7s'}}>🌟</span>
+                            <span className="absolute bottom-4 left-6 text-green-300 animate-sparkle-float text-sm" style={{animationDelay: '1.2s'}}>⭐</span>
+                        </div>
+                    )}
+
+                    <div className={`relative w-40 h-40 transition-all duration-300 ${animationClass} group-hover:scale-105`}>
+                        {hatId === 'crown' && <div className="absolute -top-7 left-10 text-5xl z-20 drop-shadow-lg animate-bounce-slow">👑</div>}
+                        {hatId === 'wizard' && <div className="absolute -top-10 left-8 text-6xl z-20 drop-shadow-lg -rotate-6">🧙‍♂️</div>}
+                        {hatId === 'party' && <div className="absolute -top-9 left-12 text-5xl z-20 drop-shadow-lg">🎉</div>}
+                        {hatId === 'headphones' && <div className="absolute -top-3 left-1 text-6xl z-20 drop-shadow-md">🎧</div>}
+                        {hatId === 'glasses' && <div className="absolute top-12 left-8 text-5xl z-20 drop-shadow-md">🕶️</div>}
+                        {hatId === 'halo' && <div className="absolute -top-9 left-10 text-5xl z-20 drop-shadow-xl animate-pulse">😇</div>}
+
+                        <svg viewBox="0 0 200 200" className="w-full h-full drop-shadow-2xl">
+                            <ellipse cx="65" cy="175" rx="22" ry="12" fill="#15803d" opacity="0.9"/>
+                            <ellipse cx="135" cy="175" rx="22" ry="12" fill="#15803d" opacity="0.9"/>
+
+                            <path 
+                                d="M 100,20 C 155,20 180,60 180,110 C 180,160 150,175 100,175 C 50,175 20,160 20,110 C 20,60 45,20 100,20 Z" 
+                                fill={bodyColor}
+                                className="transition-colors duration-500"
+                            />
+
+                            <path 
+                                d="M 100,85 C 130,85 145,110 145,135 C 145,155 125,165 100,165 C 75,165 55,155 55,135 C 55,110 70,85 100,85 Z" 
+                                fill="#ffffff" 
+                                opacity="0.25"
+                            />
+
+                            <ellipse cx="50" cy="120" rx="10" ry="6" fill="#f43f5e" opacity={moodKey === 'HAPPY' || moodKey === 'ECSTATIC' ? "0.4" : "0.15"} />
+                            <ellipse cx="150" cy="120" rx="10" ry="6" fill="#f43f5e" opacity={moodKey === 'HAPPY' || moodKey === 'ECSTATIC' ? "0.4" : "0.15"} />
+
+                            {(moodKey === 'HAPPY' || moodKey === 'ECSTATIC') && (
+                                <g>
+                                    <circle cx="65" cy="95" r="14" fill="#0f172a" />
+                                    <circle cx="135" cy="95" r="14" fill="#0f172a" />
+                                    <circle cx="61" cy="91" r="5" fill="#ffffff" />
+                                    <circle cx="131" cy="91" r="5" fill="#ffffff" />
+                                    <path d="M 75 122 Q 100 145 125 122" fill="none" stroke="#0f172a" strokeWidth="6" strokeLinecap="round" />
+                                </g>
+                            )}
+
+                            {(moodKey === 'MILD_TIRED' || moodKey === 'DROWSY') && (
+                                <g>
+                                    <path d="M 50 95 Q 65 82 80 95" fill="none" stroke="#0f172a" strokeWidth="6" strokeLinecap="round" />
+                                    <path d="M 120 95 Q 135 82 150 95" fill="none" stroke="#0f172a" strokeWidth="6" strokeLinecap="round" />
+                                    <ellipse cx="100" cy="128" rx="12" ry="16" fill="#0f172a" />
+                                    <path d="M 160 70 Q 165 80 160 85 Q 155 80 160 70 Z" fill="#38bdf8" />
+                                </g>
+                            )}
+
+                            {(moodKey === 'STRESSED' || moodKey === 'EXHAUSTED') && (
+                                <g>
+                                    <line x1="55" y1="88" x2="75" y2="102" stroke="#0f172a" strokeWidth="6" strokeLinecap="round" />
+                                    <line x1="75" y1="88" x2="55" y2="102" stroke="#0f172a" strokeWidth="6" strokeLinecap="round" />
+                                    <line x1="125" y1="88" x2="145" y2="102" stroke="#0f172a" strokeWidth="6" strokeLinecap="round" />
+                                    <line x1="145" y1="88" x2="125" y2="102" stroke="#0f172a" strokeWidth="6" strokeLinecap="round" />
+                                    <path d="M 75 135 Q 100 115 125 135" fill="none" stroke="#0f172a" strokeWidth="6" strokeLinecap="round" />
+                                    <rect x="85" y="60" width="30" height="12" rx="3" fill="#fef3c7" transform="rotate(-12 100 66)" />
+                                </g>
+                            )}
+                        </svg>
+                    </div>
+
+                    <div className="mt-1 px-4 py-1.5 rounded-full bg-slate-900/80 border border-slate-700/80 text-xs font-bold tracking-wide flex items-center gap-2 shadow-lg">
+                        <span className={statusColor}>{activePet.name}: {moodStatusText}</span>
+                    </div>
+                </div>
+            );
+        }
+
+        function FocusTimerMode({ onFocusComplete, onClose }) {
+            const [timerMode, setTimerMode] = React.useState('pomodoro');
+            const [selectedDuration, setSelectedDuration] = React.useState(25);
+            const [secondsLeft, setSecondsLeft] = React.useState(25 * 60);
+            const [stopwatchSecs, setStopwatchSecs] = React.useState(0);
+            const [isRunning, setIsRunning] = React.useState(false);
+            const [ambientSound, setAmbientSound] = React.useState('none');
+            const [showConfirmQuit, setShowConfirmQuit] = React.useState(false);
+
+            React.useEffect(() => {
+                let timer = null;
+                if (isRunning) {
+                    if (timerMode === 'stopwatch') {
+                        timer = setInterval(() => setStopwatchSecs(s => s + 1), 1000);
+                    } else if (secondsLeft > 0) {
+                        timer = setInterval(() => setSecondsLeft(s => s - 1), 1000);
+                    } else if (secondsLeft === 0) {
+                        setIsRunning(false);
+                        sound.stopAmbient();
+                        sound.success();
+                        confetti({ particleCount: 140, spread: 90, origin: { y: 0.6 } });
+                        onFocusComplete(selectedDuration);
+                    }
+                }
+                return () => clearInterval(timer);
+            }, [isRunning, secondsLeft, timerMode]);
+
+            const switchMode = (mode, dur) => {
+                sound.pop();
+                setTimerMode(mode);
+                setSelectedDuration(dur);
+                setSecondsLeft(dur * 60);
+                setStopwatchSecs(0);
+                setIsRunning(false);
+            };
+
+            const toggleAmbient = (type) => {
+                sound.pop();
+                if (ambientSound === type) {
+                    setAmbientSound('none');
+                    sound.stopAmbient();
+                } else {
+                    setAmbientSound(type);
+                    sound.startAmbient(type);
+                }
+            };
+
+            const formatTime = (secs) => {
+                const m = Math.floor(secs / 60);
+                const s = secs % 60;
+                return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const currentSecs = timerMode === 'stopwatch' ? stopwatchSecs : secondsLeft;
+            const progressRatio = timerMode === 'stopwatch' ? 1 : (1 - (secondsLeft / (selectedDuration * 60)));
+
+            return (
+                <div className="absolute inset-0 z-50 bg-slate-950/95 backdrop-blur-xl flex flex-col justify-between p-6 animate-fade-in overflow-y-auto">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <span className="text-2xl">🌱</span>
+                            <h3 className="font-display font-bold text-xl text-emerald-300">Tree Growth Focus Timer</h3>
+                        </div>
+                        <button 
+                            onClick={() => {
+                                if (isRunning) setShowConfirmQuit(true);
+                                else { sound.stopAmbient(); onClose(); }
+                            }} 
+                            className="w-9 h-9 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center"
+                        >
+                            <i className="fa-solid fa-xmark text-lg"></i>
+                        </button>
+                    </div>
+
+                    <div className="my-auto flex flex-col items-center justify-center text-center">
+                        <div className="flex bg-slate-900/90 p-1 rounded-2xl border border-slate-700/80 mb-4 gap-1">
+                            <button onClick={() => switchMode('pomodoro', 25)} className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${timerMode === 'pomodoro' ? 'bg-emerald-600 text-white' : 'text-slate-400'}`}>Pomodoro (25m)</button>
+                            <button onClick={() => switchMode('short_break', 5)} className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${timerMode === 'short_break' ? 'bg-cyan-600 text-white' : 'text-slate-400'}`}>Short Break (5m)</button>
+                            <button onClick={() => switchMode('stopwatch', 0)} className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${timerMode === 'stopwatch' ? 'bg-purple-600 text-white' : 'text-slate-400'}`}>Stopwatch</button>
+                        </div>
+
+                        <div className="relative w-48 h-48 flex items-center justify-center my-2">
+                            <div className="absolute inset-0 rounded-full border-4 border-emerald-500/20"></div>
+                            <div 
+                                className="absolute inset-0 rounded-full border-4 border-emerald-400 transition-all duration-1000"
+                                style={{ clipPath: `inset(0 0 ${100 - (progressRatio * 100)}% 0)` }}
+                            ></div>
+
+                            <div className="text-7xl transition-all duration-700 transform hover:scale-110">
+                                {timerMode === 'short_break' ? '☕' : (
+                                    progressRatio < 0.25 ? '🌱' : (progressRatio < 0.6 ? '🌿' : (progressRatio < 0.95 ? '🪴' : '🌳'))
+                                )}
+                            </div>
+                        </div>
+
+                        <h2 className="font-display text-5xl font-extrabold text-white tracking-wider my-2">
+                            {formatTime(currentSecs)}
+                        </h2>
+                        <p className="text-xs text-emerald-400 font-bold px-4">
+                            {isRunning ? "Sparky is meditating with you... Stay off distractions!" : "Choose session duration & plant your tree"}
+                        </p>
+                    </div>
+
+                    <div className="space-y-3">
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block text-center">Lo-Fi Ambient Soundscapes:</span>
+                        <div className="flex gap-2 justify-center">
+                            <button 
+                                onClick={() => toggleAmbient('rain')}
+                                className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all ${ambientSound === 'rain' ? 'bg-cyan-500/30 border-cyan-400 text-cyan-200' : 'bg-slate-800/80 border-slate-700 text-slate-400'}`}
+                            >
+                                🌧 Soft Rain
+                            </button>
+                            <button 
+                                onClick={() => toggleAmbient('waves')}
+                                className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all ${ambientSound === 'waves' ? 'bg-indigo-500/30 border-indigo-400 text-indigo-200' : 'bg-slate-800/80 border-slate-700 text-slate-400'}`}
+                            >
+                                🌊 Ocean Waves
+                            </button>
+                            <button 
+                                onClick={() => toggleAmbient('white')}
+                                className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all ${ambientSound === 'white' ? 'bg-purple-500/30 border-purple-400 text-purple-200' : 'bg-slate-800/80 border-slate-700 text-slate-400'}`}
+                            >
+                                📻 White Noise
+                            </button>
+                        </div>
+
+                        {!isRunning ? (
+                            <button 
+                                onClick={() => { sound.pop(); setIsRunning(true); }}
+                                className="w-full py-3.5 rounded-xl btn-3d btn-3d-green font-bold text-sm"
+                            >
+                                Start Focus Timer ▶
+                            </button>
+                        ) : (
+                            <button 
+                                onClick={() => setShowConfirmQuit(true)}
+                                className="w-full py-3.5 rounded-xl btn-3d btn-3d-rose font-bold text-sm"
+                            >
+                                Give Up Session (Wilt Tree)
+                            </button>
+                        )}
+                    </div>
+
+                    {showConfirmQuit && (
+                        <div className="absolute inset-0 z-50 bg-slate-950/90 flex flex-col items-center justify-center p-6 text-center">
+                            <span className="text-5xl mb-2">🥀</span>
+                            <h3 className="font-display font-bold text-xl text-white">Give Up Focus Session?</h3>
+                            <p className="text-xs text-slate-400 mt-1 mb-6">Your tree will wilt and you won't earn XP or coins!</p>
+                            <div className="flex gap-3 w-full">
+                                <button 
+                                    onClick={() => setShowConfirmQuit(false)}
+                                    className="flex-1 py-3 rounded-xl btn-3d btn-3d-green text-xs font-bold"
+                                >
+                                    Keep Focusing
+                                </button>
+                                <button 
+                                    onClick={() => {
+                                        setShowConfirmQuit(false);
+                                        setIsRunning(false);
+                                        sound.stopAmbient();
+                                        sound.error();
+                                        onClose();
+                                    }}
+                                    className="flex-1 py-3 rounded-xl btn-3d btn-3d-rose text-xs font-bold"
+                                >
+                                    Wilt Tree
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function BreatheWidget({ onClose }) {
+            const [phase, setPhase] = React.useState('Inhale');
+
+            React.useEffect(() => {
+                const phases = ['Inhale (4s)', 'Hold (7s)', 'Exhale (8s)'];
+                let idx = 0;
+                const timer = setInterval(() => {
+                    idx = (idx + 1) % phases.length;
+                    setPhase(phases[idx]);
+                }, 4000);
+                return () => clearInterval(timer);
+            }, []);
+
+            return (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+                    <div className="glass-card w-full max-w-sm rounded-3xl p-6 text-center border-2 border-cyan-500/40 relative">
+                        <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-white">
+                            <i className="fa-solid fa-xmark text-xl"></i>
+                        </button>
+                        <span className="text-4xl">🧘</span>
+                        <h3 className="font-display text-2xl font-bold text-cyan-300 mt-2">Mindful Breathing</h3>
+                        <p className="text-xs text-slate-300 mb-8">Follow the expanding ring to center your focus.</p>
+
+                        <div className="relative w-44 h-44 mx-auto mb-8 flex items-center justify-center">
+                            <div className="absolute inset-0 rounded-full bg-cyan-500/20 animate-breathe-ring"></div>
+                            <div className="w-28 h-28 rounded-full bg-gradient-to-tr from-cyan-500 to-teal-400 flex items-center justify-center shadow-lg shadow-cyan-500/50">
+                                <span className="font-display font-bold text-white text-base">{phase}</span>
+                            </div>
+                        </div>
+
+                        <button onClick={onClose} className="w-full py-3 rounded-xl btn-3d btn-3d-cyan font-bold text-sm">
+                            I Feel Centered ✨
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
+        function PetStoreWardrobeView({ coins, ownedHats, ownedThemes, activeHat, activeTheme, activePetSpecies, onBuyHat, onEquipHat, onBuyTheme, onEquipTheme, onSelectSpecies, onFeedPet }) {
+            const [storeTab, setStoreTab] = React.useState('hats');
+
+            return (
+                <div className="p-4 space-y-4 pb-24 animate-fade-in">
+                    <div className="glass-card rounded-2xl p-4 border-slate-700 flex justify-between items-center">
+                        <div>
+                            <h2 className="font-display text-2xl font-bold text-white">Pet Shop & Style Hub</h2>
+                            <p className="text-xs text-slate-300">Equip hats, themes, species & treats!</p>
+                        </div>
+                        <div className="px-3 py-1.5 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold">
+                            🪙 {coins} Coins
+                        </div>
+                    </div>
+
+                    <div className="flex bg-slate-900/80 p-1 rounded-xl border border-slate-700">
+                        <button onClick={() => { sound.pop(); setStoreTab('hats'); }} className={`flex-1 py-1.5 rounded-lg font-bold text-xs ${storeTab === 'hats' ? 'bg-purple-600 text-white' : 'text-slate-400'}`}>🎩 Hats</button>
+                        <button onClick={() => { sound.pop(); setStoreTab('themes'); }} className={`flex-1 py-1.5 rounded-lg font-bold text-xs ${storeTab === 'themes' ? 'bg-purple-600 text-white' : 'text-slate-400'}`}>🎨 Themes</button>
+                        <button onClick={() => { sound.pop(); setStoreTab('species'); }} className={`flex-1 py-1.5 rounded-lg font-bold text-xs ${storeTab === 'species' ? 'bg-purple-600 text-white' : 'text-slate-400'}`}>🐾 Species</button>
+                        <button onClick={() => { sound.pop(); setStoreTab('food'); }} className={`flex-1 py-1.5 rounded-lg font-bold text-xs ${storeTab === 'food' ? 'bg-purple-600 text-white' : 'text-slate-400'}`}>🍎 Food</button>
+                    </div>
+
+                    {storeTab === 'hats' && (
+                        <div className="grid grid-cols-2 gap-3">
+                            {COSMETICS_HATS.map(hat => {
+                                const isOwned = ownedHats.includes(hat.id);
+                                const isEquipped = activeHat === hat.id;
+                                return (
+                                    <div key={hat.id} className={`glass-card rounded-2xl p-3 border flex flex-col items-center text-center justify-between ${isEquipped ? 'border-purple-400 bg-purple-500/10' : 'border-slate-800'}`}>
+                                        <span className="text-4xl my-1">{hat.icon}</span>
+                                        <h4 className="font-bold text-xs text-white">{hat.name}</h4>
+                                        <p className="text-[10px] text-slate-400 mb-2">{hat.description}</p>
+                                        {isEquipped ? (
+                                            <span className="px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 font-bold text-[10px]">Equipped</span>
+                                        ) : isOwned ? (
+                                            <button onClick={() => onEquipHat(hat.id)} className="w-full py-1.5 rounded-lg btn-3d btn-3d-purple text-[10px] font-bold">Equip</button>
+                                        ) : (
+                                            <button onClick={() => onBuyHat(hat)} className="w-full py-1.5 rounded-lg btn-3d btn-3d-amber text-[10px] font-bold">Buy 🪙 {hat.price}</button>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+
+                    {storeTab === 'themes' && (
+                        <div className="grid grid-cols-2 gap-3">
+                            {BACKGROUND_THEMES.map(theme => {
+                                const isOwned = ownedThemes.includes(theme.id);
+                                const isEquipped = activeTheme === theme.id;
+                                return (
+                                    <div key={theme.id} className={`glass-card rounded-2xl p-3 border flex flex-col items-center text-center justify-between ${isEquipped ? 'border-emerald-400 bg-emerald-500/10' : 'border-slate-800'}`}>
+                                        <span className="text-4xl my-1">{theme.icon}</span>
+                                        <h4 className="font-bold text-xs text-white">{theme.name}</h4>
+                                        {isEquipped ? (
+                                            <span className="px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 font-bold text-[10px] mt-2">Active Theme</span>
+                                        ) : isOwned ? (
+                                            <button onClick={() => onEquipTheme(theme.id)} className="w-full py-1.5 rounded-lg btn-3d btn-3d-green text-[10px] font-bold mt-2">Apply</button>
+                                        ) : (
+                                            <button onClick={() => onBuyTheme(theme)} className="w-full py-1.5 rounded-lg btn-3d btn-3d-amber text-[10px] font-bold mt-2">Buy 🪙 {theme.price}</button>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+
+                    {storeTab === 'species' && (
+                        <div className="space-y-3">
+                            {PET_SPECIES.map(pet => (
+                                <div key={pet.id} className={`glass-card rounded-2xl p-3 border flex items-center justify-between ${activePetSpecies === pet.id ? 'border-cyan-400 bg-cyan-500/10' : 'border-slate-800'}`}>
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-4xl">{pet.icon}</span>
+                                        <div>
+                                            <h4 className="font-bold text-xs text-white">{pet.name}</h4>
+                                            <p className="text-[10px] text-slate-400">{pet.desc}</p>
+                                        </div>
+                                    </div>
+                                    <button 
+                                        onClick={() => onSelectSpecies(pet.id)}
+                                        className={`px-3 py-1.5 rounded-xl text-xs font-bold ${activePetSpecies === pet.id ? 'bg-cyan-500 text-white' : 'bg-slate-800 text-slate-300'}`}
+                                    >
+                                        {activePetSpecies === pet.id ? 'Selected' : 'Choose'}
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {storeTab === 'food' && (
+                        <div className="grid grid-cols-2 gap-3">
+                            {FOOD_ITEMS.map(food => (
+                                <div key={food.id} className="glass-card rounded-2xl p-3 border border-slate-800 flex flex-col items-center text-center justify-between">
+                                    <span className="text-4xl my-1">{food.icon}</span>
+                                    <h4 className="font-bold text-xs text-white">{food.name}</h4>
+                                    <span className="text-[10px] text-emerald-400 font-bold">+ {food.hungerGain}% Hunger</span>
+                                    <button onClick={() => onFeedPet(food)} className="w-full py-1.5 rounded-lg btn-3d btn-3d-amber text-[10px] font-bold mt-2">Feed 🪙 {food.price}</button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function AppLimitsView({ apps, onToggleBlock, onUpdateLimit, onEmergencyUnlockRequest }) {
+            return (
+                <div className="p-4 space-y-4 pb-24 animate-fade-in">
+                    <div className="glass-card rounded-2xl p-4 border-slate-700">
+                        <h2 className="font-display text-2xl font-bold text-white">App Limits & Blocker</h2>
+                        <p className="text-xs text-slate-300">Set daily limits & block distracting apps.</p>
+                    </div>
+
+                    <div className="space-y-3">
+                        {apps.map(app => {
+                            const isOver = app.usageMins >= app.limitMins;
+                            return (
+                                <div key={app.id} className={`glass-card rounded-2xl p-4 border ${app.blocked ? 'border-rose-500/50 bg-rose-950/20' : 'border-slate-800'}`}>
+                                    <div className="flex items-center justify-between mb-3">
+                                        <div className="flex items-center gap-3">
+                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${app.color}`}>
+                                                <i className={app.icon}></i>
+                                            </div>
+                                            <div>
+                                                <h4 className="font-bold text-sm text-white">{app.name}</h4>
+                                                <span className="text-[10px] text-slate-400 font-bold">{app.category} • {app.usageMins}m / {app.limitMins}m used</span>
+                                            </div>
+                                        </div>
+                                        <button 
+                                            onClick={() => onToggleBlock(app.id)}
+                                            className={`px-3 py-1.5 rounded-xl text-xs font-bold ${app.blocked ? 'bg-rose-500 text-white' : 'bg-slate-800 text-slate-400'}`}
+                                        >
+                                            {app.blocked ? '🔒 Blocked' : '🔓 Active'}
+                                        </button>
+                                    </div>
+
+                                    <div className="space-y-1">
+                                        <div className="flex justify-between text-[10px] font-bold text-slate-400">
+                                            <span>Limit Slider:</span>
+                                            <span>{app.limitMins} mins</span>
+                                        </div>
+                                        <input 
+                                            type="range"
+                                            min="10"
+                                            max="120"
+                                            step="5"
+                                            value={app.limitMins}
+                                            onChange={(e) => onUpdateLimit(app.id, parseInt(e.target.value))}
+                                            className="w-full accent-purple-500 cursor-pointer"
+                                        />
+                                    </div>
+
+                                    {app.blocked && (
+                                        <button 
+                                            onClick={() => onEmergencyUnlockRequest(app)}
+                                            className="w-full mt-2 py-1.5 rounded-xl bg-rose-500/20 text-rose-300 text-xs font-bold border border-rose-500/40"
+                                        >
+                                            Emergency Bypass (Costs Coins)
+                                        </button>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            );
+        }
+
+        function SocialFriendsView({ friends, streak }) {
+            return (
+                <div className="p-4 space-y-4 pb-24 animate-fade-in">
+                    <div className="glass-card rounded-2xl p-4 border-slate-700">
+                        <h2 className="font-display text-2xl font-bold text-white">Friends Leaderboard</h2>
+                        <p className="text-xs text-slate-300">Compete with study buddies for top focus streaks.</p>
+                    </div>
+
+                    <div className="glass-card rounded-2xl p-3 border-emerald-500/30 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold text-lg">
+                                YOU
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-sm text-white">Your Sanctuary Rank</h4>
+                                <span className="text-[10px] text-emerald-400 font-bold">🔥 {streak} Day Streak • #1 Leader</span>
+                            </div>
+                        </div>
+                        <span className="text-2xl">🥇</span>
+                    </div>
+
+                    <div className="space-y-3">
+                        {friends.map((f, idx) => (
+                            <div key={f.id} className="glass-card rounded-2xl p-3 border border-slate-800 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <span className="font-display font-extrabold text-slate-500 text-sm">#{idx + 2}</span>
+                                    <div className={`w-9 h-9 rounded-full ${f.avatarColor} text-white flex items-center justify-center text-lg`}>
+                                        {f.petIcon}
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-xs text-white">{f.name}</h4>
+                                        <span className="text-[10px] text-slate-400 font-bold">Level {f.level} • {f.focusMins}m Focus</span>
+                                    </div>
+                                </div>
+                                <div className="px-2.5 py-1 rounded-xl bg-amber-500/20 text-amber-300 text-xs font-bold">
+                                    🔥 {f.streak}d
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        function ComprehensiveAnalyticsView({ screenTimeMins, dailyLimitMins, apps }) {
+            const focusScore = Math.max(20, Math.min(100, Math.round(100 - ((screenTimeMins / dailyLimitMins) * 50))));
+            const totalProductiveMins = 145;
+            const focusRatio = Math.round((totalProductiveMins / (screenTimeMins + totalProductiveMins)) * 100);
+
+            // App Categories calculation
+            const categoryData = [
+                { name: 'Social', mins: 115, color: 'bg-purple-500', pct: 40 },
+                { name: 'Media', mins: 35, color: 'bg-red-500', pct: 20 },
+                { name: 'Gaming', mins: 40, color: 'bg-cyan-500', pct: 25 },
+                { name: 'Chat', mins: 25, color: 'bg-emerald-500', pct: 15 }
+            ];
+
+            return (
+                <div className="p-4 space-y-4 pb-24 animate-fade-in">
+                    <div className="glass-card rounded-2xl p-4 border-slate-700">
+                        <h2 className="font-display text-2xl font-bold text-white">Digital Wellbeing Insights</h2>
+                        <p className="text-xs text-slate-300">Comprehensive focus stats, metrics & productivity breakdown.</p>
+                    </div>
+
+                    {/* Overall Focus Health Index Hero */}
+                    <div className="glass-card rounded-2xl p-5 border-emerald-500/30 relative overflow-hidden text-center">
+                        <span className="text-[10px] font-extrabold uppercase text-emerald-400 tracking-wider block mb-1">Focus Health Index</span>
+                        <div className="font-display text-5xl font-extrabold text-white my-1">{focusScore}<span className="text-2xl text-emerald-400">/100</span></div>
+                        <p className="text-xs text-slate-300">
+                            {focusScore > 75 ? '🌟 Excellent Mindful Control' : '⚠️ Elevated Screen Distraction'}
+                        </p>
+                    </div>
+
+                    {/* Key Stats Cards Grid */}
+                    <div className="grid grid-cols-2 gap-3">
+                        <div className="glass-card rounded-2xl p-3.5 border-purple-500/30">
+                            <span className="text-[10px] font-bold text-purple-300 uppercase block">Productive Focus</span>
+                            <span className="font-display text-2xl font-bold text-white">{totalProductiveMins}m</span>
+                            <span className="text-[10px] text-emerald-400 font-bold block mt-1">↑ +22m from yesterday</span>
+                        </div>
+                        <div className="glass-card rounded-2xl p-3.5 border-cyan-500/30">
+                            <span className="text-[10px] font-bold text-cyan-300 uppercase block">Focus Ratio</span>
+                            <span className="font-display text-2xl font-bold text-white">{focusRatio}%</span>
+                            <span className="text-[10px] text-cyan-400 font-bold block mt-1">Balanced Ratio</span>
+                        </div>
+                    </div>
+
+                    {/* Weekly Trend Bar Chart */}
+                    <div className="glass-card rounded-2xl p-4 border-slate-700 space-y-3">
+                        <h3 className="font-bold text-xs text-white uppercase tracking-wider">Weekly Screen vs Focus Comparison</h3>
+                        <div className="flex items-end justify-between h-36 pt-4 px-2 border-b border-slate-700 pb-3">
+                            {[
+                                { day: 'Mon', screen: 110, focus: 140 },
+                                { day: 'Tue', screen: 140, focus: 120 },
+                                { day: 'Wed', screen: 90, focus: 180 },
+                                { day: 'Thu', screen: 160, focus: 110 },
+                                { day: 'Fri', screen: 85, focus: 190 },
+                                { day: 'Sat', screen: 120, focus: 130 },
+                                { day: 'Sun', screen: screenTimeMins, focus: 150 }
+                            ].map((item, idx) => (
+                                <div key={idx} className="flex flex-col items-center gap-1">
+                                    <div className="flex items-end gap-1 h-24">
+                                        <div className="w-2.5 rounded-t bg-rose-500/80 transition-all" style={{ height: `${(item.screen / 200) * 100}%` }} title={`Screen: ${item.screen}m`}></div>
+                                        <div className="w-2.5 rounded-t bg-emerald-400 transition-all" style={{ height: `${(item.focus / 200) * 100}%` }} title={`Focus: ${item.focus}m`}></div>
+                                    </div>
+                                    <span className="text-[10px] font-bold text-slate-400">{item.day}</span>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="flex justify-center gap-6 text-[10px] font-bold">
+                            <span className="flex items-center gap-1.5 text-rose-400"><span className="w-2.5 h-2.5 rounded bg-rose-500"></span> Screen Time</span>
+                            <span className="flex items-center gap-1.5 text-emerald-400"><span className="w-2.5 h-2.5 rounded bg-emerald-400"></span> Focus Time</span>
+                        </div>
+                    </div>
+
+                    {/* App Category Breakdown */}
+                    <div className="glass-card rounded-2xl p-4 border-slate-700 space-y-3">
+                        <h3 className="font-bold text-xs text-white uppercase tracking-wider">Screen Time by Category</h3>
+                        <div className="h-3 w-full rounded-full bg-slate-900 overflow-hidden flex">
+                            {categoryData.map((cat, idx) => (
+                                <div key={idx} className={`${cat.color} h-full`} style={{ width: `${cat.pct}%` }}></div>
+                            ))}
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                            {categoryData.map((cat, idx) => (
+                                <div key={idx} className="flex items-center justify-between p-2 rounded-xl bg-slate-900/60 border border-slate-800">
+                                    <div className="flex items-center gap-2">
+                                        <span className={`w-2.5 h-2.5 rounded-full ${cat.color}`}></span>
+                                        <span className="text-slate-300 font-bold">{cat.name}</span>
+                                    </div>
+                                    <span className="font-bold text-white">{cat.mins}m</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function GamesHubView({ onEarnReward }) {
+            const [gameTab, setGameTab] = React.useState('math');
+            const [mathDiff, setMathDiff] = React.useState('easy');
+            const [currentMath, setCurrentMath] = React.useState(generateMathProblem('easy'));
+            const [mathInput, setMathInput] = React.useState('');
+            const [mathStreak, setMathStreak] = React.useState(0);
+            const [feedback, setFeedback] = React.useState('');
+
+            const vocabList = [
+                { word: 'FOCUS', hint: 'Concentration on task' },
+                { word: 'MINDFUL', hint: 'Aware and present state' },
+                { word: 'WISDOM', hint: 'Knowledge applied well' },
+                { word: 'STREAK', hint: 'Consecutive goal days' },
+                { word: 'MASTERY', hint: 'Expert level performance' }
+            ];
+            const [wordIdx, setWordIdx] = React.useState(0);
+            const [scrambled, setScrambled] = React.useState('');
+            const [wordInput, setWordInput] = React.useState('');
+
+            const [memoryGrid, setMemoryGrid] = React.useState([1, 2, 3, 4, 1, 2, 3, 4].sort(() => Math.random() - 0.5));
+            const [flipped, setFlipped] = React.useState([]);
+            const [matched, setMatched] = React.useState([]);
+
+            React.useEffect(() => {
+                if (gameTab === 'word') {
+                    const target = vocabList[wordIdx].word;
+                    const sc = target.split('').sort(() => Math.random() - 0.5).join(' ');
+                    setScrambled(sc);
+                }
+            }, [wordIdx, gameTab]);
+
+            const handleMathSubmit = (e) => {
+                e.preventDefault();
+                if (parseInt(mathInput) === currentMath.ans) {
+                    sound.coin();
+                    setMathStreak(s => s + 1);
+                    setFeedback('✅ Correct! +10 Coins');
+                    onEarnReward(10, 15);
+                    setCurrentMath(generateMathProblem(mathDiff));
+                    setMathInput('');
+                } else {
+                    sound.error();
+                    setFeedback('❌ Incorrect, try again!');
+                }
+            };
+
+            const handleWordSubmit = (e) => {
+                e.preventDefault();
+                if (wordInput.trim().toUpperCase() === vocabList[wordIdx].word) {
+                    sound.success();
+                    setFeedback('🎉 Correct Word! +20 Coins');
+                    onEarnReward(20, 25);
+                    setWordInput('');
+                    setWordIdx((wordIdx + 1) % vocabList.length);
+                } else {
+                    sound.error();
+                    setFeedback('❌ Try again!');
+                }
+            };
+
+            const handleMemoryClick = (idx) => {
+                if (flipped.length === 2 || flipped.includes(idx) || matched.includes(idx)) return;
+                sound.pop();
+                const newFlipped = [...flipped, idx];
+                setFlipped(newFlipped);
+
+                if (newFlipped.length === 2) {
+                    const [first, second] = newFlipped;
+                    if (memoryGrid[first] === memoryGrid[second]) {
+                        sound.coin();
+                        setMatched([...matched, first, second]);
+                        setFlipped([]);
+                        if (matched.length + 2 === memoryGrid.length) {
+                            sound.success();
+                            confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+                            onEarnReward(35, 40);
+                            setFeedback('🏆 Memory Grid Cleared! +35 Coins');
+                        }
+                    } else {
+                        setTimeout(() => setFlipped([]), 800);
+                    }
+                }
+            };
+
+            return (
+                <div className="p-4 space-y-4 pb-24 animate-fade-in">
+                    <div className="glass-card rounded-2xl p-4 border-slate-700">
+                        <h2 className="font-display text-2xl font-bold text-white">Brain Gym & Games</h2>
+                        <p className="text-xs text-slate-300">Play productive mini-games to sharpen focus & earn coins!</p>
+                    </div>
+
+                    <div className="flex bg-slate-900/80 p-1 rounded-xl border border-slate-700">
+                        <button onClick={() => { sound.pop(); setGameTab('math'); setFeedback(''); }} className={`flex-1 py-2 rounded-lg font-bold text-xs ${gameTab === 'math' ? 'bg-purple-600 text-white shadow' : 'text-slate-400'}`}>
+                            🧮 Math Blitz
+                        </button>
+                        <button onClick={() => { sound.pop(); setGameTab('word'); setFeedback(''); }} className={`flex-1 py-2 rounded-lg font-bold text-xs ${gameTab === 'word' ? 'bg-purple-600 text-white shadow' : 'text-slate-400'}`}>
+                            🔤 Vocab Builder
+                        </button>
+                        <button onClick={() => { sound.pop(); setGameTab('memory'); setFeedback(''); }} className={`flex-1 py-2 rounded-lg font-bold text-xs ${gameTab === 'memory' ? 'bg-purple-600 text-white shadow' : 'text-slate-400'}`}>
+                            🧠 Memory Grid
+                        </button>
+                    </div>
+
+                    {feedback && (
+                        <div className="p-2.5 rounded-xl bg-purple-500/20 border border-purple-500/40 text-center text-xs font-bold text-purple-300">
+                            {feedback}
+                        </div>
+                    )}
+
+                    {gameTab === 'math' && (
+                        <div className="glass-card rounded-2xl p-5 border-slate-700 space-y-4">
+                            <div className="flex justify-between items-center">
+                                <span className="text-xs font-bold text-amber-400">Streak: 🔥 {mathStreak}</span>
+                                <div className="flex gap-1">
+                                    <button onClick={() => { setMathDiff('easy'); setCurrentMath(generateMathProblem('easy')); }} className={`px-2 py-1 rounded text-[10px] font-bold ${mathDiff === 'easy' ? 'bg-emerald-500 text-white' : 'bg-slate-800 text-slate-400'}`}>Easy</button>
+                                    <button onClick={() => { setMathDiff('medium'); setCurrentMath(generateMathProblem('medium')); }} className={`px-2 py-1 rounded text-[10px] font-bold ${mathDiff === 'medium' ? 'bg-amber-500 text-white' : 'bg-slate-800 text-slate-400'}`}>Medium</button>
+                                    <button onClick={() => { setMathDiff('hard'); setCurrentMath(generateMathProblem('hard')); }} className={`px-2 py-1 rounded text-[10px] font-bold ${mathDiff === 'hard' ? 'bg-rose-500 text-white' : 'bg-slate-800 text-slate-400'}`}>Hard</button>
+                                </div>
+                            </div>
+
+                            <div className="text-3xl font-display font-extrabold text-amber-300 bg-slate-900/90 text-center py-6 rounded-2xl border-2 border-amber-500/30">
+                                {currentMath.text}
+                            </div>
+
+                            <form onSubmit={handleMathSubmit} className="space-y-3">
+                                <input 
+                                    type="number"
+                                    value={mathInput}
+                                    onChange={(e) => setMathInput(e.target.value)}
+                                    placeholder="Enter solution..."
+                                    className="w-full text-center text-2xl font-bold bg-slate-800 text-white rounded-xl py-3 border-2 border-purple-500/50 focus:outline-none"
+                                />
+                                <button type="submit" className="w-full py-3 rounded-xl btn-3d btn-3d-purple font-bold text-sm">
+                                    Submit Answer 🚀
+                                </button>
+                            </form>
+                        </div>
+                    )}
+
+                    {gameTab === 'word' && (
+                        <div className="glass-card rounded-2xl p-5 border-slate-700 space-y-4 text-center">
+                            <span className="text-xs font-bold text-slate-400">Hint: {vocabList[wordIdx].hint}</span>
+                            <div className="text-3xl font-display font-extrabold text-cyan-300 bg-slate-900/90 py-6 rounded-2xl border-2 border-cyan-500/30 tracking-widest">
+                                {scrambled}
+                            </div>
+                            <form onSubmit={handleWordSubmit} className="space-y-3">
+                                <input 
+                                    type="text"
+                                    value={wordInput}
+                                    onChange={(e) => setWordInput(e.target.value)}
+                                    placeholder="Unscramble word..."
+                                    className="w-full text-center text-xl font-bold uppercase bg-slate-800 text-white rounded-xl py-3 border-2 border-cyan-500/50 focus:outline-none"
+                                />
+                                <button type="submit" className="w-full py-3 rounded-xl btn-3d btn-3d-cyan font-bold text-sm">
+                                    Check Word ✨
+                                </button>
+                            </form>
+                        </div>
+                    )}
+
+                    {gameTab === 'memory' && (
+                        <div className="glass-card rounded-2xl p-5 border-slate-700 space-y-4">
+                            <div className="grid grid-cols-4 gap-3">
+                                {memoryGrid.map((val, idx) => {
+                                    const isFlipped = flipped.includes(idx) || matched.includes(idx);
+                                    const icons = ['🌿', '⚡', '🌟', '💎'];
+                                    return (
+                                        <button 
+                                            key={idx}
+                                            onClick={() => handleMemoryClick(idx)}
+                                            className={`h-20 rounded-2xl font-display text-3xl flex items-center justify-center transition-all ${isFlipped ? 'bg-purple-600 text-white' : 'bg-slate-800 text-slate-600 hover:bg-slate-700'}`}
+                                        >
+                                            {isFlipped ? icons[val - 1] : '❓'}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        function EmergencyUnlockModal({ coins, onConfirmUnlock, onClose }) {
+            const [reason, setReason] = React.useState('');
+            const [errorMsg, setErrorMsg] = React.useState('');
+
+            const handleAttempt = (e) => {
+                e.preventDefault();
+                if (reason.trim().length < 8) {
+                    setErrorMsg('Please write a detailed reason (at least 8 characters).');
+                    return;
+                }
+                if (coins < 80) {
+                    setErrorMsg('Insufficient coins (80 coins required penalty).');
+                    return;
+                }
+                onConfirmUnlock(reason);
+            };
+
+            return (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md">
+                    <div className="glass-card w-full max-w-md rounded-3xl p-6 border-2 border-rose-500/50 shadow-2xl relative">
+                        <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-white">
+                            <i className="fa-solid fa-xmark text-xl"></i>
+                        </button>
+
+                        <div className="text-center mb-4">
+                            <span className="text-4xl">🚨</span>
+                            <h3 className="font-display text-2xl font-bold text-rose-400 mt-1">Emergency Override</h3>
+                            <p className="text-xs text-slate-300">Bypass app limits. Requires penalty deduction.</p>
+                        </div>
+
+                        <div className="bg-rose-500/20 border border-rose-500/40 rounded-xl p-3 mb-4 text-xs text-rose-200">
+                            <strong>Penalty Cost:</strong> 🪙 80 Coins & -30 XP. This override will be recorded in your focus log.
+                        </div>
+
+                        <form onSubmit={handleAttempt} className="space-y-4">
+                            <div>
+                                <label className="text-xs font-bold text-slate-300 block mb-1">State reason for emergency unlock:</label>
+                                <textarea 
+                                    rows="3"
+                                    value={reason}
+                                    onChange={(e) => setReason(e.target.value)}
+                                    placeholder="e.g., Need to send urgent email for school project..."
+                                    className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-rose-400"
+                                ></textarea>
+                            </div>
+
+                            {errorMsg && <p className="text-rose-400 text-xs font-bold">{errorMsg}</p>}
+
+                            <button type="submit" className="w-full py-3.5 rounded-xl btn-3d btn-3d-rose font-bold text-sm">
+                                Confirm Emergency Unlock (-80 Coins)
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            );
+        }
+
+        function HomeworkTrackerView({ assignments, onAddAssignment, onToggleComplete }) {
+            const [showAddForm, setShowAddForm] = React.useState(false);
+            const [title, setTitle] = React.useState('');
+            const [subject, setSubject] = React.useState('Math');
+            const [dueDate, setDueDate] = React.useState('2026-10-05');
+            const [priority, setPriority] = React.useState('Medium');
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                if (!title) return;
+                onAddAssignment({
+                    id: Date.now(),
+                    title,
+                    subject,
+                    dueDate,
+                    priority,
+                    completed: false
+                });
+                setTitle('');
+                setShowAddForm(false);
+            };
+
+            return (
+                <div className="p-4 space-y-4 pb-24 animate-fade-in">
+                    <div className="glass-card rounded-2xl p-4 flex justify-between items-center border-slate-700">
+                        <div>
+                            <h2 className="font-display text-2xl font-bold text-white">Homework Hub</h2>
+                            <p className="text-xs text-slate-300">Track upcoming school tasks & assignments.</p>
+                        </div>
+                        <button 
+                            onClick={() => setShowAddForm(!showAddForm)}
+                            className="px-3 py-2 rounded-xl btn-3d btn-3d-green text-xs font-bold"
+                        >
+                            + Add Task
+                        </button>
+                    </div>
+
+                    {showAddForm && (
+                        <form onSubmit={handleSubmit} className="glass-card rounded-2xl p-4 border-emerald-500/40 space-y-3">
+                            <h4 className="font-bold text-sm text-emerald-300">New Homework Assignment</h4>
+                            <input 
+                                type="text"
+                                placeholder="Task title (e.g. History Essay)"
+                                value={title}
+                                onChange={e => setTitle(e.target.value)}
+                                className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none"
+                            />
+                            <div className="grid grid-cols-3 gap-2">
+                                <select value={subject} onChange={e => setSubject(e.target.value)} className="bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                                    <option>Math</option>
+                                    <option>Science</option>
+                                    <option>History</option>
+                                    <option>English</option>
+                                    <option>Coding</option>
+                                </select>
+                                <input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} className="bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white" />
+                                <select value={priority} onChange={e => setPriority(e.target.value)} className="bg-slate-900 border border-slate-700 rounded-xl p-2 text-xs text-white">
+                                    <option>High</option>
+                                    <option>Medium</option>
+                                    <option>Low</option>
+                                </select>
+                            </div>
+                            <button type="submit" className="w-full py-2.5 rounded-xl btn-3d btn-3d-purple text-xs font-bold">
+                                Save Homework Task ✨
+                            </button>
+                        </form>
+                    )}
+
+                    <div className="space-y-3">
+                        {assignments.map(item => (
+                            <div key={item.id} className={`glass-card rounded-2xl p-4 border ${item.completed ? 'opacity-60 border-slate-800' : 'border-slate-700'}`}>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <button 
+                                            onClick={() => onToggleComplete(item.id)}
+                                            className={`w-6 h-6 rounded-lg border flex items-center justify-center ${item.completed ? 'bg-emerald-500 border-emerald-400 text-white' : 'border-slate-600'}`}
+                                        >
+                                            {item.completed && <i className="fa-solid fa-check text-xs"></i>}
+                                        </button>
+                                        <div>
+                                            <h4 className={`font-bold text-sm text-white ${item.completed ? 'line-through' : ''}`}>{item.title}</h4>
+                                            <span className="text-[10px] text-slate-400 font-bold">{item.subject} • Due {item.dueDate}</span>
+                                        </div>
+                                    </div>
+                                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${item.priority === 'High' ? 'bg-rose-500/20 text-rose-300' : 'bg-amber-500/20 text-amber-300'}`}>
+                                        {item.priority}
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        function CalendarView({ assignments }) {
+            const daysInOct = Array.from({ length: 31 }, (_, i) => i + 1);
+
+            return (
+                <div className="p-4 space-y-4 pb-24 animate-fade-in">
+                    <div className="glass-card rounded-2xl p-4 border-slate-700 flex justify-between items-center">
+                        <div>
+                            <h2 className="font-display text-2xl font-bold text-white">Focus Calendar</h2>
+                            <p className="text-xs text-slate-300">October 2026 Schedule & Goals</p>
+                        </div>
+                        <span className="px-3 py-1 rounded-xl bg-purple-500/20 text-purple-300 text-xs font-bold">Month View</span>
+                    </div>
+
+                    <div className="glass-card rounded-2xl p-4 border-slate-700 space-y-3">
+                        <div className="grid grid-cols-7 text-center font-bold text-xs text-slate-400 pb-2 border-b border-slate-700">
+                            <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+                        </div>
+                        <div className="grid grid-cols-7 gap-1 text-center">
+                            {daysInOct.map(day => {
+                                const isToday = day === 2;
+                                const isStreak = day >= 1 && day <= 7;
+                                return (
+                                    <div 
+                                        key={day}
+                                        className={`p-2 rounded-xl text-xs font-bold flex flex-col items-center justify-between h-12 transition-all ${
+                                            isToday ? 'bg-emerald-500 text-white shadow-lg' : (isStreak ? 'bg-slate-800/90 text-slate-200' : 'bg-slate-900/40 text-slate-500')
+                                        }`}
+                                    >
+                                        <span>{day}</span>
+                                        {isStreak && <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function SettingsView({ dailyLimitMins, onUpdateBudget, soundEnabled, onToggleSound, activeTheme, onSelectTheme, onResetProgress }) {
+            return (
+                <div className="p-4 space-y-4 pb-24 animate-fade-in">
+                    <div className="glass-card rounded-2xl p-4 border-slate-700">
+                        <h2 className="font-display text-2xl font-bold text-white">Application Settings</h2>
+                        <p className="text-xs text-slate-300">Customize limits, themes, and audio preferences.</p>
+                    </div>
+
+                    <div className="glass-card rounded-2xl p-4 border-slate-700 space-y-4">
+                        <h3 className="font-bold text-sm text-white border-b border-slate-700 pb-2">Daily Screen Budget Slider</h3>
+                        <div>
+                            <div className="flex justify-between text-xs font-bold mb-2">
+                                <span className="text-slate-400">Current Budget:</span>
+                                <span className="text-emerald-400">{Math.floor(dailyLimitMins / 60)}h {dailyLimitMins % 60}m</span>
+                            </div>
+                            <input 
+                                type="range"
+                                min="30"
+                                max="360"
+                                step="15"
+                                value={dailyLimitMins}
+                                onChange={(e) => onUpdateBudget(parseInt(e.target.value))}
+                                className="w-full accent-emerald-500 cursor-pointer"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="glass-card rounded-2xl p-4 border-slate-700 space-y-3">
+                        <h3 className="font-bold text-sm text-white border-b border-slate-700 pb-2">Audio & Sound Effects</h3>
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs text-slate-300 font-bold">Sound Effects & Synth Audio</span>
+                            <button 
+                                onClick={onToggleSound}
+                                className={`px-4 py-2 rounded-xl text-xs font-bold ${soundEnabled ? 'bg-emerald-500 text-white' : 'bg-slate-800 text-slate-400'}`}
+                            >
+                                {soundEnabled ? '🔊 Enabled' : '🔇 Muted'}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="glass-card rounded-2xl p-4 border-rose-500/30 space-y-3">
+                        <h3 className="font-bold text-sm text-rose-400 border-b border-slate-700 pb-2">Danger Zone</h3>
+                        <button onClick={onResetProgress} className="w-full py-2.5 rounded-xl btn-3d btn-3d-rose text-xs font-bold">
+                            Reset Daily Progress & Timer
+                        </button>
+                    </div>
+                </div>
+            );
+        }
+
+        function FocusPalApp() {
+            const [viewShell, setViewShell] = React.useState('phone');
+            const [screenTimeMins, setScreenTimeMins] = React.useState(105);
+            const [dailyLimitMins, setDailyLimitMins] = React.useState(180);
+            const [streak, setStreak] = React.useState(7);
+            const [xp, setXp] = React.useState(280);
+            const [coins, setCoins] = React.useState(420);
+            const [level, setLevel] = React.useState(4);
+            const [forcedMood, setForcedMood] = React.useState(null);
+
+            const [petHunger, setPetHunger] = React.useState(80);
+            const [activePetSpecies, setActivePetSpecies] = React.useState('sparky');
+
+            const [ownedHats, setOwnedHats] = React.useState(['none', 'crown']);
+            const [ownedThemes, setOwnedThemes] = React.useState(['sanctuary']);
+            const [activeHat, setActiveHat] = React.useState('crown');
+            const [activeTheme, setActiveTheme] = React.useState('sanctuary');
+
+            const [activeTab, setActiveTab] = React.useState('sanctuary');
+
+            const [apps, setApps] = React.useState(INITIAL_APPS_LIST);
+            const [assignments, setAssignments] = React.useState([
+                { id: 1, title: 'Calculus Ch. 4 Exercises', subject: 'Math', dueDate: '2026-10-04', priority: 'High', completed: false },
+                { id: 2, title: 'Read Chapter 3 History', subject: 'History', dueDate: '2026-10-06', priority: 'Medium', completed: true }
+            ]);
+
+            const [showEmergencyModal, setShowEmergencyModal] = React.useState(false);
+            const [showFocusTimer, setShowFocusTimer] = React.useState(false);
+            const [showBreatheModal, setShowBreatheModal] = React.useState(false);
+            const [notification, setNotification] = React.useState(null);
+
+            const currentThemeObj = BACKGROUND_THEMES.find(t => t.id === activeTheme) || BACKGROUND_THEMES[0];
+
+            const showToast = (msg, icon = '✨') => {
+                setNotification({ msg, icon });
+                setTimeout(() => setNotification(null), 3000);
+            };
+
+            const addXp = (amount) => {
+                const nextXp = xp + amount;
+                if (nextXp >= 400) {
+                    setLevel(l => l + 1);
+                    setXp(nextXp - 400);
+                    sound.levelUp();
+                    showToast(`LEVEL UP! You reached Level ${level + 1}! 🎉`, '👑');
+                } else {
+                    setXp(nextXp);
+                }
+            };
+
+            const handleBuyHat = (hat) => {
+                if (coins >= hat.price) {
+                    sound.coin();
+                    setCoins(c => c - hat.price);
+                    setOwnedHats([...ownedHats, hat.id]);
+                    setActiveHat(hat.id);
+                    showToast(`Unlocked & equipped ${hat.name}!`, '🎩');
+                } else {
+                    sound.error();
+                    showToast('Not enough coins!', '⚠️');
+                }
+            };
+
+            const handleBuyTheme = (theme) => {
+                if (coins >= theme.price) {
+                    sound.coin();
+                    setCoins(c => c - theme.price);
+                    setOwnedThemes([...ownedThemes, theme.id]);
+                    setActiveTheme(theme.id);
+                    showToast(`Applied ${theme.name} theme!`, '🎨');
+                } else {
+                    sound.error();
+                    showToast('Not enough coins!', '⚠️');
+                }
+            };
+
+            const handleFeedPet = (food) => {
+                if (coins >= food.price) {
+                    sound.coin();
+                    setCoins(c => c - food.price);
+                    setPetHunger(h => Math.min(100, h + food.hungerGain));
+                    showToast(`Fed your pet ${food.name}! Fullness +${food.hungerGain}%`, '🍏');
+                } else {
+                    sound.error();
+                    showToast('Not enough coins!', '⚠️');
+                }
+            };
+
+            const handleEmergencyUnlock = (reason) => {
+                setShowEmergencyModal(false);
+                setCoins(c => Math.max(0, c - 80));
+                setXp(x => Math.max(0, x - 30));
+                setScreenTimeMins(prev => Math.max(0, prev - 45));
+                sound.coin();
+                showToast(`Emergency override recorded: "${reason.substring(0, 18)}..."`, '🚨');
+            };
+
+            const formatHoursMins = (totalMins) => {
+                const h = Math.floor(totalMins / 60);
+                const m = totalMins % 60;
+                return `${h}h ${m}m`;
+            };
+
+            return (
+                <div className="w-full flex flex-col items-center justify-center gap-6 py-2">
+                    {/* Simulator Device Shell Toggle */}
+                    <div className="glass-card px-5 py-2.5 rounded-full flex items-center gap-3 border-slate-700 shadow-lg">
+                        <span className="text-xs font-bold text-slate-300">Device Simulator:</span>
+                        <button 
+                            onClick={() => { sound.pop(); setViewShell('phone'); }}
+                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${viewShell === 'phone' ? 'bg-emerald-500 text-white shadow' : 'bg-slate-800 text-slate-400'}`}
+                        >
+                            📱 Mobile Phone View
+                        </button>
+                        <button 
+                            onClick={() => { sound.pop(); setViewShell('mac'); }}
+                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${viewShell === 'mac' ? 'bg-purple-600 text-white shadow' : 'bg-slate-800 text-slate-400'}`}
+                        >
+                            💻 Mac Desktop View
+                        </button>
+                    </div>
+
+                    {/* MAIN APP FRAME */}
+                    <div className={viewShell === 'phone' ? 'phone-container w-full bg-slate-950 flex flex-col justify-between shadow-2xl relative border-4 border-slate-800' : 'mac-container w-full bg-slate-950 flex flex-col justify-between shadow-2xl relative border-2 border-slate-700'}>
+                        <div className={`absolute inset-0 bg-gradient-to-b ${currentThemeObj.bgClass} transition-all duration-700 pointer-events-none`}></div>
+
+                        {/* Top Header Stats Bar */}
+                        <div className="relative z-30 p-3 flex items-center justify-between border-b border-white/10 glass-card mx-3 mt-3 rounded-2xl">
+                            <div className="flex items-center gap-2">
+                                <div className="w-9 h-9 rounded-xl bg-purple-500/30 border border-purple-400 flex items-center justify-center font-display font-black text-purple-300 text-sm shadow">
+                                    L{level}
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-xs text-white leading-tight">Focus Master</h4>
+                                    <div className="w-20 h-2 bg-slate-800 rounded-full overflow-hidden mt-1 border border-slate-700">
+                                        <div className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all" style={{ width: `${(xp / 400) * 100}%` }}></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-2">
+                                <div className="px-2.5 py-1 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold flex items-center gap-1">
+                                    <span>🔥</span><span>{streak}</span>
+                                </div>
+                                <div className="px-2.5 py-1 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold flex items-center gap-1">
+                                    <span>🪙</span><span>{coins}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Toast Notification Banner */}
+                        {notification && (
+                            <div className="absolute top-20 left-6 right-6 z-50 glass-card border-2 border-emerald-400/80 bg-slate-900/90 rounded-2xl p-3 shadow-2xl flex items-center gap-3 animate-bounce-slow">
+                                <span className="text-2xl">{notification.icon}</span>
+                                <span className="text-xs font-bold text-white">{notification.msg}</span>
+                            </div>
+                        )}
+
+                        {/* TAB VIEW CONTENT */}
+                        <div className="relative z-20 flex-1 overflow-y-auto">
+                            {activeTab === 'sanctuary' && (
+                                <div className="p-4 space-y-4">
+                                    <MascotDisplay 
+                                        state={{ screenTimeMins, dailyLimitMins, forcedMood }}
+                                        hatId={activeHat}
+                                        speciesId={activePetSpecies}
+                                        onClick={() => showToast("Sparky says: Stay focused today! 🚀", "💬")}
+                                    />
+
+                                    <div className="glass-card rounded-2xl p-3 border-slate-700 flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xl">🍎</span>
+                                            <div>
+                                                <span className="text-[10px] font-bold text-slate-400 block">Pet Fullness</span>
+                                                <div className="w-24 h-2.5 bg-slate-900 rounded-full overflow-hidden border border-slate-700">
+                                                    <div className="h-full bg-amber-400 transition-all" style={{ width: `${petHunger}%` }}></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button 
+                                            onClick={() => setShowBreatheModal(true)} 
+                                            className="px-3 py-1 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-xs font-bold flex items-center gap-1"
+                                        >
+                                            🧘 Breathe
+                                        </button>
+                                    </div>
+
+                                    <div className="glass-card rounded-3xl p-5 border-slate-700/80 space-y-3 shadow-xl">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">Today's Screen Time</span>
+                                                <h2 className="font-display text-3xl font-extrabold text-white">{formatHoursMins(screenTimeMins)}</h2>
+                                            </div>
+                                            <div className="text-right">
+                                                <span className="text-xs font-bold text-slate-400 block">Daily Budget</span>
+                                                <span className="font-display font-bold text-slate-300">{formatHoursMins(dailyLimitMins)}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <div className="w-full h-4 bg-slate-900 rounded-full overflow-hidden p-0.5 border border-slate-700">
+                                                <div 
+                                                    className={`h-full rounded-full transition-all duration-500 ${
+                                                        (screenTimeMins / dailyLimitMins) >= 1.0 ? 'bg-rose-500' : 'bg-emerald-400'
+                                                    }`}
+                                                    style={{ width: `${Math.min(100, (screenTimeMins / dailyLimitMins) * 100)}%` }}
+                                                ></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button 
+                                        onClick={() => setShowFocusTimer(true)}
+                                        className="w-full p-4 rounded-2xl btn-3d btn-3d-green font-display font-extrabold text-base flex items-center justify-center gap-2 shadow-lg"
+                                    >
+                                        <span>🌱 Grow Focus Tree (Pomodoro)</span>
+                                    </button>
+                                </div>
+                            )}
+
+                            {activeTab === 'shop' && (
+                                <PetStoreWardrobeView 
+                                    coins={coins}
+                                    ownedHats={ownedHats}
+                                    ownedThemes={ownedThemes}
+                                    activeHat={activeHat}
+                                    activeTheme={activeTheme}
+                                    activePetSpecies={activePetSpecies}
+                                    onBuyHat={handleBuyHat}
+                                    onEquipHat={setActiveHat}
+                                    onBuyTheme={handleBuyTheme}
+                                    onEquipTheme={setActiveTheme}
+                                    onSelectSpecies={setActivePetSpecies}
+                                    onFeedPet={handleFeedPet}
+                                />
+                            )}
+
+                            {activeTab === 'app_limits' && (
+                                <AppLimitsView 
+                                    apps={apps}
+                                    onToggleBlock={id => setApps(apps.map(a => a.id === id ? { ...a, blocked: !a.blocked } : a))}
+                                    onUpdateLimit={(id, limitMins) => setApps(apps.map(a => a.id === id ? { ...a, limitMins } : a))}
+                                    onEmergencyUnlockRequest={() => setShowEmergencyModal(true)}
+                                />
+                            )}
+
+                            {activeTab === 'analytics' && (
+                                <ComprehensiveAnalyticsView screenTimeMins={screenTimeMins} dailyLimitMins={dailyLimitMins} apps={apps} />
+                            )}
+
+                            {activeTab === 'games' && (
+                                <GamesHubView onEarnReward={(c, x) => {
+                                    setCoins(prev => prev + c);
+                                    addXp(x);
+                                }} />
+                            )}
+
+                            {activeTab === 'homework' && (
+                                <HomeworkTrackerView 
+                                    assignments={assignments}
+                                    onAddAssignment={item => setAssignments([...assignments, item])}
+                                    onToggleComplete={id => setAssignments(assignments.map(a => a.id === id ? { ...a, completed: !a.completed } : a))}
+                                />
+                            )}
+
+                            {activeTab === 'calendar' && (
+                                <CalendarView assignments={assignments} />
+                            )}
+
+                            {activeTab === 'social' && (
+                                <SocialFriendsView friends={FRIENDS_DATA} streak={streak} />
+                            )}
+
+                            {activeTab === 'settings' && (
+                                <SettingsView 
+                                    dailyLimitMins={dailyLimitMins}
+                                    onUpdateBudget={setDailyLimitMins}
+                                    soundEnabled={sound.soundEnabled}
+                                    onToggleSound={() => sound.soundEnabled = !sound.soundEnabled}
+                                    activeTheme={activeTheme}
+                                    onSelectTheme={setActiveTheme}
+                                    onResetProgress={() => { setScreenTimeMins(0); showToast("Progress Reset!", "🔄"); }}
+                                />
+                            )}
+                        </div>
+
+                        {/* BOTTOM TAB BAR */}
+                        <div className="relative z-30 p-1.5 glass-card border-t border-slate-700/80 rounded-t-3xl grid grid-cols-5 md:grid-cols-9 gap-1 text-center">
+                            <button onClick={() => { sound.pop(); setActiveTab('sanctuary'); }} className={`p-1.5 rounded-xl ${activeTab === 'sanctuary' ? 'text-emerald-400 bg-emerald-500/10 font-bold' : 'text-slate-400'}`}>
+                                <i className="fa-solid fa-house text-sm block"></i>
+                                <span className="text-[8px]">Home</span>
+                            </button>
+                            <button onClick={() => { sound.pop(); setActiveTab('shop'); }} className={`p-1.5 rounded-xl ${activeTab === 'shop' ? 'text-emerald-400 bg-emerald-500/10 font-bold' : 'text-slate-400'}`}>
+                                <i className="fa-solid fa-store text-sm block"></i>
+                                <span className="text-[8px]">Shop</span>
+                            </button>
+                            <button onClick={() => { sound.pop(); setActiveTab('app_limits'); }} className={`p-1.5 rounded-xl ${activeTab === 'app_limits' ? 'text-emerald-400 bg-emerald-500/10 font-bold' : 'text-slate-400'}`}>
+                                <i className="fa-solid fa-mobile-screen text-sm block"></i>
+                                <span className="text-[8px]">Apps</span>
+                            </button>
+                            <button onClick={() => { sound.pop(); setActiveTab('analytics'); }} className={`p-1.5 rounded-xl ${activeTab === 'analytics' ? 'text-emerald-400 bg-emerald-500/10 font-bold' : 'text-slate-400'}`}>
+                                <i className="fa-solid fa-chart-pie text-sm block"></i>
+                                <span className="text-[8px]">Stats</span>
+                            </button>
+                            <button onClick={() => { sound.pop(); setActiveTab('games'); }} className={`p-1.5 rounded-xl ${activeTab === 'games' ? 'text-emerald-400 bg-emerald-500/10 font-bold' : 'text-slate-400'}`}>
+                                <i className="fa-solid fa-gamepad text-sm block"></i>
+                                <span className="text-[8px]">Games</span>
+                            </button>
+                            <button onClick={() => { sound.pop(); setActiveTab('homework'); }} className={`p-1.5 rounded-xl ${activeTab === 'homework' ? 'text-emerald-400 bg-emerald-500/10 font-bold' : 'text-slate-400'}`}>
+                                <i className="fa-solid fa-book text-sm block"></i>
+                                <span className="text-[8px]">Tasks</span>
+                            </button>
+                            <button onClick={() => { sound.pop(); setActiveTab('calendar'); }} className={`p-1.5 rounded-xl ${activeTab === 'calendar' ? 'text-emerald-400 bg-emerald-500/10 font-bold' : 'text-slate-400'}`}>
+                                <i className="fa-solid fa-calendar-days text-sm block"></i>
+                                <span className="text-[8px]">Calendar</span>
+                            </button>
+                            <button onClick={() => { sound.pop(); setActiveTab('social'); }} className={`p-1.5 rounded-xl ${activeTab === 'social' ? 'text-emerald-400 bg-emerald-500/10 font-bold' : 'text-slate-400'}`}>
+                                <i className="fa-solid fa-users text-sm block"></i>
+                                <span className="text-[8px]">Friends</span>
+                            </button>
+                            <button onClick={() => { sound.pop(); setActiveTab('settings'); }} className={`p-1.5 rounded-xl ${activeTab === 'settings' ? 'text-emerald-400 bg-emerald-500/10 font-bold' : 'text-slate-400'}`}>
+                                <i className="fa-solid fa-gear text-sm block"></i>
+                                <span className="text-[8px]">Settings</span>
+                            </button>
+                        </div>
+
+                        {/* MODAL OVERLAYS */}
+                        {showFocusTimer && (
+                            <FocusTimerMode 
+                                onFocusComplete={(mins) => {
+                                    setShowFocusTimer(false);
+                                    setScreenTimeMins(prev => Math.max(0, prev - mins));
+                                    addXp(100);
+                                    setCoins(c => c + 50);
+                                    showToast(`Grew a Lush Tree! +${mins}m Screen Refill!`, '🌳');
+                                }}
+                                onClose={() => setShowFocusTimer(false)}
+                            />
+                        )}
+
+                        {showBreatheModal && (
+                            <BreatheWidget onClose={() => setShowBreatheModal(false)} />
+                        )}
+
+                        {showEmergencyModal && (
+                            <EmergencyUnlockModal 
+                                coins={coins}
+                                onConfirmUnlock={handleEmergencyUnlock}
+                                onClose={() => setShowEmergencyModal(false)}
+                            />
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        const rootElement = document.getElementById('root');
+        const root = ReactDOM.createRoot(rootElement);
+        root.render(<FocusPalApp />);
+    </script>
+</body>
+</html>

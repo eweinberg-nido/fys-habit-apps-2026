@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusQuest - Simple 9th Grade Study Companion</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Segoe UI', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background-color 0.3s ease;
+        }
+
+        .progress-ring-circle {
+            transition: stroke-dashoffset 0.35s ease-in-out;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        .bounce-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .toast-animate {
+            animation: slideIn 0.3s ease-out forwards;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
+
+    <!-- Toast Notification Overlay -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col space-y-2 max-w-xs pointer-events-none"></div>
+
+    <!-- Header -->
+    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-40">
+        <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-500 to-amber-400 flex items-center justify-center text-white text-lg font-black shadow-lg shadow-indigo-500/20">
+                    ⚡
+                </div>
+                <div>
+                    <h1 class="font-black text-base text-white tracking-tight">FocusQuest</h1>
+                    <p class="text-[11px] text-slate-400 font-semibold">9th Grade Study Buddy</p>
+                </div>
+            </div>
+
+            <!-- Level & Streak Badges -->
+            <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-1.5 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-full">
+                    <i class="fa-solid fa-fire text-amber-400 text-xs"></i>
+                    <span class="text-xs font-black text-amber-300" id="headerStreak">0 Day Streak</span>
+                </div>
+
+                <div class="flex items-center space-x-2 bg-indigo-500/10 border border-indigo-500/30 px-3 py-1 rounded-full">
+                    <span class="text-xs font-black text-indigo-300" id="headerLevel">Lvl 1</span>
+                    <div class="w-16 bg-slate-800 h-2 rounded-full overflow-hidden">
+                        <div id="headerXpBar" class="bg-indigo-500 h-full w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-4xl w-full mx-auto px-4 py-6 space-y-6">
+
+        <!-- SMART Goal Banner -->
+        <div class="bg-slate-900/90 rounded-2xl p-4 border border-slate-800 flex items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center text-sm font-bold shrink-0">
+                    🎯
+                </div>
+                <div>
+                    <span class="text-[10px] font-black uppercase tracking-wider text-amber-400">Your SMART Study Goal</span>
+                    <p class="text-xs font-bold text-slate-200 mt-0.5" id="smartGoalSummary">"Finish homework right after school with a 10-min screen-free unwind first."</p>
+                </div>
+            </div>
+            <button onclick="editSmartGoalPrompt()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 transition shrink-0">
+                Edit Goal
+            </button>
+        </div>
+
+        <!-- Simple 3-Step Guided Tabs -->
+        <div class="grid grid-cols-3 gap-2">
+            <button onclick="switchStep(1)" id="stepBtn1" class="step-btn p-3 rounded-2xl border text-center transition flex flex-col items-center space-y-1 bg-amber-500 text-slate-950 font-black border-amber-400 shadow-lg shadow-amber-500/20">
+                <span class="text-lg">🧘</span>
+                <span class="text-xs">1. Unwind</span>
+            </button>
+            <button onclick="switchStep(2)" id="stepBtn2" class="step-btn p-3 rounded-2xl border border-slate-800 bg-slate-900 text-slate-400 font-extrabold hover:text-white transition flex flex-col items-center space-y-1">
+                <span class="text-lg">📝</span>
+                <span class="text-xs">2. Quests</span>
+            </button>
+            <button onclick="switchStep(3)" id="stepBtn3" class="step-btn p-3 rounded-2xl border border-slate-800 bg-slate-900 text-slate-400 font-extrabold hover:text-white transition flex flex-col items-center space-y-1">
+                <span class="text-lg">⏱️</span>
+                <span class="text-xs">3. Focus Sprint</span>
+            </button>
+        </div>
+
+        <!-- STEP 1: SCREEN-FREE UNWIND -->
+        <section id="step1" class="step-content bg-slate-900 rounded-3xl p-6 border border-slate-800 space-y-6">
+            <div class="text-center space-y-2 max-w-md mx-auto">
+                <span class="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-[11px] font-black uppercase tracking-wider">
+                    Anti-Doomscroll Buffer
+                </span>
+                <h2 class="text-xl font-black text-white">Just Got Home? Reset Your Brain First!</h2>
+                <p class="text-xs text-slate-400">Put your phone away for 10 minutes before starting homework. You'll study faster and avoid late-night fatigue.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                <!-- 10 Minute Unwind Timer Circle -->
+                <div class="flex flex-col items-center justify-center p-6 bg-slate-950 rounded-2xl border border-slate-800 space-y-4">
+                    <div class="relative w-40 h-40 flex items-center justify-center">
+                        <svg class="w-full h-full" viewBox="0 0 100 100">
+                            <circle class="text-slate-800 stroke-current" stroke-width="8" cx="50" cy="50" r="40" fill="transparent"></circle>
+                            <circle id="unwindCircle" class="text-amber-500 progress-ring-circle stroke-current" stroke-width="8" stroke-linecap="round" cx="50" cy="50" r="40" fill="transparent" stroke-dasharray="251.2" stroke-dashoffset="0"></circle>
+                        </svg>
+                        <div class="absolute flex flex-col items-center">
+                            <span id="unwindTimeDisplay" class="text-3xl font-black text-white tracking-tight">10:00</span>
+                            <span class="text-[9px] text-slate-400 font-extrabold uppercase tracking-widest mt-1">Screen-Free</span>
+                        </div>
+                    </div>
+
+                    <div class="flex space-x-2">
+                        <button id="startUnwindBtn" onclick="toggleUnwindTimer()" class="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition flex items-center space-x-2 bounce-btn shadow-md shadow-amber-500/20">
+                            <i class="fa-solid fa-play"></i>
+                            <span>Start 10m Reset</span>
+                        </button>
+                        <button onclick="resetUnwindTimer()" class="px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs font-bold transition">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Random Fun Idea Box -->
+                <div class="space-y-4">
+                    <div class="p-4 rounded-2xl bg-amber-950/30 border border-amber-500/30 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold text-amber-300">💡 Screen-Free Idea</span>
+                            <button onclick="spinUnwindIdea()" class="text-xs text-slate-400 hover:text-white font-bold">
+                                <i class="fa-solid fa-rotate"></i> Spin
+                            </button>
+                        </div>
+                        <p id="unwindIdeaText" class="text-xs font-bold text-white italic">"Drink a cold glass of water and stretch or shoot hoops outside."</p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="flex items-center space-x-3 p-3 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer">
+                            <input type="checkbox" id="unwindCheck1" class="w-4 h-4 text-amber-500 rounded border-slate-700 bg-slate-800">
+                            <span class="text-xs font-semibold text-slate-200">Phone parked in another room</span>
+                        </label>
+                        <label class="flex items-center space-x-3 p-3 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer">
+                            <input type="checkbox" id="unwindCheck2" class="w-4 h-4 text-amber-500 rounded border-slate-700 bg-slate-800">
+                            <span class="text-xs font-semibold text-slate-200">Drank water or grabbed a snack</span>
+                        </label>
+                    </div>
+
+                    <button onclick="claimUnwindBonus()" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition shadow-md shadow-amber-500/20 flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Complete Ritual & Claim +50 XP</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 2: HOMEWORK QUESTS -->
+        <section id="step2" class="step-content hidden bg-slate-900 rounded-3xl p-6 border border-slate-800 space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div>
+                    <h2 class="text-lg font-black text-white">Homework Quests</h2>
+                    <p class="text-xs text-slate-400">Break homework into tiny 15-minute bites so it never feels overwhelming.</p>
+                </div>
+                <span id="activeQuestCount" class="text-xs font-bold text-indigo-400 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30">0 Active</span>
+            </div>
+
+            <!-- Quick Add Homework Form -->
+            <form id="addQuestForm" class="flex flex-col sm:flex-row gap-2">
+                <input type="text" id="questInput" required placeholder="e.g., Math Ch 4 Problems 1-5" class="flex-1 px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 outline-none focus:ring-2 focus:ring-indigo-500">
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs transition shadow-md shadow-indigo-600/20 shrink-0">
+                    + Add Quest
+                </button>
+            </form>
+
+            <!-- Quests List -->
+            <div id="questsContainer" class="space-y-3">
+                <!-- Javascript populated -->
+            </div>
+        </section>
+
+        <!-- STEP 3: FOCUS SPRINT TIMER -->
+        <section id="step3" class="step-content hidden bg-slate-900 rounded-3xl p-6 border border-slate-800 space-y-6 max-w-lg mx-auto text-center">
+            <div class="space-y-1">
+                <span class="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-[11px] font-black uppercase tracking-wider">
+                    Focus Mode
+                </span>
+                <h2 class="text-lg font-black text-white" id="focusCurrentTask">Timed Study Sprint</h2>
+                <p class="text-xs text-slate-400">Work continuously without checking social media.</p>
+            </div>
+
+            <!-- Timer Circle Display -->
+            <div class="flex flex-col items-center justify-center p-6 bg-slate-950 rounded-3xl border border-slate-800 space-y-6">
+                <div class="relative w-56 h-56 flex items-center justify-center">
+                    <svg class="w-full h-full" viewBox="0 0 100 100">
+                        <circle class="text-slate-800 stroke-current" stroke-width="6" cx="50" cy="50" r="44" fill="transparent"></circle>
+                        <circle id="focusCircle" class="text-emerald-500 progress-ring-circle stroke-current" stroke-width="6" stroke-linecap="round" cx="50" cy="50" r="44" fill="transparent" stroke-dasharray="276.46" stroke-dashoffset="0"></circle>
+                    </svg>
+                    <div class="absolute flex flex-col items-center">
+                        <span id="focusTimeDisplay" class="text-5xl font-black text-white tracking-tighter">25:00</span>
+                        <span class="text-[10px] font-black uppercase text-emerald-400 mt-2">Deep Focus</span>
+                    </div>
+                </div>
+
+                <!-- Timer Controls -->
+                <div class="flex items-center space-x-3">
+                    <button id="startFocusBtn" onclick="toggleFocusTimer()" class="px-8 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition shadow-lg shadow-emerald-500/20 flex items-center space-x-2">
+                        <i class="fa-solid fa-play"></i>
+                        <span>Start Sprint</span>
+                    </button>
+                    <button onclick="resetFocusTimer()" class="px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 font-bold text-xs transition">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Mood Check After Study -->
+            <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+                <p class="text-xs font-bold text-slate-300">How do you feel after finishing this sprint?</p>
+                <div class="flex justify-center space-x-4">
+                    <button onclick="logReflection('Great 😌')" class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-emerald-500 text-xs font-bold text-emerald-400 transition">
+                        😌 Energized
+                    </button>
+                    <button onclick="logReflection('Okay 😐')" class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-amber-500 text-xs font-bold text-amber-400 transition">
+                        😐 Okay
+                    </button>
+                    <button onclick="logReflection('Tired 😓')" class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-rose-500 text-xs font-bold text-rose-400 transition">
+                        😓 Tired
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        const STORAGE_KEY = 'focusquest_simple_v1';
+
+        const defaultState = {
+            xp: 0,
+            level: 1,
+            streak: 0,
+            smartGoal: "Finish homework right after school with a 10-min screen-free unwind first.",
+            quests: [
+                { id: 'q1', text: 'Math Homework - Ch 4', completed: false },
+                { id: 'q2', text: 'History Chapter Summary', completed: false }
+            ]
+        };
+
+        let state = loadState();
+
+        function loadState() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                return saved ? { ...defaultState, ...JSON.parse(saved) } : defaultState;
+            } catch (e) {
+                return defaultState;
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            updateHeader();
+        }
+
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `p-3 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-bold shadow-xl flex items-center space-x-2 toast-animate pointer-events-auto`;
+            toast.innerHTML = `<span>⚡</span><span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function addXP(amount, message) {
+            state.xp += amount;
+            const required = state.level * 100;
+            if (state.xp >= required) {
+                state.xp -= required;
+                state.level += 1;
+                try { confetti({ particleCount: 80, spread: 60 }); } catch(e){}
+                showToast(`🎉 LEVEL UP! You reached Level ${state.level}!`);
+            } else {
+                showToast(`+${amount} XP: ${message}`);
+            }
+            saveState();
+        }
+
+        function updateHeader() {
+            document.getElementById('headerStreak').innerText = `${state.streak} Day Streak`;
+            document.getElementById('headerLevel').innerText = `Lvl ${state.level}`;
+            const required = state.level * 100;
+            const pct = Math.min(100, Math.round((state.xp / required) * 100));
+            document.getElementById('headerXpBar').style.width = `${pct}%`;
+            document.getElementById('smartGoalSummary').innerText = `"${state.smartGoal}"`;
+        }
+
+        function switchStep(stepNum) {
+            document.querySelectorAll('.step-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.step-btn').forEach(btn => {
+                btn.className = 'step-btn p-3 rounded-2xl border border-slate-800 bg-slate-900 text-slate-400 font-extrabold hover:text-white transition flex flex-col items-center space-y-1';
+            });
+
+            document.getElementById(`step${stepNum}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`stepBtn${stepNum}`);
+            activeBtn.className = 'step-btn p-3 rounded-2xl border text-center transition flex flex-col items-center space-y-1 bg-amber-500 text-slate-950 font-black border-amber-400 shadow-lg shadow-amber-500/20';
+        }
+
+        const unwindIdeas = [
+            "Drink a cold glass of water and stretch outside for 10 minutes.",
+            "Listen to 2 favorite songs while changing out of school clothes.",
+            "Shoot hoops or walk around the yard screen-free.",
+            "Organize your desk space and pet your dog/cat."
+        ];
+
+        function spinUnwindIdea() {
+            const idea = unwindIdeas[Math.floor(Math.random() * unwindIdeas.length)];
+            document.getElementById('unwindIdeaText').innerText = `"${idea}"`;
+        }
+
+        let unwindLeft = 10 * 60;
+        let unwindInterval = null;
+
+        function toggleUnwindTimer() {
+            const btn = document.getElementById('startUnwindBtn');
+            if (unwindInterval) {
+                clearInterval(unwindInterval);
+                unwindInterval = null;
+                btn.innerHTML = `<i class="fa-solid fa-play"></i><span>Resume Reset</span>`;
+            } else {
+                btn.innerHTML = `<i class="fa-solid fa-pause"></i><span>Pause</span>`;
+                unwindInterval = setInterval(() => {
+                    if (unwindLeft > 0) {
+                        unwindLeft--;
+                        updateUnwindDisplay();
+                    } else {
+                        clearInterval(unwindInterval);
+                        unwindInterval = null;
+                        try { confetti({ particleCount: 70, spread: 60 }); } catch(e){}
+                        showToast("10-Minute Screen-Free Reset Done!");
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetUnwindTimer() {
+            clearInterval(unwindInterval);
+            unwindInterval = null;
+            unwindLeft = 10 * 60;
+            updateUnwindDisplay();
+            document.getElementById('startUnwindBtn').innerHTML = `<i class="fa-solid fa-play"></i><span>Start 10m Reset</span>`;
+        }
+
+        function updateUnwindDisplay() {
+            const mins = Math.floor(unwindLeft / 60);
+            const secs = unwindLeft % 60;
+            document.getElementById('unwindTimeDisplay').innerText = 
+                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            const circle = document.getElementById('unwindCircle');
+            const offset = 251.2 - (unwindLeft / (10 * 60)) * 251.2;
+            circle.style.strokeDashoffset = offset;
+        }
+
+        function claimUnwindBonus() {
+            state.streak += 1;
+            addXP(50, "Screen-Free Arrival Ritual Completed!");
+            switchStep(2);
+        }
+
+        document.getElementById('addQuestForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const input = document.getElementById('questInput');
+            if (!input.value.trim()) return;
+
+            state.quests.unshift({
+                id: `q_${Date.now()}`,
+                text: input.value.trim(),
+                completed: false
+            });
+
+            input.value = '';
+            addXP(10, "Added Homework Quest");
+            renderQuests();
+        });
+
+        function renderQuests() {
+            const container = document.getElementById('questsContainer');
+            container.innerHTML = '';
+            
+            const active = state.quests.filter(q => !q.completed).length;
+            document.getElementById('activeQuestCount').innerText = `${active} Active`;
+
+            if (state.quests.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-500 italic text-center py-4">No homework quests added yet!</p>`;
+                return;
+            }
+
+            state.quests.forEach(q => {
+                const item = document.createElement('div');
+                item.className = `p-3.5 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-between space-x-3 transition ${q.completed ? 'opacity-50' : ''}`;
+                item.innerHTML = `
+                    <label class="flex items-center space-x-3 cursor-pointer flex-1">
+                        <input type="checkbox" ${q.completed ? 'checked' : ''} onchange="toggleQuest('${q.id}')" class="w-4 h-4 text-indigo-500 rounded border-slate-700 bg-slate-900">
+                        <span class="text-xs font-bold ${q.completed ? 'line-through text-slate-500' : 'text-slate-200'}">${q.text}</span>
+                    </label>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="startQuestSprint('${q.text}')" class="px-2.5 py-1 rounded-lg bg-indigo-500/20 text-indigo-300 font-bold text-[11px] hover:bg-indigo-500/30 transition">
+                            ⏱️ Focus
+                        </button>
+                        <button onclick="deleteQuest('${q.id}')" class="text-slate-600 hover:text-rose-400 text-xs p-1">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function toggleQuest(id) {
+            const q = state.quests.find(i => i.id === id);
+            if (q) {
+                q.completed = !q.completed;
+                if (q.completed) {
+                    addXP(30, "Completed Homework Quest!");
+                    try { confetti({ particleCount: 50, spread: 50 }); } catch(e){}
+                }
+                saveState();
+                renderQuests();
+            }
+        }
+
+        function deleteQuest(id) {
+            state.quests = state.quests.filter(i => i.id !== id);
+            saveState();
+            renderQuests();
+        }
+
+        function startQuestSprint(title) {
+            document.getElementById('focusCurrentTask').innerText = `Focusing on: ${title}`;
+            switchStep(3);
+        }
+
+        let focusLeft = 25 * 60;
+        let focusInterval = null;
+
+        function toggleFocusTimer() {
+            const btn = document.getElementById('startFocusBtn');
+            if (focusInterval) {
+                clearInterval(focusInterval);
+                focusInterval = null;
+                btn.innerHTML = `<i class="fa-solid fa-play"></i><span>Resume Sprint</span>`;
+            } else {
+                btn.innerHTML = `<i class="fa-solid fa-pause"></i><span>Pause</span>`;
+                focusInterval = setInterval(() => {
+                    if (focusLeft > 0) {
+                        focusLeft--;
+                        updateFocusDisplay();
+                    } else {
+                        clearInterval(focusInterval);
+                        focusInterval = null;
+                        addXP(40, "Completed 25-Min Focus Sprint!");
+                        try { confetti({ particleCount: 90, spread: 70 }); } catch(e){}
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetFocusTimer() {
+            clearInterval(focusInterval);
+            focusInterval = null;
+            focusLeft = 25 * 60;
+            updateFocusDisplay();
+            document.getElementById('startFocusBtn').innerHTML = `<i class="fa-solid fa-play"></i><span>Start Sprint</span>`;
+        }
+
+        function updateFocusDisplay() {
+            const mins = Math.floor(focusLeft / 60);
+            const secs = focusLeft % 60;
+            document.getElementById('focusTimeDisplay').innerText = 
+                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            const circle = document.getElementById('focusCircle');
+            const offset = 276.46 - (focusLeft / (25 * 60)) * 276.46;
+            circle.style.strokeDashoffset = offset;
+        }
+
+        function logReflection(vibe) {
+            addXP(20, `Logged Mood: ${vibe}`);
+            showToast(`Saved! Great job finishing your study session.`);
+            switchStep(1);
+        }
+
+        function editSmartGoalPrompt() {
+            const newGoal = prompt("Enter your SMART Study Goal:", state.smartGoal);
+            if (newGoal && newGoal.trim()) {
+                state.smartGoal = newGoal.trim();
+                saveState();
+                showToast("Updated SMART Goal!");
+            }
+        }
+
+        window.onload = function() {
+            updateUnwindDisplay();
+            updateFocusDisplay();
+            renderQuests();
+            updateHeader();
+        };
+    </script>
+</body>
+</html>

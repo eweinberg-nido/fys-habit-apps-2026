@@ -38,6 +38,10 @@
   <p>
     The International School Nido de Aguilas &middot; First Year Seminar
   </p>
+  <div class="counter">
+    <p>You are visitor number</p>
+    <div class="odometer" id="odometer" role="img" aria-label="Visitor counter: 2026"></div>
+  </div>
   <p class="small">Best viewed with Netscape Navigator 3.0 at 800&times;600</p>
 </center>
 
@@ -236,6 +240,28 @@
       boxes[i].firstChild.style.transform = "scale(" + (boxes[i].clientWidth / 1200) + ")";
     }
   }
+  // ---- Visitor counter: rolls up to a fixed number, Angelfire style ----
+  (function () {
+    var target = 2026, digits = 6, odo = document.getElementById("odometer");
+    function show(n) {
+      var s = String(n);
+      while (s.length < digits) s = "0" + s;
+      odo.innerHTML = "";
+      for (var i = 0; i < s.length; i++) odo.appendChild(el("span", { "aria-hidden": "true" }, s[i]));
+    }
+    var still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (still) { show(target); return; }
+    var start = null;
+    function step(t) {
+      if (!start) start = t;
+      var p = Math.min((t - start) / 1400, 1);
+      show(Math.round(target * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) requestAnimationFrame(step);
+    }
+    show(0);
+    requestAnimationFrame(step);
+  })();
+
   window.addEventListener("resize", scalePreviews);
   window.addEventListener("hashchange", render);
   render();

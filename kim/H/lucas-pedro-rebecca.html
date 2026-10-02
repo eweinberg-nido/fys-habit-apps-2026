@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PIVOT x NoxRest | AI-Verified Mindful Dopamine Rewire</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Nunito:wght@600;700;800;900&family=Outfit:wght@500;700;800;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Nunito', 'Inter', 'sans-serif'],
+                        display: ['Outfit', 'Fredoka', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            black: '#080a0c',
+                            card: '#121620',
+                            cardHover: '#1a202c',
+                            border: '#232a3b',
+                            green: '#00ff87',
+                            greenDark: '#00cc6a',
+                            cyan: '#00e5ff',
+                            cyanDark: '#00b8cc',
+                            purple: '#a855f7',
+                            purpleDark: '#8b5cf6',
+                            orange: '#ff6b35',
+                            orangeDark: '#e0531e',
+                            yellow: '#ffc800',
+                            red: '#ff4b4b',
+                        }
+                    },
+                    boxShadow: {
+                        '3d-green': '0 4px 0 #00cc6a',
+                        '3d-cyan': '0 4px 0 #00b8cc',
+                        '3d-purple': '0 4px 0 #8b5cf6',
+                        '3d-orange': '0 4px 0 #e0531e',
+                        '3d-red': '0 4px 0 #dc2626',
+                        'glow-green': '0 0 25px rgba(0, 255, 135, 0.25)',
+                        'glow-purple': '0 0 25px rgba(168, 85, 247, 0.25)',
+                        'glow-cyan': '0 0 25px rgba(0, 229, 255, 0.25)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #080a0c;
+            color: #f3f4f6;
+            font-family: 'Nunito', 'Inter', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+
+        h1, h2, h3, h4, .font-display {
+            font-family: 'Outfit', 'Fredoka', sans-serif;
+        }
+
+        .glass-panel {
+            background: rgba(18, 22, 32, 0.88);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* 3D Dynamic Buttons */
+        .btn-3d {
+            transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.15s ease;
+        }
+        .btn-3d:active {
+            transform: translateY(4px);
+            box-shadow: none !important;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #080a0c;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #232a3b;
+            border-radius: 999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00ff87;
+        }
+
+        /* Video element for front camera */
+        video {
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        .tab-btn.active {
+            color: #00ff87;
+            border-bottom: 2px solid #00ff87;
+            background: rgba(0, 255, 135, 0.06);
+        }
+
+        @keyframes ringPulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 0.3; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+        .animate-ring-pulse {
+            animation: ringPulse 2.5s infinite ease-in-out;
+        }
+
+        @keyframes mascotFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(1.5deg); }
+        }
+        .animate-mascot {
+            animation: mascotFloat 3s infinite ease-in-out;
+        }
+
+        .scrollbar-none::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-none {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col md:flex-row max-w-7xl mx-auto border-x border-brand-border shadow-2xl selection:bg-brand-green selection:text-black">
+
+    <aside class="hidden md:flex flex-col w-64 p-5 border-r border-brand-border bg-brand-black justify-between shrink-0 h-screen sticky top-0 z-40">
+        <div class="space-y-6">
+            <!-- Brand Header -->
+            <div class="flex items-center gap-3 px-2 py-2">
+                <div class="w-11 h-11 bg-gradient-to-tr from-brand-green to-brand-cyan rounded-2xl flex items-center justify-center text-black text-2xl font-black font-display shadow-glow-green">
+                    P
+                </div>
+                <div>
+                    <h1 class="text-xl font-black font-display text-white tracking-wider flex items-center gap-1.5">
+                        PIVOT <span class="text-[10px] px-2 py-0.5 rounded-full bg-brand-green/10 text-brand-green border border-brand-green/30 font-semibold">NOX 3.0</span>
+                    </h1>
+                    <p class="text-[11px] text-gray-400">Rewire Dopamine with AI</p>
+                </div>
+            </div>
+
+            <!-- Main Nav Items -->
+            <nav class="space-y-1.5">
+                <button onclick="switchTab('path')" id="side-nav-path" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-bold text-sm text-left transition-all bg-brand-card text-brand-green border border-brand-green/30 shadow-3d-green">
+                    <i class="fa-solid fa-map-location-dot text-lg w-5 text-brand-green"></i> Quests Path
+                </button>
+                <button onclick="switchTab('dashboard')" id="side-nav-dashboard" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-bold text-sm text-gray-400 hover:bg-brand-card hover:text-white transition-all">
+                    <i class="fa-solid fa-chart-line text-lg w-5 text-brand-cyan"></i> Whoop Dashboard
+                </button>
+                <button onclick="switchTab('camera')" id="side-nav-camera" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-bold text-sm text-gray-400 hover:bg-brand-card hover:text-white transition-all">
+                    <i class="fa-solid fa-camera-rotate text-lg w-5 text-brand-purple"></i> AI Camera Lab
+                </button>
+                <button onclick="switchTab('lock')" id="side-nav-lock" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-bold text-sm text-gray-400 hover:bg-brand-card hover:text-white transition-all">
+                    <i class="fa-solid fa-shield-halved text-lg w-5 text-brand-cyan"></i> Face-Down Lock
+                </button>
+                <button onclick="switchTab('boredom')" id="side-nav-boredom" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-bold text-sm text-gray-400 hover:bg-brand-card hover:text-white transition-all">
+                    <i class="fa-solid fa-dice-five text-lg w-5 text-brand-yellow"></i> Boredom Spinner
+                </button>
+                <button onclick="switchTab('wardrobe')" id="side-nav-wardrobe" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-bold text-sm text-gray-400 hover:bg-brand-card hover:text-white transition-all">
+                    <i class="fa-solid fa-shirt text-lg w-5 text-brand-purple"></i> Mascot Studio
+                </button>
+                <button onclick="switchTab('analytics')" id="side-nav-analytics" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-bold text-sm text-gray-400 hover:bg-brand-card hover:text-white transition-all">
+                    <i class="fa-solid fa-brain text-lg w-5 text-brand-orange"></i> Trigger Analytics
+                </button>
+                <button onclick="switchTab('rewards')" id="side-nav-rewards" class="nav-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-bold text-sm text-gray-400 hover:bg-brand-card hover:text-white transition-all">
+                    <i class="fa-solid fa-trophy text-lg w-5 text-brand-yellow"></i> Rewards & Shop
+                </button>
+            </nav>
+        </div>
+
+        <!-- Emergency Panic Pivot Trigger -->
+        <div class="pt-4 border-t border-brand-border space-y-2">
+            <button onclick="openCravingDecoder()" class="w-full bg-gradient-to-r from-brand-red to-brand-orange text-white py-3.5 px-4 rounded-2xl font-black font-display flex items-center justify-center gap-2 shadow-3d-red btn-3d tracking-wide text-sm">
+                <i class="fa-solid fa-bolt-lightning text-lg animate-bounce"></i>
+                <span>PANIC PIVOT!</span>
+            </button>
+            <p class="text-[10px] text-gray-500 text-center">Interruption resets dopamine balance</p>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col min-h-screen pb-24 md:pb-6 overflow-x-hidden">
+
+        <!-- Header Stats Bar -->
+        <header class="sticky top-0 z-30 bg-brand-black/90 backdrop-blur-md px-4 py-3 border-b border-brand-border flex items-center justify-between">
+            <div class="flex items-center gap-2 md:hidden">
+                <div class="w-9 h-9 bg-gradient-to-tr from-brand-green to-brand-cyan rounded-xl flex items-center justify-center text-black font-black font-display">
+                    P
+                </div>
+                <span class="font-display font-black text-lg text-white">PIVOT x NOX</span>
+            </div>
+
+            <!-- Quick Metrics Top Bar -->
+            <div class="flex items-center gap-2 sm:gap-4 ml-auto">
+                <div class="flex items-center gap-1.5 bg-brand-card px-3 py-1.5 rounded-xl border border-brand-orange/30 text-brand-orange font-extrabold text-xs sm:text-sm">
+                    <i class="fa-solid fa-fire text-base animate-pulse"></i>
+                    <span id="header-streak">3</span>
+                    <span class="hidden sm:inline">Days</span>
+                </div>
+
+                <div class="flex items-center gap-1.5 bg-brand-card px-3 py-1.5 rounded-xl border border-brand-yellow/30 text-brand-yellow font-extrabold text-xs sm:text-sm">
+                    <i class="fa-solid fa-gem text-base"></i>
+                    <span id="header-gems">180</span>
+                </div>
+
+                <div class="flex items-center gap-1.5 bg-brand-card px-3 py-1.5 rounded-xl border border-brand-purple/30 text-brand-purple font-extrabold text-xs sm:text-sm">
+                    <i class="fa-solid fa-bolt text-base"></i>
+                    <span id="header-level">Lvl 1</span>
+                    <span id="header-xp" class="text-[10px] text-gray-400 font-normal">(0 XP)</span>
+                </div>
+
+                <button onclick="openCravingDecoder()" class="md:hidden bg-brand-green text-black px-3 py-1.5 rounded-xl font-bold text-xs flex items-center gap-1">
+                    <i class="fa-solid fa-bolt"></i> PIVOT
+                </button>
+            </div>
+        </header>
+
+        <!-- Mobile Bottom / Navigation Tab Bar -->
+        <div class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-brand-card/95 backdrop-blur-md border-t border-brand-border px-2 py-2 flex justify-around items-center text-xs">
+            <button onclick="switchTab('path')" id="mob-nav-path" class="flex flex-col items-center gap-1 text-brand-green font-bold">
+                <i class="fa-solid fa-map-location-dot text-base"></i>
+                <span class="text-[10px]">Path</span>
+            </button>
+            <button onclick="switchTab('dashboard')" id="mob-nav-dashboard" class="flex flex-col items-center gap-1 text-gray-400">
+                <i class="fa-solid fa-chart-line text-base"></i>
+                <span class="text-[10px]">Whoop</span>
+            </button>
+            <button onclick="switchTab('camera')" id="mob-nav-camera" class="flex flex-col items-center gap-1 text-gray-400">
+                <i class="fa-solid fa-camera text-base"></i>
+                <span class="text-[10px]">AI Cam</span>
+            </button>
+            <button onclick="switchTab('boredom')" id="mob-nav-boredom" class="flex flex-col items-center gap-1 text-gray-400">
+                <i class="fa-solid fa-dice-five text-base"></i>
+                <span class="text-[10px]">Boredom</span>
+            </button>
+            <button onclick="switchTab('wardrobe')" id="mob-nav-wardrobe" class="flex flex-col items-center gap-1 text-gray-400">
+                <i class="fa-solid fa-shirt text-base"></i>
+                <span class="text-[10px]">Studio</span>
+            </button>
+            <button onclick="openCravingDecoder()" class="flex flex-col items-center gap-1 text-brand-red font-black">
+                <i class="fa-solid fa-bolt text-base"></i>
+                <span class="text-[10px]">Pivot</span>
+            </button>
+        </div>
+
+        <!-- MAIN TAB CONTAINER CONTENT -->
+        <div class="p-4 sm:p-6 flex-1 max-w-4xl mx-auto w-full">
+
+            <!-- TAB 1: QUESTS PATH (DUOLINGO MULTI-UNIT STYLE) -->
+            <section id="tab-path" class="tab-content block space-y-6">
+
+                <!-- Hero Panic Banner -->
+                <div class="bg-gradient-to-r from-emerald-950/70 via-brand-card to-purple-950/70 p-5 rounded-3xl border border-brand-green/30 relative overflow-hidden shadow-2xl flex flex-col md:flex-row items-center justify-between gap-5">
+                    <div class="space-y-2 text-center md:text-left z-10">
+                        <div class="inline-flex items-center gap-2 text-[11px] font-bold text-brand-green uppercase tracking-wider bg-brand-green/10 px-3 py-1 rounded-full border border-brand-green/20">
+                            <span class="w-2 h-2 rounded-full bg-brand-green animate-ping"></span>
+                            AI Habit Interrupter Active
+                        </div>
+                        <h2 class="font-display font-black text-xl sm:text-2xl text-white">
+                            Urge to scroll right now?
+                        </h2>
+                        <p class="text-xs sm:text-sm text-gray-300 max-w-md">
+                            Interrupt the dopamine loop with a 60-second real-world swap verified by AI camera motion.
+                        </p>
+                    </div>
+
+                    <button onclick="openCravingDecoder()" class="z-10 group bg-gradient-to-r from-brand-green to-brand-cyan hover:brightness-110 text-black font-display font-black text-base px-6 py-3.5 rounded-2xl shadow-glow-green transition-all transform hover:scale-105 active:scale-95 w-full md:w-auto flex items-center justify-center gap-2 shrink-0">
+                        <i class="fa-solid fa-bolt-lightning text-lg group-hover:rotate-12 transition-transform"></i>
+                        <span>PIVOT & REWIRE</span>
+                    </button>
+                </div>
+
+                <!-- Mascot Speech Greeting Box -->
+                <div class="bg-gradient-to-r from-brand-card via-brand-card to-slate-900 p-5 rounded-3xl border border-brand-border shadow-xl flex flex-col sm:flex-row items-center gap-5 relative overflow-hidden">
+                    <div class="w-24 h-24 shrink-0 flex items-center justify-center relative">
+                        <div class="absolute inset-0 bg-brand-green/20 rounded-full blur-xl"></div>
+                        <div id="path-mascot-preview" class="w-full h-full relative z-10 animate-mascot">
+                            <!-- SVG Mascot rendered dynamically -->
+                        </div>
+                    </div>
+                    <div class="text-center sm:text-left flex-1 space-y-2">
+                        <div class="inline-flex items-center gap-1.5 bg-brand-green/20 text-brand-green font-extrabold text-xs px-3 py-1 rounded-full uppercase tracking-wider">
+                            <i class="fa-solid fa-shield-cat"></i> Nox Guardian Speech
+                        </div>
+                        <h2 class="text-lg sm:text-xl font-bold text-white" id="mascot-speech-text">Complete quest nodes to unlock the next Dopamine Unit!</h2>
+                        <p class="text-gray-300 text-xs sm:text-sm leading-relaxed">
+                            AI Camera motion differencing verifies physical movement so you actually earn XP and Gems without cheating!
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Level Progress Header -->
+                <div class="glass-panel p-4 rounded-2xl border border-brand-border flex flex-col gap-2">
+                    <div class="flex justify-between items-center text-xs sm:text-sm font-bold">
+                        <span class="text-gray-300"><i class="fa-solid fa-star text-brand-yellow mr-1"></i> Level <span id="current-level-num">1</span> Explorer</span>
+                        <span class="text-brand-green" id="xp-text">0 / 100 XP</span>
+                    </div>
+                    <div class="w-full bg-brand-black rounded-full h-3.5 overflow-hidden border border-brand-border">
+                        <div id="xp-bar" class="bg-gradient-to-r from-brand-green to-brand-cyan h-full w-0 transition-all duration-500 rounded-full"></div>
+                    </div>
+                </div>
+
+                <!-- DUOLINGO MULTI-UNIT QUEST PATH CONTAINER -->
+                <div id="duolingo-path-container" class="space-y-10 py-2">
+                    <!-- Dynamic Units and Quest Nodes rendered via JavaScript -->
+                </div>
+            </section>
+
+            <!-- TAB 2: WHOOP-STYLE DASHBOARD -->
+            <section id="tab-dashboard" class="tab-content hidden space-y-6">
+                <div>
+                    <h2 class="font-display font-black text-2xl text-white">Whoop Digital Performance Hub</h2>
+                    <p class="text-xs text-gray-400">Track your real-time dopamine recovery score and micro daily goals.</p>
+                </div>
+
+                <!-- Scores Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                    <!-- Digital Recovery Score Card -->
+                    <div class="glass-panel p-6 rounded-3xl relative flex flex-col justify-between items-center text-center">
+                        <div class="w-full flex justify-between items-center text-xs text-gray-400 uppercase tracking-wider font-semibold mb-2">
+                            <span>Digital Balance Score</span>
+                            <i class="fa-solid fa-heart-pulse text-brand-green"></i>
+                        </div>
+
+                        <!-- Circular Progress Gauge -->
+                        <div class="relative w-40 h-40 flex items-center justify-center my-2">
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                <path class="text-brand-border" stroke-width="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path id="score-circle" class="text-brand-green transition-all duration-1000 ease-out" stroke-dasharray="0, 100" stroke-width="3.2" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            </svg>
+                            <div class="absolute flex flex-col items-center">
+                                <span id="dash-balance-score" class="font-display font-black text-4xl text-white">0%</span>
+                                <span id="dash-balance-status" class="text-xs text-brand-green font-semibold">PRIME</span>
+                            </div>
+                        </div>
+
+                        <p class="text-[11px] text-gray-400 mt-2">Calculated from AI-verified pivots & scroll-free streak hours.</p>
+                    </div>
+
+                    <!-- Daily Dopamine Coach Nudge Card -->
+                    <div class="glass-panel p-6 rounded-3xl md:col-span-2 flex flex-col justify-between relative overflow-hidden">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-lg bg-brand-cyan/20 text-brand-cyan flex items-center justify-center text-sm">
+                                    <i class="fa-solid fa-robot"></i>
+                                </div>
+                                <span class="font-display font-bold text-sm tracking-wide text-white">PIVOT COACH NUDGE</span>
+                            </div>
+                            <span class="text-[10px] bg-brand-border px-2.5 py-1 rounded-full text-gray-300">Updated Today</span>
+                        </div>
+
+                        <div id="coach-nudge-box" class="space-y-2.5 bg-brand-black/60 p-4 rounded-2xl border border-brand-border">
+                            <h3 class="font-display font-bold text-base text-brand-cyan flex items-center gap-2">
+                                <i class="fa-solid fa-lightbulb"></i>
+                                <span id="nudge-title">Boredom is a Physical Call to Action</span>
+                            </h3>
+                            <p id="nudge-body" class="text-xs sm:text-sm text-gray-300 leading-relaxed">
+                                When you feel bored, your brain's tonic dopamine drops. Swapping to a 60-second exercise burst re-engages your prefrontal cortex instantly!
+                            </p>
+                        </div>
+
+                        <div class="mt-4 flex items-center justify-between text-xs text-gray-400">
+                            <span class="flex items-center gap-1">
+                                <i class="fa-solid fa-shield-halved text-brand-green"></i> Target: 3 Pivots / Day
+                            </span>
+                            <button onclick="openCravingDecoder()" class="text-brand-green hover:underline font-bold">
+                                Perform Pivot (+50 XP) &rarr;
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daily Micro Goals -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="glass-panel p-4 rounded-2xl flex items-center justify-between border-l-4 border-l-brand-green">
+                        <div class="space-y-1">
+                            <p class="text-[10px] text-gray-400 font-semibold uppercase">Daily Goal 1</p>
+                            <p class="font-display font-bold text-sm text-white">Complete 2 Verified Pivots</p>
+                            <p class="text-xs text-gray-400" id="goal-1-status">0/2 Completed</p>
+                        </div>
+                        <div id="goal-1-badge" class="w-9 h-9 rounded-full bg-brand-border flex items-center justify-center text-gray-500">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-4 rounded-2xl flex items-center justify-between border-l-4 border-l-brand-purple">
+                        <div class="space-y-1">
+                            <p class="text-[10px] text-gray-400 font-semibold uppercase">Daily Goal 2</p>
+                            <p class="font-display font-bold text-sm text-white">1 AI Motion Workout</p>
+                            <p class="text-xs text-gray-400" id="goal-2-status">Pending</p>
+                        </div>
+                        <div id="goal-2-badge" class="w-9 h-9 rounded-full bg-brand-border flex items-center justify-center text-gray-500">
+                            <i class="fa-solid fa-dumbbell"></i>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-4 rounded-2xl flex items-center justify-between border-l-4 border-l-brand-cyan">
+                        <div class="space-y-1">
+                            <p class="text-[10px] text-gray-400 font-semibold uppercase">Daily Goal 3</p>
+                            <p class="font-display font-bold text-sm text-white">5-Min Face-Down Lock</p>
+                            <p class="text-xs text-gray-400" id="goal-3-status">Pending</p>
+                        </div>
+                        <div id="goal-3-badge" class="w-9 h-9 rounded-full bg-brand-border flex items-center justify-center text-gray-500">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Pivots History -->
+                <div class="glass-panel p-6 rounded-3xl space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-display font-bold text-lg text-white flex items-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left text-brand-green"></i>
+                            Recent Pivots Log
+                        </h3>
+                        <span class="text-xs text-gray-400" id="pivot-count-label">0 total pivots recorded</span>
+                    </div>
+
+                    <div id="recent-pivots-list" class="space-y-3">
+                        <div class="text-center py-8 text-gray-500 text-sm">
+                            No pivots logged yet today. Click <strong class="text-brand-green">PIVOT NOW</strong> when you feel the urge to scroll!
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: CAMERA VERIFICATION TEST LAB -->
+            <section id="tab-camera" class="tab-content hidden space-y-6">
+                <div class="glass-panel border-2 border-brand-green/40 rounded-3xl p-6 text-center space-y-6 shadow-2xl">
+                    <div class="inline-flex items-center gap-1.5 bg-brand-green/20 text-brand-green font-extrabold text-xs px-4 py-1.5 rounded-full uppercase tracking-wider">
+                        <i class="fa-solid fa-camera mr-1"></i> AI Pixel Motion & Darkness Lab
+                    </div>
+
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white">Live Camera Verification Lab</h2>
+                    <p class="text-gray-300 text-xs sm:text-sm max-w-md mx-auto">
+                        Test your device's camera stream to see real-time HTML5 canvas motion differencing and darkness detection.
+                    </p>
+
+                    <div class="relative aspect-video max-w-md mx-auto bg-black rounded-2xl overflow-hidden border-2 border-brand-border flex items-center justify-center shadow-inner">
+                        <video id="lab-video" autoplay playsinline muted class="w-full h-full object-cover hidden"></video>
+                        <canvas id="lab-canvas" class="hidden"></canvas>
+
+                        <div id="lab-cam-placeholder" class="text-center p-6 space-y-3">
+                            <i class="fa-solid fa-video text-4xl text-brand-green animate-pulse"></i>
+                            <p class="text-xs text-gray-300">Test camera motion differencing & darkness sensing</p>
+                            <button onclick="initCameraStream('lab-video')" class="bg-brand-green text-black font-extrabold px-5 py-2.5 rounded-xl text-xs shadow-3d-green btn-3d uppercase">
+                                Activate Camera Test
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 max-w-md mx-auto text-left">
+                        <div class="bg-brand-black/80 p-4 rounded-2xl border border-brand-border">
+                            <span class="text-xs text-gray-400 font-bold block">Motion Intensity</span>
+                            <span id="lab-motion-val" class="text-2xl font-black text-brand-green">0%</span>
+                        </div>
+                        <div class="bg-brand-black/80 p-4 rounded-2xl border border-brand-border">
+                            <span class="text-xs text-gray-400 font-bold block">Darkness Level</span>
+                            <span id="lab-darkness-val" class="text-2xl font-black text-brand-cyan">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: FACE DOWN LOCK -->
+            <section id="tab-lock" class="tab-content hidden space-y-6">
+                <div class="glass-panel border border-brand-cyan/40 rounded-3xl p-6 text-center space-y-6 shadow-2xl relative overflow-hidden">
+                    <div class="inline-block bg-brand-cyan/20 text-brand-cyan font-extrabold text-xs px-4 py-1.5 rounded-full uppercase tracking-wider">
+                        <i class="fa-solid fa-eye-slash mr-1"></i> Camera Darkness Shield
+                    </div>
+
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white">Face-Down Screen Lock</h2>
+                    <p class="text-gray-300 text-xs sm:text-sm max-w-md mx-auto">
+                        Place your phone screen down on your table or desk. NoxRest checks front camera darkness so you stay focused without checking social apps!
+                    </p>
+
+                    <!-- Lock Status Box -->
+                    <div class="bg-brand-black/80 p-6 rounded-3xl border border-brand-border space-y-4 max-w-sm mx-auto">
+                        <div id="lock-icon-box" class="w-20 h-20 bg-brand-card text-gray-500 rounded-2xl flex items-center justify-center text-4xl mx-auto border border-brand-border">
+                            <i class="fa-solid fa-mobile-screen-button"></i>
+                        </div>
+                        <div>
+                            <h3 id="lock-status-title" class="font-bold text-white text-base">Ready for Face-Down Lock</h3>
+                            <p id="lock-status-sub" class="text-xs text-gray-400 mt-1">Lay phone flat or cover front camera</p>
+                        </div>
+                        <div class="text-3xl font-display font-black text-brand-cyan tracking-widest" id="lock-timer-text">
+                            05:00
+                        </div>
+                    </div>
+
+                    <button id="facedown-lock-btn" onclick="startFaceDownLockSession()" class="w-full max-w-xs bg-brand-green text-black py-4 px-6 rounded-2xl font-black text-lg shadow-3d-green btn-3d uppercase">
+                        <i class="fa-solid fa-shield-halved mr-2"></i> Start Focus Block
+                    </button>
+                </div>
+            </section>
+
+            <!-- TAB 5: BOREDOM BUSTER SPINNER -->
+            <section id="tab-boredom" class="tab-content hidden space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="font-display font-black text-2xl text-white">Boredom Buster Spinner</h2>
+                        <p class="text-xs text-gray-400">Spin for instant offline activities to replace cheap phone dopamine.</p>
+                    </div>
+
+                    <!-- Category Filters -->
+                    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+                        <button onclick="filterQuests('all')" class="quest-filter active px-3 py-1.5 rounded-xl text-xs font-bold bg-brand-green text-black">All</button>
+                        <button onclick="filterQuests('physical')" class="quest-filter px-3 py-1.5 rounded-xl text-xs font-bold bg-brand-card border border-brand-border text-gray-300">💪 Physical</button>
+                        <button onclick="filterQuests('creative')" class="quest-filter px-3 py-1.5 rounded-xl text-xs font-bold bg-brand-card border border-brand-border text-gray-300">🎨 Creative</button>
+                        <button onclick="filterQuests('zen')" class="quest-filter px-3 py-1.5 rounded-xl text-xs font-bold bg-brand-card border border-brand-border text-gray-300">🧘 Mindful</button>
+                    </div>
+                </div>
+
+                <!-- Spinner Wheel Card -->
+                <div class="glass-panel p-6 rounded-3xl text-center space-y-6">
+                    <div id="spinner-display-box" class="p-8 rounded-2xl bg-brand-black/80 border-2 border-brand-green/30 space-y-3">
+                        <span id="spinner-cat-badge" class="text-[10px] font-bold uppercase tracking-widest text-brand-green px-3 py-1 bg-brand-green/10 rounded-full">Randomizer</span>
+                        <h3 id="spinner-title" class="font-display font-black text-2xl text-white">Click Spin for an Offline Quest!</h3>
+                        <p id="spinner-desc" class="text-xs text-gray-400">Generate a random healthy habit spark right now.</p>
+                    </div>
+
+                    <button onclick="spinBoredomWheel()" id="spin-btn" class="bg-gradient-to-r from-brand-yellow to-brand-orange text-black font-display font-black text-lg px-8 py-4 rounded-2xl shadow-3d-orange btn-3d uppercase">
+                        <i class="fa-solid fa-dice-five mr-2"></i> SPIN BOREDOM WHEEL
+                    </button>
+                </div>
+
+                <!-- Quests Grid -->
+                <div id="quests-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Dynamically populated -->
+                </div>
+            </section>
+
+            <!-- TAB 6: CUSTOMIZER & WARDROBE -->
+            <section id="tab-wardrobe" class="tab-content hidden space-y-6">
+                <div class="text-center space-y-2">
+                    <div class="inline-flex items-center gap-1.5 bg-brand-purple/20 text-brand-purple font-extrabold text-xs px-3 py-1 rounded-full uppercase tracking-wider">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Nox Studio
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-bold text-white">Mascot Wardrobe & Gear</h2>
+                    <p class="text-gray-300 text-xs sm:text-sm">Spend Gems earned from pivots to unlock hats, eyewear, outfits & skin colors!</p>
+                </div>
+
+                <!-- Mascot Preview Stage -->
+                <div class="glass-panel p-6 rounded-3xl border-2 border-brand-border flex flex-col items-center justify-center relative shadow-xl min-h-[220px]">
+                    <div class="w-44 h-44 relative">
+                        <div class="absolute inset-0 bg-brand-purple/20 rounded-full blur-2xl"></div>
+                        <div id="shop-mascot-preview" class="w-full h-full relative z-10 transition-transform hover:scale-105 duration-300">
+                            <!-- SVG Mascot rendered via JS -->
+                        </div>
+                    </div>
+                    <!-- Gems counter pill -->
+                    <div class="mt-2 bg-brand-black/90 px-4 py-1.5 rounded-full border border-brand-border text-brand-yellow font-extrabold text-xs flex items-center gap-2">
+                        <i class="fa-solid fa-gem"></i>
+                        <span id="shop-gems-display">180</span> Gems Available
+                    </div>
+                </div>
+
+                <!-- Category selector tabs -->
+                <div class="flex border-b border-brand-border gap-2 overflow-x-auto pb-2 scrollbar-none">
+                    <button onclick="switchShopCategory('hats')" id="shop-cat-hats" class="shop-cat-btn px-4 py-2 rounded-xl font-bold text-xs bg-brand-purple text-white shadow-3d-purple transition-all shrink-0">
+                        <i class="fa-solid fa-hat-wizard mr-1.5"></i> Hats
+                    </button>
+                    <button onclick="switchShopCategory('glasses')" id="shop-cat-glasses" class="shop-cat-btn px-4 py-2 rounded-xl font-bold text-xs bg-brand-card text-gray-400 hover:bg-brand-cardHover transition-all shrink-0">
+                        <i class="fa-solid fa-glasses mr-1.5"></i> Eyewear
+                    </button>
+                    <button onclick="switchShopCategory('outfits')" id="shop-cat-outfits" class="shop-cat-btn px-4 py-2 rounded-xl font-bold text-xs bg-brand-card text-gray-400 hover:bg-brand-cardHover transition-all shrink-0">
+                        <i class="fa-solid fa-shirt mr-1.5"></i> Outfits
+                    </button>
+                    <button onclick="switchShopCategory('skins')" id="shop-cat-skins" class="shop-cat-btn px-4 py-2 rounded-xl font-bold text-xs bg-brand-card text-gray-400 hover:bg-brand-cardHover transition-all shrink-0">
+                        <i class="fa-solid fa-palette mr-1.5"></i> Skins
+                    </button>
+                </div>
+
+                <!-- Shop Items Grid -->
+                <div id="shop-items-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <!-- Dynamic shop item cards -->
+                </div>
+            </section>
+
+            <!-- TAB 7: TRIGGER ANALYTICS -->
+            <section id="tab-analytics" class="tab-content hidden space-y-6">
+                <div>
+                    <h2 class="font-display font-black text-2xl text-white">Trigger Psychology Analytics</h2>
+                    <p class="text-xs text-gray-400">Discover what emotional triggers prompt phone pick-ups.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="glass-panel p-6 rounded-3xl space-y-4">
+                        <h3 class="font-display font-bold text-base text-white flex items-center gap-2">
+                            <i class="fa-solid fa-chart-pie text-brand-purple"></i>
+                            Craving Trigger Breakdown
+                        </h3>
+                        <div class="h-60 relative flex items-center justify-center">
+                            <canvas id="triggerChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-3xl space-y-4">
+                        <h3 class="font-display font-bold text-base text-white flex items-center gap-2">
+                            <i class="fa-solid fa-chart-line text-brand-green"></i>
+                            Weekly Pivots Trend
+                        </h3>
+                        <div class="h-60 relative flex items-center justify-center">
+                            <canvas id="weeklyChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 8: REWARDS & SHOP -->
+            <section id="tab-rewards" class="tab-content hidden space-y-8">
+                <div>
+                    <h2 class="font-display font-black text-2xl text-white">Level Rank & Custom Reward Shop</h2>
+                    <p class="text-xs text-gray-400">Trade earned XP and Gems for real-life treats.</p>
+                </div>
+
+                <!-- Custom Personal Reward Shop -->
+                <div class="glass-panel p-6 rounded-3xl space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-display font-bold text-lg text-white flex items-center gap-2">
+                                <i class="fa-solid fa-gift text-brand-green"></i>
+                                Real-Life Custom Rewards
+                            </h3>
+                            <p class="text-xs text-gray-400">Treat yourself when you hit milestones.</p>
+                        </div>
+                        <button onclick="openAddRewardModal()" class="px-3 py-1.5 rounded-xl bg-brand-green/20 text-brand-green border border-brand-green/30 text-xs font-bold hover:bg-brand-green hover:text-black transition-all">
+                            + Custom Reward
+                        </button>
+                    </div>
+
+                    <div id="rewards-shop-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Dynamic -->
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- CRAVING DECODER OVERLAY MODAL -->
+    <div id="modal-decoder" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-panel w-full max-w-xl p-6 sm:p-8 rounded-3xl border border-brand-green/40 relative shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+            <button onclick="closeCravingDecoder()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg w-8 h-8 rounded-full bg-brand-card flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Step 1: Identify Emotion/Trigger -->
+            <div id="decoder-step-1" class="space-y-6">
+                <div class="text-center space-y-2">
+                    <span class="text-xs font-bold uppercase tracking-widest text-brand-green px-3 py-1 bg-brand-green/10 rounded-full">Step 1: Craving Check-In</span>
+                    <h2 class="font-display font-black text-2xl text-white">What urged you to pick up your phone?</h2>
+                    <p class="text-xs text-gray-400">Identifying your emotion breaks the subconscious habit loop.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button onclick="selectCraving('boredom')" class="p-4 rounded-2xl bg-brand-card border border-brand-border hover:border-brand-green text-left flex items-center gap-3 group transition-all">
+                        <span class="text-2xl group-hover:scale-125 transition-transform">🥱</span>
+                        <div>
+                            <p class="font-display font-bold text-sm text-white">Boredom / Monotony</p>
+                            <p class="text-[11px] text-gray-400">Seeking novel stimulation</p>
+                        </div>
+                    </button>
+
+                    <button onclick="selectCraving('procrastination')" class="p-4 rounded-2xl bg-brand-card border border-brand-border hover:border-brand-purple text-left flex items-center gap-3 group transition-all">
+                        <span class="text-2xl group-hover:scale-125 transition-transform">🧠</span>
+                        <div>
+                            <p class="font-display font-bold text-sm text-white">Avoiding Hard Work</p>
+                            <p class="text-[11px] text-gray-400">Fleeing cognitive load</p>
+                        </div>
+                    </button>
+
+                    <button onclick="selectCraving('stress')" class="p-4 rounded-2xl bg-brand-card border border-brand-border hover:border-brand-orange text-left flex items-center gap-3 group transition-all">
+                        <span class="text-2xl group-hover:scale-125 transition-transform">😮‍💨</span>
+                        <div>
+                            <p class="font-display font-bold text-sm text-white">Stressed / Anxious</p>
+                            <p class="text-[11px] text-gray-400">Seeking comfort numbing</p>
+                        </div>
+                    </button>
+
+                    <button onclick="selectCraving('lonely')" class="p-4 rounded-2xl bg-brand-card border border-brand-border hover:border-brand-cyan text-left flex items-center gap-3 group transition-all">
+                        <span class="text-2xl group-hover:scale-125 transition-transform">💬</span>
+                        <div>
+                            <p class="font-display font-bold text-sm text-white">Lonely / FOMO</p>
+                            <p class="text-[11px] text-gray-400">Craving social connection</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Decoded Swap Actions -->
+            <div id="decoder-step-2" class="space-y-6 hidden">
+                <div class="text-center space-y-2">
+                    <span id="decoded-badge" class="text-xs font-bold uppercase tracking-widest text-brand-cyan px-3 py-1 bg-brand-cyan/10 rounded-full">Craving Decoded</span>
+                    <h2 id="decoded-title" class="font-display font-black text-2xl text-white">You don't want cheap scrolling...</h2>
+                    <p id="decoded-desc" class="text-xs sm:text-sm text-gray-300">Your brain actually wants a fast physical movement spark!</p>
+                </div>
+
+                <div class="space-y-3">
+                    <p class="text-[11px] uppercase font-bold text-gray-400 tracking-wider">Select a 60-Second Real-World Swap:</p>
+                    <div id="suggested-swaps" class="space-y-3">
+                        <!-- Dynamic options -->
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-2">
+                    <button onclick="resetDecoderStep()" class="text-xs text-gray-400 hover:text-white flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-left"></i> Change Trigger
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI CAMERA QUEST TIMER MODAL -->
+    <div id="modal-timer" class="fixed inset-0 bg-black/95 backdrop-blur-lg z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-panel w-full max-w-md p-6 sm:p-8 rounded-3xl border border-brand-green/50 text-center space-y-5 shadow-2xl relative">
+            <button onclick="closeTimerModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <span id="active-quest-category" class="text-xs font-bold uppercase tracking-widest text-brand-green px-3 py-1 bg-brand-green/10 rounded-full">AI Camera Quest</span>
+            <h3 id="active-quest-title" class="font-display font-black text-2xl text-white">15 Fast Jumping Jacks</h3>
+            <p id="active-quest-desc" class="text-xs text-gray-300">Get blood pumping into your body right now.</p>
+
+            <!-- Live Camera Feed Box -->
+            <div class="relative aspect-video w-full bg-black rounded-2xl overflow-hidden border border-brand-border flex items-center justify-center">
+                <video id="quest-video" autoplay playsinline muted class="w-full h-full object-cover hidden"></video>
+                <canvas id="quest-canvas" class="hidden"></canvas>
+
+                <div id="quest-cam-placeholder" class="text-center p-4 space-y-2">
+                    <i class="fa-solid fa-camera text-3xl text-brand-green"></i>
+                    <p class="text-[11px] text-gray-300">Optional AI Camera Motion Verification</p>
+                    <button onclick="initCameraStream('quest-video')" class="bg-brand-green text-black font-bold px-4 py-1.5 rounded-xl text-xs">
+                        Enable Camera
+                    </button>
+                </div>
+
+                <!-- Motion Status Pill Overlay -->
+                <div id="quest-motion-pill" class="absolute top-3 left-3 bg-black/80 px-3 py-1 rounded-full text-[10px] font-bold text-brand-green border border-brand-green/30 hidden">
+                    Motion: <span id="quest-motion-val">0%</span>
+                </div>
+            </div>
+
+            <!-- Countdown Display -->
+            <div class="relative w-36 h-36 mx-auto flex items-center justify-center my-2">
+                <div class="absolute inset-0 rounded-full border-4 border-brand-border"></div>
+                <div class="absolute inset-0 rounded-full border-4 border-brand-green animate-ring-pulse"></div>
+                <span id="timer-display" class="font-display font-black text-4xl text-white">60s</span>
+            </div>
+
+            <div class="space-y-2">
+                <button id="timer-start-btn" onclick="toggleQuestTimer()" class="w-full bg-brand-green text-black font-display font-black text-lg py-3 rounded-2xl shadow-3d-green btn-3d uppercase">
+                    START QUEST
+                </button>
+                <button onclick="completeCurrentQuest()" class="w-full bg-brand-card border border-brand-border text-gray-300 font-bold py-2.5 rounded-2xl text-xs hover:text-white">
+                    I Completed This! (+50 XP, +15 Gems)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD REWARD MODAL -->
+    <div id="modal-add-reward" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-panel w-full max-w-md p-6 rounded-3xl border border-brand-border space-y-4">
+            <h3 class="font-display font-bold text-lg text-white">Add Personal Reward</h3>
+            <div class="space-y-3">
+                <input id="reward-name-input" type="text" placeholder="e.g. 20 Mins Video Games, Iced Matcha" class="w-full bg-brand-black border border-brand-border rounded-xl p-3 text-sm text-white focus:outline-none focus:border-brand-green">
+                <input id="reward-cost-input" type="number" placeholder="Cost in Gems (e.g. 100)" class="w-full bg-brand-black border border-brand-border rounded-xl p-3 text-sm text-white focus:outline-none focus:border-brand-green">
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeAddRewardModal()" class="px-4 py-2 rounded-xl bg-brand-card text-xs text-gray-400">Cancel</button>
+                <button onclick="saveCustomReward()" class="px-4 py-2 rounded-xl bg-brand-green text-black font-bold text-xs">Save Reward</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* APP DATA STATE MANAGEMENT */
+        const state = {
+            streak: 3,
+            xp: 45,
+            gems: 180,
+            level: 1,
+            pivots: [],
+            triggersCount: { boredom: 4, procrastination: 3, stress: 2, lonely: 1 },
+            equipped: {
+                hat: 'none',
+                glasses: 'none',
+                outfit: 'default',
+                skin: '#00ff87'
+            },
+            inventory: ['hat_none', 'glasses_none', 'outfit_default', 'skin_#00ff87'],
+            customRewards: [
+                { id: 1, name: "30 Mins Gaming", cost: 120, claimed: false },
+                { id: 2, name: "Special Coffee Treat", cost: 80, claimed: false }
+            ],
+            completedNodes: [1, 2]
+        };
+
+        /* DUOLINGO QUEST PATH UNITS DATA */
+        const pathUnits = [
+            {
+                unitNum: 1,
+                title: "Unit 1: Dopamine Detox Basics",
+                color: "brand-green",
+                nodes: [
+                    { id: 1, title: "15 Jumping Jacks", type: "physical", duration: 60, xp: 30, gems: 10, icon: "fa-dumbbell" },
+                    { id: 2, title: "Deep Breathing Reset", type: "zen", duration: 60, xp: 30, gems: 10, icon: "fa-wind" },
+                    { id: 3, title: "Wall Sit Challenge", type: "physical", duration: 45, xp: 40, gems: 15, icon: "fa-fire" },
+                    { id: 4, title: "Face-Down Screen Lock", type: "lock", duration: 180, xp: 50, gems: 20, icon: "fa-shield-halved" }
+                ]
+            },
+            {
+                unitNum: 2,
+                title: "Unit 2: Habit Rewire Mastery",
+                color: "brand-purple",
+                nodes: [
+                    { id: 5, title: "20 Pushups / Squats", type: "physical", duration: 60, xp: 50, gems: 20, icon: "fa-bolt" },
+                    { id: 6, title: "Cold Water Face Splash", type: "physical", duration: 30, xp: 40, gems: 15, icon: "fa-droplet" },
+                    { id: 7, title: "Sketch a Quick Doodle", type: "creative", duration: 120, xp: 50, gems: 20, icon: "fa-pencil" },
+                    { id: 8, title: "10-Min Deep Focus", type: "lock", duration: 300, xp: 80, gems: 35, icon: "fa-crown" }
+                ]
+            }
+        ];
+
+        /* WARDROBE SHOP ITEMS */
+        const shopItems = {
+            hats: [
+                { id: 'hat_none', name: 'No Hat', cost: 0, icon: 'fa-ban' },
+                { id: 'hat_crown', name: 'Golden Crown', cost: 100, icon: 'fa-crown' },
+                { id: 'hat_wizard', name: 'Wizard Cap', cost: 150, icon: 'fa-hat-wizard' },
+                { id: 'hat_cap', name: 'Athletic Cap', cost: 80, icon: 'fa-graduation-cap' }
+            ],
+            glasses: [
+                { id: 'glasses_none', name: 'No Eyewear', cost: 0, icon: 'fa-ban' },
+                { id: 'glasses_shades', name: 'Cool Shades', cost: 75, icon: 'fa-glasses' },
+                { id: 'glasses_vr', name: 'VR Headset', cost: 150, icon: 'fa-headset' }
+            ],
+            outfits: [
+                { id: 'outfit_default', name: 'Classic Suit', cost: 0, icon: 'fa-user-ninja' },
+                { id: 'outfit_armor', name: 'Cyber Armor', cost: 200, icon: 'fa-shield-cat' }
+            ],
+            skins: [
+                { id: 'skin_#00ff87', name: 'Neon Emerald', cost: 0, color: '#00ff87' },
+                { id: 'skin_#00e5ff', name: 'Electric Cyan', cost: 50, color: '#00e5ff' },
+                { id: 'skin_#a855f7', name: 'Vivid Purple', cost: 50, color: '#a855f7' },
+                { id: 'skin_#ff6b35', name: 'Dopamine Orange', cost: 50, color: '#ff6b35' }
+            ]
+        };
+
+        /* BOREDOM BUSTER QUEST LIST */
+        const boredomQuests = [
+            { title: "20 Standing Squats", cat: "physical", desc: "Get oxygen flowing back into your brain." },
+            { title: "Draw a Fast Cartoon", cat: "creative", desc: "Engage your creative prefrontal cortex." },
+            { title: "Box Breathing 4-4-4", cat: "zen", desc: "Lower cortisol and reduce urge intensity." },
+            { title: "Clean Desk Speedrun", cat: "physical", desc: "Tidy 3 items in your room right now." },
+            { title: "Drink Full Glass of Water", cat: "physical", desc: "Rehydrate your nervous system." }
+        ];
+
+        /* AUDIO SYNTHESIZER (Web Audio API) */
+        function playChime(freq = 587.33, duration = 0.2) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch(e) {}
+        }
+
+        /* DYNAMIC SVG MASCOT GENERATOR */
+        function renderMascotSVG(skinColor = state.equipped.skin, hat = state.equipped.hat, glasses = state.equipped.glasses) {
+            let hatSVG = '';
+            if (hat === 'hat_crown') {
+                hatSVG = `<polygon points="25,30 32,12 40,24 50,8 60,24 68,12 75,30" fill="#ffc800" stroke="#e5b200" stroke-width="2"/>`;
+            } else if (hat === 'hat_wizard') {
+                hatSVG = `<path d="M20,32 L50,2 L80,32 Z" fill="#a855f7"/><ellipse cx="50" cy="32" rx="35" ry="6" fill="#8b5cf6"/>`;
+            } else if (hat === 'hat_cap') {
+                hatSVG = `<path d="M25,32 Q50,15 75,32 Z" fill="#00e5ff"/><rect x="20" y="30" width="40" height="5" rx="2" fill="#00b8cc"/>`;
+            }
+
+            let glassesSVG = '';
+            if (glasses === 'glasses_shades') {
+                glassesSVG = `<rect x="25" y="42" width="22" height="12" rx="3" fill="#000"/><rect x="53" y="42" width="22" height="12" rx="3" fill="#000"/><line x1="47" y1="46" x2="53" y2="46" stroke="#000" stroke-width="3"/>`;
+            } else if (glasses === 'glasses_vr') {
+                glassesSVG = `<rect x="22" y="38" width="56" height="20" rx="6" fill="#121620" stroke="#00ff87" stroke-width="2"/><circle cx="38" cy="48" r="4" fill="#00e5ff"/><circle cx="62" cy="48" r="4" fill="#00e5ff"/>`;
+            }
+
+            return `
+            <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-md">
+                <!-- Guardian Body -->
+                <circle cx="50" cy="55" r="32" fill="${skinColor}" />
+                <circle cx="50" cy="55" r="32" fill="url(#grad)" opacity="0.2" />
+                
+                <!-- Eyes -->
+                <circle cx="38" cy="48" r="5" fill="#080a0c" />
+                <circle cx="62" cy="48" r="5" fill="#080a0c" />
+                <circle cx="40" cy="46" r="1.8" fill="#ffffff" />
+                <circle cx="64" cy="46" r="1.8" fill="#ffffff" />
+                
+                <!-- Smile -->
+                <path d="M 42 62 Q 50 69 58 62" stroke="#080a0c" stroke-width="3" stroke-linecap="round" fill="none" />
+                
+                <!-- Accessories Overlays -->
+                ${hatSVG}
+                ${glassesSVG}
+            </svg>`;
+        }
+
+        function updateAllMascotPreviews() {
+            const svg = renderMascotSVG();
+            const p1 = document.getElementById('path-mascot-preview');
+            const p2 = document.getElementById('shop-mascot-preview');
+            if (p1) p1.innerHTML = svg;
+            if (p2) p2.innerHTML = svg;
+        }
+
+        function switchTab(tabId) {
+            playChime(600, 0.1);
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-brand-card', 'text-brand-green', 'border', 'border-brand-green/30', 'shadow-3d-green');
+                btn.classList.add('text-gray-400');
+            });
+
+            const activeTab = document.getElementById(`tab-${tabId}`);
+            if (activeTab) activeTab.classList.remove('hidden');
+
+            const sideNav = document.getElementById(`side-nav-${tabId}`);
+            if (sideNav) {
+                sideNav.classList.remove('text-gray-400');
+                sideNav.classList.add('bg-brand-card', 'text-brand-green', 'border', 'border-brand-green/30', 'shadow-3d-green');
+            }
+
+            if (tabId === 'analytics') renderAnalyticsCharts();
+            if (tabId === 'wardrobe') renderShopGrid('hats');
+        }
+
+        function renderQuestPath() {
+            const container = document.getElementById('duolingo-path-container');
+            if (!container) return;
+
+            let html = '';
+            pathUnits.forEach(unit => {
+                html += `
+                <div class="space-y-4">
+                    <div class="bg-brand-card p-4 rounded-2xl border border-brand-border flex items-center justify-between">
+                        <h3 class="font-display font-black text-base text-white flex items-center gap-2">
+                            <i class="fa-solid fa-flag-checkered text-brand-green"></i> ${unit.title}
+                        </h3>
+                        <span class="text-xs bg-brand-green/10 text-brand-green px-3 py-1 rounded-full font-bold">Unit ${unit.unitNum}</span>
+                    </div>
+
+                    <div class="flex flex-col items-center space-y-6 py-2">`;
+
+                unit.nodes.forEach((node, idx) => {
+                    const isCompleted = state.completedNodes.includes(node.id);
+                    const isUnlocked = idx === 0 || state.completedNodes.includes(unit.nodes[idx - 1].id);
+                    
+                    // Zig-zag offset styling for Duolingo path
+                    const offsets = ['translate-x-0', 'translate-x-8', 'translate-x-0', '-translate-x-8'];
+                    const offsetClass = offsets[idx % offsets.length];
+
+                    let nodeStyle = 'bg-brand-card text-gray-500 border-brand-border';
+                    if (isCompleted) nodeStyle = 'bg-brand-green text-black border-brand-green shadow-3d-green';
+                    else if (isUnlocked) nodeStyle = 'bg-gradient-to-tr from-brand-cyan to-brand-green text-black border-brand-green shadow-glow-green animate-pulse';
+
+                    html += `
+                        <div class="flex flex-col items-center ${offsetClass}">
+                            <button onclick="startQuestNode(${node.id})" ${!isUnlocked ? 'disabled' : ''} class="w-16 h-16 rounded-full border-4 ${nodeStyle} flex items-center justify-center text-xl font-black transition-all transform hover:scale-110 active:scale-95 relative">
+                                <i class="fa-solid ${node.icon}"></i>
+                                ${isCompleted ? '<div class="absolute -top-1 -right-1 bg-black text-brand-green rounded-full w-5 h-5 text-[10px] flex items-center justify-center"><i class="fa-solid fa-check"></i></div>' : ''}
+                            </button>
+                            <span class="text-[11px] font-bold text-gray-300 mt-2 text-center max-w-[120px] leading-tight">${node.title}</span>
+                            <span class="text-[10px] text-brand-green font-semibold">+${node.xp} XP</span>
+                        </div>`;
+                });
+
+                html += `</div></div>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function openCravingDecoder() {
+            playChime(700, 0.15);
+            document.getElementById('modal-decoder').classList.remove('hidden');
+            resetDecoderStep();
+        }
+
+        function closeCravingDecoder() {
+            document.getElementById('modal-decoder').classList.add('hidden');
+        }
+
+        function resetDecoderStep() {
+            document.getElementById('decoder-step-1').classList.remove('hidden');
+            document.getElementById('decoder-step-2').classList.add('hidden');
+        }
+
+        function selectCraving(type) {
+            playChime(800, 0.15);
+            state.triggersCount[type] = (state.triggersCount[type] || 0) + 1;
+
+            document.getElementById('decoder-step-1').classList.add('hidden');
+            document.getElementById('decoder-step-2').classList.remove('hidden');
+
+            const swapsBox = document.getElementById('suggested-swaps');
+            swapsBox.innerHTML = `
+                <button onclick="triggerSwapAction('15 Jumping Jacks', 60)" class="w-full p-4 rounded-2xl bg-brand-card border border-brand-border hover:border-brand-green text-left flex items-center justify-between group transition-all">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl">🏃</span>
+                        <div>
+                            <p class="font-bold text-sm text-white">15 Fast Jumping Jacks</p>
+                            <p class="text-[11px] text-gray-400">AI Motion Camera Verification</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold text-brand-green bg-brand-green/10 px-3 py-1 rounded-full">+50 XP</span>
+                </button>
+
+                <button onclick="triggerSwapAction('Box Breathing', 60)" class="w-full p-4 rounded-2xl bg-brand-card border border-brand-border hover:border-brand-cyan text-left flex items-center justify-between group transition-all">
+                    <div class="flex items-center gap-3">
+                        <span class="text-xl">🧘</span>
+                        <div>
+                            <p class="font-bold text-sm text-white">60s Mindful Reset</p>
+                            <p class="text-[11px] text-gray-400">Box breathing 4-4-4</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold text-brand-cyan bg-brand-cyan/10 px-3 py-1 rounded-full">+40 XP</span>
+                </button>`;
+        }
+
+        function triggerSwapAction(title, duration) {
+            closeCravingDecoder();
+            openTimerModal(title, "Quick Dopamine Pivot Swap", duration);
+        }
+
+        let activeTimer = null;
+        let timerSeconds = 60;
+        let videoStream = null;
+
+        function openTimerModal(title, desc, duration) {
+            document.getElementById('active-quest-title').innerText = title;
+            document.getElementById('active-quest-desc').innerText = desc;
+            timerSeconds = duration;
+            document.getElementById('timer-display').innerText = `${timerSeconds}s`;
+            document.getElementById('modal-timer').classList.remove('hidden');
+        }
+
+        function closeTimerModal() {
+            if (activeTimer) clearInterval(activeTimer);
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+                videoStream = null;
+            }
+            document.getElementById('modal-timer').classList.add('hidden');
+        }
+
+        function toggleQuestTimer() {
+            const btn = document.getElementById('timer-start-btn');
+            if (activeTimer) {
+                clearInterval(activeTimer);
+                activeTimer = null;
+                btn.innerText = "RESUME QUEST";
+                return;
+            }
+
+            btn.innerText = "PAUSE";
+            activeTimer = setInterval(() => {
+                timerSeconds--;
+                document.getElementById('timer-display').innerText = `${timerSeconds}s`;
+                if (timerSeconds <= 0) {
+                    clearInterval(activeTimer);
+                    completeCurrentQuest();
+                }
+            }, 1000);
+        }
+
+        function completeCurrentQuest() {
+            playChime(1000, 0.3);
+            state.xp += 50;
+            state.gems += 15;
+            state.pivots.unshift({
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                title: document.getElementById('active-quest-title').innerText
+            });
+
+            closeTimerModal();
+            updateHeaderStats();
+            renderRecentPivots();
+        }
+
+        /* HTML5 CAMERA MOTION & DARKNESS SENSING LOGIC */
+        async function initCameraStream(videoId) {
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+                const videoEl = document.getElementById(videoId);
+                if (videoEl) {
+                    videoEl.srcObject = videoStream;
+                    videoEl.classList.remove('hidden');
+                    const ph = document.getElementById('lab-cam-placeholder') || document.getElementById('quest-cam-placeholder');
+                    if (ph) ph.classList.add('hidden');
+
+                    startCameraAnalysis(videoEl);
+                }
+            } catch(e) {
+                alert("Camera permission not available. You can still complete quests with manual timer!");
+            }
+        }
+
+        function startCameraAnalysis(videoEl) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            let prevData = null;
+
+            setInterval(() => {
+                if (!videoEl || videoEl.paused || videoEl.ended) return;
+                canvas.width = 80;
+                canvas.height = 60;
+                ctx.drawImage(videoEl, 0, 0, 80, 60);
+
+                const currentData = ctx.getImageData(0, 0, 80, 60).data;
+                if (prevData) {
+                    let diff = 0;
+                    let totalLuma = 0;
+                    for (let i = 0; i < currentData.length; i += 4) {
+                        const luma = 0.299 * currentData[i] + 0.587 * currentData[i+1] + 0.114 * currentData[i+2];
+                        totalLuma += luma;
+                        diff += Math.abs(currentData[i] - prevData[i]);
+                    }
+
+                    const motion = Math.min(100, Math.round((diff / (80 * 60 * 3)) * 4));
+                    const darkness = Math.min(100, Math.round(100 - (totalLuma / (80 * 60 * 255)) * 100));
+
+                    const labMotion = document.getElementById('lab-motion-val');
+                    const labDarkness = document.getElementById('lab-darkness-val');
+                    if (labMotion) labMotion.innerText = `${motion}%`;
+                    if (labDarkness) labDarkness.innerText = `${darkness}%`;
+
+                    const questMotion = document.getElementById('quest-motion-val');
+                    if (questMotion) questMotion.innerText = `${motion}%`;
+                }
+                prevData = currentData;
+            }, 200);
+        }
+
+        let lockTimerInt = null;
+        let lockSeconds = 300;
+
+        function startFaceDownLockSession() {
+            playChime(650, 0.2);
+            const btn = document.getElementById('facedown-lock-btn');
+            btn.innerText = "Shield Active...";
+            btn.disabled = true;
+
+            lockTimerInt = setInterval(() => {
+                lockSeconds--;
+                const mins = Math.floor(lockSeconds / 60);
+                const secs = lockSeconds % 60;
+                document.getElementById('lock-timer-text').innerText = `${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+
+                if (lockSeconds <= 0) {
+                    clearInterval(lockTimerInt);
+                    playChime(1200, 0.4);
+                    state.xp += 80;
+                    state.gems += 30;
+                    updateHeaderStats();
+                    alert("Focus Lock Completed! Earned +80 XP & +30 Gems!");
+                }
+            }, 1000);
+        }
+
+        function spinBoredomWheel() {
+            playChime(900, 0.1);
+            const rand = boredomQuests[Math.floor(Math.random() * boredomQuests.length)];
+            document.getElementById('spinner-title').innerText = rand.title;
+            document.getElementById('spinner-desc').innerText = rand.desc;
+            document.getElementById('spinner-cat-badge').innerText = rand.cat.toUpperCase();
+        }
+
+        function filterQuests(cat) {
+            document.querySelectorAll('.quest-filter').forEach(btn => {
+                btn.classList.remove('bg-brand-green', 'text-black');
+                btn.classList.add('bg-brand-card', 'text-gray-300');
+            });
+            event.target.classList.add('bg-brand-green', 'text-black');
+        }
+
+        function renderShopGrid(cat) {
+            const grid = document.getElementById('shop-items-grid');
+            if (!grid) return;
+
+            const items = shopItems[cat] || [];
+            let html = '';
+            items.forEach(item => {
+                const isEquipped = state.equipped[cat === 'skins' ? 'skin' : cat.slice(0, -1)] === item.id || state.equipped.skin === item.color;
+
+                html += `
+                <div class="glass-panel p-4 rounded-2xl flex flex-col items-center justify-between text-center space-y-3">
+                    <div class="w-12 h-12 rounded-xl bg-brand-black flex items-center justify-center text-xl text-brand-purple">
+                        ${item.icon ? `<i class="fa-solid ${item.icon}"></i>` : `<div class="w-6 h-6 rounded-full" style="background:${item.color}"></div>`}
+                    </div>
+                    <div>
+                        <p class="font-bold text-xs text-white">${item.name}</p>
+                        <p class="text-[10px] text-brand-yellow font-bold">${item.cost} Gems</p>
+                    </div>
+                    <button onclick="equipShopItem('${cat}', '${item.id}', ${item.cost})" class="w-full py-1.5 rounded-xl text-xs font-bold ${isEquipped ? 'bg-brand-green text-black' : 'bg-brand-card text-gray-300 hover:text-white'}">
+                        ${isEquipped ? 'Equipped' : 'Equip / Buy'}
+                    </button>
+                </div>`;
+            });
+            grid.innerHTML = html;
+        }
+
+        function switchShopCategory(cat) {
+            renderShopGrid(cat);
+        }
+
+        function equipShopItem(cat, itemId, cost) {
+            playChime(750, 0.15);
+            if (cat === 'skins') {
+                const item = shopItems.skins.find(s => s.id === itemId);
+                if (item) state.equipped.skin = item.color;
+            } else {
+                const key = cat.slice(0, -1);
+                state.equipped[key] = itemId;
+            }
+            updateAllMascotPreviews();
+            renderShopGrid(cat);
+        }
+
+        let triggerChart = null;
+        let weeklyChart = null;
+
+        function renderAnalyticsCharts() {
+            const ctx1 = document.getElementById('triggerChart');
+            const ctx2 = document.getElementById('weeklyChart');
+
+            if (ctx1) {
+                if (triggerChart) triggerChart.destroy();
+                triggerChart = new Chart(ctx1, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Boredom', 'Procrastination', 'Stress', 'Lonely'],
+                        datasets: [{
+                            data: [state.triggersCount.boredom, state.triggersCount.procrastination, state.triggersCount.stress, state.triggersCount.lonely],
+                            backgroundColor: ['#00ff87', '#a855f7', '#ff6b35', '#00e5ff']
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+
+            if (ctx2) {
+                if (weeklyChart) weeklyChart.destroy();
+                weeklyChart = new Chart(ctx2, {
+                    type: 'line',
+                    data: {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        datasets: [{
+                            label: 'Verified Pivots',
+                            data: [2, 4, 3, 5, 2, 6, 4],
+                            borderColor: '#00ff87',
+                            tension: 0.3
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+        }
+
+        function updateHeaderStats() {
+            document.getElementById('header-streak').innerText = state.streak;
+            document.getElementById('header-gems').innerText = state.gems;
+            document.getElementById('header-xp').innerText = `(${state.xp} XP)`;
+            document.getElementById('shop-gems-display').innerText = state.gems;
+
+            const scoreCircle = document.getElementById('score-circle');
+            if (scoreCircle) {
+                const pct = Math.min(100, Math.round((state.xp / 200) * 100));
+                scoreCircle.setAttribute('stroke-dasharray', `${pct}, 100`);
+                document.getElementById('dash-balance-score').innerText = `${pct}%`;
+            }
+        }
+
+        function renderRecentPivots() {
+            const list = document.getElementById('recent-pivots-list');
+            if (!list) return;
+
+            if (state.pivots.length === 0) return;
+
+            list.innerHTML = state.pivots.map(p => `
+                <div class="p-3.5 rounded-2xl bg-brand-card border border-brand-border flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-xl bg-brand-green/20 text-brand-green flex items-center justify-center text-xs font-bold">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-xs text-white">${p.title}</p>
+                            <p class="text-[10px] text-gray-400">Completed at ${p.time}</p>
+                        </div>
+                    </div>
+                    <span class="text-xs text-brand-green font-bold">+50 XP</span>
+                </div>
+            `).join('');
+        }
+
+        /* CUSTOM REWARDS SHOP LOGIC */
+        function openAddRewardModal() {
+            document.getElementById('modal-add-reward').classList.remove('hidden');
+        }
+
+        function closeAddRewardModal() {
+            document.getElementById('modal-add-reward').classList.add('hidden');
+        }
+
+        function saveCustomReward() {
+            const name = document.getElementById('reward-name-input').value;
+            const cost = parseInt(document.getElementById('reward-cost-input').value) || 50;
+
+            if (name) {
+                state.customRewards.push({ id: Date.now(), name, cost, claimed: false });
+                closeAddRewardModal();
+                renderRewardsShop();
+            }
+        }
+
+        function renderRewardsShop() {
+            const grid = document.getElementById('rewards-shop-grid');
+            if (!grid) return;
+
+            grid.innerHTML = state.customRewards.map(r => `
+                <div class="glass-panel p-4 rounded-2xl flex items-center justify-between border border-brand-border">
+                    <div>
+                        <p class="font-bold text-sm text-white">${r.name}</p>
+                        <p class="text-xs text-brand-yellow font-bold">${r.cost} Gems</p>
+                    </div>
+                    <button onclick="claimReward(${r.id})" class="px-3 py-1.5 rounded-xl bg-brand-green/20 text-brand-green border border-brand-green/30 text-xs font-bold hover:bg-brand-green hover:text-black transition-all">
+                        Claim Reward
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function claimReward(id) {
+            const item = state.customRewards.find(r => r.id === id);
+            if (item && state.gems >= item.cost) {
+                state.gems -= item.cost;
+                updateHeaderStats();
+                alert(`Enjoy your reward: ${item.name}!`);
+            } else {
+                alert("Not enough Gems yet! Complete more camera verified pivots.");
+            }
+        }
+
+        /* INITIALIZATION ON WINDOW LOAD */
+        window.onload = function() {
+            updateAllMascotPreviews();
+            renderQuestPath();
+            updateHeaderStats();
+            renderRewardsShop();
+            renderShopGrid('hats');
+        };
+    </script>
+</body>
+</html>

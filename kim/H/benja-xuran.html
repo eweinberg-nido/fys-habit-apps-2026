@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en" class="dark" id="appHtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriHydro - Balanced Nutrition & Hydration Companion</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            950: '#060B18',
+                            900: '#0A1128',
+                            850: '#101B3B',
+                            800: '#1A264F',
+                            700: '#28386B',
+                        },
+                        hydro: {
+                            400: '#38BDF8',
+                            500: '#0EA5E9',
+                            600: '#0284C7',
+                            glow: 'rgba(14, 165, 233, 0.25)'
+                        },
+                        nutri: {
+                            400: '#34D399',
+                            500: '#10B981',
+                            600: '#059669',
+                            glow: 'rgba(16, 185, 129, 0.25)'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --bg-main: #060B18;
+            --card-bg: rgba(10, 17, 40, 0.85);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+        }
+
+        html.light {
+            --bg-main: #F8FAFC;
+            --card-bg: rgba(255, 255, 255, 0.92);
+            --card-border: rgba(0, 0, 0, 0.08);
+            --text-primary: #0F172A;
+            --text-secondary: #475569;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .bg-glass {
+            background: var(--card-bg);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--card-border);
+        }
+
+        .bg-glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            transition: all 0.25s ease;
+        }
+
+        .water-wave {
+            background: linear-gradient(180deg, rgba(56, 189, 248, 0.8) 0%, rgba(2, 132, 199, 0.95) 100%);
+            transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(100, 116, 139, 0.4);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-navy-950 text-slate-100 flex flex-col min-h-screen selection:bg-sky-500 selection:text-white">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40 bg-navy-900/90 border-b border-slate-800/80 backdrop-blur-md px-4 lg:px-8 py-3 transition-all">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-hydro-500 via-teal-500 to-nutri-500 flex items-center justify-center text-white shadow-lg shadow-sky-500/20">
+                    <i class="fa-solid fa-scale-balanced text-lg"></i>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <h1 class="font-black text-xl tracking-tight bg-gradient-to-r from-hydro-400 via-teal-300 to-nutri-400 bg-clip-text text-transparent">
+                            NutriHydro
+                        </h1>
+                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-sky-400 border border-sky-500/30 font-mono font-bold">50:50 Balanced</span>
+                    </div>
+                    <p class="text-xs text-slate-400 hidden sm:block">Unified 50% Hydration & 50% Nutrition Companion</p>
+                </div>
+            </div>
+
+            <!-- Quick Dual Goal Badges in Header -->
+            <div class="flex items-center space-x-3 text-xs">
+                <!-- Hydration Summary Badge -->
+                <div onclick="switchTab('hydration')" class="cursor-pointer flex items-center space-x-2 bg-navy-850 px-3 py-1.5 rounded-xl border border-hydro-500/30 hover:border-hydro-400 transition">
+                    <i class="fa-solid fa-droplet text-hydro-400 text-sm"></i>
+                    <div>
+                        <span class="text-slate-400 text-[10px] block leading-none font-semibold uppercase">Hydration</span>
+                        <span class="font-bold text-hydro-400" id="headerHydroText">1,500 / 2,500 ml</span>
+                    </div>
+                </div>
+
+                <!-- Nutrition Summary Badge -->
+                <div onclick="switchTab('nutrition')" class="cursor-pointer flex items-center space-x-2 bg-navy-850 px-3 py-1.5 rounded-xl border border-nutri-500/30 hover:border-nutri-400 transition">
+                    <i class="fa-solid fa-utensils text-nutri-400 text-sm"></i>
+                    <div>
+                        <span class="text-slate-400 text-[10px] block leading-none font-semibold uppercase">Nutrition</span>
+                        <span class="font-bold text-nutri-400" id="headerNutriText">1,450 / 2,000 kcal</span>
+                    </div>
+                </div>
+
+                <!-- Quick Log Button -->
+                <button onclick="openQuickLogModal()" class="bg-gradient-to-r from-hydro-500 to-nutri-500 hover:from-hydro-400 hover:to-nutri-400 text-slate-950 font-black px-3.5 py-2 rounded-xl shadow-lg transition flex items-center space-x-1.5 text-xs">
+                    <i class="fa-solid fa-plus text-sm"></i>
+                    <span class="hidden md:inline">Log Entry</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Navigation Bar -->
+    <nav class="bg-navy-900/60 border-b border-slate-800/60 px-4 sticky top-[61px] z-30 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto flex space-x-2 md:space-x-4 overflow-x-auto py-2 no-scrollbar">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="tab-btn px-4 py-2 rounded-xl text-xs md:text-sm font-bold flex items-center space-x-2 whitespace-nowrap transition bg-slate-800 text-sky-400 border border-slate-700">
+                <i class="fa-solid fa-table-cells-large"></i>
+                <span>Dual Dashboard (50/50)</span>
+            </button>
+            <button onclick="switchTab('hydration')" id="nav-hydration" class="tab-btn px-4 py-2 rounded-xl text-xs md:text-sm font-bold flex items-center space-x-2 whitespace-nowrap transition text-slate-400 hover:text-slate-200">
+                <i class="fa-solid fa-glass-water text-hydro-400"></i>
+                <span>Hydration Hub (50%)</span>
+            </button>
+            <button onclick="switchTab('nutrition')" id="nav-nutrition" class="tab-btn px-4 py-2 rounded-xl text-xs md:text-sm font-bold flex items-center space-x-2 whitespace-nowrap transition text-slate-400 hover:text-slate-200">
+                <i class="fa-solid fa-apple-whole text-nutri-400"></i>
+                <span>Nutrition Hub (50%)</span>
+            </button>
+            <button onclick="switchTab('planner')" id="nav-planner" class="tab-btn px-4 py-2 rounded-xl text-xs md:text-sm font-bold flex items-center space-x-2 whitespace-nowrap transition text-slate-400 hover:text-slate-200">
+                <i class="fa-regular fa-calendar-check"></i>
+                <span>Meal & Fluid Planner</span>
+            </button>
+            <button onclick="switchTab('insights')" id="nav-insights" class="tab-btn px-4 py-2 rounded-xl text-xs md:text-sm font-bold flex items-center space-x-2 whitespace-nowrap transition text-slate-400 hover:text-slate-200">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Balance Insights</span>
+            </button>
+            <button onclick="switchTab('settings')" id="nav-settings" class="tab-btn px-4 py-2 rounded-xl text-xs md:text-sm font-bold flex items-center space-x-2 whitespace-nowrap transition text-slate-400 hover:text-slate-200">
+                <i class="fa-solid fa-sliders"></i>
+                <span>Settings</span>
+            </button>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6 lg:p-8 space-y-6">
+
+        <!-- VIEW 1: DUAL DASHBOARD (EQUAL 50 / 50 SPLIT) -->
+        <section id="view-dashboard" class="tab-view space-y-6">
+            
+            <!-- Dashboard Banner -->
+            <div class="bg-gradient-to-r from-navy-900 via-navy-850 to-navy-900 border border-slate-800 rounded-3xl p-6 md:p-8 relative overflow-hidden shadow-2xl">
+                <div class="absolute -right-16 -top-16 w-64 h-64 bg-hydro-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-16 -bottom-16 w-64 h-64 bg-nutri-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div class="space-y-2 max-w-2xl">
+                        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-800/80 text-xs font-semibold border border-slate-700">
+                            <i class="fa-solid fa-arrows-left-right text-teal-400"></i>
+                            <span>Equally Balanced Everyday Health</span>
+                        </div>
+                        <h2 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+                            Optimal Health = 50% Hydration + 50% Nutrition
+                        </h2>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Track your fluid intake and macronutrients side-by-side to maintain peak energy, metabolic efficiency, and mental clarity.
+                        </p>
+                    </div>
+
+                    <div class="flex items-center gap-3 w-full md:w-auto">
+                        <button onclick="openQuickLogModal('hydration')" class="flex-1 md:flex-initial py-3 px-5 bg-hydro-600/20 hover:bg-hydro-600/30 border border-hydro-500/40 text-hydro-300 font-bold rounded-2xl text-xs flex items-center justify-center space-x-2 transition">
+                            <i class="fa-solid fa-droplet text-hydro-400"></i>
+                            <span>+ Log Fluid</span>
+                        </button>
+                        <button onclick="openQuickLogModal('nutrition')" class="flex-1 md:flex-initial py-3 px-5 bg-nutri-600/20 hover:bg-nutri-600/30 border border-nutri-500/40 text-nutri-300 font-bold rounded-2xl text-xs flex items-center justify-center space-x-2 transition">
+                            <i class="fa-solid fa-utensils text-nutri-400"></i>
+                            <span>+ Log Food</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EQUAL 50 / 50 SPLIT GRID -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                <!-- LEFT HALF: HYDRATION SIDE (50%) -->
+                <div class="bg-glass-card rounded-3xl p-6 border-l-4 border-l-hydro-500 space-y-6 flex flex-col justify-between">
+                    <div class="space-y-6">
+                        <!-- Section Header -->
+                        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-2xl bg-hydro-500/20 border border-hydro-500/30 flex items-center justify-center text-hydro-400 text-lg">
+                                    <i class="fa-solid fa-droplet"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-extrabold text-lg text-white">50% Hydration Tracker</h3>
+                                    <p class="text-xs text-slate-400">Fluid balance & hydration status</p>
+                                </div>
+                            </div>
+                            <span class="px-3 py-1 bg-hydro-500/10 text-hydro-400 border border-hydro-500/20 rounded-full font-mono text-xs font-bold" id="dashHydroPercent">60% Reached</span>
+                        </div>
+
+                        <!-- Interactive Visual Hydration Cylinder -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
+                            <!-- Visual Water Bottle -->
+                            <div class="flex flex-col items-center justify-center sm:col-span-1">
+                                <div class="w-20 h-44 rounded-3xl border-2 border-hydro-500/40 bg-navy-950/80 p-1.5 relative overflow-hidden shadow-inner flex flex-col justify-end">
+                                    <!-- Fluid fill -->
+                                    <div id="visualWaterFill" class="water-wave w-full rounded-2xl relative flex items-center justify-center" style="height: 60%;">
+                                        <span class="text-xs font-black text-white drop-shadow-md" id="visualWaterPercent">60%</span>
+                                    </div>
+                                </div>
+                                <span class="text-[11px] text-slate-400 mt-2 font-mono" id="visualWaterGoalText">1,500 / 2,500 ml</span>
+                            </div>
+
+                            <!-- Fluid Stats Breakdown -->
+                            <div class="sm:col-span-2 space-y-3">
+                                <div class="bg-navy-950/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
+                                    <span class="text-xs text-slate-400">Today's Intake</span>
+                                    <span class="text-base font-extrabold text-hydro-400" id="dashHydroIntake">1,500 ml</span>
+                                </div>
+                                <div class="bg-navy-950/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
+                                    <span class="text-xs text-slate-400">Remaining Target</span>
+                                    <span class="text-base font-extrabold text-slate-200" id="dashHydroRemaining">1,000 ml</span>
+                                </div>
+                                <div class="bg-navy-950/80 p-3.5 rounded-2xl border border-slate-800 flex justify-between items-center">
+                                    <span class="text-xs text-slate-400">Hydration Score</span>
+                                    <span class="text-base font-extrabold text-emerald-400">Optimal (88/100)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Add Fluid Buttons -->
+                        <div class="space-y-2">
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Quick Hydrate</span>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button onclick="quickAddFluid(250, 'Water')" class="py-2.5 bg-navy-850 hover:bg-hydro-500/20 text-hydro-300 border border-slate-700 hover:border-hydro-500/50 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1">
+                                    <i class="fa-solid fa-glass-water"></i>
+                                    <span>+250ml Water</span>
+                                </button>
+                                <button onclick="quickAddFluid(350, 'Electrolytes')" class="py-2.5 bg-navy-850 hover:bg-teal-500/20 text-teal-300 border border-slate-700 hover:border-teal-500/50 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1">
+                                    <i class="fa-solid fa-bolt"></i>
+                                    <span>+350ml Electro</span>
+                                </button>
+                                <button onclick="quickAddFluid(200, 'Herbal Tea')" class="py-2.5 bg-navy-850 hover:bg-amber-500/20 text-amber-300 border border-slate-700 hover:border-amber-500/50 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1">
+                                    <i class="fa-solid fa-mug-hot"></i>
+                                    <span>+200ml Tea</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Recent Hydration Log Feed -->
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Today's Fluid Log</span>
+                                <button onclick="switchTab('hydration')" class="text-xs text-hydro-400 hover:underline">View All</button>
+                            </div>
+                            <div id="dashHydroLogFeed" class="space-y-2 max-h-40 overflow-y-auto pr-1">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="switchTab('hydration')" class="w-full py-3 bg-hydro-500/10 hover:bg-hydro-500/20 text-hydro-400 border border-hydro-500/30 rounded-2xl text-xs font-extrabold transition flex items-center justify-center space-x-2">
+                        <span>Open Hydration Studio</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </div>
+
+                <!-- RIGHT HALF: NUTRITION SIDE (50%) -->
+                <div class="bg-glass-card rounded-3xl p-6 border-l-4 border-l-nutri-500 space-y-6 flex flex-col justify-between">
+                    <div class="space-y-6">
+                        <!-- Section Header -->
+                        <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-2xl bg-nutri-500/20 border border-nutri-500/30 flex items-center justify-center text-nutri-400 text-lg">
+                                    <i class="fa-solid fa-utensils"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-extrabold text-lg text-white">50% Nutrition Tracker</h3>
+                                    <p class="text-xs text-slate-400">Calories & macronutrients balance</p>
+                                </div>
+                            </div>
+                            <span class="px-3 py-1 bg-nutri-500/10 text-nutri-400 border border-nutri-500/20 rounded-full font-mono text-xs font-bold" id="dashNutriPercent">72% Reached</span>
+                        </div>
+
+                        <!-- Calorie Summary & Macro Progress Bars -->
+                        <div class="space-y-4">
+                            <!-- Calorie Header -->
+                            <div class="bg-navy-950/80 p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs text-slate-400 block font-medium">Energy Consumed</span>
+                                    <span class="text-2xl font-black text-nutri-400" id="dashCalorieText">1,450 <span class="text-xs font-normal text-slate-400">/ 2,000 kcal</span></span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs text-slate-400 block font-medium">Remaining</span>
+                                    <span class="text-lg font-extrabold text-slate-200" id="dashCalorieRemaining">550 kcal</span>
+                                </div>
+                            </div>
+
+                            <!-- Macros Grid -->
+                            <div class="grid grid-cols-2 gap-3">
+                                <!-- Protein -->
+                                <div class="bg-navy-950/80 p-3 rounded-2xl border border-slate-800 space-y-1.5">
+                                    <div class="flex justify-between text-xs font-bold">
+                                        <span class="text-rose-400"><i class="fa-solid fa-drumstick-bite mr-1"></i> Protein</span>
+                                        <span id="macroProteinText" class="text-slate-300">85g / 120g</span>
+                                    </div>
+                                    <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                        <div id="barProtein" class="bg-rose-500 h-full transition-all duration-500" style="width: 70%;"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Carbs -->
+                                <div class="bg-navy-950/80 p-3 rounded-2xl border border-slate-800 space-y-1.5">
+                                    <div class="flex justify-between text-xs font-bold">
+                                        <span class="text-amber-400"><i class="fa-solid fa-wheat-awn mr-1"></i> Carbs</span>
+                                        <span id="macroCarbsText" class="text-slate-300">160g / 220g</span>
+                                    </div>
+                                    <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                        <div id="barCarbs" class="bg-amber-500 h-full transition-all duration-500" style="width: 72%;"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Fats -->
+                                <div class="bg-navy-950/80 p-3 rounded-2xl border border-slate-800 space-y-1.5">
+                                    <div class="flex justify-between text-xs font-bold">
+                                        <span class="text-indigo-400"><i class="fa-solid fa-oil-can mr-1"></i> Fats</span>
+                                        <span id="macroFatsText" class="text-slate-300">45g / 65g</span>
+                                    </div>
+                                    <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                        <div id="barFats" class="bg-indigo-500 h-full transition-all duration-500" style="width: 69%;"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Fiber -->
+                                <div class="bg-navy-950/80 p-3 rounded-2xl border border-slate-800 space-y-1.5">
+                                    <div class="flex justify-between text-xs font-bold">
+                                        <span class="text-emerald-400"><i class="fa-solid fa-seedling mr-1"></i> Fiber</span>
+                                        <span id="macroFiberText" class="text-slate-300">22g / 30g</span>
+                                    </div>
+                                    <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                                        <div id="barFiber" class="bg-emerald-500 h-full transition-all duration-500" style="width: 73%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Today's Meals Feed -->
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Today's Meal Log</span>
+                                <button onclick="switchTab('nutrition')" class="text-xs text-nutri-400 hover:underline">View All</button>
+                            </div>
+                            <div id="dashNutriLogFeed" class="space-y-2 max-h-40 overflow-y-auto pr-1">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="switchTab('nutrition')" class="w-full py-3 bg-nutri-500/10 hover:bg-nutri-500/20 text-nutri-400 border border-nutri-500/30 rounded-2xl text-xs font-extrabold transition flex items-center justify-center space-x-2">
+                        <span>Open Nutrition Studio</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- VIEW 2: HYDRATION HUB (DEDICATED 50%) -->
+        <section id="view-hydration" class="tab-view space-y-6 hidden">
+            <!-- Header Banner -->
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-glass-card p-6 rounded-3xl border-hydro-500/30">
+                <div>
+                    <h2 class="text-2xl font-black text-white flex items-center gap-2">
+                        <i class="fa-solid fa-droplet text-hydro-400"></i> Hydration Studio & Beverage Intelligence
+                    </h2>
+                    <p class="text-xs text-slate-300">Calculators, beverage multipliers, electrolytes, and fluid logs.</p>
+                </div>
+                <button onclick="openQuickLogModal('hydration')" class="bg-hydro-500 hover:bg-hydro-400 text-navy-950 font-black px-4 py-2.5 rounded-xl transition flex items-center justify-center space-x-2 text-xs shadow-lg shadow-hydro-500/20">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Log Fluid Intake</span>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Water Calculator & Target Adjuster -->
+                <div class="bg-glass-card p-6 rounded-3xl space-y-4">
+                    <h3 class="font-bold text-base text-white flex items-center gap-2">
+                        <i class="fa-solid fa-calculator text-hydro-400"></i> Hydration Target Calculator
+                    </h3>
+                    <p class="text-xs text-slate-400">Calculate ideal water intake based on weight & daily exercise.</p>
+
+                    <form onsubmit="calculateWaterGoal(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-xs text-slate-300 mb-1">Body Weight (kg)</label>
+                            <input type="number" id="calcWeight" value="70" required class="w-full bg-navy-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-300 mb-1">Daily Exercise (Minutes)</label>
+                            <input type="number" id="calcExercise" value="45" required class="w-full bg-navy-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-slate-300 mb-1">Climate Environment</label>
+                            <select id="calcClimate" class="w-full bg-navy-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+                                <option value="1">Moderate / Indoor</option>
+                                <option value="1.15">Hot & Humid (+15%)</option>
+                                <option value="0.95">Cold Weather</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full py-2.5 bg-hydro-500 hover:bg-hydro-400 text-navy-950 font-bold rounded-xl text-xs transition">
+                            Update Daily Goal
+                        </button>
+                    </form>
+
+                    <div class="p-3 bg-navy-950/80 rounded-2xl border border-hydro-500/20 text-xs text-slate-300 space-y-1">
+                        <span class="text-hydro-300 font-bold block"><i class="fa-solid fa-lightbulb mr-1"></i> Hydration Tip:</span>
+                        Drinking 500ml water upon waking boosts metabolic rate by ~24% for the first hour!
+                    </div>
+                </div>
+
+                <!-- Beverage Type Multiplier Matrix -->
+                <div class="bg-glass-card p-6 rounded-3xl space-y-4 lg:col-span-2">
+                    <h3 class="font-bold text-base text-white flex items-center gap-2">
+                        <i class="fa-solid fa-wine-glass text-hydro-400"></i> Hydration Multipliers & Beverage Guide
+                    </h3>
+                    <p class="text-xs text-slate-400">Different beverages absorb into your bloodstream at different efficiency rates.</p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="p-3 bg-navy-950/80 rounded-2xl border border-slate-800 flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-sm">
+                                    <i class="fa-solid fa-glass-water"></i>
+                                </div>
+                                <div>
+                                    <span class="text-xs font-bold text-slate-200 block">Pure Spring Water</span>
+                                    <span class="text-[10px] text-slate-400">Optimal Baseline</span>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 rounded bg-sky-500/20 text-sky-300 text-xs font-mono font-bold">1.0x</span>
+                        </div>
+
+                        <div class="p-3 bg-navy-950/80 rounded-2xl border border-slate-800 flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center text-sm">
+                                    <i class="fa-solid fa-bolt"></i>
+                                </div>
+                                <div>
+                                    <span class="text-xs font-bold text-slate-200 block">Electrolyte Solution</span>
+                                    <span class="text-[10px] text-slate-400">Enhanced Retention</span>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 rounded bg-teal-500/20 text-teal-300 text-xs font-mono font-bold">1.25x</span>
+                        </div>
+
+                        <div class="p-3 bg-navy-950/80 rounded-2xl border border-slate-800 flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm">
+                                    <i class="fa-solid fa-mug-hot"></i>
+                                </div>
+                                <div>
+                                    <span class="text-xs font-bold text-slate-200 block">Herbal Chamomile Tea</span>
+                                    <span class="text-[10px] text-slate-400">Calm & Soothing</span>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 rounded bg-amber-500/20 text-amber-300 text-xs font-mono font-bold">1.0x</span>
+                        </div>
+
+                        <div class="p-3 bg-navy-950/80 rounded-2xl border border-slate-800 flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center text-sm">
+                                    <i class="fa-solid fa-coffee"></i>
+                                </div>
+                                <div>
+                                    <span class="text-xs font-bold text-slate-200 block">Black Coffee</span>
+                                    <span class="text-[10px] text-slate-400">Mild Diuretic Effect</span>
+                                </div>
+                            </div>
+                            <span class="px-2 py-1 rounded bg-purple-500/20 text-purple-300 text-xs font-mono font-bold">0.8x</span>
+                        </div>
+                    </div>
+
+                    <!-- Comprehensive Fluid Log History Table -->
+                    <div class="space-y-3 pt-2">
+                        <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Complete Hydration History</h4>
+                        <div class="bg-navy-950/80 rounded-2xl border border-slate-800 p-4 max-h-60 overflow-y-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead>
+                                    <tr class="text-slate-400 border-b border-slate-800">
+                                        <th class="pb-2">Time</th>
+                                        <th class="pb-2">Beverage</th>
+                                        <th class="pb-2">Volume</th>
+                                        <th class="pb-2 text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableHydroHistory">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 3: NUTRITION HUB (DEDICATED 50%) -->
+        <section id="view-nutrition" class="tab-view space-y-6 hidden">
+            <!-- Header Banner -->
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-glass-card p-6 rounded-3xl border-nutri-500/30">
+                <div>
+                    <h2 class="text-2xl font-black text-white flex items-center gap-2">
+                        <i class="fa-solid fa-apple-whole text-nutri-400"></i> Nutrition Studio & Macronutrient Hub
+                    </h2>
+                    <p class="text-xs text-slate-300">Calorie target management, whole food scores, mindful eating check-in.</p>
+                </div>
+                <button onclick="openQuickLogModal('nutrition')" class="bg-nutri-500 hover:bg-nutri-400 text-navy-950 font-black px-4 py-2.5 rounded-xl transition flex items-center justify-center space-x-2 text-xs shadow-lg shadow-nutri-500/20">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Log Meal or Snack</span>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Mindful Hunger Check-In Tool -->
+                <div class="bg-glass-card p-6 rounded-3xl space-y-4">
+                    <h3 class="font-bold text-base text-white flex items-center gap-2">
+                        <i class="fa-solid fa-brain text-nutri-400"></i> Mindful Hunger Scale (1-10)
+                    </h3>
+                    <p class="text-xs text-slate-400">Assess your hunger level before eating to prevent stress snacking.</p>
+
+                    <div class="space-y-3">
+                        <div class="flex justify-between text-xs font-bold">
+                            <span class="text-slate-400">1: Starving</span>
+                            <span class="text-nutri-400" id="hungerValDisplay">Level 5 (Moderate Hunger)</span>
+                            <span class="text-slate-400">10: Stuffed</span>
+                        </div>
+                        <input type="range" id="hungerSlider" min="1" max="10" value="5" oninput="updateHungerDisplay(this.value)" class="w-full accent-nutri-500">
+                        <div class="p-3 bg-navy-950/80 rounded-2xl border border-slate-800 text-xs text-slate-300" id="hungerDescription">
+                            Ideal eating window! You feel stomach empty but clear-headed.
+                        </div>
+                        <button onclick="logMindfulHunger()" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-nutri-300 font-bold rounded-xl text-xs transition border border-slate-700">
+                            Log Mindful Rating
+                        </button>
+                    </div>
+
+                    <!-- Healthy Food Swaps Card -->
+                    <div class="pt-2 border-t border-slate-800/80 space-y-2">
+                        <span class="text-xs font-bold text-slate-300 block">Smart Food Swaps</span>
+                        <div class="space-y-2 text-xs">
+                            <div class="p-2.5 bg-navy-950/80 rounded-xl border border-slate-800 flex items-center justify-between">
+                                <span class="text-rose-400 line-through">Potato Chips</span>
+                                <i class="fa-solid fa-arrow-right text-slate-500"></i>
+                                <span class="text-emerald-400 font-bold">Air-popped Popcorn</span>
+                            </div>
+                            <div class="p-2.5 bg-navy-950/80 rounded-xl border border-slate-800 flex items-center justify-between">
+                                <span class="text-rose-400 line-through">Sugary Soda</span>
+                                <i class="fa-solid fa-arrow-right text-slate-500"></i>
+                                <span class="text-emerald-400 font-bold">Sparkling Lemon Water</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comprehensive Meal Log & Macro Breakdown -->
+                <div class="bg-glass-card p-6 rounded-3xl space-y-4 lg:col-span-2">
+                    <h3 class="font-bold text-base text-white flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-nutri-400"></i> Daily Meal & Snack Journal
+                    </h3>
+
+                    <div class="bg-navy-950/80 rounded-2xl border border-slate-800 p-4 max-h-80 overflow-y-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="text-slate-400 border-b border-slate-800">
+                                    <th class="pb-2">Meal</th>
+                                    <th class="pb-2">Food Name</th>
+                                    <th class="pb-2">Calories</th>
+                                    <th class="pb-2">Macros (P / C / F)</th>
+                                    <th class="pb-2 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableNutriHistory">
+                                <!-- Populated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 4: MEAL & FLUID PLANNER -->
+        <section id="view-planner" class="tab-view space-y-6 hidden">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-glass-card p-6 rounded-3xl">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-regular fa-calendar-check text-teal-400"></i> 7-Day Meal & Hydration Weekly Planner
+                    </h2>
+                    <p class="text-xs text-slate-300">Schedule meals and fluid targets for every day of the week.</p>
+                </div>
+                <button onclick="openPlannerModal()" class="bg-teal-500 hover:bg-teal-400 text-navy-950 font-bold px-4 py-2.5 rounded-xl transition flex items-center justify-center space-x-2 text-xs shadow-lg shadow-teal-500/20">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Add Weekly Plan</span>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-4" id="weeklyPlannerGrid">
+                <!-- Rendered dynamically -->
+            </div>
+        </section>
+
+        <!-- VIEW 5: BALANCE INSIGHTS -->
+        <section id="view-insights" class="tab-view space-y-6 hidden">
+            <div class="bg-glass-card p-6 rounded-3xl space-y-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-sky-400"></i> Hydration vs Nutrition Synergy Score
+                    </h2>
+                    <p class="text-xs text-slate-300">Analytics showing how optimal hydration improves nutrient absorption & energy.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-5 bg-navy-950/80 rounded-2xl border border-slate-800 text-center space-y-2">
+                        <span class="text-xs font-bold text-slate-400 block">Weekly Hydration Index</span>
+                        <span class="text-3xl font-black text-hydro-400">92 / 100</span>
+                        <p class="text-[11px] text-slate-400">Consistent fluid intake reduces mental fatigue by 35%.</p>
+                    </div>
+
+                    <div class="p-5 bg-navy-950/80 rounded-2xl border border-slate-800 text-center space-y-2">
+                        <span class="text-xs font-bold text-slate-400 block">Weekly Nutrition Quality</span>
+                        <span class="text-3xl font-black text-nutri-400">86 / 100</span>
+                        <p class="text-[11px] text-slate-400">High fiber & balanced lean protein ratio achieved.</p>
+                    </div>
+
+                    <div class="p-5 bg-navy-950/80 rounded-2xl border border-slate-800 text-center space-y-2">
+                        <span class="text-xs font-bold text-slate-400 block">Overall Balance Synergy</span>
+                        <span class="text-3xl font-black text-teal-300">89%</span>
+                        <p class="text-[11px] text-slate-400">Perfect 50/50 balance maintained for 5 consecutive days.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 6: SETTINGS -->
+        <section id="view-settings" class="tab-view space-y-6 hidden">
+            <div class="bg-glass-card p-6 rounded-3xl space-y-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-sky-400"></i> Preferences & Theme
+                    </h2>
+                    <p class="text-xs text-slate-300">Manage targets, dark/light theme, and reset option.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-800">
+                    <div class="p-5 bg-navy-950/80 rounded-2xl border border-slate-800 space-y-3">
+                        <h3 class="font-bold text-sm text-white flex items-center gap-2">
+                            <i class="fa-solid fa-moon text-indigo-400"></i> Theme Options
+                        </h3>
+                        <div class="flex items-center space-x-3 pt-2">
+                            <button onclick="setAppThemeMode('dark')" id="btnDarkTheme" class="flex-1 py-2.5 rounded-xl border text-xs font-bold transition bg-sky-500 text-navy-950 border-sky-400">
+                                Dark Mode
+                            </button>
+                            <button onclick="setAppThemeMode('light')" id="btnLightTheme" class="flex-1 py-2.5 rounded-xl border text-xs font-bold transition bg-slate-800 text-slate-300 border-slate-700">
+                                Light Mode
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-5 bg-navy-950/80 rounded-2xl border border-slate-800 space-y-3">
+                        <h3 class="font-bold text-sm text-white flex items-center gap-2">
+                            <i class="fa-solid fa-arrows-rotate text-rose-400"></i> Daily Reset Options
+                        </h3>
+                        <p class="text-xs text-slate-400">Start fresh for today's logs.</p>
+                        <button onclick="resetDailyProgress()" class="w-full py-2.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 rounded-xl text-xs font-bold transition">
+                            Reset Today's Hydration & Nutrition Logs
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL: QUICK LOG ENTRY (HYDRATION & NUTRITION) -->
+    <div id="modalQuickLog" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-navy-900 border border-slate-700 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-lg font-extrabold text-white" id="modalLogTitle">Log Entry</h3>
+                <button onclick="closeQuickLogModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 bg-navy-950 p-1.5 rounded-xl border border-slate-800">
+                <button type="button" onclick="setLogType('hydration')" id="btnTypeHydro" class="py-2 rounded-lg text-xs font-bold transition bg-hydro-500 text-navy-950">
+                    <i class="fa-solid fa-droplet mr-1"></i> Hydration
+                </button>
+                <button type="button" onclick="setLogType('nutrition')" id="btnTypeNutri" class="py-2 rounded-lg text-xs font-bold transition text-slate-400">
+                    <i class="fa-solid fa-utensils mr-1"></i> Nutrition
+                </button>
+            </div>
+
+            <!-- Hydration Form -->
+            <form id="formHydroLog" onsubmit="handleLogFluid(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Beverage Type</label>
+                    <select id="hydroBeverageType" class="w-full bg-navy-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+                        <option value="Water">Pure Spring Water</option>
+                        <option value="Electrolytes">Electrolyte Drink</option>
+                        <option value="Herbal Tea">Herbal Chamomile / Green Tea</option>
+                        <option value="Coconut Water">Coconut Water</option>
+                        <option value="Coffee">Black Coffee / Espresso</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Volume (ml)</label>
+                    <input type="number" id="hydroAmount" required min="50" max="2000" step="50" value="250" class="w-full bg-navy-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeQuickLogModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-xs font-semibold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-hydro-500 text-navy-950 rounded-xl text-xs font-bold">Add Fluid Log</button>
+                </div>
+            </form>
+
+            <!-- Nutrition Form -->
+            <form id="formNutriLog" onsubmit="handleLogFood(event)" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Meal Category</label>
+                    <select id="nutriMealCategory" class="w-full bg-navy-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+                        <option value="Breakfast">Breakfast</option>
+                        <option value="Lunch">Lunch</option>
+                        <option value="Dinner">Dinner</option>
+                        <option value="Snack">Healthy Snack</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Food Item Name</label>
+                    <input type="text" id="nutriFoodName" required placeholder="e.g. Grilled Chicken Salad, Oatmeal & Berries" class="w-full bg-navy-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Calories (kcal)</label>
+                        <input type="number" id="nutriCalories" required min="10" value="350" class="w-full bg-navy-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Protein (g)</label>
+                        <input type="number" id="nutriProtein" required min="0" value="25" class="w-full bg-navy-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Carbs (g)</label>
+                        <input type="number" id="nutriCarbs" required min="0" value="30" class="w-full bg-navy-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Fats (g)</label>
+                        <input type="number" id="nutriFats" required min="0" value="10" class="w-full bg-navy-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closeQuickLogModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-xs font-semibold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-nutri-500 text-navy-950 rounded-xl text-xs font-bold">Add Food Log</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD PLANNER TASK -->
+    <div id="modalPlanner" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-navy-900 border border-slate-700 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <h3 class="text-lg font-bold text-white">Add Planner Schedule</h3>
+                <button onclick="closePlannerModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="handlePlannerAdd(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Plan Type</label>
+                    <select id="planType" class="w-full bg-navy-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+                        <option value="Meal">Meal / Nutrition Goal</option>
+                        <option value="Fluid">Hydration Goal</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Day of Week</label>
+                    <select id="planDay" class="w-full bg-navy-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+                        <option value="Mon">Monday</option>
+                        <option value="Tue">Tuesday</option>
+                        <option value="Wed">Wednesday</option>
+                        <option value="Thu">Thursday</option>
+                        <option value="Fri">Friday</option>
+                        <option value="Sat">Saturday</option>
+                        <option value="Sun">Sunday</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Description</label>
+                    <input type="text" id="planTitle" required placeholder="e.g. Salmon & Quinoa Bowl or 1L Coconut Water" class="w-full bg-navy-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="closePlannerModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-xs font-semibold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-teal-500 text-navy-950 rounded-xl text-xs font-bold">Save Plan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const APP_STATE = {
+            hydration: {
+                drunk: 1500,
+                goal: 2500,
+                logs: [
+                    { id: 'h1', time: '08:30 AM', beverage: 'Water', amount: 500 },
+                    { id: 'h2', time: '11:00 AM', beverage: 'Electrolytes', amount: 350 },
+                    { id: 'h3', time: '02:15 PM', beverage: 'Herbal Tea', amount: 250 },
+                    { id: 'h4', time: '04:45 PM', beverage: 'Water', amount: 400 }
+                ]
+            },
+            nutrition: {
+                calories: 1450,
+                calorieGoal: 2000,
+                protein: 85,
+                proteinGoal: 120,
+                carbs: 160,
+                carbsGoal: 220,
+                fats: 45,
+                fatsGoal: 65,
+                fiber: 22,
+                fiberGoal: 30,
+                meals: [
+                    { id: 'n1', category: 'Breakfast', name: 'Greek Yogurt, Berry & Oat Bowl', calories: 420, protein: 28, carbs: 52, fats: 10 },
+                    { id: 'n2', category: 'Lunch', name: 'Grilled Chicken & Quinoa Salad', calories: 650, protein: 42, carbs: 68, fats: 20 },
+                    { id: 'n3', category: 'Snack', name: 'Almonds & Apple Slices', calories: 380, protein: 15, carbs: 40, fats: 15 }
+                ]
+            },
+            planner: [
+                { id: 'p1', day: 'Mon', type: 'Meal', title: 'High-Protein Salmon Meal' },
+                { id: 'p2', day: 'Mon', type: 'Fluid', title: '1L Electrolyte Mix' },
+                { id: 'p3', day: 'Wed', type: 'Meal', title: 'Avocado Whole Grain Toast' },
+                { id: 'p4', day: 'Fri', type: 'Fluid', title: 'Herbal Chamomile Tea Night' }
+            ],
+            themeMode: 'dark'
+        };
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-view').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-slate-800', 'text-sky-400', 'border', 'border-slate-700');
+                btn.classList.add('text-slate-400');
+            });
+
+            const activeView = document.getElementById(`view-${tabId}`);
+            if (activeView) activeView.classList.remove('hidden');
+
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if (activeNav) {
+                activeNav.classList.add('bg-slate-800', 'text-sky-400', 'border', 'border-slate-700');
+                activeNav.classList.remove('text-slate-400');
+            }
+        }
+
+        function updateAllUI() {
+            // Update Header
+            document.getElementById('headerHydroText').innerText = `${APP_STATE.hydration.drunk} / ${APP_STATE.hydration.goal} ml`;
+            document.getElementById('headerNutriText').innerText = `${APP_STATE.nutrition.calories} / ${APP_STATE.nutrition.calorieGoal} kcal`;
+
+            // Hydration Dashboard
+            const hydroPercent = Math.min(100, Math.round((APP_STATE.hydration.drunk / APP_STATE.hydration.goal) * 100));
+            document.getElementById('dashHydroPercent').innerText = `${hydroPercent}% Reached`;
+            document.getElementById('visualWaterFill').style.height = `${hydroPercent}%`;
+            document.getElementById('visualWaterPercent').innerText = `${hydroPercent}%`;
+            document.getElementById('visualWaterGoalText').innerText = `${APP_STATE.hydration.drunk} / ${APP_STATE.hydration.goal} ml`;
+            document.getElementById('dashHydroIntake').innerText = `${APP_STATE.hydration.drunk} ml`;
+            document.getElementById('dashHydroRemaining').innerText = `${Math.max(0, APP_STATE.hydration.goal - APP_STATE.hydration.drunk)} ml`;
+
+            // Nutrition Dashboard
+            const nutriPercent = Math.min(100, Math.round((APP_STATE.nutrition.calories / APP_STATE.nutrition.calorieGoal) * 100));
+            document.getElementById('dashNutriPercent').innerText = `${nutriPercent}% Reached`;
+            document.getElementById('dashCalorieText').innerHTML = `${APP_STATE.nutrition.calories} <span class="text-xs font-normal text-slate-400">/ ${APP_STATE.nutrition.calorieGoal} kcal</span>`;
+            document.getElementById('dashCalorieRemaining').innerText = `${Math.max(0, APP_STATE.nutrition.calorieGoal - APP_STATE.nutrition.calories)} kcal`;
+
+            // Macro Bars
+            document.getElementById('macroProteinText').innerText = `${APP_STATE.nutrition.protein}g / ${APP_STATE.nutrition.proteinGoal}g`;
+            document.getElementById('barProtein').style.width = `${Math.min(100, Math.round((APP_STATE.nutrition.protein / APP_STATE.nutrition.proteinGoal)*100))}%`;
+
+            document.getElementById('macroCarbsText').innerText = `${APP_STATE.nutrition.carbs}g / ${APP_STATE.nutrition.carbsGoal}g`;
+            document.getElementById('barCarbs').style.width = `${Math.min(100, Math.round((APP_STATE.nutrition.carbs / APP_STATE.nutrition.carbsGoal)*100))}%`;
+
+            document.getElementById('macroFatsText').innerText = `${APP_STATE.nutrition.fats}g / ${APP_STATE.nutrition.fatsGoal}g`;
+            document.getElementById('barFats').style.width = `${Math.min(100, Math.round((APP_STATE.nutrition.fats / APP_STATE.nutrition.fatsGoal)*100))}%`;
+
+            document.getElementById('macroFiberText').innerText = `${APP_STATE.nutrition.fiber}g / ${APP_STATE.nutrition.fiberGoal}g`;
+            document.getElementById('barFiber').style.width = `${Math.min(100, Math.round((APP_STATE.nutrition.fiber / APP_STATE.nutrition.fiberGoal)*100))}%`;
+
+            renderDashboardLogs();
+            renderTables();
+            renderWeeklyPlanner();
+        }
+
+        function renderDashboardLogs() {
+            // Dashboard Hydro Log Feed
+            const hydroFeed = document.getElementById('dashHydroLogFeed');
+            hydroFeed.innerHTML = '';
+            APP_STATE.hydration.logs.slice(-3).reverse().forEach(log => {
+                const div = document.createElement('div');
+                div.className = 'p-2.5 bg-navy-950/80 rounded-xl border border-slate-800 flex justify-between items-center text-xs';
+                div.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-droplet text-hydro-400"></i>
+                        <span class="font-bold text-slate-200">${log.beverage}</span>
+                    </div>
+                    <span class="text-hydro-400 font-mono font-bold">+${log.amount}ml (${log.time})</span>
+                `;
+                hydroFeed.appendChild(div);
+            });
+
+            // Dashboard Nutri Log Feed
+            const nutriFeed = document.getElementById('dashNutriLogFeed');
+            nutriFeed.innerHTML = '';
+            APP_STATE.nutrition.meals.slice(-3).reverse().forEach(meal => {
+                const div = document.createElement('div');
+                div.className = 'p-2.5 bg-navy-950/80 rounded-xl border border-slate-800 flex justify-between items-center text-xs';
+                div.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-utensils text-nutri-400"></i>
+                        <span class="font-bold text-slate-200">${meal.name}</span>
+                    </div>
+                    <span class="text-nutri-400 font-mono font-bold">${meal.calories} kcal</span>
+                `;
+                nutriFeed.appendChild(div);
+            });
+        }
+
+        function renderTables() {
+            // Hydro Table
+            const hydroTable = document.getElementById('tableHydroHistory');
+            hydroTable.innerHTML = '';
+            APP_STATE.hydration.logs.forEach(log => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-slate-800/60 text-slate-300';
+                tr.innerHTML = `
+                    <td class="py-2.5 font-mono text-slate-400">${log.time}</td>
+                    <td class="py-2.5 font-semibold text-white">${log.beverage}</td>
+                    <td class="py-2.5 font-bold text-hydro-400">${log.amount} ml</td>
+                    <td class="py-2.5 text-right">
+                        <button onclick="deleteHydroLog('${log.id}')" class="text-slate-500 hover:text-rose-400"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                `;
+                hydroTable.appendChild(tr);
+            });
+
+            // Nutri Table
+            const nutriTable = document.getElementById('tableNutriHistory');
+            nutriTable.innerHTML = '';
+            APP_STATE.nutrition.meals.forEach(meal => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-slate-800/60 text-slate-300';
+                tr.innerHTML = `
+                    <td class="py-2.5 font-semibold text-nutri-400">${meal.category}</td>
+                    <td class="py-2.5 font-bold text-white">${meal.name}</td>
+                    <td class="py-2.5 font-extrabold text-amber-400">${meal.calories} kcal</td>
+                    <td class="py-2.5 text-slate-400 font-mono">${meal.protein}g P / ${meal.carbs}g C / ${meal.fats}g F</td>
+                    <td class="py-2.5 text-right">
+                        <button onclick="deleteNutriLog('${meal.id}')" class="text-slate-500 hover:text-rose-400"><i class="fa-solid fa-trash-can"></i></button>
+                    </td>
+                `;
+                nutriTable.appendChild(tr);
+            });
+        }
+
+        function quickAddFluid(amount, beverage) {
+            const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            APP_STATE.hydration.drunk += amount;
+            APP_STATE.hydration.logs.push({
+                id: Date.now().toString(),
+                time: timeNow,
+                beverage: beverage,
+                amount: amount
+            });
+            updateAllUI();
+        }
+
+        function deleteHydroLog(id) {
+            const item = APP_STATE.hydration.logs.find(l => l.id === id);
+            if (item) {
+                APP_STATE.hydration.drunk = Math.max(0, APP_STATE.hydration.drunk - item.amount);
+                APP_STATE.hydration.logs = APP_STATE.hydration.logs.filter(l => l.id !== id);
+                updateAllUI();
+            }
+        }
+
+        function deleteNutriLog(id) {
+            const item = APP_STATE.nutrition.meals.find(m => m.id === id);
+            if (item) {
+                APP_STATE.nutrition.calories = Math.max(0, APP_STATE.nutrition.calories - item.calories);
+                APP_STATE.nutrition.protein = Math.max(0, APP_STATE.nutrition.protein - item.protein);
+                APP_STATE.nutrition.carbs = Math.max(0, APP_STATE.nutrition.carbs - item.carbs);
+                APP_STATE.nutrition.fats = Math.max(0, APP_STATE.nutrition.fats - item.fats);
+                APP_STATE.nutrition.meals = APP_STATE.nutrition.meals.filter(m => m.id !== id);
+                updateAllUI();
+            }
+        }
+
+        function openQuickLogModal(type = 'hydration') {
+            setLogType(type);
+            document.getElementById('modalQuickLog').classList.remove('hidden');
+        }
+
+        function closeQuickLogModal() {
+            document.getElementById('modalQuickLog').classList.add('hidden');
+        }
+
+        function setLogType(type) {
+            const btnHydro = document.getElementById('btnTypeHydro');
+            const btnNutri = document.getElementById('btnTypeNutri');
+            const formHydro = document.getElementById('formHydroLog');
+            const formNutri = document.getElementById('formNutriLog');
+
+            if (type === 'hydration') {
+                btnHydro.className = 'py-2 rounded-lg text-xs font-bold transition bg-hydro-500 text-navy-950';
+                btnNutri.className = 'py-2 rounded-lg text-xs font-bold transition text-slate-400';
+                formHydro.classList.remove('hidden');
+                formNutri.classList.add('hidden');
+                document.getElementById('modalLogTitle').innerText = 'Log Hydration Intake';
+            } else {
+                btnNutri.className = 'py-2 rounded-lg text-xs font-bold transition bg-nutri-500 text-navy-950';
+                btnHydro.className = 'py-2 rounded-lg text-xs font-bold transition text-slate-400';
+                formNutri.classList.remove('hidden');
+                formHydro.classList.add('hidden');
+                document.getElementById('modalLogTitle').innerText = 'Log Nutrition Meal';
+            }
+        }
+
+        function handleLogFluid(e) {
+            e.preventDefault();
+            const beverage = document.getElementById('hydroBeverageType').value;
+            const amount = parseInt(document.getElementById('hydroAmount').value) || 250;
+            quickAddFluid(amount, beverage);
+            closeQuickLogModal();
+        }
+
+        function handleLogFood(e) {
+            e.preventDefault();
+            const category = document.getElementById('nutriMealCategory').value;
+            const name = document.getElementById('nutriFoodName').value;
+            const calories = parseInt(document.getElementById('nutriCalories').value) || 0;
+            const protein = parseInt(document.getElementById('nutriProtein').value) || 0;
+            const carbs = parseInt(document.getElementById('nutriCarbs').value) || 0;
+            const fats = parseInt(document.getElementById('nutriFats').value) || 0;
+
+            APP_STATE.nutrition.calories += calories;
+            APP_STATE.nutrition.protein += protein;
+            APP_STATE.nutrition.carbs += carbs;
+            APP_STATE.nutrition.fats += fats;
+
+            APP_STATE.nutrition.meals.push({
+                id: Date.now().toString(),
+                category,
+                name,
+                calories,
+                protein,
+                carbs,
+                fats
+            });
+
+            document.getElementById('nutriFoodName').value = '';
+            closeQuickLogModal();
+            updateAllUI();
+        }
+
+        function calculateWaterGoal(e) {
+            e.preventDefault();
+            const weight = parseFloat(document.getElementById('calcWeight').value) || 70;
+            const exercise = parseFloat(document.getElementById('calcExercise').value) || 0;
+            const climate = parseFloat(document.getElementById('calcClimate').value) || 1;
+
+            // Baseline formula: 35ml per kg + 12ml per min of exercise
+            let newGoal = Math.round((weight * 35 + exercise * 12) * climate);
+            APP_STATE.hydration.goal = newGoal;
+            updateAllUI();
+        }
+
+        function updateHungerDisplay(val) {
+            const display = document.getElementById('hungerValDisplay');
+            const desc = document.getElementById('hungerDescription');
+            
+            const descriptions = {
+                1: 'Starving: Low energy, headache risk. Eat immediately!',
+                2: 'Very Hungry: Low stamina, strong urge to eat.',
+                3: 'Hungry: Stomach rumbling, good meal window.',
+                4: 'Mild Hunger: Thinking about food options.',
+                5: 'Level 5: Neutral balance. Stomach empty but clear-headed.',
+                6: 'Slightly Satisfied: No longer hungry.',
+                7: 'Comfortably Full: Perfect post-meal satiety.',
+                8: 'Full: Very satisfied, no more room.',
+                9: 'Very Full: Uncomfortably heavy.',
+                10: 'Stuffed: Stuffed & sluggish from overeating.'
+            };
+
+            display.innerText = `Level ${val} (${descriptions[val].split(':')[0]})`;
+            desc.innerText = descriptions[val];
+        }
+
+        function logMindfulHunger() {
+            switchTab('dashboard');
+        }
+
+        function renderWeeklyPlanner() {
+            const grid = document.getElementById('weeklyPlannerGrid');
+            grid.innerHTML = '';
+            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+            days.forEach(day => {
+                const dayPlans = APP_STATE.planner.filter(p => p.day === day);
+                const dayCard = document.createElement('div');
+                dayCard.className = 'bg-glass-card rounded-2xl p-4 border border-slate-800/80 flex flex-col justify-between min-h-[200px]';
+
+                let planHtml = dayPlans.map(p => `
+                    <div class="p-2 bg-navy-950 rounded-xl border border-slate-800 text-xs space-y-1">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold ${p.type === 'Meal' ? 'text-nutri-400' : 'text-hydro-400'}">${p.type}</span>
+                            <button onclick="deletePlan('${p.id}')" class="text-slate-500 hover:text-rose-400 text-[10px]"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                        <p class="text-[11px] text-slate-200">${p.title}</p>
+                    </div>
+                `).join('');
+
+                dayCard.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-2">
+                            <span class="font-extrabold text-sm text-white">${day}</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">${dayPlans.length} Scheduled</span>
+                        </div>
+                        <div class="space-y-2">
+                            ${planHtml || '<p class="text-[10px] text-slate-500 italic">No plan set</p>'}
+                        </div>
+                    </div>
+                    <button onclick="openPlannerModal('${day}')" class="mt-3 w-full py-1.5 border border-dashed border-slate-700 hover:border-teal-400 text-slate-400 text-xs rounded-xl transition">
+                        + Add Schedule
+                    </button>
+                `;
+                grid.appendChild(dayCard);
+            });
+        }
+
+        function openPlannerModal(day = 'Mon') {
+            document.getElementById('planDay').value = day;
+            document.getElementById('modalPlanner').classList.remove('hidden');
+        }
+
+        function closePlannerModal() {
+            document.getElementById('modalPlanner').classList.add('hidden');
+        }
+
+        function handlePlannerAdd(e) {
+            e.preventDefault();
+            const type = document.getElementById('planType').value;
+            const day = document.getElementById('planDay').value;
+            const title = document.getElementById('planTitle').value;
+
+            APP_STATE.planner.push({
+                id: Date.now().toString(),
+                type,
+                day,
+                title
+            });
+
+            document.getElementById('planTitle').value = '';
+            closePlannerModal();
+            renderWeeklyPlanner();
+        }
+
+        function deletePlan(id) {
+            APP_STATE.planner = APP_STATE.planner.filter(p => p.id !== id);
+            renderWeeklyPlanner();
+        }
+
+        function setAppThemeMode(mode) {
+            APP_STATE.themeMode = mode;
+            const html = document.getElementById('appHtml');
+            const darkBtn = document.getElementById('btnDarkTheme');
+            const lightBtn = document.getElementById('btnLightTheme');
+
+            if (mode === 'light') {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                lightBtn.className = 'flex-1 py-2.5 rounded-xl border text-xs font-bold transition bg-sky-500 text-navy-950 border-sky-400';
+                darkBtn.className = 'flex-1 py-2.5 rounded-xl border text-xs font-bold transition bg-slate-800 text-slate-300 border-slate-700';
+            } else {
+                html.classList.remove('light');
+                html.classList.add('dark');
+                darkBtn.className = 'flex-1 py-2.5 rounded-xl border text-xs font-bold transition bg-sky-500 text-navy-950 border-sky-400';
+                lightBtn.className = 'flex-1 py-2.5 rounded-xl border text-xs font-bold transition bg-slate-800 text-slate-300 border-slate-700';
+            }
+        }
+
+        function resetDailyProgress() {
+            APP_STATE.hydration.drunk = 0;
+            APP_STATE.hydration.logs = [];
+            APP_STATE.nutrition.calories = 0;
+            APP_STATE.nutrition.protein = 0;
+            APP_STATE.nutrition.carbs = 0;
+            APP_STATE.nutrition.fats = 0;
+            APP_STATE.nutrition.fiber = 0;
+            APP_STATE.nutrition.meals = [];
+            updateAllUI();
+        }
+
+        window.onload = function() {
+            updateAllUI();
+        };
+    </script>
+</body>
+</html>
