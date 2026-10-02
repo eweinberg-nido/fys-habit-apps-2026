@@ -342,6 +342,81 @@ window.GALLERY = {
               "studentLabel": "Sleep"
             }
           ]
+        },
+        {
+          "block": "E",
+          "apps": [
+            {
+              "name": "SlumberPulse",
+              "tagline": "Teen Sleep & Evening Organizer",
+              "students": "Emily & Rafa",
+              "path": "cade/E/emily-rafa.html",
+              "topics": [
+                "sleep"
+              ],
+              "studentLabel": "Sleep"
+            },
+            {
+              "name": "Estudio Fútbol Club",
+              "tagline": "Católica & Palestino Edition",
+              "students": "Ignacia, Barba & Nicolas",
+              "path": "cade/E/ignacia-barba-nicolas.html",
+              "topics": [
+                "procrastination"
+              ],
+              "studentLabel": "Procrastination"
+            },
+            {
+              "name": "SparkStudy",
+              "tagline": "Dopamine Study Buddy",
+              "students": "Juan & Octavio",
+              "path": "cade/E/juan-octavio.html",
+              "topics": [
+                "studying"
+              ],
+              "studentLabel": "Homework"
+            },
+            {
+              "name": "DirectFlow",
+              "tagline": "Executive Focus Oasis",
+              "students": "Matias & Paulina",
+              "path": "cade/E/matias-paulina.html",
+              "topics": [
+                "procrastination"
+              ],
+              "studentLabel": "Procrastination"
+            },
+            {
+              "name": "Unscroll & Focus",
+              "tagline": "4-Week Minimalist SMART Goal",
+              "students": "Renata, Eva & Akira",
+              "path": "cade/E/renata-eva-akira.html",
+              "topics": [
+                "screen-time"
+              ],
+              "studentLabel": "doomscrolling"
+            },
+            {
+              "name": "SparkFocus",
+              "tagline": "Aesthetic Study & Homework Planner",
+              "students": "Ulli & Jacinta",
+              "path": "cade/E/ulli-jacinta.html",
+              "topics": [
+                "time-management"
+              ],
+              "studentLabel": "Activity and Organzation"
+            },
+            {
+              "name": "Unplug & Thrive",
+              "tagline": "Life Beyond the Screen",
+              "students": "Yong & Catalina",
+              "path": "cade/E/yong-catalina.html",
+              "topics": [
+                "screen-time"
+              ],
+              "studentLabel": "Phone usage"
+            }
+          ]
         }
       ]
     },

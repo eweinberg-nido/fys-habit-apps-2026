@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unscroll & Focus - 4-Week Minimalist SMART Goal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        stone: {
+                            850: '#201e1c',
+                            950: '#0c0a09',
+                        },
+                        pastelGreen: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                        },
+                        pastelBlue: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                        },
+                        sage: {
+                            50: '#f4f7f4',
+                            100: '#e3ebe3',
+                            200: '#c7d7c7',
+                            500: '#5c805c',
+                            600: '#476847',
+                            700: '#395239',
+                            800: '#2d402d',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .task-checkbox:checked + span {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom scrollbar for clean aesthetic */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #374151;
+        }
+    </style>
+</head>
+<body class="h-full bg-gradient-to-br from-emerald-50/60 via-sky-50/40 to-stone-50 dark:from-stone-950 dark:via-sky-950/20 dark:to-stone-950 text-stone-800 dark:text-stone-200 flex flex-col justify-between selection:bg-sky-200 dark:selection:bg-sky-800">
+
+    <div class="min-h-full flex flex-col justify-between max-w-2xl mx-auto px-4 py-6 sm:px-6 w-full">
+        
+        <!-- Header & Goal Overview -->
+        <header class="space-y-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-emerald-400 to-sky-400 text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                        ✓
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-semibold tracking-tight text-stone-900 dark:text-stone-100">Unscroll & Focus</h1>
+                        <p class="text-xs text-stone-500 dark:text-stone-400">Minimalist Daily Task Tracker</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <!-- Dark mode toggle -->
+                    <button id="themeToggleBtn" onclick="toggleTheme()" class="p-2 text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200 rounded-full hover:bg-white/60 dark:hover:bg-stone-800/50 transition-colors" title="Toggle Theme">
+                        <svg id="sunIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <svg id="moonIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </button>
+                    <!-- Settings/Info toggle -->
+                    <button onclick="toggleModal('goalModal')" class="p-2 text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200 rounded-full hover:bg-white/60 dark:hover:bg-stone-800/50 transition-colors" title="SMART Goal Details">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SMART Goal Progress Summary Card -->
+            <div class="bg-white/90 dark:bg-stone-900/90 backdrop-blur-sm border border-sky-100/80 dark:border-stone-800 rounded-2xl p-4 shadow-sm space-y-3">
+                <div class="flex items-center justify-between text-xs font-medium">
+                    <span class="text-stone-600 dark:text-stone-300 flex items-center gap-1.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-emerald-400 to-sky-400 inline-block"></span>
+                        4-Week Unscroll Challenge
+                    </span>
+                    <span id="challengeDayText" class="text-stone-500 dark:text-stone-400">Day 1 of 28</span>
+                </div>
+
+                <!-- 28-day Progress Grid mini overview -->
+                <div>
+                    <div class="flex justify-between items-center text-xs text-stone-500 dark:text-stone-400 mb-1.5">
+                        <span>Overall Progress</span>
+                        <span id="challengeProgressPercent" class="font-semibold text-stone-700 dark:text-stone-200">0%</span>
+                    </div>
+                    <div class="w-full bg-stone-100 dark:bg-stone-800 h-2.5 rounded-full overflow-hidden">
+                        <div id="challengeProgressBar" class="bg-gradient-to-r from-emerald-400 via-teal-400 to-sky-400 h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="pt-1 flex items-center justify-between text-xs border-t border-stone-100 dark:border-stone-800/60">
+                    <div class="flex items-center gap-1.5 text-stone-600 dark:text-stone-300">
+                        <span id="todayStatusIcon">⭕</span>
+                        <span>Today's Target: <strong id="todayCompletedCount">0</strong>/3 tasks</span>
+                    </div>
+                    <button onclick="toggleModal('gridModal')" class="text-sky-600 dark:text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 hover:underline font-medium">
+                        View 28-Day Grid →
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="my-6 space-y-6 flex-1">
+            
+            <!-- View Mode Switcher & Date Navigation -->
+            <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 id="currentDateTitle" class="text-lg font-medium text-stone-900 dark:text-stone-100">Today</h2>
+                        <p id="subQuote" class="text-xs text-stone-500 dark:text-stone-400 italic mt-0.5">Focus on what matters, then put the phone away.</p>
+                    </div>
+                    <div class="flex items-center gap-1 bg-white/80 dark:bg-stone-900/80 backdrop-blur-sm border border-stone-200 dark:border-stone-800 rounded-lg p-1 text-xs">
+                        <button onclick="navigateDate(-1)" class="px-2 py-1 hover:bg-sky-50 dark:hover:bg-stone-800 hover:text-sky-600 rounded transition-colors">← Prev</button>
+                        <button onclick="navigateDate(0)" class="px-2 py-1 hover:bg-sky-50 dark:hover:bg-stone-800 hover:text-sky-600 rounded font-medium transition-colors">Today</button>
+                        <button onclick="navigateDate(1)" class="px-2 py-1 hover:bg-sky-50 dark:hover:bg-stone-800 hover:text-sky-600 rounded transition-colors">Next →</button>
+                    </div>
+                </div>
+
+                <!-- Tabs: Daily List vs Interactive Calendar View -->
+                <div class="flex border-b border-stone-200 dark:border-stone-800 text-xs font-medium gap-3 sm:gap-4 overflow-x-auto">
+                    <button id="tabListBtn" onclick="switchView('list')" class="pb-2 border-b-2 border-emerald-500 text-emerald-700 dark:text-emerald-400 font-semibold transition-all whitespace-nowrap">
+                        📋 Daily List
+                    </button>
+                    <button id="tabCalendarBtn" onclick="switchView('calendar')" class="pb-2 border-b-2 border-transparent text-stone-500 hover:text-sky-600 dark:hover:text-sky-400 transition-all whitespace-nowrap">
+                        📅 Calendar View
+                    </button>
+                    <button id="tabAllBtn" onclick="switchView('all')" class="pb-2 border-b-2 border-transparent text-stone-500 hover:text-sky-600 dark:hover:text-sky-400 transition-all whitespace-nowrap">
+                        📑 All Due Tasks
+                    </button>
+                    <button id="tabUnwindBtn" onclick="switchView('unwind')" class="pb-2 border-b-2 border-transparent text-stone-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all whitespace-nowrap flex items-center gap-1">
+                        🧘 Unwind & Rest
+                    </button>
+                </div>
+            </div>
+
+            <!-- Task Input Bar with Due Date Picker -->
+            <form id="taskForm" onsubmit="handleAddTask(event)" class="flex flex-col sm:flex-row gap-2">
+                <input 
+                    type="text" 
+                    id="taskInput"
+                    placeholder="Add a task with due date..." 
+                    maxlength="100"
+                    class="flex-1 bg-white dark:bg-stone-900 border border-emerald-100 dark:border-stone-800 rounded-xl px-4 py-3 text-sm text-stone-900 dark:text-stone-100 placeholder-stone-400 dark:placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-sky-400/50 shadow-sm transition-all"
+                />
+                <div class="flex gap-2">
+                    <input 
+                        type="date" 
+                        id="taskDueDateInput"
+                        class="bg-white dark:bg-stone-900 border border-emerald-100 dark:border-stone-800 rounded-xl px-3 py-3 text-xs text-stone-700 dark:text-stone-300 focus:outline-none focus:ring-2 focus:ring-sky-400/50 shadow-sm transition-all"
+                        title="Set Due Date"
+                    />
+                    <button 
+                        type="submit" 
+                        class="bg-gradient-to-r from-emerald-500 via-teal-500 to-sky-500 hover:from-emerald-600 hover:to-sky-600 text-white px-5 py-3 rounded-xl text-xs font-medium transition-all shadow-sm flex items-center justify-center gap-1 shrink-0 active:scale-95">
+                        <span>Add Task</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Interactive Calendar View Container (Hidden by default) -->
+            <div id="calendarViewContainer" class="hidden bg-white/90 dark:bg-stone-900/90 backdrop-blur-sm border border-sky-100 dark:border-stone-800 rounded-2xl p-4 shadow-sm space-y-4 fade-in">
+                <!-- ... existing calendar content ... -->
+            </div>
+
+            <!-- Unwind & Rest Timer Container (The ONLY timer in the app) -->
+            <div id="unwindViewContainer" class="hidden bg-gradient-to-br from-emerald-50/90 via-sky-50/70 to-teal-50/90 dark:from-stone-900/90 dark:via-emerald-950/20 dark:to-stone-900/90 backdrop-blur-sm border border-emerald-200/80 dark:border-stone-800 rounded-2xl p-6 shadow-sm space-y-6 fade-in">
+                <div class="text-center space-y-1">
+                    <span class="inline-block px-3 py-1 rounded-full text-[11px] font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                        🧘 Mindful Rest Zone
+                    </span>
+                    <h3 class="text-lg font-semibold text-stone-900 dark:text-stone-100">Unwind & Disconnect</h3>
+                    <p class="text-xs text-stone-500 dark:text-stone-400 max-w-sm mx-auto">
+                        Set your rest time to step away from your phone, rest your eyes, and relax.
+                    </p>
+                </div>
+
+                <!-- Circular Timer Display -->
+                <div class="flex flex-col items-center justify-center space-y-4 my-2">
+                    <div class="relative w-44 h-44 rounded-full bg-white dark:bg-stone-900 border-4 border-sky-200 dark:border-stone-700 shadow-inner flex flex-col items-center justify-center transition-all">
+                        <span id="unwindTimeDisplay" class="text-4xl font-bold tracking-tight text-stone-800 dark:text-stone-100">10:00</span>
+                        <span id="unwindStatusLabel" class="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-1">Ready to Rest</span>
+                    </div>
+
+                    <!-- Adjust duration buttons -->
+                    <div class="flex items-center gap-2">
+                        <button onclick="adjustUnwindDuration(-5)" class="p-1.5 px-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 rounded-lg text-xs font-medium hover:bg-stone-50 dark:hover:bg-stone-700 active:scale-95 transition-all">-5m</button>
+                        <button onclick="adjustUnwindDuration(-1)" class="p-1.5 px-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 rounded-lg text-xs font-medium hover:bg-stone-50 dark:hover:bg-stone-700 active:scale-95 transition-all">-1m</button>
+                        <span class="text-xs text-stone-400 font-medium px-1">Adjust</span>
+                        <button onclick="adjustUnwindDuration(1)" class="p-1.5 px-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 rounded-lg text-xs font-medium hover:bg-stone-50 dark:hover:bg-stone-700 active:scale-95 transition-all">+1m</button>
+                        <button onclick="adjustUnwindDuration(5)" class="p-1.5 px-3 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 rounded-lg text-xs font-medium hover:bg-stone-50 dark:hover:bg-stone-700 active:scale-95 transition-all">+5m</button>
+                    </div>
+
+                    <!-- Quick Preset Buttons -->
+                    <div class="flex flex-wrap justify-center gap-2 pt-1">
+                        <button onclick="setUnwindDuration(5)" class="px-3 py-1 bg-white/80 dark:bg-stone-800 text-xs rounded-full border border-sky-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:border-emerald-400 transition-colors">5 min break</button>
+                        <button onclick="setUnwindDuration(10)" class="px-3 py-1 bg-white/80 dark:bg-stone-800 text-xs rounded-full border border-sky-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:border-emerald-400 transition-colors">10 min tea time</button>
+                        <button onclick="setUnwindDuration(15)" class="px-3 py-1 bg-white/80 dark:bg-stone-800 text-xs rounded-full border border-sky-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:border-emerald-400 transition-colors">15 min walk</button>
+                        <button onclick="setUnwindDuration(20)" class="px-3 py-1 bg-white/80 dark:bg-stone-800 text-xs rounded-full border border-sky-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:border-emerald-400 transition-colors">20 min stretch</button>
+                    </div>
+                </div>
+
+                <!-- Control Actions -->
+                <div class="flex justify-center gap-3 pt-2">
+                    <button id="startUnwindBtn" onclick="toggleUnwindTimer()" class="bg-gradient-to-r from-emerald-500 via-teal-500 to-sky-500 hover:from-emerald-600 hover:to-sky-600 text-white px-6 py-2.5 rounded-xl text-xs font-medium transition-all shadow-sm active:scale-95 min-w-[110px]">
+                        Start Rest
+                    </button>
+                    <button onclick="resetUnwindTimer()" class="bg-white dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 px-5 py-2.5 rounded-xl text-xs font-medium transition-all active:scale-95">
+                        Reset
+                    </button>
+                </div>
+
+                <!-- Mindful Relaxation Suggestion -->
+                <div class="bg-white/70 dark:bg-stone-900/60 p-3.5 rounded-xl border border-sky-100 dark:border-stone-800 text-center text-xs space-y-1">
+                    <p class="text-stone-600 dark:text-stone-300 font-medium">✨ Unwind Mindset:</p>
+                    <p id="unwindTipText" class="text-stone-500 dark:text-stone-400 italic">Put your phone face-down, take 3 slow deep breaths, and rest your eyes.</p>
+                </div>
+            </div>
+
+            <!-- Minimal Task List Container -->
+            <div id="listViewContainer" class="space-y-2">
+                <div class="flex justify-between items-center text-xs font-medium text-stone-500 dark:text-stone-400 px-1">
+                    <span id="taskListHeading">To-Do List</span>
+                    <span id="taskListSummary">0 tasks</span>
+                </div>
+
+                <div id="taskList" class="space-y-2 min-h-[160px]">
+                    <!-- Dynamic tasks inserted here -->
+                </div>
+            </div>
+
+            <!-- Goal Achieved Celebration Banner (shows when 3+ tasks checked off today) -->
+            <div id="goalAchievedBanner" class="hidden fade-in bg-gradient-to-r from-emerald-50/90 via-teal-50/80 to-sky-50/90 dark:from-emerald-950/40 dark:via-teal-950/30 dark:to-sky-950/40 border border-emerald-200 dark:border-emerald-800/50 rounded-2xl p-5 text-center space-y-3 shadow-sm">
+                <div class="inline-flex p-3 bg-gradient-to-tr from-emerald-400 to-sky-400 rounded-full text-white shadow-sm">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                </div>
+                <div>
+                    <h3 class="text-base font-semibold text-stone-900 dark:text-stone-100">3 Daily Tasks Complete! 🎉</h3>
+                    <p class="text-xs text-stone-600 dark:text-stone-400 mt-1 max-w-md mx-auto">
+                        You have met today's SMART goal requirement. You can lock your screen now and enjoy offline life without doomscrolling.
+                    </p>
+                </div>
+
+                <!-- Random offline activity suggestor -->
+                <div class="pt-2">
+                    <button onclick="generateOfflineIdea()" class="text-xs bg-white dark:bg-stone-800 border border-sky-200 dark:border-stone-700 hover:border-sky-400 text-stone-700 dark:text-stone-300 px-3 py-1.5 rounded-full transition-colors inline-flex items-center gap-1.5 shadow-sm">
+                        <span>✨ What to do instead of scrolling?</span>
+                    </button>
+                    <p id="offlineIdeaText" class="text-xs text-teal-700 dark:text-teal-300 font-medium mt-2 min-h-[1.25rem]"></p>
+                </div>
+            </div>
+
+            <!-- Single Focus Mode Card (for extreme minimalism) -->
+            <div id="singleFocusContainer" class="hidden bg-sky-50/60 dark:bg-stone-900/60 border border-sky-100 dark:border-stone-800 rounded-xl p-4 text-center">
+                <p class="text-xs font-semibold uppercase tracking-wider text-sky-600 dark:text-sky-400 mb-1">Current Focus Item</p>
+                <p id="singleFocusText" class="text-sm font-medium text-stone-800 dark:text-stone-200"></p>
+            </div>
+        </main>
+
+        <footer class="pt-4 border-t border-stone-200/80 dark:border-stone-800 flex items-center justify-between text-xs text-stone-400 dark:text-stone-500">
+            <span>No timers • No infinite feeds • Clean focus</span>
+            <button onclick="toggleModal('gridModal')" class="hover:text-stone-700 dark:hover:text-stone-300 transition-colors">
+                28-Day Challenge Calendar
+            </button>
+        </footer>
+    </div>
+
+    <!-- MODAL 1: 28-Day Challenge Grid -->
+    <div id="gridModal" class="fixed inset-0 bg-stone-950/40 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4 max-h-[90vh] overflow-y-auto fade-in">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-base font-semibold text-stone-900 dark:text-stone-100">4-Week Challenge Progress</h3>
+                    <p class="text-xs text-stone-500 dark:text-stone-400">Complete at least 3 tasks per day to green a day.</p>
+                </div>
+                <button onclick="toggleModal('gridModal')" class="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 text-lg">✕</button>
+            </div>
+
+            <!-- Grid container for 28 days -->
+            <div id="daysGrid" class="grid grid-cols-7 gap-2 pt-2">
+                <!-- Dynamically generated 28 boxes -->
+            </div>
+
+            <div class="flex items-center justify-between text-xs text-stone-500 pt-2 border-t border-stone-100 dark:border-stone-800">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded bg-gradient-to-tr from-emerald-400 to-teal-400 inline-block"></span> <span>Goal Met (3+)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded bg-sky-100 dark:bg-sky-900/40 border border-sky-300 dark:border-sky-700 inline-block"></span> <span>Partial</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded bg-stone-200 dark:bg-stone-800 inline-block"></span> <span>Incomplete</span>
+                </div>
+            </div>
+
+            <div class="pt-2 flex gap-2">
+                <button onclick="resetChallengePrompt()" class="w-full text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 py-2 rounded-lg border border-red-200 dark:border-red-900/40 transition-colors">
+                    Reset 28-Day Challenge
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: SMART Goal Details -->
+    <div id="goalModal" class="fixed inset-0 bg-stone-950/40 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl max-w-md w-full p-6 shadow-xl space-y-4 fade-in">
+            <div class="flex items-center justify-between">
+                <h3 class="text-base font-semibold text-stone-900 dark:text-stone-100">Your SMART Goal</h3>
+                <button onclick="toggleModal('goalModal')" class="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 text-lg">✕</button>
+            </div>
+
+            <div class="space-y-3 text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
+                <div class="bg-stone-50 dark:bg-stone-800/50 p-3 rounded-xl border border-stone-200/60 dark:border-stone-700/50">
+                    <p class="italic text-stone-700 dark:text-stone-200">
+                        "I will reduce my doomscrolling by using a minimalist app that gives me a simple daily to-do list, helping me focus on what I need to do instead of spending too much time on my phone. I will use the app every day for 4 weeks and complete at least 3 important tasks each day."
+                    </p>
+                </div>
+
+                <div class="space-y-1.5">
+                    <p><strong>🎯 Specific:</strong> Complete 3 tasks daily & reduce phone scrolling.</p>
+                    <p><strong>📊 Measurable:</strong> At least 3 tasks checked off every day.</p>
+                    <p><strong>🌱 Achievable:</strong> Simple, clean task list without overwhelming timers.</p>
+                    <p><strong>🧘 Relevant:</strong> Reclaim focus and offline time.</p>
+                    <p><strong>⏳ Time-bound:</strong> 4 weeks (28 continuous days).</p>
+                </div>
+            </div>
+
+            <button onclick="toggleModal('goalModal')" class="w-full bg-sage-600 hover:bg-sage-700 text-white text-xs font-medium py-2.5 rounded-xl transition-colors">
+                Got It
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 3: Custom Confirmation Dialog (Replaces native confirm()) -->
+    <div id="confirmModal" class="fixed inset-0 bg-stone-950/40 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl max-w-sm w-full p-5 shadow-xl space-y-4 fade-in">
+            <h3 id="confirmTitle" class="text-base font-semibold text-stone-900 dark:text-stone-100">Are you sure?</h3>
+            <p id="confirmMessage" class="text-xs text-stone-600 dark:text-stone-400">This action cannot be undone.</p>
+            <div class="flex gap-2 justify-end pt-2">
+                <button id="confirmCancelBtn" class="px-3 py-1.5 rounded-lg text-xs font-medium text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800">Cancel</button>
+                <button id="confirmOkBtn" class="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-red-600 hover:bg-red-700">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA STORE & STATE ---
+        const STORAGE_KEY = 'unscroll_focus_app_v1';
+        
+        let state = {
+            startDate: getFormattedDate(new Date()), // Format YYYY-MM-DD
+            tasksByDate: {}, // { '2026-09-30': [ { id, text, completed, dueDate } ] }
+            currentViewingDate: getFormattedDate(new Date()),
+            calendarDisplayDate: new Date(),
+            activeView: 'list', // 'list', 'calendar', 'all', 'unwind'
+            theme: 'light'
+        };
+
+        // Dedicated Rest / Unwind Timer State (the ONLY timer in the app)
+        let unwindTimerState = {
+            durationMinutes: 10,
+            remainingSeconds: 600,
+            isRunning: false,
+            intervalId: null
+        };
+
+        const OFFLINE_IDEAS = [
+            "Read 10 pages of a physical book or audio book 📖",
+            "Go for a 15-minute walk outside without looking at your phone 🚶‍♂️",
+            "Drink a warm glass of tea or coffee mindfully ☕",
+            "Do a quick 5-minute stretch session 🧘",
+            "Write down 3 things you are grateful for today ✍️",
+            "Tidy up one small corner or desk space 🧹",
+            "Listen to an entire album without multitasking 🎧",
+            "Call or text a friend to say hello ☎️",
+            "Doodle or draw something simple on paper 🎨"
+        ];
+
+        function initApp() {
+            loadState();
+            applyTheme();
+            
+            // Ensure state for today exists
+            const todayStr = getFormattedDate(new Date());
+            if (!state.tasksByDate[todayStr]) {
+                state.tasksByDate[todayStr] = [
+                    { id: Date.now() + 1, text: "Read for 15 minutes", completed: false, dueDate: todayStr },
+                    { id: Date.now() + 2, text: "Drink 2 liters of water", completed: false, dueDate: todayStr },
+                    { id: Date.now() + 3, text: "Go for a short daily walk", completed: false, dueDate: todayStr }
+                ];
+                saveState();
+            }
+
+            // Sync date input default
+            const dueDateInput = document.getElementById('taskDueDateInput');
+            if (dueDateInput) {
+                dueDateInput.value = state.currentViewingDate;
+            }
+
+            render();
+        }
+
+        function loadState() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    state = { ...state, ...parsed };
+                }
+            } catch (e) {
+                console.error("Failed to load local storage state", e);
+            }
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            } catch (e) {
+                console.error("Failed to save to local storage", e);
+            }
+        }
+
+        function getFormattedDate(dateObj) {
+            const y = dateObj.getFullYear();
+            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const d = String(dateObj.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function parseFormattedDate(dateStr) {
+            const parts = dateStr.split('-');
+            return new Date(parts[0], parts[1] - 1, parts[2]);
+        }
+
+        function switchView(viewMode) {
+            state.activeView = viewMode;
+            
+            const btnList = document.getElementById('tabListBtn');
+            const btnCal = document.getElementById('tabCalendarBtn');
+            const btnAll = document.getElementById('tabAllBtn');
+            const btnUnwind = document.getElementById('tabUnwindBtn');
+
+            const activeClassList = "pb-2 border-b-2 border-emerald-500 text-emerald-700 dark:text-emerald-400 font-semibold transition-all whitespace-nowrap";
+            const activeClassCal = "pb-2 border-b-2 border-sky-500 text-sky-600 dark:text-sky-400 font-semibold transition-all whitespace-nowrap";
+            const activeClassAll = "pb-2 border-b-2 border-teal-500 text-teal-600 dark:text-teal-400 font-semibold transition-all whitespace-nowrap";
+            const activeClassUnwind = "pb-2 border-b-2 border-emerald-500 text-emerald-600 dark:text-emerald-400 font-semibold transition-all whitespace-nowrap flex items-center gap-1";
+            const inactiveClass = "pb-2 border-b-2 border-transparent text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 transition-all whitespace-nowrap";
+
+            btnList.className = viewMode === 'list' ? activeClassList : inactiveClass;
+            btnCal.className = viewMode === 'calendar' ? activeClassCal : inactiveClass;
+            btnAll.className = viewMode === 'all' ? activeClassAll : inactiveClass;
+            if (btnUnwind) btnUnwind.className = viewMode === 'unwind' ? activeClassUnwind : inactiveClass + " flex items-center gap-1";
+
+            const calContainer = document.getElementById('calendarViewContainer');
+            const listContainer = document.getElementById('listViewContainer');
+            const unwindContainer = document.getElementById('unwindViewContainer');
+            const taskForm = document.getElementById('taskForm');
+
+            if (viewMode === 'calendar') {
+                calContainer.classList.remove('hidden');
+                listContainer.classList.remove('hidden');
+                unwindContainer.classList.add('hidden');
+                if (taskForm) taskForm.classList.remove('hidden');
+            } else if (viewMode === 'all') {
+                calContainer.classList.add('hidden');
+                listContainer.classList.remove('hidden');
+                unwindContainer.classList.add('hidden');
+                if (taskForm) taskForm.classList.remove('hidden');
+            } else if (viewMode === 'unwind') {
+                calContainer.classList.add('hidden');
+                listContainer.classList.add('hidden');
+                unwindContainer.classList.remove('hidden');
+                if (taskForm) taskForm.classList.add('hidden');
+                renderUnwindTimer();
+            } else { // 'list'
+                calContainer.classList.add('hidden');
+                listContainer.classList.remove('hidden');
+                unwindContainer.classList.add('hidden');
+                if (taskForm) taskForm.classList.remove('hidden');
+            }
+
+            render();
+        }
+
+        // --- UNWIND REST TIMER LOGIC ---
+        function setUnwindDuration(mins) {
+            if (mins < 1) mins = 1;
+            if (mins > 120) mins = 120;
+            
+            unwindTimerState.durationMinutes = mins;
+            unwindTimerState.remainingSeconds = mins * 60;
+            if (unwindTimerState.isRunning) {
+                pauseUnwindTimer();
+            }
+            renderUnwindTimer();
+        }
+
+        function adjustUnwindDuration(deltaMins) {
+            const newMins = unwindTimerState.durationMinutes + deltaMins;
+            setUnwindDuration(newMins);
+        }
+
+        function renderUnwindTimer() {
+            const displayEl = document.getElementById('unwindTimeDisplay');
+            const statusEl = document.getElementById('unwindStatusLabel');
+            const btnEl = document.getElementById('startUnwindBtn');
+
+            if (!displayEl) return;
+
+            const totalSecs = unwindTimerState.remainingSeconds;
+            const m = Math.floor(totalSecs / 60);
+            const s = totalSecs % 60;
+            displayEl.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+
+            if (unwindTimerState.isRunning) {
+                statusEl.textContent = "Unwinding in Progress 🌿";
+                statusEl.className = "text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-1 animate-pulse";
+                btnEl.textContent = "Pause Rest";
+                btnEl.className = "bg-amber-500 hover:bg-amber-600 text-white px-6 py-2.5 rounded-xl text-xs font-medium transition-all shadow-sm active:scale-95 min-w-[110px]";
+            } else {
+                statusEl.textContent = totalSecs === 0 ? "Rest Finished! ✨" : "Ready to Rest";
+                statusEl.className = "text-xs text-sky-600 dark:text-sky-400 font-medium mt-1";
+                btnEl.textContent = totalSecs === 0 ? "Start Again" : "Start Rest";
+                btnEl.className = "bg-gradient-to-r from-emerald-500 via-teal-500 to-sky-500 hover:from-emerald-600 hover:to-sky-600 text-white px-6 py-2.5 rounded-xl text-xs font-medium transition-all shadow-sm active:scale-95 min-w-[110px]";
+            }
+        }
+
+        function toggleUnwindTimer() {
+            if (unwindTimerState.isRunning) {
+                pauseUnwindTimer();
+            } else {
+                if (unwindTimerState.remainingSeconds <= 0) {
+                    unwindTimerState.remainingSeconds = unwindTimerState.durationMinutes * 60;
+                }
+                startUnwindTimer();
+            }
+        }
+
+        function startUnwindTimer() {
+            if (unwindTimerState.intervalId) clearInterval(unwindTimerState.intervalId);
+            unwindTimerState.isRunning = true;
+            
+            unwindTimerState.intervalId = setInterval(() => {
+                if (unwindTimerState.remainingSeconds > 0) {
+                    unwindTimerState.remainingSeconds--;
+                    renderUnwindTimer();
+                } else {
+                    finishUnwindTimer();
+                }
+            }, 1000);
+
+            renderUnwindTimer();
+        }
+
+        function pauseUnwindTimer() {
+            unwindTimerState.isRunning = false;
+            if (unwindTimerState.intervalId) {
+                clearInterval(unwindTimerState.intervalId);
+                unwindTimerState.intervalId = null;
+            }
+            renderUnwindTimer();
+        }
+
+        function resetUnwindTimer() {
+            pauseUnwindTimer();
+            unwindTimerState.remainingSeconds = unwindTimerState.durationMinutes * 60;
+            renderUnwindTimer();
+        }
+
+        function finishUnwindTimer() {
+            pauseUnwindTimer();
+            playSoftTone();
+            
+            const statusEl = document.getElementById('unwindStatusLabel');
+            if (statusEl) {
+                statusEl.textContent = "Rest Finished! 🎉";
+                statusEl.className = "text-xs text-emerald-600 font-bold mt-1";
+            }
+
+            const tipEl = document.getElementById('unwindTipText');
+            if (tipEl) {
+                tipEl.textContent = "Great job taking time for yourself! Gently return to your tasks when you feel refreshed.";
+            }
+        }
+
+        function renderInteractiveCalendar() {
+            const titleEl = document.getElementById('calendarMonthTitle');
+            const gridEl = document.getElementById('monthDaysGrid');
+            if (!gridEl) return;
+
+            const viewDate = state.calendarDisplayDate || new Date();
+            const year = viewDate.getFullYear();
+            const month = viewDate.getMonth();
+
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            titleEl.textContent = `${monthNames[month]} ${year}`;
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            let html = '';
+
+            // Empty cells before first day
+            for (let i = 0; i < firstDay; i++) {
+                html += `<div class="aspect-square opacity-20"></div>`;
+            }
+
+            const todayStr = getFormattedDate(new Date());
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const cellDate = new Date(year, month, day);
+                const cellDateStr = getFormattedDate(cellDate);
+
+                const tasksOnDay = state.tasksByDate[cellDateStr] || [];
+                const completedOnDay = tasksOnDay.filter(t => t.completed).length;
+
+                const isToday = cellDateStr === todayStr;
+                const isSelected = cellDateStr === state.currentViewingDate;
+
+                let borderClass = "border border-stone-100 dark:border-stone-800/60";
+                if (isSelected) borderClass = "ring-2 ring-sky-400 font-bold bg-sky-50/40 dark:bg-sky-950/20";
+                if (isToday) borderClass += " bg-emerald-50/60 dark:bg-emerald-950/30";
+
+                let indicatorDot = '';
+                if (completedOnDay >= 3) {
+                    indicatorDot = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1 shadow-sm"></span>`;
+                } else if (tasksOnDay.length > 0) {
+                    indicatorDot = `<span class="w-1.5 h-1.5 rounded-full bg-sky-400 mt-1 shadow-sm"></span>`;
+                }
+
+                html += `
+                    <button 
+                        onclick="selectCalendarDate('${cellDateStr}')"
+                        class="aspect-square rounded-lg flex flex-col items-center justify-center text-xs p-1 hover:bg-sky-50/70 dark:hover:bg-stone-800 transition-all ${borderClass}">
+                        <span class="${isToday ? 'text-emerald-700 dark:text-emerald-400 font-bold' : 'text-stone-700 dark:text-stone-300'}">${day}</span>
+                        ${indicatorDot}
+                    </button>
+                `;
+            }
+
+            gridEl.innerHTML = html;
+        }
+
+        function render28DayGrid() {
+            const gridContainer = document.getElementById('daysGrid');
+            if (!gridContainer) return;
+
+            const start = parseFormattedDate(state.startDate);
+            let html = '';
+
+            for (let i = 0; i < 28; i++) {
+                const d = new Date(start);
+                d.setDate(d.getDate() + i);
+                const dStr = getFormattedDate(d);
+                const tasks = state.tasksByDate[dStr] || [];
+                const completedCount = tasks.filter(t => t.completed).length;
+
+                const isGoalMet = completedCount >= 3;
+                const isCurrentViewing = dStr === state.currentViewingDate;
+
+                let bgClass = "bg-stone-100 dark:bg-stone-800/60 text-stone-600 dark:text-stone-400";
+                if (isGoalMet) {
+                    bgClass = "bg-gradient-to-tr from-emerald-400 to-teal-400 text-white font-bold shadow-sm";
+                } else if (completedCount > 0) {
+                    bgClass = "bg-sky-100 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800/60 text-sky-800 dark:text-sky-300";
+                }
+
+                const ringClass = isCurrentViewing ? "ring-2 ring-sky-400 dark:ring-sky-400 scale-105" : "";
+
+                html += `
+                    <button 
+                        onclick="selectGridDate('${dStr}')" 
+                        class="aspect-square rounded-xl flex flex-col items-center justify-center p-1 text-xs transition-all ${bgClass} ${ringClass} hover:opacity-80"
+                        title="${dStr}: ${completedCount} tasks completed">
+                        <span class="text-[10px] opacity-75">D${i + 1}</span>
+                        <span class="font-semibold text-xs">${completedCount}/3</span>
+                    </button>
+                `;
+            }
+
+            gridContainer.innerHTML = html;
+        }
+
+        function selectGridDate(dateStr) {
+            state.currentViewingDate = dateStr;
+            toggleModal('gridModal');
+            render();
+        }
+
+        function toggleTheme() {
+            state.theme = state.theme === 'dark' ? 'light' : 'dark';
+            applyTheme();
+            saveState();
+        }
+
+        function applyTheme() {
+            const sun = document.getElementById('sunIcon');
+            const moon = document.getElementById('moonIcon');
+            if (state.theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                if (sun && moon) {
+                    sun.classList.remove('hidden');
+                    moon.classList.add('hidden');
+                }
+            } else {
+                document.documentElement.classList.remove('dark');
+                if (sun && moon) {
+                    sun.classList.add('hidden');
+                    moon.classList.remove('hidden');
+                }
+            }
+        }
+
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.toggle('hidden');
+                modal.classList.toggle('flex');
+            }
+        }
+
+        function generateOfflineIdea() {
+            const ideaEl = document.getElementById('offlineIdeaText');
+            const random = OFFLINE_IDEAS[Math.floor(Math.random() * OFFLINE_IDEAS.length)];
+            ideaEl.textContent = random;
+        }
+
+        function resetChallengePrompt() {
+            showConfirm(
+                "Reset 28-Day Challenge?", 
+                "This will restart your 4-week timer starting today. Your existing task logs will be preserved.",
+                () => {
+                    state.startDate = getFormattedDate(new Date());
+                    saveState();
+                    render();
+                    toggleModal('gridModal');
+                }
+            );
+        }
+
+        // Custom Confirm Dialog (no native confirm/alert)
+        function showConfirm(title, message, onOk) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            
+            const modal = document.getElementById('confirmModal');
+            const okBtn = document.getElementById('confirmOkBtn');
+            const cancelBtn = document.getElementById('confirmCancelBtn');
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            const cleanup = () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                okBtn.onclick = null;
+                cancelBtn.onclick = null;
+            };
+
+            okBtn.onclick = () => {
+                cleanup();
+                onOk();
+            };
+
+            cancelBtn.onclick = () => {
+                cleanup();
+            };
+        }
+
+        // Web Audio API soft chime feedback on completing tasks
+        function playSoftTone() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+                osc.frequency.exponentialRampToValueAtTime(659.25, ctx.currentTime + 0.15); // E5
+
+                gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start();
+                osc.stop(ctx.currentTime + 0.2);
+            } catch (e) {
+                // Audio context may be restricted before interaction
+            }
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;")
+                      .replace(/</g, "&lt;")
+                      .replace(/>/g, "&gt;")
+                      .replace(/"/g, "&quot;")
+                      .replace(/'/g, "&#032;");
+        }
+
+        window.onload = function() {
+            initApp();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SparkStudy - Dopamine Study Buddy</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Fredoka & Plus Jakarta Sans for cute, readable typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sparkYellow: '#FFD166',
+                        sparkPink: '#FF70A6',
+                        sparkPurple: '#70D6FF',
+                        sparkViolet: '#9B5DE5',
+                        sparkGreen: '#06D6A0',
+                        sparkOrange: '#FF9F1C',
+                        bgSoft: '#F8F9FE'
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #F4F6FC;
+            background-image: radial-gradient(#E2E8F0 1.2px, transparent 1.2px);
+            background-size: 24px 24px;
+        }
+
+        .heading-font {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .bounce-gentle {
+            animation: bounceGentle 2.5s infinite ease-in-out;
+        }
+
+        @keyframes bounceGentle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .pulse-glow {
+            animation: pulseGlow 2s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 15px rgba(255, 112, 166, 0.4); }
+            100% { box-shadow: 0 0 30px rgba(255, 112, 166, 0.8); }
+        }
+
+        .bubble {
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .bubble.popped {
+            transform: scale(0.7);
+            opacity: 0.25;
+            box-shadow: inset 0 3px 6px rgba(0,0,0,0.2);
+            background: #CBD5E1 !important;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F1F5F9;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col justify-between selection:bg-sparkPink selection:text-white">
+
+    <header class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-30">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- App Logo -->
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 bg-gradient-to-tr from-sparkPink to-sparkOrange rounded-2xl flex items-center justify-center text-white text-2xl shadow-md shadow-sparkPink/20 transform hover:rotate-6 transition-transform">
+                    ✨
+                </div>
+                <div>
+                    <h1 class="heading-font text-2xl font-bold bg-gradient-to-r from-sparkPink via-sparkViolet to-sparkOrange bg-clip-text text-transparent leading-none">
+                        SparkStudy
+                    </h1>
+                    <p class="text-xs font-semibold text-slate-400">Zero-Guilt Study Buddy</p>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="flex items-center gap-2 sm:gap-4">
+                <!-- Streak Badge -->
+                <div class="bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-sm" title="Daily Study Streak">
+                    <span class="text-lg">🔥</span>
+                    <span id="streak-count" class="heading-font font-bold text-amber-700 text-sm">0 Days</span>
+                </div>
+
+                <!-- Coins / Stars Badge -->
+                <div class="bg-purple-50 border border-purple-200 px-3 py-1.5 rounded-xl flex items-center gap-2 shadow-sm" title="Dopamine Stars Earned">
+                    <span class="text-lg">⭐</span>
+                    <span id="stars-count" class="heading-font font-bold text-purple-700 text-sm">0 Stars</span>
+                </div>
+
+                <!-- Audio Toggle -->
+                <button id="sound-toggle-btn" onclick="toggleSound()" class="w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-xl flex items-center justify-center text-slate-600 transition-colors" title="Toggle Sound Effects">
+                    <i id="sound-icon" class="fas fa-volume-up"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-6 w-full flex-grow grid grid-cols-1 md:grid-cols-12 gap-6">
+
+        <!-- LEFT COLUMN: Mascot & Timer Hub (7 cols) -->
+        <section class="md:col-span-7 flex flex-col gap-6">
+
+            <!-- MASCOT CARD -->
+            <div class="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100 relative overflow-hidden flex flex-col items-center justify-center text-center">
+                <!-- Background decoration glow -->
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-sparkPurple/20 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-sparkPink/20 rounded-full blur-2xl pointer-events-none"></div>
+
+                <!-- Pet Avatar SVG Dynamic Visual -->
+                <div id="mascot-container" class="relative w-44 h-44 my-2 bounce-gentle cursor-pointer group" onclick="interactMascot()">
+                    <!-- Mascot Canvas SVG -->
+                    <svg id="sparky-svg" class="w-full h-full drop-shadow-lg" viewBox="0 0 200 200">
+                        <!-- Shadow -->
+                        <ellipse cx="100" cy="180" rx="55" ry="12" fill="#E2E8F0" />
+                        <!-- Body -->
+                        <path id="sparky-body" d="M 40 120 C 30 50, 170 50, 160 120 C 160 170, 40 170, 40 120 Z" fill="url(#sparkyGrad)" />
+                        <!-- Gradient -->
+                        <defs>
+                            <linearGradient id="sparkyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#FF70A6" />
+                                <stop offset="100%" stop-color="#FF9F1C" />
+                            </linearGradient>
+                        </defs>
+                        <!-- Cheek Blushes -->
+                        <circle cx="65" cy="115" r="12" fill="#FF477E" opacity="0.3" />
+                        <circle cx="135" cy="115" r="12" fill="#FF477E" opacity="0.3" />
+                        <!-- Eyes -->
+                        <g id="sparky-eyes">
+                            <circle cx="75" cy="100" r="8" fill="#1E293B" />
+                            <circle cx="125" cy="100" r="8" fill="#1E293B" />
+                            <!-- Eye sparkles -->
+                            <circle cx="72" cy="97" r="3" fill="#FFFFFF" />
+                            <circle cx="122" cy="97" r="3" fill="#FFFFFF" />
+                        </g>
+                        <!-- Smile Mouth -->
+                        <path id="sparky-mouth" d="M 88 115 Q 100 128 112 115" fill="none" stroke="#1E293B" stroke-width="4" stroke-linecap="round" />
+                        
+                        <!-- Accessories Overlay Slot -->
+                        <g id="mascot-hat-slot"></g>
+                        <g id="mascot-glasses-slot"></g>
+                    </svg>
+                    <!-- Click reaction quote bubble -->
+                    <div id="mascot-bubble" class="absolute -top-4 right-0 bg-slate-900 text-white text-xs font-semibold px-3 py-1.5 rounded-2xl opacity-0 transition-opacity pointer-events-none shadow-md">
+                        Let's do this! ✨
+                    </div>
+                </div>
+
+                <!-- Mascot Info & Outfit Button -->
+                <div class="flex items-center gap-3 mt-2">
+                    <h2 class="heading-font text-2xl font-bold text-slate-800">Sparky</h2>
+                    <span id="mascot-status" class="bg-emerald-100 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full">Ready to support you!</span>
+                </div>
+
+                <button onclick="openShopModal()" class="mt-3 text-xs font-bold text-sparkViolet hover:text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 px-4 py-2 rounded-xl transition-all flex items-center gap-2">
+                    <i class="fas fa-store"></i> Dress Up Sparky & Shop
+                </button>
+            </div>
+
+            <!-- TIMER CARD -->
+            <div class="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col items-center">
+                <!-- Preset Sprint Selector Buttons -->
+                <div class="flex items-center justify-center gap-2 mb-6 w-full max-w-sm bg-slate-100 p-1.5 rounded-2xl">
+                    <button onclick="setTimerDuration(5)" id="preset-5" class="timer-preset-btn flex-1 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all bg-white text-slate-800 shadow-sm">
+                        ⚡ 5 Min <span class="hidden sm:inline">(Micro)</span>
+                    </button>
+                    <button onclick="setTimerDuration(15)" id="preset-15" class="timer-preset-btn flex-1 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-500 hover:text-slate-800 transition-all">
+                        🎯 15 Min <span class="hidden sm:inline">(Focus)</span>
+                    </button>
+                    <button onclick="setTimerDuration(25)" id="preset-25" class="timer-preset-btn flex-1 py-2 rounded-xl text-xs sm:text-sm font-bold text-slate-500 hover:text-slate-800 transition-all">
+                        🧠 25 Min <span class="hidden sm:inline">(Deep)</span>
+                    </button>
+                </div>
+
+                <!-- Current Micro Goal Input -->
+                <div class="w-full max-w-md mb-6">
+                    <div class="relative">
+                        <i class="fas fa-bullseye absolute left-4 top-1/2 -translate-y-1/2 text-sparkPink"></i>
+                        <input type="text" id="current-task-input" placeholder="What tiny step are we working on right now?" class="w-full pl-11 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 focus:outline-none focus:border-sparkPink focus:ring-2 focus:ring-sparkPink/20 text-sm font-semibold transition-all">
+                    </div>
+                </div>
+
+                <!-- Timer Circle Display -->
+                <div class="relative w-56 h-56 flex items-center justify-center my-2">
+                    <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                        <!-- Background Circle Track -->
+                        <circle cx="50" cy="50" r="42" stroke="#F1F5F9" stroke-width="8" fill="transparent" />
+                        <!-- Dynamic Progress Arc -->
+                        <circle id="timer-progress" cx="50" cy="50" r="42" stroke="url(#timerGrad)" stroke-width="8" stroke-linecap="round" fill="transparent" stroke-dasharray="263.89" stroke-dashoffset="0" class="transition-all duration-1000 ease-linear" />
+                        <defs>
+                            <linearGradient id="timerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#FF70A6" />
+                                <stop offset="100%" stop-color="#9B5DE5" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <!-- Time Digits -->
+                    <div class="absolute flex flex-col items-center justify-center">
+                        <span id="timer-display" class="heading-font text-5xl font-extrabold text-slate-800 tracking-tight">05:00</span>
+                        <span id="timer-status-label" class="text-xs font-bold text-slate-400 mt-1 uppercase tracking-wider">Ready to Spark</span>
+                    </div>
+                </div>
+
+                <!-- Control Buttons -->
+                <div class="flex items-center justify-center gap-4 mt-6 w-full max-w-xs">
+                    <button id="start-btn" onclick="toggleTimer()" class="flex-1 bg-gradient-to-r from-sparkPink to-sparkOrange text-white heading-font text-lg font-bold py-3.5 px-6 rounded-2xl shadow-lg shadow-sparkPink/30 hover:opacity-95 transform active:scale-95 transition-all flex items-center justify-center gap-2">
+                        <i class="fas fa-play text-sm"></i> Start
+                    </button>
+                    <button onclick="resetTimer()" class="w-12 h-12 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-2xl flex items-center justify-center transition-colors" title="Reset Timer">
+                        <i class="fas fa-redo-alt"></i>
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- RIGHT COLUMN: SOS Boredom & Dopamine Rescue Kit (5 cols) -->
+        <section class="md:col-span-5 flex flex-col gap-6">
+
+            <!-- BOREDOM EMERGENCY SOS BUTTON CARD -->
+            <div class="bg-gradient-to-br from-sparkPink via-sparkViolet to-purple-600 rounded-3xl p-6 text-white shadow-xl shadow-sparkPink/20 relative overflow-hidden">
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="bg-white/20 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Emergency Kit</span>
+                        <span class="text-2xl animate-pulse">🚨</span>
+                    </div>
+                    <h2 class="heading-font text-2xl font-extrabold leading-tight">Feeling Bored or Distracted?</h2>
+                    <p class="text-xs font-medium text-purple-100 mt-1">Don't feel bad! Instead of scrolling social media, get a healthy dopamine reset right here.</p>
+                    
+                    <button onclick="openBoredomModal()" class="mt-5 w-full bg-white text-sparkViolet hover:bg-slate-50 heading-font text-base font-bold py-3.5 px-4 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2 pulse-glow">
+                        <i class="fas fa-bolt text-sparkPink"></i> Press for Quick Dopamine Swap!
+                    </button>
+                </div>
+            </div>
+
+            <!-- TASK MICRO-CHUNKER (ANTI-OVERWHELM TOOL) -->
+            <div class="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100 flex-grow flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="text-xl">🪄</span>
+                        <h3 class="heading-font text-lg font-bold text-slate-800">Bite-Sized Task Splitter</h3>
+                    </div>
+                    <p class="text-xs text-slate-500 mb-4">Too bored or overwhelmed? Type a big scary task and let us break it into 3 tiny 3-minute steps.</p>
+
+                    <div class="flex gap-2 mb-4">
+                        <input type="text" id="big-task-input" placeholder="e.g. Study Chapter 4 Biology" class="flex-1 px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-semibold focus:outline-none focus:border-sparkViolet">
+                        <button onclick="generateMicroSteps()" class="bg-sparkViolet hover:bg-purple-700 text-white px-4 py-2.5 rounded-xl font-bold text-xs transition-all flex items-center gap-1 shadow-sm">
+                            Split <i class="fas fa-magic text-xs"></i>
+                        </button>
+                    </div>
+
+                    <!-- Steps Container -->
+                    <div id="micro-steps-list" class="space-y-2 max-h-52 overflow-y-auto pr-1">
+                        <div class="text-center py-6 text-slate-400 text-xs italic">
+                            No active micro-tasks yet. Enter a study topic above!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Self-Compassion Daily Quote -->
+                <div class="mt-4 p-3 bg-amber-50/70 border border-amber-200/60 rounded-2xl flex items-start gap-3">
+                    <span class="text-lg">💡</span>
+                    <div>
+                        <h4 class="text-xs font-bold text-amber-900">Study Secret</h4>
+                        <p id="daily-tip" class="text-[11px] font-medium text-amber-800/90 leading-tight mt-0.5">
+                            Studying for 5 focused minutes is 100x better than 0 minutes. Every tiny step counts!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RECENT COMPLETED SESSIONS SUMMARY -->
+            <div class="bg-white rounded-3xl p-5 shadow-xl shadow-slate-200/50 border border-slate-100">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="heading-font text-base font-bold text-slate-800 flex items-center gap-2">
+                        <span>🏆</span> Today's Wins
+                    </h3>
+                    <span id="today-minutes" class="text-xs font-bold text-sparkPink bg-pink-50 px-2.5 py-1 rounded-full">0 mins done</span>
+                </div>
+                <div id="wins-log" class="space-y-2 max-h-36 overflow-y-auto text-xs">
+                    <p class="text-slate-400 italic text-center py-2">Start your first mini-sprint to log a win here!</p>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="max-w-5xl mx-auto px-4 py-4 text-center text-xs text-slate-400 font-medium">
+        SparkStudy • Fun, Compassionate & Self-Contained Study Assistant
+    </footer>
+
+
+    <!-- ================= MODALS & OVERLAYS ================= -->
+
+    <!-- SOS BOREDOM MODAL -->
+    <div id="boredom-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform scale-95 transition-transform duration-300 relative overflow-hidden max-h-[90vh] flex flex-col">
+            
+            <button onclick="closeBoredomModal()" class="absolute top-4 right-4 w-8 h-8 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-500 font-bold transition-colors">
+                ✕
+            </button>
+
+            <div class="mb-4">
+                <span class="bg-purple-100 text-purple-700 font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wider">Dopamine Swap</span>
+                <h3 class="heading-font text-2xl font-bold text-slate-800 mt-1">What sounds good right now?</h3>
+                <p class="text-xs text-slate-500">Pick an instant mini-break to reset your brain without doomscrolling!</p>
+            </div>
+
+            <!-- Tab Buttons -->
+            <div class="flex border-b border-slate-200 mb-4 gap-2">
+                <button onclick="switchSosTab('bubbles')" id="tab-bubbles" class="sos-tab-btn pb-2 text-xs font-bold text-sparkPink border-b-2 border-sparkPink flex-1 text-center">
+                    🫧 Pop Wrap
+                </button>
+                <button onclick="switchSosTab('studytok')" id="tab-studytok" class="sos-tab-btn pb-2 text-xs font-bold text-slate-400 flex-1 text-center">
+                    📱 StudyTok
+                </button>
+                <button onclick="switchSosTab('breathe')" id="tab-breathe" class="sos-tab-btn pb-2 text-xs font-bold text-slate-400 flex-1 text-center">
+                    🧘 1-Min Breathe
+                </button>
+            </div>
+
+            <!-- TAB 1: BUBBLE POPPER GAME -->
+            <div id="sos-content-bubbles" class="sos-tab-content flex-grow flex flex-col items-center">
+                <p class="text-xs text-slate-500 mb-3 font-medium text-center">Pop all the bubbles to get a quick instant dopamine hit!</p>
+                <div id="bubble-grid" class="grid grid-cols-5 gap-3 p-4 bg-purple-50/50 rounded-2xl w-full justify-items-center">
+                    <!-- Javascript populates 20 bubbles here -->
+                </div>
+                <button onclick="resetBubbleWrap()" class="mt-4 text-xs font-bold text-sparkViolet hover:underline">
+                    🔄 Reset Bubble Wrap
+                </button>
+            </div>
+
+            <!-- TAB 2: STUDYTOK (SAFE SOCIAL MEDIA FEED) -->
+            <div id="sos-content-studytok" class="sos-tab-content hidden flex-grow overflow-y-auto space-y-4 pr-1">
+                <!-- Post 1 -->
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="w-7 h-7 bg-sparkPink rounded-full flex items-center justify-center text-white text-xs font-bold">🧠</div>
+                        <span class="text-xs font-bold text-slate-700">@StudySecrets</span>
+                    </div>
+                    <p class="text-xs text-slate-600 font-medium leading-relaxed">
+                        "Your brain isn't broken just because you get bored! Boredom is just your brain asking for a smaller, easier first step. Try setting a timer for just 3 minutes."
+                    </p>
+                    <div class="mt-2 text-[10px] text-pink-500 font-bold">❤️ 12.4k Dopamine Likes</div>
+                </div>
+                <!-- Post 2 -->
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="w-7 h-7 bg-sparkOrange rounded-full flex items-center justify-center text-white text-xs font-bold">😸</div>
+                        <span class="text-xs font-bold text-slate-700">@SparkyTheMascot</span>
+                    </div>
+                    <p class="text-xs text-slate-600 font-medium leading-relaxed">
+                        "POV: You studied for 5 minutes, didn't check Instagram, and earned a star. You're literally doing amazing!"
+                    </p>
+                    <div class="mt-2 text-[10px] text-orange-500 font-bold">🔥 45.2k Likes</div>
+                </div>
+                <!-- Post 3 -->
+                <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 shadow-sm">
+                    <div class="flex items-center gap-2 mb-2">
+                        <div class="w-7 h-7 bg-sparkGreen rounded-full flex items-center justify-center text-white text-xs font-bold">🌱</div>
+                        <span class="text-xs font-bold text-slate-700">@GentleFocus</span>
+                    </div>
+                    <p class="text-xs text-slate-600 font-medium leading-relaxed">
+                        "Reminder: Perfectionism is the biggest cause of procrastination. A messy 10 minutes of studying beats a perfect zero!"
+                    </p>
+                    <div class="mt-2 text-[10px] text-emerald-500 font-bold">✨ 89.1k Likes</div>
+                </div>
+            </div>
+
+            <!-- TAB 3: BREATHING RESET -->
+            <div id="sos-content-breathe" class="sos-tab-content hidden flex-grow flex flex-col items-center justify-center py-4 text-center">
+                <div id="breathe-circle" class="w-28 h-28 bg-gradient-to-tr from-sparkPurple to-sparkViolet rounded-full flex items-center justify-center text-white heading-font text-sm font-bold shadow-xl transition-all duration-[4000ms] ease-in-out">
+                    Inhale
+                </div>
+                <p id="breathe-instruction" class="mt-6 text-xs font-bold text-slate-700">Breathe in slowly...</p>
+                <button onclick="toggleBreathwork()" id="breathe-btn" class="mt-4 bg-sparkViolet text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-md">
+                    Start 1-Min Reset
+                </button>
+            </div>
+
+            <!-- Bottom Modal Action -->
+            <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between">
+                <span class="text-xs text-slate-400 font-semibold">Feeling ready to return?</span>
+                <button onclick="closeBoredomModal()" class="bg-gradient-to-r from-sparkPink to-sparkOrange text-white text-xs font-bold px-4 py-2 rounded-xl shadow-sm">
+                    Back to Study ⚡
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- MASCOT SHOP MODAL -->
+    <div id="shop-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform scale-95 transition-transform duration-300 relative max-h-[90vh] flex flex-col">
+            
+            <button onclick="closeShopModal()" class="absolute top-4 right-4 w-8 h-8 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center text-slate-500 font-bold transition-colors">
+                ✕
+            </button>
+
+            <div class="mb-4">
+                <div class="flex items-center justify-between">
+                    <span class="bg-purple-100 text-purple-700 font-bold text-xs px-3 py-1 rounded-full uppercase tracking-wider">Sparky's Closet</span>
+                    <span class="heading-font text-sm font-bold text-purple-700 flex items-center gap-1">
+                        ⭐ <span id="shop-star-balance">0</span>
+                    </span>
+                </div>
+                <h3 class="heading-font text-2xl font-bold text-slate-800 mt-1">Unlock Cute Accessories</h3>
+                <p class="text-xs text-slate-500">Spend stars earned from finishing mini study sessions!</p>
+            </div>
+
+            <!-- Shop Items Grid -->
+            <div id="shop-items-grid" class="grid grid-cols-2 gap-3 overflow-y-auto flex-grow pr-1">
+                <!-- Populated dynamically by JS -->
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-slate-100 text-center">
+                <button onclick="closeShopModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-2.5 rounded-xl transition-colors">
+                    Done Customizing
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- CONGRATS / SESSION COMPLETE MODAL -->
+    <div id="congrats-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-100 text-center transform scale-95 transition-transform duration-300 relative overflow-hidden">
+            
+            <div class="text-5xl my-2 animate-bounce">🎉</div>
+            <h3 class="heading-font text-2xl font-bold text-slate-800">Awesome Job!</h3>
+            <p id="congrats-text" class="text-xs text-slate-600 my-2">You completed a study sprint without quitting! Sparky is super proud of you.</p>
+
+            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 my-4 flex items-center justify-center gap-3">
+                <span class="text-2xl">⭐</span>
+                <span id="congrats-stars-earned" class="heading-font text-lg font-bold text-amber-800">+10 Dopamine Stars Earned!</span>
+            </div>
+
+            <button onclick="closeCongratsModal()" class="w-full bg-gradient-to-r from-sparkPink to-sparkOrange text-white heading-font text-base font-bold py-3 px-6 rounded-2xl shadow-lg shadow-sparkPink/30 hover:opacity-95 transition-all">
+                Heck Yeah! 🚀
+            </button>
+        </div>
+    </div>
+
+
+    <script>
+        /* ================= STATE & CONFIGURATION ================= */
+        const DEFAULT_STATE = {
+            stars: 20, // Initial bonus stars to encourage engagement
+            streak: 1,
+            lastStudyDate: null,
+            totalMinutesToday: 0,
+            equippedHat: null,
+            equippedGlasses: null,
+            inventory: ['none_hat', 'none_glasses'],
+            sessionsLog: []
+        };
+
+        let state = loadState();
+
+        // Timer Variables
+        let timerDurationMinutes = 5;
+        let timeRemainingSeconds = timerDurationMinutes * 60;
+        let timerInterval = null;
+        let isTimerRunning = false;
+        let currentTaskText = "";
+
+        // Audio Synth toggle
+        let isSoundEnabled = true;
+
+        // Breathwork state
+        let breatheInterval = null;
+        let breatheState = 'idle'; // 'inhale', 'hold', 'exhale'
+
+        /* ================= SHOP CATALOG DEFINITION ================= */
+        const SHOP_ITEMS = [
+            { id: 'hat_party', name: 'Party Cone', category: 'hat', cost: 15, icon: '🎉' },
+            { id: 'hat_crown', name: 'Golden Crown', category: 'hat', cost: 30, icon: '👑' },
+            { id: 'hat_cap', name: 'Cool Cap', category: 'hat', cost: 20, icon: '🧢' },
+            { id: 'glasses_cool', name: 'Thug Sunglasses', category: 'glasses', cost: 15, icon: '🕶️' },
+            { id: 'glasses_cute', name: 'Nerd Glasses', category: 'glasses', cost: 25, icon: '👓' },
+            { id: 'glasses_star', name: 'Star Glasses', category: 'glasses', cost: 35, icon: '⭐' }
+        ];
+
+        /* ================= INITIALIZATION ================= */
+        window.onload = function() {
+            checkDailyStreak();
+            updateStatsUI();
+            renderMascotAccessories();
+            renderShopItems();
+            renderBubbleGrid();
+            updateTimerDisplay();
+            renderWinsLog();
+        };
+
+        /* ================= LOCAL STORAGE HELPERS ================= */
+        function loadState() {
+            try {
+                const saved = localStorage.getItem('spark_study_app_data');
+                return saved ? { ...DEFAULT_STATE, ...JSON.parse(saved) } : { ...DEFAULT_STATE };
+            } catch(e) {
+                return { ...DEFAULT_STATE };
+            }
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem('spark_study_app_data', JSON.stringify(state));
+            } catch(e) {
+                console.error("Storage error:", e);
+            }
+        }
+
+        /* ================= SOUND SYNTHESIZER (WEB AUDIO API) ================= */
+        function playAudioTone(freq, type = 'sine', duration = 0.15) {
+            if (!isSoundEnabled) return;
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch(e) {
+                // Audio context suppressed if no user interaction yet
+            }
+        }
+
+        function toggleSound() {
+            isSoundEnabled = !isSoundEnabled;
+            const icon = document.getElementById('sound-icon');
+            if (isSoundEnabled) {
+                icon.className = 'fas fa-volume-up';
+                playAudioTone(523, 'sine', 0.1);
+            } else {
+                icon.className = 'fas fa-volume-mute';
+            }
+        }
+
+        /* ================= STREAK CALCULATOR ================= */
+        function checkDailyStreak() {
+            const today = new Date().toDateString();
+            if (!state.lastStudyDate) {
+                state.lastStudyDate = today;
+            } else if (state.lastStudyDate !== today) {
+                const lastDate = new Date(state.lastStudyDate);
+                const diffTime = Math.abs(new Date() - lastDate);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                if (diffDays === 1) {
+                    // Studied yesterday, keep streak going
+                } else if (diffDays > 1) {
+                    // Reset streak gently without shame
+                    state.streak = 1;
+                }
+            }
+            saveState();
+        }
+
+        /* ================= TIMER FUNCTIONS ================= */
+        function setTimerDuration(mins) {
+            if (isTimerRunning) return;
+            
+            timerDurationMinutes = mins;
+            timeRemainingSeconds = mins * 60;
+            
+            // Highlight active button
+            document.querySelectorAll('.timer-preset-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'text-slate-800', 'shadow-sm');
+                btn.classList.add('text-slate-500');
+            });
+
+            const activeBtn = document.getElementById(`preset-${mins}`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-white', 'text-slate-800', 'shadow-sm');
+                activeBtn.classList.remove('text-slate-500');
+            }
+
+            updateTimerDisplay();
+            playAudioTone(440, 'sine', 0.1);
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timeRemainingSeconds / 60);
+            const secs = timeRemainingSeconds % 60;
+            const displayStr = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            document.getElementById('timer-display').innerText = displayStr;
+
+            // Update Circle Progress
+            const totalSecs = timerDurationMinutes * 60;
+            const progressRatio = timeRemainingSeconds / totalSecs;
+            const circumference = 263.89; // 2 * pi * 42
+            const offset = circumference * (1 - progressRatio);
+            document.getElementById('timer-progress').style.strokeDashoffset = offset;
+        }
+
+        function toggleTimer() {
+            const btn = document.getElementById('start-btn');
+            const statusLabel = document.getElementById('timer-status-label');
+
+            if (isTimerRunning) {
+                // Pause Timer
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+                btn.innerHTML = '<i class="fas fa-play text-sm"></i> Resume';
+                btn.className = "flex-1 bg-gradient-to-r from-sparkPink to-sparkOrange text-white heading-font text-lg font-bold py-3.5 px-6 rounded-2xl shadow-lg shadow-sparkPink/30 hover:opacity-95 transform active:scale-95 transition-all flex items-center justify-center gap-2";
+                statusLabel.innerText = "Paused (Take a breath)";
+                setMascotExpression('normal');
+            } else {
+                // Start Timer
+                currentTaskText = document.getElementById('current-task-input').value.trim() || `${timerDurationMinutes}-Min Focus Burst`;
+                isTimerRunning = true;
+                btn.innerHTML = '<i class="fas fa-pause text-sm"></i> Pause';
+                btn.className = "flex-1 bg-slate-800 text-white heading-font text-lg font-bold py-3.5 px-6 rounded-2xl shadow-md hover:bg-slate-700 transform active:scale-95 transition-all flex items-center justify-center gap-2";
+                statusLabel.innerText = "Focus Mode Active ⚡";
+                setMascotExpression('focus');
+
+                playAudioTone(587.33, 'triangle', 0.2);
+
+                timerInterval = setInterval(() => {
+                    if (timeRemainingSeconds > 0) {
+                        timeRemainingSeconds--;
+                        updateTimerDisplay();
+                    } else {
+                        completeStudySession();
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            timeRemainingSeconds = timerDurationMinutes * 60;
+            document.getElementById('start-btn').innerHTML = '<i class="fas fa-play text-sm"></i> Start';
+            document.getElementById('start-btn').className = "flex-1 bg-gradient-to-r from-sparkPink to-sparkOrange text-white heading-font text-lg font-bold py-3.5 px-6 rounded-2xl shadow-lg shadow-sparkPink/30 hover:opacity-95 transform active:scale-95 transition-all flex items-center justify-center gap-2";
+            document.getElementById('timer-status-label').innerText = "Ready to Spark";
+            setMascotExpression('normal');
+            updateTimerDisplay();
+        }
+
+        function completeStudySession() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+
+            // Calculate Earned Rewards
+            const starsEarned = timerDurationMinutes * 2;
+            state.stars += starsEarned;
+            state.totalMinutesToday += timerDurationMinutes;
+
+            // Update streak if today
+            const today = new Date().toDateString();
+            if (state.lastStudyDate !== today) {
+                state.streak += 1;
+                state.lastStudyDate = today;
+            }
+
+            // Log Session
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            state.sessionsLog.unshift({
+                task: currentTaskText,
+                minutes: timerDurationMinutes,
+                time: timeStr
+            });
+
+            saveState();
+            updateStatsUI();
+            renderWinsLog();
+
+            // Sound celebration
+            playAudioTone(523.25, 'sine', 0.15);
+            setTimeout(() => playAudioTone(659.25, 'sine', 0.15), 150);
+            setTimeout(() => playAudioTone(783.99, 'sine', 0.3), 300);
+
+            // Trigger Mascot Joy & Congrats Modal
+            setMascotExpression('happy');
+            openCongratsModal(starsEarned);
+            
+            // Reset timer state
+            timeRemainingSeconds = timerDurationMinutes * 60;
+            document.getElementById('start-btn').innerHTML = '<i class="fas fa-play text-sm"></i> Start';
+            document.getElementById('timer-status-label').innerText = "Great Job!";
+            updateTimerDisplay();
+        }
+
+        /* ================= MASCOT VISUAL CONTROLLER ================= */
+        function setMascotExpression(type) {
+            const mouth = document.getElementById('sparky-mouth');
+            const eyes = document.getElementById('sparky-eyes');
+
+            if (type === 'focus') {
+                mouth.setAttribute('d', 'M 90 120 Q 100 120 110 120'); // Focused line
+                eyes.innerHTML = `
+                    <ellipse cx="75" cy="100" rx="8" ry="4" fill="#1E293B" />
+                    <ellipse cx="125" cy="100" rx="8" ry="4" fill="#1E293B" />
+                `;
+            } else if (type === 'happy') {
+                mouth.setAttribute('d', 'M 80 110 Q 100 135 120 110'); // Big smile
+                eyes.innerHTML = `
+                    <path d="M 68 102 Q 75 92 82 102" stroke="#1E293B" stroke-width="4" fill="none" stroke-linecap="round"/>
+                    <path d="M 118 102 Q 125 92 132 102" stroke="#1E293B" stroke-width="4" fill="none" stroke-linecap="round"/>
+                `;
+            } else { // Normal
+                mouth.setAttribute('d', 'M 88 115 Q 100 128 112 115');
+                eyes.innerHTML = `
+                    <circle cx="75" cy="100" r="8" fill="#1E293B" />
+                    <circle cx="125" cy="100" r="8" fill="#1E293B" />
+                    <circle cx="72" cy="97" r="3" fill="#FFFFFF" />
+                    <circle cx="122" cy="97" r="3" fill="#FFFFFF" />
+                `;
+            }
+        }
+
+        function interactMascot() {
+            playAudioTone(880, 'sine', 0.1);
+            setMascotExpression('happy');
+            
+            const quotes = [
+                "You're doing better than you think! ✨",
+                "5 minutes is way better than 0 minutes!",
+                "Take it easy! One step at a time.",
+                "I believe in you! 🚀",
+                "Need a break? Check the SOS button!"
+            ];
+            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            
+            const bubble = document.getElementById('mascot-bubble');
+            bubble.innerText = randomQuote;
+            bubble.classList.remove('opacity-0');
+            bubble.classList.add('opacity-100');
+
+            setTimeout(() => {
+                bubble.classList.remove('opacity-100');
+                bubble.classList.add('opacity-0');
+                if (!isTimerRunning) setMascotExpression('normal');
+            }, 2500);
+        }
+
+        function renderMascotAccessories() {
+            const hatSlot = document.getElementById('mascot-hat-slot');
+            const glassesSlot = document.getElementById('mascot-glasses-slot');
+
+            // Render Hat
+            if (state.equippedHat === 'hat_party') {
+                hatSlot.innerHTML = `<polygon points="100,25 80,65 120,65" fill="#FFD166" stroke="#FF9F1C" stroke-width="3"/><circle cx="100" cy="22" r="6" fill="#FF70A6"/>`;
+            } else if (state.equippedHat === 'hat_crown') {
+                hatSlot.innerHTML = `<path d="M 75 65 L 75 40 L 88 55 L 100 35 L 112 55 L 125 40 L 125 65 Z" fill="#FFD166" stroke="#B45309" stroke-width="2"/>`;
+            } else if (state.equippedHat === 'hat_cap') {
+                hatSlot.innerHTML = `<path d="M 70 65 Q 100 40 130 65 Z" fill="#70D6FF"/><rect x="110" y="60" width="30" height="6" rx="3" fill="#0284C7"/>`;
+            } else {
+                hatSlot.innerHTML = '';
+            }
+
+            // Render Glasses
+            if (state.equippedGlasses === 'glasses_cool') {
+                glassesSlot.innerHTML = `<rect x="60" y="92" width="32" height="18" rx="4" fill="#0F172A"/><rect x="108" y="92" width="32" height="18" rx="4" fill="#0F172A"/><line x1="92" y1="98" x2="108" y2="98" stroke="#0F172A" stroke-width="4"/>`;
+            } else if (state.equippedGlasses === 'glasses_cute') {
+                glassesSlot.innerHTML = `<circle cx="75" cy="100" r="14" fill="none" stroke="#7C3AED" stroke-width="3"/><circle cx="125" cy="100" r="14" fill="none" stroke="#7C3AED" stroke-width="3"/><line x1="89" y1="100" x2="111" y2="100" stroke="#7C3AED" stroke-width="3"/>`;
+            } else if (state.equippedGlasses === 'glasses_star') {
+                glassesSlot.innerHTML = `<text x="60" y="108" font-size="22">⭐</text><text x="110" y="108" font-size="22">⭐</text>`;
+            } else {
+                glassesSlot.innerHTML = '';
+            }
+        }
+
+        /* ================= MICRO-TASK CHUNKER ================= */
+        function generateMicroSteps() {
+            const input = document.getElementById('big-task-input');
+            const topic = input.value.trim();
+            if (!topic) return;
+
+            playAudioTone(600, 'sine', 0.1);
+
+            const stepsList = document.getElementById('micro-steps-list');
+            stepsList.innerHTML = `
+                <div class="bg-purple-50 border border-purple-100 rounded-2xl p-3 flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-700">1. Skim headings & diagrams for 2 mins</span>
+                    <button onclick="useStepAsTask('Skim headings for ${topic}')" class="text-[11px] font-bold text-sparkViolet bg-white border border-purple-200 px-2.5 py-1 rounded-lg hover:bg-purple-100">
+                        Use Step ⚡
+                    </button>
+                </div>
+                <div class="bg-purple-50 border border-purple-100 rounded-2xl p-3 flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-700">2. Read just 1 page or 1 section out loud</span>
+                    <button onclick="useStepAsTask('Read 1 section of ${topic}')" class="text-[11px] font-bold text-sparkViolet bg-white border border-purple-200 px-2.5 py-1 rounded-lg hover:bg-purple-100">
+                        Use Step ⚡
+                    </button>
+                </div>
+                <div class="bg-purple-50 border border-purple-100 rounded-2xl p-3 flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-700">3. Answer or write down 1 single question</span>
+                    <button onclick="useStepAsTask('Answer 1 question on ${topic}')" class="text-[11px] font-bold text-sparkViolet bg-white border border-purple-200 px-2.5 py-1 rounded-lg hover:bg-purple-100">
+                        Use Step ⚡
+                    </button>
+                </div>
+            `;
+
+            input.value = '';
+        }
+
+        function useStepAsTask(stepText) {
+            document.getElementById('current-task-input').value = stepText;
+            setTimerDuration(5); // Auto set to 5 min micro sprint
+            playAudioTone(700, 'sine', 0.1);
+        }
+
+        /* ================= BOREDOM SOS RESCUE KIT ================= */
+        function openBoredomModal() {
+            playAudioTone(500, 'sine', 0.1);
+            const modal = document.getElementById('boredom-modal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.children[0].classList.remove('scale-95');
+            modal.children[0].classList.add('scale-100');
+        }
+
+        function closeBoredomModal() {
+            const modal = document.getElementById('boredom-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modal.children[0].classList.remove('scale-100');
+            modal.children[0].classList.add('scale-95');
+            if (breatheInterval) clearInterval(breatheInterval);
+        }
+
+        function switchSosTab(tabName) {
+            playAudioTone(400, 'sine', 0.08);
+            
+            // Update tabs UI
+            document.querySelectorAll('.sos-tab-btn').forEach(btn => {
+                btn.classList.remove('text-sparkPink', 'border-b-2', 'border-sparkPink');
+                btn.classList.add('text-slate-400');
+            });
+            const activeTab = document.getElementById(`tab-${tabName}`);
+            activeTab.classList.add('text-sparkPink', 'border-b-2', 'border-sparkPink');
+            activeTab.classList.remove('text-slate-400');
+
+            // Hide all tab content
+            document.querySelectorAll('.sos-tab-content').forEach(content => content.classList.add('hidden'));
+            
+            // Show target
+            document.getElementById(`sos-content-${tabName}`).classList.remove('hidden');
+        }
+
+        /* BUBBLE WRAP GAME */
+        function renderBubbleGrid() {
+            const grid = document.getElementById('bubble-grid');
+            grid.innerHTML = '';
+            for (let i = 0; i < 20; i++) {
+                const bubble = document.createElement('button');
+                bubble.className = 'w-11 h-11 bg-gradient-to-tr from-sparkPurple to-sparkViolet rounded-full shadow-md bubble transform active:scale-90';
+                bubble.onclick = function() {
+                    if (!bubble.classList.contains('popped')) {
+                        bubble.classList.add('popped');
+                        playAudioTone(800 + Math.random() * 300, 'triangle', 0.05);
+                    }
+                };
+                grid.appendChild(bubble);
+            }
+        }
+
+        function resetBubbleWrap() {
+            playAudioTone(600, 'sine', 0.1);
+            renderBubbleGrid();
+        }
+
+        /* 1-MIN BREATHWORK RESET */
+        function toggleBreathwork() {
+            const circle = document.getElementById('breathe-circle');
+            const instruction = document.getElementById('breathe-instruction');
+            const btn = document.getElementById('breathe-btn');
+
+            if (breatheInterval) {
+                clearInterval(breatheInterval);
+                breatheInterval = null;
+                btn.innerText = "Start 1-Min Reset";
+                instruction.innerText = "Breathe in slowly...";
+                circle.style.transform = "scale(1)";
+                return;
+            }
+
+            btn.innerText = "Stop Reset";
+            let phase = 0; // 0: inhale, 1: hold, 2: exhale
+
+            const runPhase = () => {
+                if (phase === 0) {
+                    circle.style.transform = "scale(1.4)";
+                    circle.innerText = "Inhale";
+                    instruction.innerText = "Breathe in gently...";
+                    playAudioTone(300, 'sine', 0.4);
+                    phase = 1;
+                } else if (phase === 1) {
+                    circle.innerText = "Hold";
+                    instruction.innerText = "Hold that calmness...";
+                    phase = 2;
+                } else {
+                    circle.style.transform = "scale(1)";
+                    circle.innerText = "Exhale";
+                    instruction.innerText = "Release all study stress...";
+                    playAudioTone(220, 'sine', 0.4);
+                    phase = 0;
+                }
+            };
+
+            runPhase();
+            breatheInterval = setInterval(runPhase, 3500);
+        }
+
+        /* ================= MASCOT SHOP ================= */
+        function openShopModal() {
+            playAudioTone(500, 'sine', 0.1);
+            document.getElementById('shop-star-balance').innerText = state.stars;
+            const modal = document.getElementById('shop-modal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.children[0].classList.remove('scale-95');
+            modal.children[0].classList.add('scale-100');
+        }
+
+        function closeShopModal() {
+            const modal = document.getElementById('shop-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modal.children[0].classList.remove('scale-100');
+            modal.children[0].classList.add('scale-95');
+        }
+
+        function renderShopItems() {
+            const grid = document.getElementById('shop-items-grid');
+            grid.innerHTML = '';
+
+            SHOP_ITEMS.forEach(item => {
+                const isOwned = state.inventory.includes(item.id);
+                const isEquipped = (state.equippedHat === item.id) || (state.equippedGlasses === item.id);
+
+                const card = document.createElement('div');
+                card.className = `p-3 rounded-2xl border flex flex-col items-center justify-between text-center transition-all ${
+                    isEquipped ? 'bg-purple-50 border-sparkViolet ring-2 ring-sparkViolet/30' : 'bg-slate-50 border-slate-200'
+                }`;
+
+                card.innerHTML = `
+                    <div class="text-3xl my-1">${item.icon}</div>
+                    <div class="text-xs font-bold text-slate-800">${item.name}</div>
+                    <div class="text-[10px] text-slate-400 font-semibold mb-2">⭐ ${item.cost} Stars</div>
+                    
+                    ${isEquipped ? 
+                        `<button onclick="unequipItem('${item.category}')" class="w-full bg-amber-500 text-white font-bold text-[11px] py-1.5 rounded-xl">Unequip</button>` :
+                        isOwned ? 
+                        `<button onclick="equipItem('${item.id}', '${item.category}')" class="w-full bg-sparkViolet text-white font-bold text-[11px] py-1.5 rounded-xl">Wear</button>` :
+                        `<button onclick="buyItem('${item.id}', ${item.cost})" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold text-[11px] py-1.5 rounded-xl">Buy</button>`
+                    }
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function buyItem(id, cost) {
+            if (state.stars >= cost) {
+                state.stars -= cost;
+                state.inventory.push(id);
+                saveState();
+                updateStatsUI();
+                renderShopItems();
+                playAudioTone(880, 'sine', 0.2);
+            } else {
+                playAudioTone(200, 'sawtooth', 0.2);
+            }
+        }
+
+        function equipItem(id, category) {
+            if (category === 'hat') state.equippedHat = id;
+            if (category === 'glasses') state.equippedGlasses = id;
+            saveState();
+            renderMascotAccessories();
+            renderShopItems();
+            playAudioTone(750, 'sine', 0.1);
+        }
+
+        function unequipItem(category) {
+            if (category === 'hat') state.equippedHat = null;
+            if (category === 'glasses') state.equippedGlasses = null;
+            saveState();
+            renderMascotAccessories();
+            renderShopItems();
+            playAudioTone(400, 'sine', 0.1);
+        }
+
+        /* ================= UI UPDATERS ================= */
+        function updateStatsUI() {
+            document.getElementById('stars-count').innerText = `${state.stars} Stars`;
+            document.getElementById('streak-count').innerText = `${state.streak} Day${state.streak > 1 ? 's' : ''}`;
+            document.getElementById('today-minutes').innerText = `${state.totalMinutesToday} mins done`;
+            document.getElementById('shop-star-balance').innerText = state.stars;
+        }
+
+        function renderWinsLog() {
+            const logContainer = document.getElementById('wins-log');
+            if (state.sessionsLog.length === 0) {
+                logContainer.innerHTML = `<p class="text-slate-400 italic text-center py-2">Start your first mini-sprint to log a win here!</p>`;
+                return;
+            }
+
+            logContainer.innerHTML = state.sessionsLog.slice(0, 5).map(s => `
+                <div class="bg-slate-50 border border-slate-100 rounded-xl p-2.5 flex items-center justify-between">
+                    <div class="flex items-center gap-2 overflow-hidden">
+                        <span class="text-xs">✅</span>
+                        <span class="font-bold text-slate-700 truncate">${s.task}</span>
+                    </div>
+                    <span class="font-bold text-sparkPink text-[11px] shrink-0">+${s.minutes}m (${s.time})</span>
+                </div>
+            `).join('');
+        }
+
+        /* ================= CONGRATS MODAL ================= */
+        function openCongratsModal(starsEarned) {
+            document.getElementById('congrats-stars-earned').innerText = `+${starsEarned} Dopamine Stars Earned!`;
+            const modal = document.getElementById('congrats-modal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.children[0].classList.remove('scale-95');
+            modal.children[0].classList.add('scale-100');
+        }
+
+        function closeCongratsModal() {
+            const modal = document.getElementById('congrats-modal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            modal.children[0].classList.remove('scale-100');
+            modal.children[0].classList.add('scale-95');
+        }
+    </script>
+</body>
+</html>

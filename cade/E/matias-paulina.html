@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DirectFlow | Executive Focus Oasis</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        teal: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            200: '#99f6e4',
+                            300: '#5eead4',
+                            400: '#2dd4bf',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a',
+                            950: '#042f2e',
+                        },
+                        sand: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            200: '#fde68a',
+                            500: '#d97706',
+                            600: '#b45309',
+                            700: '#92400e',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(165deg, #0b2b35 0%, #061d24 50%, #031217 100%);
+            color: #0f172a;
+            min-height: 100vh;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 20px 40px -15px rgba(2, 23, 42, 0.35);
+        }
+
+        .glass-panel-subtle {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+            color: #ffffff;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px -4px rgba(13, 148, 136, 0.4);
+        }
+
+        .btn-white {
+            background: #ffffff;
+            color: #0f766e;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .btn-white:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .breath-ring {
+            animation: pulseWave 4s ease-in-out infinite;
+        }
+
+        @keyframes pulseWave {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.15); opacity: 1; }
+        }
+
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #061d24;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #0d9488;
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-teal-200 selection:text-teal-900 relative">
+
+    <!-- Ambient Subtle Ocean Wave Header Glow -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-64 bg-teal-500/10 blur-[120px] pointer-events-none z-0"></div>
+
+    <!-- Navigation & Top Dashboard Header -->
+    <header class="sticky top-0 z-30 border-b border-white/10 bg-[#061d24]/80 backdrop-blur-xl px-4 lg:px-8 py-3.5">
+        <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-4">
+            
+            <!-- Brand & Tagline -->
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-gradient-to-br from-teal-400 to-teal-600 text-white flex items-center justify-center shadow-lg shadow-teal-900/40">
+                    <i data-lucide="waves" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="font-extrabold text-base tracking-tight text-white">DirectFlow</h1>
+                        <span class="text-[10px] font-semibold text-teal-300 bg-teal-950/60 border border-teal-800/80 px-2 py-0.5 rounded-full uppercase tracking-wider">Executive Focus</span>
+                    </div>
+                    <p id="userGreeting" class="text-xs text-slate-300 font-medium">Ready for your deep focus session.</p>
+                </div>
+            </div>
+
+            <!-- Global Action Stats -->
+            <div class="flex items-center gap-2.5">
+                <!-- Daily Streak Badge -->
+                <div class="flex items-center gap-2 bg-white/10 border border-white/15 backdrop-blur-md px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white shadow-sm" title="Active Focus Streak">
+                    <i data-lucide="flame" class="w-4 h-4 text-amber-400 fill-amber-400/20"></i>
+                    <span><strong id="streakCount" class="text-amber-300">0</strong> Day Streak</span>
+                </div>
+
+                <!-- Surfed Urges Count -->
+                <div class="flex items-center gap-2 bg-white/10 border border-white/15 backdrop-blur-md px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white shadow-sm" title="Social Distractions Rejected">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+                    <span><strong id="skippedCount" class="text-emerald-300">0</strong> Urges Surfed</span>
+                </div>
+
+                <!-- Settings & SMART Goal Trigger -->
+                <button onclick="openSMARTModal()" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-white transition shadow-sm" title="Configure SMART Goal">
+                    <i data-lucide="sliders" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl w-full mx-auto px-4 py-8 space-y-6 flex-grow relative z-10">
+
+        <!-- SMART Goal Horizon Banner -->
+        <section class="glass-panel rounded-3xl p-6 sm:p-7 relative overflow-hidden border border-white">
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                
+                <div class="space-y-1.5 max-w-2xl">
+                    <div class="flex items-center gap-2 text-xs font-bold text-teal-800 uppercase tracking-widest">
+                        <span class="w-2 h-2 rounded-full bg-teal-500"></span> Primary Outcome Horizon
+                    </div>
+                    <h2 id="smartGoalTitle" class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                        Loading objective...
+                    </h2>
+                    <p id="smartGoalDesc" class="text-xs sm:text-sm text-slate-600 leading-relaxed font-normal">
+                        Specify your primary objective to eliminate hesitation and channel uninterrupted focus.
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
+                    <div class="bg-slate-100 border border-slate-200/80 rounded-2xl px-4 py-2.5 text-right">
+                        <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Target Deadline</div>
+                        <div id="smartGoalDate" class="text-xs font-bold text-slate-800">Set Date</div>
+                    </div>
+
+                    <button onclick="openSMARTModal()" class="btn-white px-4 py-2.5 rounded-2xl text-xs font-bold flex items-center gap-2 whitespace-nowrap">
+                        <i data-lucide="edit-3" class="w-3.5 h-3.5 text-teal-700"></i> Edit Goal
+                    </button>
+                </div>
+            </div>
+
+            <!-- SMART Goal Progress Tracker -->
+            <div class="mt-6 pt-5 border-t border-slate-100">
+                <div class="flex justify-between items-center text-xs font-bold text-slate-700 mb-2">
+                    <span class="flex items-center gap-1.5"><i data-lucide="target" class="w-4 h-4 text-teal-600"></i> Objective Completion</span>
+                    <span id="goalProgressPercent" class="text-teal-700 font-extrabold">0%</span>
+                </div>
+                <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden p-0.5">
+                    <div id="goalProgressBar" class="h-full bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full w-0 transition-all duration-500"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Core Focus Hub: 5-Second Launchpad & Urge Surfer (2 Columns) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- Left: Direct Action Launcher & Timer (7 Cols) -->
+            <section class="lg:col-span-7 glass-panel rounded-3xl p-6 sm:p-7 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-2 text-xs font-bold text-slate-800 uppercase tracking-wider">
+                            <i data-lucide="zap" class="w-4 h-4 text-teal-600"></i> Direct Action Launchpad
+                        </div>
+                        <span class="text-[11px] font-bold text-teal-800 bg-teal-50 border border-teal-200/60 px-3 py-1 rounded-full">
+                            5s Rule Protocol
+                        </span>
+                    </div>
+
+                    <!-- Digital Timer Display Box -->
+                    <div class="text-center py-8 my-2 bg-gradient-to-b from-slate-50 to-teal-50/30 rounded-2xl border border-slate-200/80 relative overflow-hidden">
+                        
+                        <!-- 5-Second Countdown Modal Overlay -->
+                        <div id="launchCountdownOverlay" class="hidden absolute inset-0 bg-[#061d24]/95 text-white backdrop-blur-md rounded-2xl flex flex-col items-center justify-center z-20 transition-all">
+                            <div class="text-xs uppercase font-bold tracking-widest text-teal-300 mb-1">Launching Direct Flow in</div>
+                            <div id="countdownNumber" class="text-6xl font-black text-white">5</div>
+                            <p class="text-xs text-slate-300 mt-2 font-medium">Bypass overthinking. Commit directly.</p>
+                        </div>
+
+                        <!-- Main Timer Output -->
+                        <div id="timerDisplay" class="text-5xl sm:text-6xl font-extrabold tracking-tight text-slate-900 font-mono my-1">
+                            25:00
+                        </div>
+                        <p id="timerStatusLabel" class="text-xs text-slate-500 font-medium">Select session length and launch direct momentum.</p>
+
+                        <!-- Preset Duration Selector -->
+                        <div class="flex justify-center gap-2 mt-5">
+                            <button onclick="setTimerPreset(5)" class="btn-white px-3.5 py-1.5 rounded-xl text-xs font-semibold">5m Sprint</button>
+                            <button onclick="setTimerPreset(15)" class="btn-white px-3.5 py-1.5 rounded-xl text-xs font-semibold">15m Focus</button>
+                            <button onclick="setTimerPreset(25)" class="btn-white px-3.5 py-1.5 rounded-xl text-xs font-bold border-teal-300">25m Deep Flow</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Launch Control Button Group -->
+                <div class="space-y-4 pt-4 border-t border-slate-100">
+                    <div id="timerControlGroup" class="flex gap-2">
+                        <button id="startActionBtn" onclick="triggerFiveSecondLaunch()" class="w-full py-3.5 btn-primary font-bold rounded-2xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md">
+                            <i data-lucide="play" class="w-4 h-4 fill-white"></i> Launch Direct Action (5s Count)
+                        </button>
+                        <button id="pauseTimerBtn" onclick="togglePauseTimer()" class="hidden flex-1 py-3.5 btn-white font-bold rounded-2xl text-xs flex items-center justify-center gap-2">
+                            <i data-lucide="pause" class="w-4 h-4"></i> <span id="pauseBtnText">Pause</span>
+                        </button>
+                        <button id="stopTimerBtn" onclick="resetTimer()" class="hidden py-3.5 px-5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold rounded-2xl text-xs flex items-center justify-center gap-2">
+                            <i data-lucide="square" class="w-4 h-4"></i> Reset
+                        </button>
+                    </div>
+
+                    <!-- Ambient Beach Sound Player -->
+                    <div class="flex items-center justify-between bg-slate-50 p-3 rounded-2xl border border-slate-200/80">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="volume-2" class="w-4 h-4 text-teal-700"></i>
+                            <span class="text-xs font-bold text-slate-800">Coastal Soundscape</span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="setBeachSoundMode('surf')" id="soundModeSurf" class="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-teal-100 text-teal-900 border border-teal-300">Ocean Surf</button>
+                            <button onclick="setBeachSoundMode('breeze')" id="soundModeBreeze" class="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-white text-slate-600 border border-slate-200 hover:bg-slate-50">Breeze</button>
+                            <button onclick="setBeachSoundMode('bonfire')" id="soundModeBonfire" class="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-white text-slate-600 border border-slate-200 hover:bg-slate-50">Fire</button>
+                            <button id="ambientSoundBtn" onclick="toggleAmbientSound()" class="ml-1 px-3 py-1 btn-white rounded-lg text-xs font-bold">Off</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right: TikTok/Instagram Urge Surfer Shield (5 Cols) -->
+            <section class="lg:col-span-5 glass-panel rounded-3xl p-6 sm:p-7 flex flex-col justify-between">
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2 text-xs font-bold text-rose-700 uppercase tracking-wider">
+                            <i data-lucide="shield-alert" class="w-4 h-4 text-rose-600"></i> Social Urge Shield
+                        </div>
+                        <span class="text-[10px] font-bold bg-rose-50 text-rose-800 border border-rose-200 px-2.5 py-0.5 rounded-full">
+                            TikTok & IG Blocker
+                        </span>
+                    </div>
+
+                    <p class="text-xs text-slate-600 leading-relaxed font-normal">
+                        Dopamine impulses peak rapidly and subside within 45 seconds. Ride out the urge wave without opening social media apps.
+                    </p>
+
+                    <!-- Main Urge Surfer Box -->
+                    <div id="urgeBox" class="p-5 bg-gradient-to-b from-slate-50 to-rose-50/30 rounded-2xl border border-rose-100 text-center space-y-3.5">
+                        <div class="w-12 h-12 bg-rose-100 rounded-2xl flex items-center justify-center mx-auto text-rose-700 border border-rose-200">
+                            <i data-lucide="smartphone-off" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-extrabold text-sm text-slate-900">Feeling TikTok or Instagram Urges?</h3>
+                            <p class="text-xs text-slate-500 font-medium mt-1">Surf the dopamine impulse for 45 seconds.</p>
+                        </div>
+                        <button onclick="startUrgeSurfer()" class="w-full py-3 btn-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 border-rose-200 text-rose-700 hover:bg-rose-50">
+                            <i data-lucide="wind" class="w-4 h-4 text-rose-600"></i> Surf the Urge (+1 Defeat)
+                        </button>
+                    </div>
+
+                    <!-- Urge Exercise Live Breathing Overlay -->
+                    <div id="urgeExercise" class="hidden p-5 bg-white rounded-2xl border border-teal-200 text-center space-y-3 shadow-md">
+                        <div class="text-[11px] uppercase text-teal-800 font-extrabold tracking-widest flex items-center justify-center gap-1.5">
+                            <i data-lucide="waves" class="w-4 h-4 text-teal-600"></i> Ocean Reset Exercise
+                        </div>
+                        <div id="breathPrompt" class="text-base font-bold text-slate-900 transition-all">Breathe In with the Ocean Tide...</div>
+                        
+                        <!-- Visual Breathing Ring -->
+                        <div class="relative w-20 h-20 mx-auto my-3 flex items-center justify-center">
+                            <div class="absolute inset-0 rounded-full bg-teal-100 border-2 border-teal-400 breath-ring"></div>
+                            <i data-lucide="wind" class="w-7 h-7 text-teal-700 relative z-10"></i>
+                        </div>
+
+                        <div id="urgeTimer" class="text-xs text-slate-600 font-medium">Surfing for <span class="font-bold text-teal-700">45</span>s</div>
+                    </div>
+                </div>
+
+                <!-- Strategic Focus Tip -->
+                <div class="mt-4 pt-4 border-t border-slate-100">
+                    <div class="bg-amber-50/80 border border-amber-200/80 rounded-2xl p-3.5 text-xs text-amber-900 font-medium leading-relaxed flex items-start gap-2.5">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5"></i>
+                        <span id="randomTipText">"Action precedes motivation. Commit to 120 seconds of work first."</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Procrastination Blocker Helper (Friction Check-in) -->
+        <section class="glass-panel rounded-3xl p-6 border border-white">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-3">
+                <div class="space-y-0.5">
+                    <span class="text-[11px] font-bold tracking-wider uppercase text-teal-800 flex items-center gap-1.5">
+                        <i data-lucide="help-circle" class="w-4 h-4 text-teal-600"></i> Friction Check-In
+                    </span>
+                    <h3 class="text-sm sm:text-base font-bold text-slate-900">What specific blocker is delaying execution right now?</h3>
+                </div>
+                <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                    <button onclick="applyBlockerStrategy('overwhelmed')" class="btn-white px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700">
+                        Overwhelmed
+                    </button>
+                    <button onclick="applyBlockerStrategy('perfectionism')" class="btn-white px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700">
+                        Fear / Perfectionism
+                    </button>
+                    <button onclick="applyBlockerStrategy('lowEnergy')" class="btn-white px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700">
+                        Low Energy
+                    </button>
+                    <button onclick="applyBlockerStrategy('boredom')" class="btn-white px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700">
+                        Boredom
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dynamic Advice Box -->
+            <div id="blockerAdviceBox" class="hidden mt-3 pt-3 border-t border-slate-100 text-xs text-slate-700 bg-slate-50 p-4 rounded-2xl flex items-start gap-3">
+                <i data-lucide="compass" class="w-4 h-4 text-teal-600 flex-shrink-0 mt-0.5"></i>
+                <div id="blockerAdviceText" class="font-medium leading-relaxed">Select a friction state above to receive an immediate micro-step strategy.</div>
+            </div>
+        </section>
+
+        <!-- Daily Priority Task Manager (3 Max Intentions) -->
+        <section class="glass-panel rounded-3xl p-6 sm:p-7 border border-white">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                <div>
+                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="check-square" class="w-4 h-4 text-teal-700"></i> Daily Priority Focus Intentions
+                    </h3>
+                    <p class="text-xs text-slate-500 font-medium">Focus on maximum 3 core bite-sized steps to prevent fatigue.</p>
+                </div>
+                <button onclick="clearCompletedTasks()" class="btn-white text-xs px-3 py-1.5 rounded-xl font-semibold">
+                    Clear Completed
+                </button>
+            </div>
+
+            <!-- Task Input Form -->
+            <form onsubmit="handleAddTask(event)" class="flex gap-2 mb-5">
+                <input id="taskInput" type="text" placeholder="Add a single bite-sized execution step..." maxlength="90" class="flex-grow bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs sm:text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:bg-white transition">
+                <button type="submit" class="btn-primary px-5 py-3 font-bold rounded-2xl text-xs sm:text-sm flex items-center gap-1.5 flex-shrink-0">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Add Priority
+                </button>
+            </form>
+
+            <!-- Task List Output -->
+            <div id="taskList" class="space-y-2.5">
+                <!-- Task items rendered dynamically -->
+            </div>
+        </section>
+
+        <!-- Sunset Reflection & Daily Journal Strip -->
+        <section class="glass-panel rounded-3xl p-5 border border-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div class="space-y-1 flex-grow">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-teal-900 flex items-center gap-1.5">
+                    <i data-lucide="book-open" class="w-4 h-4 text-teal-700"></i> Daily Reflection Note
+                </h4>
+                <input id="reflectionInput" type="text" onchange="saveReflection(this.value)" placeholder="What is one focus milestone you completed today?" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-500">
+            </div>
+            <div class="text-[11px] text-teal-900 font-bold bg-teal-50 border border-teal-200 px-3.5 py-2 rounded-2xl flex-shrink-0 flex items-center gap-1.5">
+                <i data-lucide="award" class="w-4 h-4 text-teal-600"></i> Consistency builds mastery.
+            </div>
+        </section>
+
+        <!-- History Stats Grid -->
+        <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="glass-panel rounded-2xl p-4.5 flex items-center gap-3.5 border border-white">
+                <div class="p-3 bg-teal-50 border border-teal-100 rounded-2xl text-teal-700">
+                    <i data-lucide="clock" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Focus Time</div>
+                    <div id="statTotalFocus" class="text-lg font-extrabold text-slate-900">0 min</div>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-4.5 flex items-center gap-3.5 border border-white">
+                <div class="p-3 bg-emerald-50 border border-emerald-100 rounded-2xl text-emerald-700">
+                    <i data-lucide="shield" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Urges Defeated</div>
+                    <div id="statSkippedTotal" class="text-lg font-extrabold text-slate-900">0 times</div>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-4.5 flex items-center gap-3.5 border border-white">
+                <div class="p-3 bg-amber-50 border border-amber-100 rounded-2xl text-amber-700">
+                    <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Intentions Finished</div>
+                    <div id="statTasksDone" class="text-lg font-extrabold text-slate-900">0 tasks</div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- SMART Goal Configuration Modal -->
+    <div id="smartModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-panel bg-white rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl border border-white space-y-5">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-4">
+                <h3 class="font-extrabold text-slate-900 text-base flex items-center gap-2">
+                    <i data-lucide="target" class="w-5 h-5 text-teal-700"></i> Define SMART Goal Horizon
+                </h3>
+                <button onclick="closeSMARTModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleSaveSmartGoal(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Specific Goal Title</label>
+                    <input id="modalGoalTitle" type="text" required placeholder="e.g. Complete Web App & Pass Technical Review" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-teal-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">Measurable Objective Details</label>
+                    <textarea id="modalGoalDesc" rows="2" placeholder="e.g. Complete 3 key modules without last-minute panic or procrastination." class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-teal-500"></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Target Date</label>
+                        <input id="modalGoalDate" type="date" required class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-teal-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Progress (%)</label>
+                        <input id="modalGoalProgress" type="number" min="0" max="100" class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3.5 py-2.5 text-xs text-slate-900 focus:outline-none focus:border-teal-500">
+                    </div>
+                </div>
+
+                <div class="pt-2 flex gap-2 justify-end">
+                    <button type="button" onclick="closeSMARTModal()" class="btn-white px-4 py-2.5 rounded-2xl text-xs font-semibold">Cancel</button>
+                    <button type="submit" class="btn-primary px-5 py-2.5 rounded-2xl text-xs font-bold shadow-md">Save Horizon</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toastNotification" class="hidden fixed bottom-6 right-6 z-50 glass-panel bg-slate-900/95 text-white border border-slate-700 px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 text-xs font-semibold">
+        <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
+        <span id="toastMessage">Message text</span>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'DIRECTFLOW_APP_DATA_V1';
+
+        // Core App State
+        let appState = {
+            smartGoal: {
+                title: "Finish Web Application & Pass Review",
+                desc: "Write clean code, conduct testing, and submit ahead of deadline.",
+                date: "2026-10-15",
+                progress: 35
+            },
+            streak: {
+                current: 1,
+                lastLoginDate: new Date().toISOString().split('T')[0]
+            },
+            skippedProcrastinationCount: 0,
+            totalFocusMinutes: 0,
+            completedTasksCount: 0,
+            reflectionNote: "",
+            tasks: [
+                { id: 1, text: "Open code editor and execute 15 continuous focus minutes", completed: false },
+                { id: 2, text: "Place phone on silent mode in adjacent room", completed: true }
+            ]
+        };
+
+        const PROMPTS = [
+            '"Action precedes motivation. Commit to 120 seconds of direct work first."',
+            '"Dopamine scrolling urges peak within 45 seconds and quickly fade away."',
+            '"Consistent 15-minute focus blocks compound into remarkable output."',
+            '"Perfectionism is procrastination in disguise. Aim for execution first."'
+        ];
+
+        // Focus Timer State
+        let timerInterval = null;
+        let timerSecondsRemaining = 25 * 60;
+        let timerTotalInitial = 25 * 60;
+        let isTimerRunning = false;
+        let isTimerPaused = false;
+
+        // Ambient Web Audio Synthesizer
+        let audioCtx = null;
+        let beachNoiseNode = null;
+        let beachFilterNode = null;
+        let beachGainNode = null;
+        let beachLfoNode = null;
+        let isAmbientPlaying = false;
+        let currentBeachSoundMode = 'surf'; // 'surf', 'breeze', 'bonfire'
+
+        window.onload = function() {
+            loadFromLocalStorage();
+            checkAndIncrementStreak();
+            updateTimeBasedGreeting();
+            renderAll();
+            lucide.createIcons();
+            rotateRandomTip();
+        };
+
+        function renderAll() {
+            // Render Stats & Badges
+            document.getElementById('streakCount').textContent = appState.streak.current;
+            document.getElementById('skippedCount').textContent = appState.skippedProcrastinationCount;
+            document.getElementById('statTotalFocus').textContent = appState.totalFocusMinutes + " min";
+            document.getElementById('statSkippedTotal').textContent = appState.skippedProcrastinationCount + " times";
+            document.getElementById('statTasksDone').textContent = appState.completedTasksCount + " tasks";
+
+            // Reflection Journal
+            const refEl = document.getElementById('reflectionInput');
+            if (refEl && appState.reflectionNote) {
+                refEl.value = appState.reflectionNote;
+            }
+
+            // SMART Goal Output
+            document.getElementById('smartGoalTitle').textContent = appState.smartGoal.title || "No Objective Defined";
+            document.getElementById('smartGoalDesc').textContent = appState.smartGoal.desc || "Define your SMART goal to focus your effort.";
+            document.getElementById('smartGoalDate').textContent = appState.smartGoal.date || "Not set";
+            document.getElementById('goalProgressPercent').textContent = (appState.smartGoal.progress || 0) + "%";
+            document.getElementById('goalProgressBar').style.width = (appState.smartGoal.progress || 0) + "%";
+
+            // Render Priority Tasks
+            renderTaskList();
+        }
+
+        function renderTaskList() {
+            const container = document.getElementById('taskList');
+            container.innerHTML = '';
+
+            if (appState.tasks.length === 0) {
+                container.innerHTML = `<div class="text-center py-6 text-xs text-slate-400 font-medium italic">No intentions set today. Add up to 3 priority tasks above.</div>`;
+                return;
+            }
+
+            appState.tasks.forEach((task) => {
+                const el = document.createElement('div');
+                el.className = `flex items-center justify-between p-3.5 rounded-2xl border transition ${
+                    task.completed 
+                    ? 'bg-slate-100/80 border-slate-200 text-slate-400 line-through' 
+                    : 'bg-white border-slate-200 text-slate-800 shadow-sm hover:border-slate-300'
+                }`;
+
+                el.innerHTML = `
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <button onclick="toggleTask(${task.id})" class="p-1 rounded-lg text-teal-600 hover:bg-teal-50 flex-shrink-0">
+                            <i data-lucide="${task.completed ? 'check-circle-2' : 'circle'}" class="w-5 h-5"></i>
+                        </button>
+                        <span class="text-xs sm:text-sm font-bold truncate">${escapeHtml(task.text)}</span>
+                    </div>
+                    <button onclick="deleteTask(${task.id})" class="text-slate-400 hover:text-rose-600 p-1 flex-shrink-0 transition">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                `;
+                container.appendChild(el);
+            });
+            lucide.createIcons();
+        }
+
+        function handleAddTask(e) {
+            e.preventDefault();
+            const input = document.getElementById('taskInput');
+            const text = input.value.trim();
+
+            if (!text) return;
+
+            if (appState.tasks.length >= 3) {
+                showToast("Keep intentions minimal (Max 3) for maximum focus!");
+            }
+
+            appState.tasks.push({
+                id: Date.now(),
+                text: text,
+                completed: false
+            });
+
+            input.value = '';
+            saveToLocalStorage();
+            renderAll();
+            showToast("Priority intention added!");
+        }
+
+        function toggleTask(id) {
+            const task = appState.tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                if (task.completed) {
+                    appState.completedTasksCount += 1;
+                    playTone(600, 0.1);
+                    showToast("Priority task completed!");
+                }
+                saveToLocalStorage();
+                renderAll();
+            }
+        }
+
+        function deleteTask(id) {
+            appState.tasks = appState.tasks.filter(t => t.id !== id);
+            saveToLocalStorage();
+            renderAll();
+        }
+
+        function clearCompletedTasks() {
+            appState.tasks = appState.tasks.filter(t => !t.completed);
+            saveToLocalStorage();
+            renderAll();
+        }
+
+        function triggerFiveSecondLaunch() {
+            if (isTimerRunning) return;
+
+            const overlay = document.getElementById('launchCountdownOverlay');
+            const numEl = document.getElementById('countdownNumber');
+            overlay.classList.remove('hidden');
+
+            let count = 5;
+            numEl.textContent = count;
+            playTone(400, 0.1);
+
+            const launchTimer = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    numEl.textContent = count;
+                    playTone(400 + (5 - count) * 80, 0.1);
+                } else {
+                    clearInterval(launchTimer);
+                    overlay.classList.add('hidden');
+                    playTone(880, 0.25);
+                    startTimer();
+                }
+            }, 1000);
+        }
+
+        function setTimerPreset(minutes) {
+            if (isTimerRunning) resetTimer();
+            timerSecondsRemaining = minutes * 60;
+            timerTotalInitial = minutes * 60;
+            updateTimerDisplay();
+        }
+
+        function startTimer() {
+            isTimerRunning = true;
+            isTimerPaused = false;
+
+            document.getElementById('startActionBtn').classList.add('hidden');
+            document.getElementById('pauseTimerBtn').classList.remove('hidden');
+            document.getElementById('stopTimerBtn').classList.remove('hidden');
+            document.getElementById('timerStatusLabel').textContent = "FOCUS ACTIVE • Direct execution session running.";
+
+            timerInterval = setInterval(() => {
+                if (!isTimerPaused) {
+                    timerSecondsRemaining--;
+                    updateTimerDisplay();
+
+                    if (timerSecondsRemaining <= 0) {
+                        clearInterval(timerInterval);
+                        onTimerComplete();
+                    }
+                }
+            }, 1000);
+        }
+
+        function togglePauseTimer() {
+            isTimerPaused = !isTimerPaused;
+            document.getElementById('pauseBtnText').textContent = isTimerPaused ? "Resume" : "Pause";
+            document.getElementById('timerStatusLabel').textContent = isTimerPaused ? "PAUSED • Waiting to resume focus" : "FOCUS ACTIVE • Direct execution session running.";
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isTimerRunning = false;
+            isTimerPaused = false;
+            timerSecondsRemaining = timerTotalInitial;
+
+            document.getElementById('startActionBtn').classList.remove('hidden');
+            document.getElementById('pauseTimerBtn').classList.add('hidden');
+            document.getElementById('stopTimerBtn').classList.add('hidden');
+            document.getElementById('timerStatusLabel').textContent = "Select session length and launch direct momentum.";
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(timerSecondsRemaining / 60);
+            const secs = timerSecondsRemaining % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function onTimerComplete() {
+            const elapsedMins = Math.round(timerTotalInitial / 60);
+            appState.totalFocusMinutes += elapsedMins;
+            saveToLocalStorage();
+            renderAll();
+            resetTimer();
+            playTone(800, 0.5);
+            showToast(`Focus session completed! Logged ${elapsedMins} minutes!`);
+        }
+
+        function startUrgeSurfer() {
+            const urgeBox = document.getElementById('urgeBox');
+            const urgeExercise = document.getElementById('urgeExercise');
+            const breathPrompt = document.getElementById('breathPrompt');
+            const urgeTimer = document.getElementById('urgeTimer');
+
+            urgeBox.classList.add('hidden');
+            urgeExercise.classList.remove('hidden');
+
+            let countdown = 45;
+            const phases = ["Breathe In with the Ocean Tide...", "Hold Breath Calmly...", "Exhale Slowly...", "Feel the Urge Wave Fade..."];
+            let phaseIdx = 0;
+
+            const breathInterval = setInterval(() => {
+                phaseIdx = (phaseIdx + 1) % phases.length;
+                breathPrompt.textContent = phases[phaseIdx];
+            }, 4000);
+
+            const countdownInterval = setInterval(() => {
+                countdown--;
+                urgeTimer.innerHTML = `Surfing urge for <span class="font-bold text-teal-700">${countdown}</span>s`;
+
+                if (countdown <= 0) {
+                    clearInterval(breathInterval);
+                    clearInterval(countdownInterval);
+
+                    urgeExercise.classList.add('hidden');
+                    urgeBox.classList.remove('hidden');
+
+                    appState.skippedProcrastinationCount += 1;
+                    saveToLocalStorage();
+                    renderAll();
+
+                    playTone(523.25, 0.3);
+                    showToast("Social Media Urge Defeated! +1 Victory");
+                }
+            }, 1000);
+        }
+
+        function setBeachSoundMode(mode) {
+            currentBeachSoundMode = mode;
+            
+            const btnSurf = document.getElementById('soundModeSurf');
+            const btnBreeze = document.getElementById('soundModeBreeze');
+            const btnBonfire = document.getElementById('soundModeBonfire');
+
+            [btnSurf, btnBreeze, btnBonfire].forEach(b => {
+                if (b) {
+                    b.className = "px-2.5 py-1 text-[11px] font-bold rounded-lg bg-white text-slate-600 border border-slate-200 hover:bg-slate-50";
+                }
+            });
+
+            if (mode === 'surf' && btnSurf) btnSurf.className = "px-2.5 py-1 text-[11px] font-bold rounded-lg bg-teal-100 text-teal-900 border border-teal-300";
+            if (mode === 'breeze' && btnBreeze) btnBreeze.className = "px-2.5 py-1 text-[11px] font-bold rounded-lg bg-teal-100 text-teal-900 border border-teal-300";
+            if (mode === 'bonfire' && btnBonfire) btnBonfire.className = "px-2.5 py-1 text-[11px] font-bold rounded-lg bg-teal-100 text-teal-900 border border-teal-300";
+
+            if (isAmbientPlaying) {
+                stopBeachAudio();
+                startBeachAudio();
+            }
+        }
+
+        function toggleAmbientSound() {
+            const btn = document.getElementById('ambientSoundBtn');
+            if (!isAmbientPlaying) {
+                startBeachAudio();
+                if (btn) {
+                    btn.textContent = "On";
+                    btn.classList.add('bg-teal-700', 'text-white');
+                }
+            } else {
+                stopBeachAudio();
+                if (btn) {
+                    btn.textContent = "Off";
+                    btn.classList.remove('bg-teal-700', 'text-white');
+                }
+            }
+        }
+
+        function startBeachAudio() {
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                const bufferSize = audioCtx.sampleRate * 2;
+                const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const output = noiseBuffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    output[i] = Math.random() * 2 - 1;
+                }
+
+                beachNoiseNode = audioCtx.createBufferSource();
+                beachNoiseNode.buffer = noiseBuffer;
+                beachNoiseNode.loop = true;
+
+                beachFilterNode = audioCtx.createBiquadFilter();
+                beachGainNode = audioCtx.createGain();
+
+                if (currentBeachSoundMode === 'surf') {
+                    beachFilterNode.type = 'lowpass';
+                    beachFilterNode.frequency.value = 350;
+                    beachGainNode.gain.value = 0.04;
+
+                    beachLfoNode = audioCtx.createOscillator();
+                    beachLfoNode.frequency.value = 0.12;
+                    const lfoGain = audioCtx.createGain();
+                    lfoGain.gain.value = 250;
+
+                    beachLfoNode.connect(lfoGain);
+                    lfoGain.connect(beachFilterNode.frequency);
+                    beachLfoNode.start();
+
+                } else if (currentBeachSoundMode === 'breeze') {
+                    beachFilterNode.type = 'bandpass';
+                    beachFilterNode.frequency.value = 750;
+                    beachFilterNode.Q.value = 1.5;
+                    beachGainNode.gain.value = 0.02;
+
+                    beachLfoNode = audioCtx.createOscillator();
+                    beachLfoNode.frequency.value = 0.2;
+                    const lfoGain = audioCtx.createGain();
+                    lfoGain.gain.value = 200;
+
+                    beachLfoNode.connect(lfoGain);
+                    lfoGain.connect(beachFilterNode.frequency);
+                    beachLfoNode.start();
+
+                } else if (currentBeachSoundMode === 'bonfire') {
+                    beachFilterNode.type = 'lowpass';
+                    beachFilterNode.frequency.value = 200;
+                    beachGainNode.gain.value = 0.05;
+                }
+
+                beachNoiseNode.connect(beachFilterNode);
+                beachFilterNode.connect(beachGainNode);
+                beachGainNode.connect(audioCtx.destination);
+
+                beachNoiseNode.start();
+                isAmbientPlaying = true;
+            } catch(e) {
+                console.error("Audio error", e);
+            }
+        }
+
+        function stopBeachAudio() {
+            if (beachNoiseNode) try { beachNoiseNode.stop(); } catch(e){}
+            if (beachLfoNode) try { beachLfoNode.stop(); } catch(e){}
+            isAmbientPlaying = false;
+        }
+
+        function applyBlockerStrategy(type) {
+            const adviceBox = document.getElementById('blockerAdviceBox');
+            const adviceText = document.getElementById('blockerAdviceText');
+            adviceBox.classList.remove('hidden');
+
+            const strategies = {
+                overwhelmed: "Break the target into a single 2-minute action. Do not focus on the entire project—execute step 1.",
+                perfectionism: "Lower the barrier to entry. Give yourself permission to make a rough first draft right now.",
+                lowEnergy: "Set the timer for a 5-minute focus sprint. If you remain fatigued afterward, rest guilt-free.",
+                boredom: "Gamify execution. Challenge yourself to complete 1 priority task before the 15-minute timer finishes."
+            };
+
+            adviceText.textContent = strategies[type] || "Take a deep breath and trigger the 5s Direct Action button.";
+        }
+
+        function openSMARTModal() {
+            document.getElementById('modalGoalTitle').value = appState.smartGoal.title || '';
+            document.getElementById('modalGoalDesc').value = appState.smartGoal.desc || '';
+            document.getElementById('modalGoalDate').value = appState.smartGoal.date || '';
+            document.getElementById('modalGoalProgress').value = appState.smartGoal.progress || 0;
+            document.getElementById('smartModal').classList.remove('hidden');
+        }
+
+        function closeSMARTModal() {
+            document.getElementById('smartModal').classList.add('hidden');
+        }
+
+        function handleSaveSmartGoal(e) {
+            e.preventDefault();
+            appState.smartGoal = {
+                title: document.getElementById('modalGoalTitle').value.trim(),
+                desc: document.getElementById('modalGoalDesc').value.trim(),
+                date: document.getElementById('modalGoalDate').value,
+                progress: parseInt(document.getElementById('modalGoalProgress').value) || 0
+            };
+            saveToLocalStorage();
+            renderAll();
+            closeSMARTModal();
+            showToast("SMART Goal updated successfully!");
+        }
+
+        function saveReflection(text) {
+            appState.reflectionNote = text;
+            saveToLocalStorage();
+            showToast("Daily reflection saved!");
+        }
+
+        function checkAndIncrementStreak() {
+            const today = new Date().toISOString().split('T')[0];
+            const lastDate = appState.streak.lastLoginDate;
+
+            if (!lastDate) {
+                appState.streak.current = 1;
+                appState.streak.lastLoginDate = today;
+            } else if (lastDate !== today) {
+                const prev = new Date(lastDate);
+                const curr = new Date(today);
+                const diffTime = Math.abs(curr - prev);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                if (diffDays === 1) {
+                    appState.streak.current += 1;
+                } else if (diffDays > 1) {
+                    appState.streak.current = 1;
+                }
+                appState.streak.lastLoginDate = today;
+            }
+            saveToLocalStorage();
+        }
+
+        function updateTimeBasedGreeting() {
+            const hour = new Date().getHours();
+            const greetingEl = document.getElementById('userGreeting');
+            if (hour < 12) greetingEl.textContent = "Good morning! Ready for a direct focus sprint?";
+            else if (hour < 18) greetingEl.textContent = "Good afternoon! Keep momentum strong with high priority tasks.";
+            else greetingEl.textContent = "Good evening! Review your daily achievements and rest well.";
+        }
+
+        function loadFromLocalStorage() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    appState = Object.assign({}, appState, JSON.parse(saved));
+                }
+            } catch(e) {
+                console.warn("Could not load from localStorage", e);
+            }
+        }
+
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+            } catch(e) {
+                console.warn("Could not save to localStorage", e);
+            }
+        }
+
+        function playTone(freq, duration) {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch(e) {}
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toastNotification');
+            document.getElementById('toastMessage').textContent = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        function rotateRandomTip() {
+            const tipEl = document.getElementById('randomTipText');
+            if (tipEl) {
+                const randomPrompt = PROMPTS[Math.floor(Math.random() * PROMPTS.length)];
+                tipEl.textContent = randomPrompt;
+            }
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>

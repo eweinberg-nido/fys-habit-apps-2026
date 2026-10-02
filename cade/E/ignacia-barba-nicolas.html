@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estudio Fútbol Club - Católica & Palestino Edition</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Teko for sports headers, Plus Jakarta Sans for body -->
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@500;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sports: ['Teko', 'sans-serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        ucBlue: '#0033A0',
+                        ucLightBlue: '#00A3E0',
+                        palGreen: '#007A3D',
+                        palRed: '#DA291C',
+                        palBlack: '#111111',
+                        pitchGreen: '#1E5631',
+                        stadiumGold: '#FFD700'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .pitch-pattern {
+            background-color: #1a4d2e;
+            background-image: repeating-linear-gradient(
+                0deg,
+                #1a4d2e,
+                #1a4d2e 40px,
+                #153e25 40px,
+                #153e25 80px
+            );
+        }
+        .glow-gold {
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+        }
+        .glow-uc {
+            box-shadow: 0 0 20px rgba(0, 163, 224, 0.5);
+        }
+        .glow-pal {
+            box-shadow: 0 0 20px rgba(0, 122, 61, 0.5);
+        }
+        @keyframes bounce-subtle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        .animate-bounce-subtle {
+            animation: bounce-subtle 2s infinite ease-in-out;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.98); opacity: 0.9; }
+            50% { transform: scale(1.02); opacity: 1; }
+            100% { transform: scale(0.98); opacity: 0.9; }
+        }
+        .pulse-stadium {
+            animation: pulse-ring 3s infinite ease-in-out;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col selection:bg-amber-400 selection:text-slate-900">
+
+    <!-- TOP NAVIGATION & TEAM DASHBOARD HUD -->
+    <header id="mainHeader" class="bg-slate-900/90 border-b border-slate-800 sticky top-0 z-40 backdrop-blur-md transition-colors duration-500">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+            
+            <!-- Logo & Title -->
+            <div class="flex items-center space-x-3">
+                <div id="teamBadgeContainer" class="w-12 h-12 rounded-full flex items-center justify-center font-sports text-2xl font-bold text-white shadow-lg border-2 border-white/20 transition-all duration-300 transform hover:scale-110 cursor-pointer" onclick="toggleTeamTheme()">
+                    <span id="badgeIcon">⚽</span>
+                </div>
+                <div>
+                    <h1 class="font-sports text-2xl md:text-3xl tracking-wide uppercase font-bold leading-none bg-gradient-to-r from-white via-slate-200 to-amber-400 bg-clip-text text-transparent">
+                        Estudio Fútbol Club
+                    </h1>
+                    <p class="text-xs text-slate-400 font-semibold flex items-center gap-1.5">
+                        <span id="themeSubtitleText" class="text-ucLightBlue font-bold">Edición Católica & Palestino</span>
+                        <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span id="activeStreakText">Racha: 0 Días</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Team Theme Selector -->
+            <div class="flex items-center bg-slate-950/80 p-1 rounded-xl border border-slate-800 shadow-inner">
+                <button onclick="setTheme('uc')" id="btnThemeUC" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-ucBlue text-white shadow-md">
+                    <span class="w-3 h-3 rounded-full bg-white border border-ucLightBlue inline-block"></span>
+                    Católica
+                </button>
+                <button onclick="setTheme('palestino')" id="btnThemePal" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-slate-400 hover:text-white">
+                    <span class="w-3 h-3 rounded-full bg-palGreen border border-palRed inline-block"></span>
+                    Palestino
+                </button>
+                <button onclick="setTheme('hybrid')" id="btnThemeHybrid" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-slate-400 hover:text-white">
+                    <span class="text-amber-400">⚡</span>
+                    Dúo Cruzado-Tino
+                </button>
+            </div>
+
+            <!-- Stats Bar (Coins, Tokens, Trophies, Level) -->
+            <div class="flex items-center gap-3 bg-slate-800/80 px-4 py-2 rounded-2xl border border-slate-700/60 shadow-lg">
+                <!-- Coins -->
+                <div class="flex items-center space-x-1.5 text-amber-400" title="Puntos de Fichaje (Monedas)">
+                    <i class="fa-solid font-bold fa-coins text-lg animate-bounce-subtle"></i>
+                    <span id="userCoins" class="font-sports text-2xl font-bold leading-none">0</span>
+                </div>
+                <div class="h-6 w-px bg-slate-700"></div>
+                <!-- Clásico Tokens (ONLY earned in hard subjects!) -->
+                <div class="flex items-center space-x-1.5 text-rose-400" title="Fichas de Clásico (Ganadas SOLO en Ramos Difíciles)">
+                    <i class="fa-solid fa-fire text-lg"></i>
+                    <span id="clasicoTokens" class="font-sports text-2xl font-bold leading-none">0</span>
+                </div>
+                <div class="h-6 w-px bg-slate-700"></div>
+                <!-- Trophies -->
+                <div class="flex items-center space-x-1.5 text-amber-300" title="Copas Ganadas">
+                    <i class="fa-solid fa-trophy text-lg"></i>
+                    <span id="userTrophies" class="font-sports text-2xl font-bold leading-none">0</span>
+                </div>
+                <div class="h-6 w-px bg-slate-700"></div>
+                <!-- User Level & Progress -->
+                <div class="flex items-center space-x-2">
+                    <div class="text-right">
+                        <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Nivel DT</div>
+                        <div id="userLevelName" class="text-xs font-bold text-emerald-400 leading-none">Promesa</div>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center font-sports text-xl font-bold text-amber-400" id="userLevelBadge">
+                        1
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- MAIN NAVIGATION TABS -->
+    <nav class="bg-slate-900/60 border-b border-slate-800/80 sticky top-[69px] z-30 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 flex space-x-2 overflow-x-auto no-scrollbar py-2">
+            <button onclick="switchTab('dashboard')" id="tabBtn-dashboard" class="nav-tab active flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all bg-emerald-600 text-white shadow-lg shadow-emerald-900/40 whitespace-nowrap">
+                <i class="fa-solid fa-futbol"></i>
+                Estadio & Partido (Timer)
+            </button>
+            <button onclick="switchTab('subjects')" id="tabBtn-subjects" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 transition-all whitespace-nowrap">
+                <i class="fa-solid fa-clipboard-list"></i>
+                Pizarra Táctica & Clásicos
+            </button>
+            <button onclick="switchTab('league')" id="tabBtn-league" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 transition-all whitespace-nowrap">
+                <i class="fa-solid fa-ranking-star text-amber-400"></i>
+                Tabla de Posiciones
+            </button>
+            <button onclick="switchTab('store')" id="tabBtn-store" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 transition-all whitespace-nowrap">
+                <i class="fa-solid fa-store text-rose-400"></i>
+                Tienda de Fichajes de Lujo
+            </button>
+            <button onclick="switchTab('avatar')" id="tabBtn-avatar" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 transition-all whitespace-nowrap">
+                <i class="fa-solid fa-user-ninja text-sky-400"></i>
+                Camarín & Avatar
+            </button>
+            <button onclick="switchTab('penalties')" id="tabBtn-penalties" class="nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 transition-all whitespace-nowrap">
+                <i class="fa-solid fa-bullseye text-emerald-400"></i>
+                Desafío de Penales
+            </button>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full">
+
+        <!-- VIEW 1: DASHBOARD & MATCH TIMER -->
+        <section id="view-dashboard" class="tab-content block space-y-6">
+            
+            <!-- High-Impact Motivation Banner for Disliked Subjects -->
+            <div id="motivationAlert" class="bg-gradient-to-r from-rose-950 via-slate-900 to-amber-950 border-2 border-rose-500/80 p-5 rounded-3xl shadow-2xl flex flex-col md:flex-row items-center gap-4 relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 opacity-10 text-9xl font-sports text-white pointer-events-none">
+                    COPA
+                </div>
+                <div class="p-4 bg-rose-500/20 text-rose-400 rounded-2xl text-3xl flex-shrink-0 border border-rose-500/30">
+                    <i class="fa-solid fa-trophy animate-bounce-subtle"></i>
+                </div>
+                <div class="flex-grow text-center md:text-left">
+                    <div class="flex items-center justify-center md:justify-start gap-2 mb-1">
+                        <span class="bg-rose-500 text-slate-950 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider">REGLA DEL DT</span>
+                        <span class="text-xs text-amber-400 font-bold">¡Estudiar solo lo fácil NO da Campeonato!</span>
+                    </div>
+                    <h3 class="font-sports text-2xl md:text-3xl font-bold text-white tracking-wide uppercase leading-tight">
+                        ¡Gana los Ramos Aburridos para Salir Campeón!
+                    </h3>
+                    <p class="text-xs md:text-sm text-slate-300 mt-1">
+                        Los ramos difíciles son los <strong class="text-rose-400">"Partidos Clave de Clásico"</strong>. Te dan <strong class="text-amber-300">3 Puntos en la Tabla</strong>, <strong class="text-rose-400">Fichas de Clásico Exclusivas 🔥</strong> para comprar equipación de oro, y <strong class="text-emerald-400">2.5x Monedas</strong>.
+                    </p>
+                </div>
+                <button onclick="switchTab('subjects')" class="px-5 py-3 bg-gradient-to-r from-rose-500 to-amber-500 hover:from-rose-400 hover:to-amber-400 text-slate-950 font-sports text-xl font-bold rounded-2xl shadow-xl transition-transform transform active:scale-95 whitespace-nowrap flex items-center gap-2">
+                    Elegir Partido Clásico <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <!-- Pitch Layout Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                <!-- STADIUM PITCH TIMER (Left - 8 cols) -->
+                <div class="lg:col-span-8 bg-slate-900 rounded-3xl border border-slate-800 overflow-hidden shadow-2xl flex flex-col">
+                    
+                    <!-- Stadium Header Banner -->
+                    <div id="stadiumBanner" class="pitch-pattern p-6 border-b border-emerald-900/60 relative flex flex-col justify-between min-h-[340px] text-white">
+                        <!-- Stadium Lighting Grid effect -->
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-slate-950/95 pointer-events-none"></div>
+
+                        <!-- Top Info Bar -->
+                        <div class="relative z-10 flex justify-between items-center">
+                            <span class="bg-slate-950/80 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-emerald-400 border border-emerald-500/30 flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                                ESTADIO EN VIVO
+                            </span>
+                            <div class="flex items-center gap-2">
+                                <span id="currentSubjectTag" class="bg-slate-900/90 px-3.5 py-1.5 rounded-full text-xs font-bold text-amber-300 border border-amber-400/40">
+                                    <i class="fa-solid fa-futbol mr-1"></i> Selecciona un Ramo para el Partido
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Scoreboard Center Display -->
+                        <div class="relative z-10 my-auto text-center py-4">
+                            <div class="inline-block bg-slate-950/90 backdrop-blur-md px-8 py-6 rounded-3xl border border-slate-700/80 shadow-2xl max-w-md w-full">
+                                <div class="text-xs uppercase tracking-widest text-slate-400 font-bold mb-1" id="timerModeText">
+                                    PRIMER TIEMPO (25 MINUTOS)
+                                </div>
+                                <div id="timerDisplay" class="font-sports text-7xl md:text-8xl font-bold tracking-tight text-white drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]">
+                                    25:00
+                                </div>
+
+                                <!-- Live Commentary Line -->
+                                <div id="liveCommentary" class="mt-3 text-xs italic text-amber-300/90 bg-slate-900/90 py-2 px-3 rounded-xl border border-slate-800 line-clamp-1">
+                                    "¡El árbitro pita el inicio! Concéntrate en el balón y evita las distracciones."
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Match Controls Row -->
+                        <div class="relative z-10 flex flex-wrap items-center justify-center gap-3">
+                            <button id="btnStartTimer" onclick="toggleTimer()" class="px-7 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-sports text-2xl font-bold tracking-wide rounded-2xl shadow-xl transition-all transform active:scale-95 flex items-center gap-2">
+                                <i class="fa-solid fa-play text-xl" id="timerPlayIcon"></i>
+                                <span id="timerPlayText">INICIAR PARTIDO</span>
+                            </button>
+
+                            <button onclick="resetTimer()" class="p-3 bg-slate-800/80 hover:bg-slate-700 text-slate-300 rounded-2xl border border-slate-700 transition-all">
+                                <i class="fa-solid fa-rotate-right text-lg"></i>
+                            </button>
+
+                            <!-- Match Type Quick Selector -->
+                            <div class="flex items-center bg-slate-950/80 p-1 rounded-2xl border border-slate-800">
+                                <button onclick="setTimerDuration(25, 'Primer Tiempo')" class="px-3 py-2 text-xs font-bold rounded-xl text-white bg-slate-800 hover:bg-slate-700">25m</button>
+                                <button onclick="setTimerDuration(45, 'Partido Completo')" class="px-3 py-2 text-xs font-bold rounded-xl text-slate-400 hover:text-white">45m</button>
+                                <button onclick="setTimerDuration(5, 'Tiempo Extra / Descanso')" class="px-3 py-2 text-xs font-bold rounded-xl text-amber-400 hover:text-amber-300">5m Descanso</button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Subject Selector for Match -->
+                    <div class="p-6 bg-slate-900 flex-grow flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-center mb-3">
+                                <h4 class="font-sports text-xl font-bold uppercase tracking-wider text-slate-300">
+                                    1. Selecciona tu Rival de Hoy (Materia)
+                                </h4>
+                                <span class="text-xs text-rose-400 font-bold">
+                                    🔥 Ramos Aburridos = Clásicos (3 Pts + Fichas)
+                                </span>
+                            </div>
+                            <div id="quickSubjectList" class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                <!-- Dynamic subjects injected here -->
+                            </div>
+                        </div>
+
+                        <!-- Dynamic Audio & Stadium Chants Toggle -->
+                        <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                            <span class="flex items-center gap-2">
+                                <i class="fa-solid fa-volume-high text-emerald-400"></i>
+                                Audio de Estadio & Hinchada Activado
+                            </span>
+                            <div class="flex gap-2">
+                                <button onclick="playWhistleSound()" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-bullhorn text-amber-400"></i> Probar Silbato
+                                </button>
+                                <button onclick="playGoalCheerSound()" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg border border-slate-700 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-futbol text-emerald-400"></i> Gritar Gol
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- PLAYER CARD & MATCH SUMMARY (Right - 4 cols) -->
+                <div class="lg:col-span-4 space-y-6">
+                    
+                    <!-- Active Player Card -->
+                    <div class="bg-slate-900 rounded-3xl p-6 border border-slate-800 shadow-xl relative overflow-hidden">
+                        <!-- Team Emblem Background watermark -->
+                        <div class="absolute -right-6 -bottom-6 opacity-10 text-9xl text-white pointer-events-none font-sports font-bold">
+                            UC
+                        </div>
+
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div id="cardAvatarFrame" class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-slate-950 via-slate-800 to-slate-900 border-2 border-amber-400 flex items-center justify-center text-4xl shadow-lg relative">
+                                <span id="cardAvatarIcon">🛡️</span>
+                                <span class="absolute -bottom-2 -right-2 bg-amber-500 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full uppercase">
+                                    CAPITÁN
+                                </span>
+                            </div>
+                            <div>
+                                <h3 id="cardPlayerName" class="font-sports text-2xl font-bold uppercase text-white leading-none">
+                                    Crack de San Carlos
+                                </h3>
+                                <p id="cardTeamTitle" class="text-xs font-bold text-ucLightBlue mt-1">
+                                    Universidad Católica DT
+                                </p>
+                                <div class="mt-2 flex items-center gap-1 text-[11px] text-amber-400 font-bold">
+                                    <i class="fa-solid fa-award"></i>
+                                    <span id="cardSpeciality">Especialista en Clásicos</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progress to Next Rank -->
+                        <div class="space-y-1.5 mb-4">
+                            <div class="flex justify-between text-xs font-bold">
+                                <span class="text-slate-400">Progreso a Selección Nacional</span>
+                                <span class="text-emerald-400" id="cardXpPercent">0%</span>
+                            </div>
+                            <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden border border-slate-800 p-0.5">
+                                <div id="cardXpBar" class="h-full bg-gradient-to-r from-emerald-500 to-amber-400 rounded-full transition-all duration-500" style="width: 25%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Stats Box -->
+                        <div class="grid grid-cols-2 gap-2 text-center text-xs">
+                            <div class="bg-slate-950/70 p-3 rounded-2xl border border-slate-800">
+                                <div class="text-slate-400 font-semibold mb-0.5">Clásicos Ganados</div>
+                                <div id="cardClasicosWon" class="font-sports text-2xl font-bold text-rose-400">0</div>
+                            </div>
+                            <div class="bg-slate-950/70 p-3 rounded-2xl border border-slate-800">
+                                <div class="text-slate-400 font-semibold mb-0.5">Puntos Liga</div>
+                                <div id="cardLeaguePoints" class="font-sports text-2xl font-bold text-emerald-400">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tactical Balance Meter -->
+                    <div class="bg-slate-900 rounded-3xl p-6 border border-slate-800 shadow-xl space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h4 class="font-sports text-xl font-bold uppercase tracking-wider text-slate-200">
+                                Balance Táctico de Plantel
+                            </h4>
+                            <i class="fa-solid fa-scale-balanced text-amber-400"></i>
+                        </div>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Si solo juegas "Amistosos" (Ramos Fáciles), tu equipo pierde condición física en los Clásicos. ¡Mantén la balanza en nivel competitivo!
+                        </p>
+
+                        <!-- Balance Gauge -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-xs font-bold">
+                                <span class="text-rose-400">Ramos Aburridos (Clásicos)</span>
+                                <span class="text-sky-400">Ramos Fáciles (Amistosos)</span>
+                            </div>
+                            <div class="w-full h-4 bg-slate-950 rounded-full flex overflow-hidden border border-slate-800 p-0.5">
+                                <div id="boringRatioBar" class="h-full bg-rose-500 rounded-l-full transition-all duration-500" style="width: 50%"></div>
+                                <div id="easyRatioBar" class="h-full bg-sky-500 rounded-r-full transition-all duration-500" style="width: 50%"></div>
+                            </div>
+                            <div id="balanceMessage" class="text-[11px] font-bold text-amber-400 text-center pt-1">
+                                ⚖️ Balance Neutro: ¡Juega un Partido Clásico para subir en la Tabla!
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- VIEW 2: SUBJECTS & TACTICAL BOARD -->
+        <section id="view-subjects" class="tab-content hidden space-y-6">
+            
+            <div class="flex flex-wrap items-center justify-between gap-4 bg-slate-900 p-6 rounded-3xl border border-slate-800">
+                <div>
+                    <h2 class="font-sports text-3xl font-bold uppercase tracking-wide text-white">
+                        Pizarra Táctica de Materias (Fixture)
+                    </h2>
+                    <p class="text-xs md:text-sm text-slate-400">
+                        Clasifica tus ramos. Identifica los que te cuestan o encuentras <strong>"Aburridos"</strong> para declararlos <strong>"Partidos Clave de Clásico" (3 Pts + Fichas)</strong>.
+                    </p>
+                </div>
+                <button onclick="openAddSubjectModal()" class="px-5 py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-sports text-xl font-bold rounded-2xl shadow-lg transition-transform transform active:scale-95 flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i> AGREGAR RAMO AL FIXTURE
+                </button>
+            </div>
+
+            <!-- Subject Cards Grid -->
+            <div id="subjectsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Injected via JS -->
+            </div>
+
+        </section>
+
+        <!-- VIEW 3: LEAGUE TABLE STANDINGS -->
+        <section id="view-league" class="tab-content hidden space-y-6">
+            
+            <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 flex flex-wrap justify-between items-center gap-4">
+                <div>
+                    <h2 class="font-sports text-3xl font-bold uppercase tracking-wide text-amber-400">
+                        Tabla de Posiciones del Campeonato
+                    </h2>
+                    <p class="text-xs md:text-sm text-slate-300">
+                        Los ramos fáciles dan 1 Punto (Empate/Amistoso). Los ramos difíciles dan <strong>3 Puntos (Victoria en Clásico)</strong>. ¡Ganar los ramos difíciles te llevará al 1er Lugar!
+                    </p>
+                </div>
+                <div class="flex items-center space-x-2 bg-slate-950/80 px-4 py-2 rounded-2xl border border-amber-400/40">
+                    <i class="fa-solid fa-trophy text-2xl text-amber-400"></i>
+                    <div>
+                        <div class="text-[10px] text-slate-400 font-bold uppercase">Tus Puntos Totales</div>
+                        <div id="leagueTotalPoints" class="font-sports text-2xl font-bold text-amber-400 leading-none">0 PTS</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- League Table UI -->
+            <div class="bg-slate-900 rounded-3xl border border-slate-800 overflow-hidden shadow-2xl">
+                <div class="p-4 bg-slate-950 border-b border-slate-800 flex justify-between items-center text-xs font-bold text-slate-400">
+                    <span class="w-12 text-center">POS</span>
+                    <span class="flex-grow">EQUIPO / JUGADOR</span>
+                    <span class="w-16 text-center">PJ</span>
+                    <span class="w-16 text-center text-rose-400">CLÁSICOS</span>
+                    <span class="w-20 text-center text-amber-400">PTS</span>
+                </div>
+                <div id="leagueTableBody" class="divide-y divide-slate-800/60">
+                    <!-- Dynamic Table Rows Injected Here -->
+                </div>
+            </div>
+
+        </section>
+
+        <!-- VIEW 4: PRIZE STORE -->
+        <section id="view-store" class="tab-content hidden space-y-6">
+            
+            <div class="bg-gradient-to-r from-rose-950/60 via-slate-900 to-slate-900 p-6 rounded-3xl border border-rose-500/40 flex flex-wrap justify-between items-center gap-4">
+                <div>
+                    <h2 class="font-sports text-3xl font-bold uppercase tracking-wide text-rose-400">
+                        Tienda de Fichajes y Premios de Lujo
+                    </h2>
+                    <p class="text-xs md:text-sm text-slate-300">
+                        Los mejores premios reales e indumentaria legendaria de la UC y Palestino <strong>requieren Fichas de Clásico 🔥 (Ramos Aburridos)</strong>.
+                    </p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2 bg-slate-950/80 px-4 py-2 rounded-2xl border border-amber-400/40">
+                        <i class="fa-solid fa-coins text-xl text-amber-400"></i>
+                        <div>
+                            <div class="text-[10px] text-slate-400 font-bold uppercase">Monedas</div>
+                            <div id="storeCoinsDisplay" class="font-sports text-xl font-bold text-amber-400 leading-none">0</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2 bg-slate-950/80 px-4 py-2 rounded-2xl border border-rose-500/40">
+                        <i class="fa-solid fa-fire text-xl text-rose-400"></i>
+                        <div>
+                            <div class="text-[10px] text-slate-400 font-bold uppercase">Fichas Clásico</div>
+                            <div id="storeTokensDisplay" class="font-sports text-xl font-bold text-rose-400 leading-none">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom Reward Creator Form -->
+            <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl">
+                <h3 class="font-sports text-xl font-bold uppercase text-slate-200 mb-3">
+                    <i class="fa-solid fa-gift text-amber-400 mr-2"></i> Crear Recompensa Real Personalizada
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <input type="text" id="newRewardTitle" placeholder="Ej: 45 min de Playstation / Salir a Comer" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400 col-span-2">
+                    <input type="number" id="newRewardCost" placeholder="Costo Monedas (300)" class="bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-400">
+                    <button onclick="createCustomReward()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm rounded-xl px-4 py-2.5 transition-transform active:scale-95 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-circle-plus"></i> Crear Premio
+                    </button>
+                </div>
+            </div>
+
+            <!-- Store Items Display -->
+            <div id="storeGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Injected JS -->
+            </div>
+
+        </section>
+
+        <!-- VIEW 5: LOCKER ROOM & AVATAR CUSTOMIZER -->
+        <section id="view-avatar" class="tab-content hidden space-y-6">
+            
+            <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 flex flex-wrap justify-between items-center gap-4">
+                <div>
+                    <h2 class="font-sports text-3xl font-bold uppercase tracking-wide text-white">
+                        Camarín de Jugadores & Avatar
+                    </h2>
+                    <p class="text-xs md:text-sm text-slate-400">
+                        Personaliza a tu capitán con camisetas históricas de Universidad Católica y Palestino, botines de oro y banderas.
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Avatar Preview (Left 5 cols) -->
+                <div class="lg:col-span-5 bg-slate-900 rounded-3xl p-8 border border-slate-800 shadow-2xl flex flex-col items-center justify-center text-center relative overflow-hidden">
+                    <div class="w-44 h-44 rounded-3xl bg-gradient-to-tr from-slate-950 via-slate-900 to-slate-800 border-4 border-amber-400 flex items-center justify-center text-8xl shadow-2xl mb-6 relative animate-bounce-subtle">
+                        <span id="previewAvatarIcon">🛡️</span>
+                        <span id="previewJerseyBadge" class="absolute top-2 right-2 text-2xl">⚽</span>
+                    </div>
+
+                    <h3 id="previewPlayerTitle" class="font-sports text-3xl font-bold uppercase text-white">
+                        Crack Cruzado-Tino
+                    </h3>
+                    <p id="previewTeamName" class="text-sm font-bold text-ucLightBlue">Universidad Católica</p>
+
+                    <div class="mt-6 w-full space-y-2">
+                        <input type="text" id="playerNameInput" placeholder="Nombre de tu Jugador / DT" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-sm text-center text-white focus:outline-none focus:border-amber-400" onchange="updatePlayerName(this.value)">
+                    </div>
+                </div>
+
+                <!-- Customization Options (Right 7 cols) -->
+                <div class="lg:col-span-7 bg-slate-900 rounded-3xl p-6 border border-slate-800 shadow-xl space-y-6">
+                    <div>
+                        <h4 class="font-sports text-xl font-bold uppercase text-slate-300 mb-3">
+                            1. Elegir Personaje Principal
+                        </h4>
+                        <div class="grid grid-cols-3 gap-3" id="avatarSelectionGrid">
+                            <!-- Injected JS -->
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="font-sports text-xl font-bold uppercase text-slate-300 mb-3">
+                            2. Camisetas & Equipaciones
+                        </h4>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3" id="jerseySelectionGrid">
+                            <!-- Injected JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- VIEW 6: PENALTY SHOOTOUT MINI-GAME -->
+        <section id="view-penalties" class="tab-content hidden space-y-6">
+            
+            <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 flex flex-wrap justify-between items-center gap-4">
+                <div>
+                    <h2 class="font-sports text-3xl font-bold uppercase tracking-wide text-emerald-400">
+                        Desafío de Penales: ¡Golea a los Ramos Aburridos!
+                    </h2>
+                    <p class="text-xs md:text-sm text-slate-300">
+                        Entrena tu puntería pateando penales a portería. Cada gol suma Monedas adicionales para la Tienda.
+                    </p>
+                </div>
+                <div class="flex items-center space-x-3 bg-slate-950 px-4 py-2 rounded-2xl border border-emerald-500/30">
+                    <span class="text-xs font-bold text-slate-400">Goles Acumulados:</span>
+                    <span id="penaltyGoalsCount" class="font-sports text-2xl font-bold text-emerald-400">0</span>
+                </div>
+            </div>
+
+            <!-- Penalty Pitch Canvas Container -->
+            <div class="bg-slate-900 rounded-3xl border border-slate-800 overflow-hidden p-6 shadow-2xl flex flex-col items-center">
+                
+                <!-- Soccer Goal Interactive Box -->
+                <div class="relative w-full max-w-2xl h-80 bg-gradient-to-b from-sky-900 via-emerald-900 to-pitchGreen rounded-3xl border-4 border-slate-800 flex flex-col justify-between p-4 overflow-hidden shadow-2xl">
+                    
+                    <!-- Goal Net Frame -->
+                    <div class="relative w-full h-48 border-8 border-white bg-slate-950/40 rounded-t-xl grid grid-cols-3 gap-2 p-2 shadow-inner">
+                        
+                        <!-- Interactive Target Zones -->
+                        <button onclick="shootPenalty('top-left')" class="group relative rounded-lg border-2 border-dashed border-amber-400/40 hover:bg-amber-400/20 transition-all flex items-center justify-center">
+                            <span class="text-xs font-bold text-amber-300 opacity-60 group-hover:opacity-100">ÁNGULO IZQ</span>
+                        </button>
+                        <button onclick="shootPenalty('top-center')" class="group relative rounded-lg border-2 border-dashed border-amber-400/40 hover:bg-amber-400/20 transition-all flex items-center justify-center">
+                            <span class="text-xs font-bold text-amber-300 opacity-60 group-hover:opacity-100">AL CENTRO</span>
+                        </button>
+                        <button onclick="shootPenalty('top-right')" class="group relative rounded-lg border-2 border-dashed border-amber-400/40 hover:bg-amber-400/20 transition-all flex items-center justify-center">
+                            <span class="text-xs font-bold text-amber-300 opacity-60 group-hover:opacity-100">ÁNGULO DER</span>
+                        </button>
+                        <button onclick="shootPenalty('bottom-left')" class="group relative rounded-lg border-2 border-dashed border-amber-400/40 hover:bg-amber-400/20 transition-all flex items-center justify-center">
+                            <span class="text-xs font-bold text-amber-300 opacity-60 group-hover:opacity-100">ABAJO IZQ</span>
+                        </button>
+                        <button onclick="shootPenalty('bottom-center')" class="group relative rounded-lg border-2 border-dashed border-amber-400/40 hover:bg-amber-400/20 transition-all flex items-center justify-center">
+                            <span class="text-xs font-bold text-amber-300 opacity-60 group-hover:opacity-100">RASTRO PASTO</span>
+                        </button>
+                        <button onclick="shootPenalty('bottom-right')" class="group relative rounded-lg border-2 border-dashed border-amber-400/40 hover:bg-amber-400/20 transition-all flex items-center justify-center">
+                            <span class="text-xs font-bold text-amber-300 opacity-60 group-hover:opacity-100">ABAJO DER</span>
+                        </button>
+
+                        <!-- Goalkeeper Animated Mascot -->
+                        <div id="goalkeeperMascot" class="absolute transition-all duration-300 text-5xl pointer-events-none" style="top: 35%; left: 45%;">
+                            🧤
+                        </div>
+                    </div>
+
+                    <!-- Penalty Spot & Ball -->
+                    <div class="flex justify-center items-center relative py-2">
+                        <div id="penaltySoccerBall" class="text-4xl transition-all duration-500 cursor-pointer transform hover:scale-110">
+                            ⚽
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Result Announcement -->
+                <div id="penaltyResultText" class="mt-4 font-sports text-2xl font-bold text-amber-300 text-center min-h-[36px]">
+                    ¡Elige una esquina de la portería para disparar tu penal!
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- ADD SUBJECT MODAL -->
+    <div id="addSubjectModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-3xl p-6 shadow-2xl relative space-y-4">
+            <button onclick="closeAddSubjectModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="font-sports text-2xl font-bold uppercase text-white">
+                Agregar Nuevo Ramo al Fixture
+            </h3>
+
+            <div class="space-y-3 text-sm">
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1">Nombre del Ramo</label>
+                    <input type="text" id="subjectNameInput" placeholder="Ej: Matemáticas / Química / Historia" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1">Categoría del Ramo</label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="p-3 bg-slate-950 rounded-xl border border-rose-500/40 flex items-center gap-2 cursor-pointer hover:bg-rose-950/20">
+                            <input type="radio" name="subjectType" value="boring" checked class="text-rose-500">
+                            <div>
+                                <div class="font-bold text-rose-400 text-xs">🔥 Difícil / Aburrido</div>
+                                <div class="text-[10px] text-slate-400">Partido Clásico (3 Pts + Ficha)</div>
+                            </div>
+                        </label>
+                        <label class="p-3 bg-slate-950 rounded-xl border border-sky-500/40 flex items-center gap-2 cursor-pointer hover:bg-sky-950/20">
+                            <input type="radio" name="subjectType" value="fun" class="text-sky-500">
+                            <div>
+                                <div class="font-bold text-sky-400 text-xs">⚽ Fácil / Divertido</div>
+                                <div class="text-[10px] text-slate-400">Partido Amistoso (1 Pt)</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-400 mb-1">Icono del Ramo</label>
+                    <select id="subjectIconInput" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-emerald-500">
+                        <option value="fa-calculator">📐 Matemáticas / Física</option>
+                        <option value="fa-flask">🧪 Química / Biología</option>
+                        <option value="fa-book">📚 Lenguaje / Literatura</option>
+                        <option value="fa-landmark">🏛️ Historia / Ciencias Sociales</option>
+                        <option value="fa-language">🇬🇧 Inglés / Idiomas</option>
+                        <option value="fa-palette">🎨 Arte / Música</option>
+                        <option value="fa-running">🏃 Educación Física</option>
+                    </select>
+                </div>
+            </div>
+
+            <button onclick="saveNewSubject()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-sports text-xl font-bold rounded-xl shadow-lg transition-transform active:scale-95">
+                GUARDAR EN EL FIXTURE
+            </button>
+        </div>
+    </div>
+
+    <!-- CUSTOM NOTIFICATION POPUP -->
+    <div id="customNotification" class="fixed bottom-6 right-6 bg-slate-900 border-2 border-amber-400 p-4 rounded-2xl shadow-2xl z-50 flex items-center space-x-3 transform translate-y-20 opacity-0 transition-all duration-300 max-w-sm">
+        <div id="notifIcon" class="text-3xl text-amber-400">🏆</div>
+        <div>
+            <div id="notifTitle" class="font-sports text-xl font-bold uppercase text-white">¡Gol de Matemáticas!</div>
+            <div id="notifMessage" class="text-xs text-slate-300">Has ganado +250 Monedas y 1 Ficha de Clásico.</div>
+        </div>
+    </div>
+
+    <script>
+        /* APP STATE INITIALIZATION */
+        const DEFAULT_STATE = {
+            coins: 200,
+            clasicoTokens: 3,
+            trophies: 2,
+            streak: 4,
+            level: 1,
+            xp: 45,
+            activeTeam: 'uc', // 'uc', 'palestino', 'hybrid'
+            playerName: "Crack Cruzado-Tino",
+            selectedAvatar: "🛡️",
+            selectedJersey: "uc-classic",
+            matchesCompleted: 6,
+            clasicosWon: 3,
+            leaguePoints: 12,
+            unlockedItems: ['uc-classic', 'pal-tricolor'],
+            subjects: [
+                { id: 1, name: "Matemáticas", isBoring: true, icon: "fa-calculator", totalMinutes: 135, matchesWon: 5 },
+                { id: 2, name: "Química / Física", isBoring: true, icon: "fa-flask", totalMinutes: 90, matchesWon: 3 },
+                { id: 3, name: "Historia", isBoring: false, icon: "fa-landmark", totalMinutes: 60, matchesWon: 2 },
+                { id: 4, name: "Lenguaje", isBoring: true, icon: "fa-book", totalMinutes: 45, matchesWon: 1 },
+                { id: 5, name: "Educación Física", isBoring: false, icon: "fa-running", totalMinutes: 150, matchesWon: 6 }
+            ],
+            rewards: [
+                { id: 101, title: "Botines de Oro (Avatar Exclusivo)", costCoins: 400, costTokens: 3, icon: "fa-socks", requiresTokens: true, unlocked: false },
+                { id: 102, title: "30 Mins de Videojuegos", costCoins: 250, costTokens: 0, icon: "fa-gamepad", requiresTokens: false, unlocked: false },
+                { id: 103, title: "Manto Sagrado Retro UC 1995", costCoins: 500, costTokens: 5, icon: "fa-shirt", requiresTokens: true, unlocked: false },
+                { id: 104, title: "Snack o Helado Favorito", costCoins: 150, costTokens: 0, icon: "fa-ice-cream", requiresTokens: false, unlocked: false }
+            ]
+        };
+
+        let state = JSON.parse(localStorage.getItem('estudio_futbol_v2_state')) || DEFAULT_STATE;
+        let activeSubjectId = state.subjects[0]?.id || 1;
+        let timerInterval = null;
+        let timerSecondsLeft = 25 * 60;
+        let isTimerRunning = false;
+        let currentTimerTotal = 25 * 60;
+        let penaltyGoals = 0;
+
+        /* WEB AUDIO API SOUND SYNTHESIZER (No external sound files required) */
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioContext();
+            }
+        }
+
+        function playWhistleSound() {
+            initAudio();
+            if (!audioCtx) return;
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(2200, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1800, audioCtx.currentTime + 0.15);
+
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        }
+
+        function playGoalCheerSound() {
+            initAudio();
+            if (!audioCtx) return;
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(320, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(640, audioCtx.currentTime + 0.4);
+
+            gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.6);
+        }
+
+        function saveState() {
+            localStorage.setItem('estudio_futbol_v2_state', JSON.stringify(state));
+            updateUI();
+        }
+
+        function setTheme(theme) {
+            state.activeTeam = theme;
+            const header = document.getElementById('mainHeader');
+            const badgeIcon = document.getElementById('badgeIcon');
+            const themeSubtitleText = document.getElementById('themeSubtitleText');
+            
+            const btnUC = document.getElementById('btnThemeUC');
+            const btnPal = document.getElementById('btnThemePal');
+            const btnHybrid = document.getElementById('btnThemeHybrid');
+
+            [btnUC, btnPal, btnHybrid].forEach(b => {
+                b.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 text-slate-400 hover:text-white";
+            });
+
+            if (theme === 'uc') {
+                btnUC.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-ucBlue text-white shadow-md";
+                badgeIcon.textContent = "⚔️";
+                themeSubtitleText.textContent = "Universidad Católica Edition";
+                themeSubtitleText.className = "text-ucLightBlue font-bold";
+                header.style.borderBottomColor = "rgba(0, 163, 224, 0.4)";
+            } else if (theme === 'palestino') {
+                btnPal.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-palGreen text-white shadow-md";
+                badgeIcon.textContent = "🦅";
+                themeSubtitleText.textContent = "Palestino Edition";
+                themeSubtitleText.className = "text-emerald-400 font-bold";
+                header.style.borderBottomColor = "rgba(0, 122, 61, 0.4)";
+            } else {
+                btnHybrid.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 bg-gradient-to-r from-ucBlue via-slate-900 to-palGreen text-amber-300 shadow-md border border-amber-400/40";
+                badgeIcon.textContent = "🏆";
+                themeSubtitleText.textContent = "Dúo Árabe-Cruzado";
+                themeSubtitleText.className = "text-amber-400 font-bold";
+                header.style.borderBottomColor = "rgba(255, 215, 0, 0.4)";
+            }
+
+            saveState();
+        }
+
+        function toggleTeamTheme() {
+            if (state.activeTeam === 'uc') setTheme('palestino');
+            else if (state.activeTeam === 'palestino') setTheme('hybrid');
+            else setTheme('uc');
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-tab').forEach(el => {
+                el.className = "nav-tab flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 transition-all whitespace-nowrap";
+            });
+
+            document.getElementById(`view-${tabId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tabBtn-${tabId}`);
+            if (activeBtn) {
+                activeBtn.className = "nav-tab active flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all bg-emerald-600 text-white shadow-lg shadow-emerald-900/40 whitespace-nowrap";
+            }
+        }
+
+        function setTimerDuration(mins, title) {
+            if (isTimerRunning) toggleTimer();
+            timerSecondsLeft = mins * 60;
+            currentTimerTotal = mins * 60;
+            document.getElementById('timerModeText').textContent = title.toUpperCase();
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timerSecondsLeft / 60);
+            const s = timerSecondsLeft % 60;
+            document.getElementById('timerDisplay').textContent = 
+                `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function toggleTimer() {
+            initAudio();
+            const btnPlayText = document.getElementById('timerPlayText');
+            const btnPlayIcon = document.getElementById('timerPlayIcon');
+
+            if (isTimerRunning) {
+                clearInterval(timerInterval);
+                isTimerRunning = false;
+                btnPlayText.textContent = "CONTINUAR PARTIDO";
+                btnPlayIcon.className = "fa-solid fa-play text-xl";
+            } else {
+                playWhistleSound();
+                isTimerRunning = true;
+                btnPlayText.textContent = "PAUSAR PARTIDO";
+                btnPlayIcon.className = "fa-solid fa-pause text-xl";
+
+                timerInterval = setInterval(() => {
+                    if (timerSecondsLeft > 0) {
+                        timerSecondsLeft--;
+                        updateTimerDisplay();
+                        updateCommentaryFeed();
+                    } else {
+                        clearInterval(timerInterval);
+                        isTimerRunning = false;
+                        finishMatchSession();
+                    }
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            if (isTimerRunning) toggleTimer();
+            timerSecondsLeft = currentTimerTotal;
+            updateTimerDisplay();
+        }
+
+        function updateCommentaryFeed() {
+            const comments = [
+                "¡Gran jugada defensiva! Mantienes la concentración contra las distracciones.",
+                "¡Pase preciso! Tu cerebro está asimilando la información del ramo.",
+                "¡Presión alta en el medio campo! Continuar estudiando da resultados.",
+                "¡Se acerca el minuto de gol! Sigue adelante sin rendirte.",
+                "¡Atención de la hinchada! La Franja y el Tino te apoyan desde la tribuna."
+            ];
+            if (timerSecondsLeft % 30 === 0) {
+                const randIndex = Math.floor(Math.random() * comments.length);
+                document.getElementById('liveCommentary').textContent = `"${comments[randIndex]}"`;
+            }
+        }
+
+        function finishMatchSession() {
+            playGoalCheerSound();
+            const currentSub = state.subjects.find(s => s.id === activeSubjectId) || state.subjects[0];
+            
+            let baseCoins = Math.floor(currentTimerTotal / 60) * 5;
+            let earnedCoins = currentSub.isBoring ? Math.floor(baseCoins * 2.5) : baseCoins;
+            let earnedTokens = currentSub.isBoring ? 1 : 0;
+            let pointsGained = currentSub.isBoring ? 3 : 1; // 3 Points for Clásico Victory!
+            let earnedXp = currentSub.isBoring ? 50 : 20;
+
+            state.coins += earnedCoins;
+            state.clasicoTokens += earnedTokens;
+            state.leaguePoints += pointsGained;
+            state.xp += earnedXp;
+            state.matchesCompleted += 1;
+            
+            if (currentSub.isBoring) {
+                state.clasicosWon += 1;
+            }
+
+            currentSub.matchesWon += 1;
+            currentSub.totalMinutes += Math.floor(currentTimerTotal / 60);
+
+            // Level Up logic
+            if (state.xp >= 100) {
+                state.level += 1;
+                state.xp = state.xp % 100;
+                state.trophies += 1;
+                showNotification("¡ASCENSO A LA SELECCIÓN!", `¡Eres ahora Nivel DT ${state.level}! Te ganas una nueva Copa 🏆.`);
+            } else {
+                if (currentSub.isBoring) {
+                    showNotification(`¡VICTORIA EN EL CLÁSICO DE ${currentSub.name.toUpperCase()}!`, 
+                        `+3 PTS en la Tabla | +${earnedCoins} Monedas | +1 Ficha de Clásico 🔥.`
+                    );
+                } else {
+                    showNotification(`¡EMPATE EN AMISTOSO (${currentSub.name})!`, 
+                        `+1 PT en la Tabla | +${earnedCoins} Monedas ganadas.`
+                    );
+                }
+            }
+
+            saveState();
+        }
+
+        function renderSubjects() {
+            const grid = document.getElementById('subjectsGrid');
+            const quickList = document.getElementById('quickSubjectList');
+            grid.innerHTML = '';
+            quickList.innerHTML = '';
+
+            state.subjects.forEach(sub => {
+                // Main Subject Card
+                const card = document.createElement('div');
+                card.className = `p-5 rounded-3xl border transition-all duration-300 relative overflow-hidden flex flex-col justify-between ${
+                    sub.isBoring ? 
+                    'bg-slate-900 border-rose-500/50 hover:border-rose-400 shadow-xl shadow-rose-950/30' : 
+                    'bg-slate-900 border-slate-800 hover:border-slate-700'
+                }`;
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="p-3 rounded-2xl bg-slate-950 border border-slate-800 text-2xl text-amber-400">
+                                <i class="fa-solid ${sub.icon}"></i>
+                            </span>
+                            ${sub.isBoring ? 
+                                `<span class="bg-rose-500/20 text-rose-400 border border-rose-500/40 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                                    <i class="fa-solid fa-fire"></i> Clásico (3 PTS + Ficha)
+                                 </span>` : 
+                                `<span class="bg-sky-500/20 text-sky-400 border border-sky-500/40 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                                    ⚽ Amistoso (1 PT)
+                                 </span>`
+                            }
+                        </div>
+                        <h3 class="font-sports text-2xl font-bold uppercase text-white mb-1">${sub.name}</h3>
+                        <p class="text-xs text-slate-400">
+                            Tiempo Jugado: <strong class="text-white">${sub.totalMinutes}m</strong> | Victorias: <strong class="text-emerald-400">${sub.matchesWon}</strong>
+                        </p>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
+                        <button onclick="toggleSubjectDifficulty(${sub.id})" class="text-xs font-bold ${sub.isBoring ? 'text-rose-400' : 'text-slate-400'} hover:underline">
+                            ${sub.isBoring ? 'Marcar como Amistoso' : '¡Declarar Partido Clásico 🔥!'}
+                        </button>
+                        <button onclick="selectSubjectForMatch(${sub.id})" class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl shadow transition-all">
+                            Jugar Partido
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+
+                // Quick selector button on timer dashboard
+                const quickBtn = document.createElement('button');
+                quickBtn.onclick = () => selectSubjectForMatch(sub.id);
+                quickBtn.className = `p-3 rounded-2xl border text-left transition-all flex items-center space-x-3 ${
+                    activeSubjectId === sub.id ?
+                    'bg-slate-800 border-amber-400 shadow-md ring-2 ring-amber-400/30' :
+                    'bg-slate-950/80 border-slate-800 hover:border-slate-700'
+                }`;
+                quickBtn.innerHTML = `
+                    <span class="text-xl text-amber-400"><i class="fa-solid ${sub.icon}"></i></span>
+                    <div class="overflow-hidden">
+                        <div class="font-sports text-lg font-bold text-white uppercase leading-none truncate">${sub.name}</div>
+                        <div class="text-[10px] ${sub.isBoring ? 'text-rose-400 font-bold' : 'text-slate-400'}">
+                            ${sub.isBoring ? '🔥 Clásico (3 Pts)' : 'Amistoso (1 Pt)'}
+                        </div>
+                    </div>
+                `;
+                quickList.appendChild(quickBtn);
+            });
+
+            updateBalanceMeter();
+        }
+
+        function selectSubjectForMatch(id) {
+            activeSubjectId = id;
+            const sub = state.subjects.find(s => s.id === id);
+            if (sub) {
+                document.getElementById('currentSubjectTag').innerHTML = `
+                    <i class="fa-solid ${sub.icon} mr-1"></i> Ramo: ${sub.name} ${sub.isBoring ? '(🔥 Partido Clásico)' : ''}
+                `;
+            }
+            switchTab('dashboard');
+            renderSubjects();
+        }
+
+        function toggleSubjectDifficulty(id) {
+            const sub = state.subjects.find(s => s.id === id);
+            if (sub) {
+                sub.isBoring = !sub.isBoring;
+                saveState();
+                renderSubjects();
+            }
+        }
+
+        function openAddSubjectModal() {
+            document.getElementById('addSubjectModal').classList.remove('hidden');
+        }
+
+        function closeAddSubjectModal() {
+            document.getElementById('addSubjectModal').classList.add('hidden');
+        }
+
+        function saveNewSubject() {
+            const name = document.getElementById('subjectNameInput').value.trim();
+            const isBoring = document.querySelector('input[name="subjectType"]:checked').value === 'boring';
+            const icon = document.getElementById('subjectIconInput').value;
+
+            if (!name) return;
+
+            const newSub = {
+                id: Date.now(),
+                name,
+                isBoring,
+                icon,
+                totalMinutes: 0,
+                matchesWon: 0
+            };
+
+            state.subjects.push(newSub);
+            saveState();
+            closeAddSubjectModal();
+            renderSubjects();
+            showNotification("NUEVO RAMO EN FIXTURE", `Has agregado ${name} al calendario de partidos.`);
+        }
+
+        function updateBalanceMeter() {
+            const boringCount = state.subjects.filter(s => s.isBoring).length;
+            const total = state.subjects.length;
+            if (total === 0) return;
+
+            const boringPct = Math.round((boringCount / total) * 100);
+            const easyPct = 100 - boringPct;
+
+            document.getElementById('boringRatioBar').style.width = `${boringPct}%`;
+            document.getElementById('easyRatioBar').style.width = `${easyPct}%`;
+
+            const balanceMsg = document.getElementById('balanceMessage');
+            if (boringPct >= 40) {
+                balanceMsg.textContent = "🔥 ¡Plantel Táctico Perfecto! Estás atacando los ramos difíciles directamente.";
+                balanceMsg.className = "text-[11px] font-bold text-emerald-400 text-center pt-1";
+            } else {
+                balanceMsg.textContent = "⚠️ ¡Atención DT! Declara más ramos difíciles como Clásicos para sumar 3 Pts y Fichas.";
+                balanceMsg.className = "text-[11px] font-bold text-amber-400 text-center pt-1";
+            }
+        }
+
+        function renderLeagueTable() {
+            const body = document.getElementById('leagueTableBody');
+            body.innerHTML = '';
+
+            const competitors = [
+                { name: `${state.playerName} (Tú)`, points: state.leaguePoints, clasicos: state.clasicosWon, matches: state.matchesCompleted, isUser: true },
+                { name: "Real Colo-Colo Estudiantil", points: Math.max(10, state.leaguePoints - 2), clasicos: 2, matches: 8, isUser: false },
+                { name: "Universidad Académica FC", points: Math.max(8, state.leaguePoints - 5), clasicos: 1, matches: 7, isUser: false },
+                { name: "Deportivo Wanders del Saber", points: Math.max(5, state.leaguePoints - 9), clasicos: 0, matches: 6, isUser: false }
+            ];
+
+            competitors.sort((a, b) => b.points - a.points);
+
+            competitors.forEach((c, idx) => {
+                const row = document.createElement('div');
+                row.className = `p-4 flex justify-between items-center text-sm font-bold transition-colors ${
+                    c.isUser ? 'bg-amber-500/10 border-l-4 border-amber-400 text-white' : 'text-slate-300 hover:bg-slate-800/40'
+                }`;
+                row.innerHTML = `
+                    <span class="w-12 text-center font-sports text-xl ${idx === 0 ? 'text-amber-400' : 'text-slate-500'}">#${idx + 1}</span>
+                    <span class="flex-grow flex items-center gap-2">
+                        ${c.isUser ? '👑' : '⚽'} ${c.name}
+                    </span>
+                    <span class="w-16 text-center text-slate-400">${c.matches}</span>
+                    <span class="w-16 text-center text-rose-400">${c.clasicos}</span>
+                    <span class="w-20 text-center font-sports text-2xl text-amber-400">${c.points}</span>
+                `;
+                body.appendChild(row);
+            });
+
+            document.getElementById('leagueTotalPoints').textContent = `${state.leaguePoints} PTS`;
+        }
+
+        function renderStore() {
+            const grid = document.getElementById('storeGrid');
+            grid.innerHTML = '';
+
+            state.rewards.forEach(item => {
+                const canAffordCoins = state.coins >= item.costCoins;
+                const canAffordTokens = !item.requiresTokens || state.clasicoTokens >= item.costTokens;
+                const canAfford = canAffordCoins && canAffordTokens;
+
+                const card = document.createElement('div');
+                card.className = `p-5 rounded-3xl border shadow-xl flex flex-col justify-between ${
+                    item.requiresTokens ? 'bg-slate-900 border-rose-500/40' : 'bg-slate-900 border-slate-800'
+                }`;
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="p-3 rounded-2xl bg-slate-950 text-2xl text-amber-400 border border-slate-800">
+                                <i class="fa-solid ${item.icon}"></i>
+                            </span>
+                            <div class="text-right">
+                                <div class="font-sports text-2xl font-bold text-amber-400">
+                                    <i class="fa-solid fa-coins mr-1"></i>${item.costCoins}
+                                </div>
+                                ${item.requiresTokens ? `
+                                    <div class="font-sports text-lg font-bold text-rose-400 leading-none">
+                                        <i class="fa-solid fa-fire mr-1"></i>${item.costTokens} Fichas
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                        <h4 class="font-sports text-2xl font-bold uppercase text-white leading-tight">${item.title}</h4>
+                        ${item.requiresTokens ? '<span class="inline-block mt-2 text-[10px] font-bold uppercase text-rose-400 bg-rose-950/60 border border-rose-500/30 px-2 py-0.5 rounded-md">¡Exclusivo por Ramos Aburridos!</span>' : ''}
+                    </div>
+
+                    <button onclick="claimReward(${item.id})" ${!canAfford ? 'disabled' : ''} class="mt-4 w-full py-2.5 rounded-xl font-bold text-xs transition-all ${
+                        canAfford ? 
+                        'bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-lg active:scale-95' : 
+                        'bg-slate-800 text-slate-500 cursor-not-allowed'
+                    }">
+                        ${canAfford ? 'CANJEAR PREMIO' : 'FALTAN PUNTOS O FICHAS'}
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+
+            document.getElementById('storeCoinsDisplay').textContent = state.coins;
+            document.getElementById('storeTokensDisplay').textContent = state.clasicoTokens;
+        }
+
+        function createCustomReward() {
+            const title = document.getElementById('newRewardTitle').value.trim();
+            const costCoins = parseInt(document.getElementById('newRewardCost').value);
+
+            if (!title || !costCoins || costCoins <= 0) return;
+
+            state.rewards.push({
+                id: Date.now(),
+                title,
+                costCoins,
+                costTokens: 0,
+                icon: "fa-gift",
+                requiresTokens: false
+            });
+
+            document.getElementById('newRewardTitle').value = '';
+            document.getElementById('newRewardCost').value = '';
+
+            saveState();
+            renderStore();
+            showNotification("PREMIO CREADO", `Agregaste "${title}" a la tienda.`);
+        }
+
+        function claimReward(id) {
+            const item = state.rewards.find(r => r.id === id);
+            if (item && state.coins >= item.costCoins && (!item.requiresTokens || state.clasicoTokens >= item.costTokens)) {
+                state.coins -= item.costCoins;
+                if (item.requiresTokens) state.clasicoTokens -= item.costTokens;
+
+                saveState();
+                renderStore();
+                playGoalCheerSound();
+                showNotification("¡PREMIO CANJEADO!", `Disfruta tu recompensa: ${item.title}`);
+            }
+        }
+
+        function renderAvatarOptions() {
+            const avatars = [
+                { icon: "🛡️", name: "Caballero Cruzado" },
+                { icon: "🦅", name: "Águila del Tino" },
+                { icon: "👑", name: "Rey de Copas" },
+                { icon: "⚽", name: "Goleador Pro" },
+                { icon: "🦁", name: "León Táctico" },
+                { icon: "🎓", name: "Capitán Académico" }
+            ];
+
+            const jerseys = [
+                { id: "uc-classic", name: "Franja Azul UC", icon: "🟦" },
+                { id: "pal-tricolor", name: "Tricolor Palestino", icon: "🟩" },
+                { id: "gold-champion", name: "Dorado Campeón", icon: "🟨" }
+            ];
+
+            const avatarGrid = document.getElementById('avatarSelectionGrid');
+            avatarGrid.innerHTML = '';
+            avatars.forEach(a => {
+                const btn = document.createElement('button');
+                btn.onclick = () => {
+                    state.selectedAvatar = a.icon;
+                    saveState();
+                    updateUI();
+                };
+                btn.className = `p-3 rounded-2xl border text-center transition-all ${
+                    state.selectedAvatar === a.icon ? 'bg-slate-800 border-amber-400 ring-2 ring-amber-400/40' : 'bg-slate-950 border-slate-800 hover:border-slate-700'
+                }`;
+                btn.innerHTML = `<div class="text-3xl mb-1">${a.icon}</div><div class="text-[11px] font-bold text-slate-300">${a.name}</div>`;
+                avatarGrid.appendChild(btn);
+            });
+
+            const jerseyGrid = document.getElementById('jerseySelectionGrid');
+            jerseyGrid.innerHTML = '';
+            jerseys.forEach(j => {
+                const btn = document.createElement('button');
+                btn.onclick = () => {
+                    state.selectedJersey = j.id;
+                    saveState();
+                    updateUI();
+                };
+                btn.className = `p-3 rounded-2xl border text-center transition-all ${
+                    state.selectedJersey === j.id ? 'bg-slate-800 border-amber-400 ring-2 ring-amber-400/40' : 'bg-slate-950 border-slate-800 hover:border-slate-700'
+                }`;
+                btn.innerHTML = `<div class="text-2

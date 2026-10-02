@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SlumberPulse - Teen Sleep & Evening Organizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        night: {
+                            900: '#0B0F19',
+                            800: '#111827',
+                            700: '#1F2937',
+                            600: '#374151',
+                        },
+                        dream: {
+                            purple: '#8B5CF6',
+                            indigo: '#6366F1',
+                            amber: '#F59E0B',
+                            teal: '#14B8A6',
+                            rose: '#F43F5E'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #07090e;
+            color: #f3f4f6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Warm Night Shift Overlay */
+        #warmFilter {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 9999;
+            background: rgba(255, 140, 0, 0.18);
+            mix-blend-mode: color-burn;
+            transition: opacity 0.5s ease;
+            opacity: 0;
+        }
+
+        #warmFilter.active {
+            opacity: 1;
+        }
+
+        /* Glassmorphism card styles */
+        .glass-card {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .glass-input {
+            background: rgba(31, 41, 55, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #f3f4f6;
+        }
+
+        .glass-input:focus {
+            outline: none;
+            border-color: #8B5CF6;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1F2937;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #374151;
+        }
+
+        /* Pulsing Glow Animation */
+        @keyframes subtlePulse {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
+        }
+        .animate-pulse-glow {
+            animation: subtlePulse 4s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="selection:bg-dream-purple selection:text-white pb-12">
+
+    <!-- Warm Filter Overlay for Blue Light Reduction -->
+    <div id="warmFilter"></div>
+
+    <!-- Application Header -->
+    <header class="sticky top-0 z-40 w-full glass-card border-b border-gray-800/80 px-4 py-3 sm:px-8 mb-6">
+        <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            
+            <!-- Logo & Brand -->
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-dream-purple to-dream-indigo flex items-center justify-center shadow-lg shadow-dream-purple/20">
+                    <i class="fa-solid font-bold fa-moon text-white text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 via-indigo-200 to-teal-200">
+                        SlumberPulse
+                    </h1>
+                    <p class="text-xs text-gray-400">SMART Teen Sleep & Routine Organizer</p>
+                </div>
+            </div>
+
+            <!-- Header Controls: Night Switch & SMART Goal Status -->
+            <div class="flex items-center space-x-3 sm:space-x-4">
+                <!-- SMART Goal Badge -->
+                <div class="hidden md:flex items-center px-3 py-1.5 rounded-full bg-indigo-950/60 border border-indigo-800/50 text-xs text-indigo-300">
+                    <i class="fa-solid fa-bullseye text-dream-amber mr-2"></i>
+                    <span>Goal: 8.5h Sleep & 11PM Bedtime</span>
+                </div>
+
+                <!-- Warm Filter Toggle / Light Switch -->
+                <button id="warmToggleBtn" onclick="toggleWarmFilter()" class="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-gray-800 hover:bg-gray-700 transition border border-gray-700 text-xs sm:text-sm font-medium text-amber-300 shadow-sm">
+                    <i id="warmToggleIcon" class="fa-solid fa-lightbulb"></i>
+                    <span id="warmToggleLabel">Warm Shift: OFF</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <main class="max-w-6xl mx-auto px-4 sm:px-6">
+        <nav class="flex space-x-2 rounded-2xl glass-card p-1.5 mb-8 overflow-x-auto no-scrollbar">
+            <button onclick="switchTab('tab-dashboard')" id="btn-tab-dashboard" class="tab-btn flex-1 min-w-[120px] flex items-center justify-center space-x-2 py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 bg-dream-purple text-white shadow-lg shadow-dream-purple/20">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Sleep Stats</span>
+            </button>
+            <button onclick="switchTab('tab-planner')" id="btn-tab-planner" class="tab-btn flex-1 min-w-[120px] flex items-center justify-center space-x-2 py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 text-gray-400 hover:text-white hover:bg-gray-800/50">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>AI Evening Schedule</span>
+            </button>
+            <button onclick="switchTab('tab-sounds')" id="btn-tab-sounds" class="tab-btn flex-1 min-w-[120px] flex items-center justify-center space-x-2 py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 text-gray-400 hover:text-white hover:bg-gray-800/50">
+                <i class="fa-solid fa-music"></i>
+                <span>Sleep Sounds</span>
+            </button>
+            <button onclick="switchTab('tab-journal')" id="btn-tab-journal" class="tab-btn flex-1 min-w-[120px] flex items-center justify-center space-x-2 py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 text-gray-400 hover:text-white hover:bg-gray-800/50">
+                <i class="fa-solid fa-book-bookmark"></i>
+                <span>Nightly Journal</span>
+            </button>
+        </nav>
+
+        <!-- TAB 1: Sleep Target, Percentage, Calculator, and Rotating Sleep Fact -->
+        <section id="tab-dashboard" class="tab-content space-y-6">
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Target Bedtime & Consistency Percentage Card -->
+                <div class="glass-card rounded-2xl p-6 flex flex-col justify-between border-t-4 border-t-dream-purple">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <h2 class="text-lg font-bold text-white">Target Bedtime Goal</h2>
+                                <p class="text-xs text-gray-400">Set your ideal sleep time</p>
+                            </div>
+                            <span class="p-2 rounded-lg bg-dream-purple/20 text-dream-purple">
+                                <i class="fa-regular fa-clock text-lg"></i>
+                            </span>
+                        </div>
+
+                        <div class="flex items-center space-x-3 mb-6">
+                            <input type="time" id="targetBedtimeInput" class="glass-input text-2xl font-bold px-4 py-2 rounded-xl w-full text-center tracking-wider text-purple-200" value="22:30">
+                            <button onclick="saveTargetBedtime()" class="px-4 py-3 bg-dream-purple hover:bg-purple-600 text-white rounded-xl text-sm font-semibold transition shadow-md shadow-purple-900/30">
+                                Save
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Bedtime Success Rate Circular Progress / Stats -->
+                    <div class="bg-gray-900/60 rounded-xl p-4 border border-gray-800 flex items-center space-x-4">
+                        <div class="relative w-16 h-16 flex items-center justify-center">
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                <path class="text-gray-800" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path id="targetCircleProgress" class="text-dream-purple transition-all duration-1000" stroke-dasharray="0, 100" stroke-width="3.5" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            </svg>
+                            <span id="targetPercentageText" class="absolute text-sm font-bold text-white">0%</span>
+                        </div>
+                        <div>
+                            <div class="text-sm font-bold text-gray-200">On-Time Sleep Rate</div>
+                            <div class="text-xs text-gray-400 mt-0.5" id="targetStreakLabel">Logged over past 14 nights</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sleep Calculator Card -->
+                <div class="glass-card rounded-2xl p-6 md:col-span-2 border-t-4 border-t-dream-indigo flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h2 class="text-lg font-bold text-white">Interactive Sleep Duration Calculator</h2>
+                                <p class="text-xs text-gray-400">Calculate exact sleep hours & check teen recommendations (8.5 - 9.5 hours)</p>
+                            </div>
+                            <span class="p-2 rounded-lg bg-dream-indigo/20 text-dream-indigo">
+                                <i class="fa-solid fa-calculator text-lg"></i>
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1 font-medium">When did you go to sleep?</label>
+                                <input type="time" id="calcBedtime" class="glass-input w-full px-4 py-2.5 rounded-xl text-base font-semibold" value="22:30" onchange="calculateSleepDuration()">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-400 mb-1 font-medium">When did you wake up?</label>
+                                <input type="time" id="calcWakeTime" class="glass-input w-full px-4 py-2.5 rounded-xl text-base font-semibold" value="07:00" onchange="calculateSleepDuration()">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Duration Result Banner -->
+                    <div id="calcResultContainer" class="p-4 rounded-xl bg-gradient-to-r from-indigo-950/80 to-purple-950/80 border border-indigo-800/40 flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 rounded-xl bg-indigo-600/30 flex items-center justify-center text-dream-indigo font-bold text-xl">
+                                <i class="fa-solid fa-bed"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs text-gray-400 font-medium">Total Sleep Time</div>
+                                <div id="calcDurationText" class="text-xl font-extrabold text-white">8 hours 30 mins</div>
+                            </div>
+                        </div>
+                        <div id="calcFeedbackBadge" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                            <i class="fa-solid fa-check-circle mr-1"></i> Ideal for Teens!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Relatable Teen Sleep Fact Box (Rotates dynamically) -->
+            <div class="glass-card rounded-2xl p-6 relative overflow-hidden bg-gradient-to-r from-purple-900/30 via-slate-900/60 to-indigo-900/30 border border-purple-500/20">
+                <div class="absolute -right-8 -bottom-8 w-40 h-40 bg-dream-purple/10 rounded-full blur-2xl pointer-events-none"></div>
+                
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-3">
+                    <div class="flex items-center space-x-2">
+                        <span class="px-2.5 py-1 rounded-md bg-dream-amber/20 text-dream-amber text-xs font-bold uppercase tracking-wide">
+                            <i class="fa-solid fa-lightbulb mr-1"></i> Teen Sleep Science
+                        </span>
+                        <span class="text-xs text-gray-400" id="factRefreshTime">Updates every 3 hours</span>
+                    </div>
+                    <button onclick="rotateSleepFact(true)" class="text-xs text-indigo-300 hover:text-white flex items-center space-x-1 bg-indigo-950/50 px-2.5 py-1 rounded-lg border border-indigo-800/40">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                        <span>New Fact</span>
+                    </button>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 id="factTitle" class="text-lg font-bold text-indigo-200">Did you know?</h3>
+                    <p id="factContent" class="text-sm text-gray-300 leading-relaxed max-w-4xl">
+                        Scrolling on TikTok or gaming in the dark tricks your brain's pineal gland into thinking it's still noon! Switching to Night Mode or putting screens away 1 hour before bed boosts your natural sleep hormone (melatonin).
+                    </p>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- TAB 2: Smart Evening Schedule Planner (AI Powered) -->
+        <section id="tab-planner" class="tab-content hidden space-y-6">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Evening Inputs & Task Form -->
+                <div class="glass-card rounded-2xl p-6 space-y-5 border-t-4 border-t-dream-teal">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 rounded-xl bg-dream-teal/20 text-dream-teal">
+                            <i class="fa-solid fa-list-check text-xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-bold text-white">Evening Task Builder</h2>
+                            <p class="text-xs text-gray-400">Set your timeframe & evening to-do list</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Time Home</label>
+                            <input type="time" id="planHomeTime" class="glass-input w-full px-3 py-2 rounded-xl text-sm" value="16:30">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Bedtime Target</label>
+                            <input type="time" id="planBedtime" class="glass-input w-full px-3 py-2 rounded-xl text-sm" value="22:30">
+                        </div>
+                    </div>
+
+                    <!-- Add Task Inputs -->
+                    <div class="space-y-3 pt-2 border-t border-gray-800">
+                        <label class="block text-xs font-semibold text-gray-300">Add Tasks to Complete</label>
+                        <div class="space-y-2">
+                            <input type="text" id="newTaskName" placeholder="Task name (e.g., Math Homework)" class="glass-input w-full px-3 py-2 rounded-xl text-xs sm:text-sm">
+                            <div class="flex space-x-2">
+                                <input type="number" id="newTaskDuration" min="5" max="180" placeholder="Mins (e.g. 45)" class="glass-input w-1/2 px-3 py-2 rounded-xl text-xs">
+                                <select id="newTaskType" class="glass-input w-1/2 px-3 py-2 rounded-xl text-xs">
+                                    <option value="Study">📚 Homework/Study</option>
+                                    <option value="Chore">🧹 Chores</option>
+                                    <option value="Dinner">🍽️ Dinner/Eat</option>
+                                    <option value="Relax">🎮 Relax/Hobby</option>
+                                    <option value="WindDown">🧘 Wind-down</option>
+                                </select>
+                            </div>
+                            <button onclick="addTaskToPlanner()" class="w-full py-2 bg-gray-800 hover:bg-gray-700 text-teal-300 text-xs font-bold rounded-xl border border-gray-700 transition flex items-center justify-center space-x-1">
+                                <i class="fa-solid fa-plus"></i>
+                                <span>Add Task</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Current Task List Preview -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-xs text-gray-400">
+                            <span>Pending Tasks (<span id="taskCountLabel">0</span>)</span>
+                            <button onclick="clearPlannerTasks()" class="text-rose-400 hover:underline">Clear all</button>
+                        </div>
+                        <ul id="plannerTaskList" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                            <!-- Populated dynamically -->
+                        </ul>
+                    </div>
+
+                    <!-- Generate AI Schedule Button -->
+                    <button onclick="generateAISchedule()" id="generateScheduleBtn" class="w-full py-3.5 bg-gradient-to-r from-dream-teal to-dream-indigo text-white font-bold text-sm rounded-xl shadow-lg shadow-teal-900/30 hover:opacity-95 transition flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>Generate Optimized Schedule</span>
+                    </button>
+                </div>
+
+                <!-- Generated Schedule Display -->
+                <div class="glass-card rounded-2xl p-6 lg:col-span-2 border-t-4 border-t-dream-indigo flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h2 class="text-lg font-bold text-white flex items-center">
+                                    <span>AI Evening Time Blocks</span>
+                                    <span id="aiBadge" class="ml-2 text-[10px] px-2 py-0.5 rounded bg-indigo-900/60 text-indigo-300 border border-indigo-700">Gemini Powered</span>
+                                </h2>
+                                <p class="text-xs text-gray-400">Your custom structured timeline to guarantee target bedtime</p>
+                            </div>
+                            <button onclick="printOrSaveSchedule()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-lg border border-gray-700">
+                                <i class="fa-solid fa-copy mr-1"></i> Copy Plan
+                            </button>
+                        </div>
+
+                        <!-- Schedule Timeline Output Container -->
+                        <div id="scheduleOutput" class="space-y-3">
+                            <div class="text-center py-12 text-gray-500 space-y-3">
+                                <i class="fa-solid fa-calendar-day text-4xl text-gray-700"></i>
+                                <p class="text-sm">No schedule generated yet. Add your tasks and click "Generate Schedule".</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Time Buffer Warning Footer -->
+                    <div id="scheduleBufferFooter" class="mt-6 p-3 rounded-xl bg-gray-900/80 border border-gray-800 flex items-center justify-between text-xs text-gray-400">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-shield-halved text-teal-400"></i>
+                            <span>Smart Buffer: 20 min wind-down buffer added before bedtime.</span>
+                        </div>
+                        <span id="totalTaskHoursLabel" class="font-bold text-gray-200">0h total</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- TAB 3: Ambient Sleep Music, Presets, YouTube Embed & Moving Sound Wave Canvas -->
+        <section id="tab-sounds" class="tab-content hidden space-y-6">
+            
+            <div class="glass-card rounded-2xl p-6 relative overflow-hidden border-t-4 border-t-dream-amber">
+                
+                <!-- Animated Sound Wave Canvas Background Display -->
+                <div class="relative w-full h-48 sm:h-56 bg-gradient-to-b from-gray-950 via-slate-900 to-gray-950 rounded-xl overflow-hidden border border-gray-800 mb-6 flex items-center justify-center">
+                    <canvas id="soundwaveCanvas" class="absolute inset-0 w-full h-full"></canvas>
+                    
+                    <div class="relative z-10 text-center space-y-2 pointer-events-none bg-black/40 px-6 py-3 rounded-2xl backdrop-blur-sm border border-white/10">
+                        <div id="activeSoundLabel" class="text-lg font-bold text-amber-200">Calming Waves Ambient Generator</div>
+                        <p class="text-xs text-gray-300">Acoustic wave visualization to relax your nervous system</p>
+                    </div>
+                </div>
+
+                <!-- Audio Controls and Preset Selector -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- Synthesized Ambient Sound Generators (Web Audio API) -->
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                            <i class="fa-solid fa-sliders text-dream-amber"></i>
+                            <span>Ambient Sound Mixers (Offline Synthetic)</span>
+                        </h3>
+
+                        <!-- Sound Option 1: Gentle Rain -->
+                        <div class="p-3 rounded-xl bg-gray-900/80 border border-gray-800 flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <button onclick="toggleSound('rain')" id="btn-sound-rain" class="w-10 h-10 rounded-lg bg-gray-800 text-blue-400 hover:bg-blue-600 hover:text-white transition flex items-center justify-center">
+                                    <i class="fa-solid fa-cloud-showers-heavy"></i>
+                                </button>
+                                <div>
+                                    <div class="text-sm font-semibold text-gray-200">Soft Rain</div>
+                                    <div class="text-[10px] text-gray-400">Gentle precipitation noise</div>
+                                </div>
+                            </div>
+                            <input type="range" id="vol-rain" min="0" max="1" step="0.05" value="0.5" oninput="updateVolume('rain')" class="w-24 accent-dream-amber">
+                        </div>
+
+                        <!-- Sound Option 2: Ocean Waves -->
+                        <div class="p-3 rounded-xl bg-gray-900/80 border border-gray-800 flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <button onclick="toggleSound('waves')" id="btn-sound-waves" class="w-10 h-10 rounded-lg bg-gray-800 text-teal-400 hover:bg-teal-600 hover:text-white transition flex items-center justify-center">
+                                    <i class="fa-solid fa-water"></i>
+                                </button>
+                                <div>
+                                    <div class="text-sm font-semibold text-gray-200">Ocean Waves</div>
+                                    <div class="text-[10px] text-gray-400">Rhythmic tidal swell</div>
+                                </div>
+                            </div>
+                            <input type="range" id="vol-waves" min="0" max="1" step="0.05" value="0.5" oninput="updateVolume('waves')" class="w-24 accent-dream-amber">
+                        </div>
+
+                        <!-- Sound Option 3: Sleep Binaural Drone -->
+                        <div class="p-3 rounded-xl bg-gray-900/80 border border-gray-800 flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <button onclick="toggleSound('synth')" id="btn-sound-synth" class="w-10 h-10 rounded-lg bg-gray-800 text-purple-400 hover:bg-purple-600 hover:text-white transition flex items-center justify-center">
+                                    <i class="fa-solid fa-wave-square"></i>
+                                </button>
+                                <div>
+                                    <div class="text-sm font-semibold text-gray-200">Deep Sleep Pad</div>
+                                    <div class="text-[10px] text-gray-400">432Hz harmonic tone</div>
+                                </div>
+                            </div>
+                            <input type="range" id="vol-synth" min="0" max="1" step="0.05" value="0.5" oninput="updateVolume('synth')" class="w-24 accent-dream-amber">
+                        </div>
+                    </div>
+
+                    <!-- Custom Music & YouTube Import Panel -->
+                    <div class="space-y-4">
+                        <h3 class="text-sm font-bold text-white flex items-center space-x-2">
+                            <i class="fa-brands fa-youtube text-red-500"></i>
+                            <span>Import YouTube / Custom Sleep Music</span>
+                        </h3>
+
+                        <div class="space-y-3">
+                            <p class="text-xs text-gray-400">Paste a YouTube sleep music link or Video ID (e.g. Lofi sleep, rain stream):</p>
+                            
+                            <div class="flex space-x-2">
+                                <input type="text" id="ytUrlInput" placeholder="https://www.youtube.com/watch?v=..." class="glass-input w-full px-3 py-2 rounded-xl text-xs">
+                                <button onclick="loadYouTubeVideo()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl transition shadow-md">
+                                    Load
+                                </button>
+                            </div>
+
+                            <!-- Preset YouTube Sleep Music Suggestions -->
+                            <div class="pt-2">
+                                <div class="text-[11px] font-semibold text-gray-400 mb-2">Popular Sleep Presets:</div>
+                                <div class="flex flex-wrap gap-2">
+                                    <button onclick="setPresetYT('jfKfPfyJRdk', 'Lofi Sleep Beats')" class="px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-xs text-gray-300 border border-gray-700">
+                                        🎧 Lofi Sleep Beats
+                                    </button>
+                                    <button onclick="setPresetYT('mPZkdNFkNps', '8-Hour Deep Rain')" class="px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-xs text-gray-300 border border-gray-700">
+                                        🌧️ Deep Night Rain
+                                    </button>
+                                    <button onclick="setPresetYT('1ZYbU82GVz4', 'Delta Waves Sleep')" class="px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-xs text-gray-300 border border-gray-700">
+                                        🧠 Delta Waves
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Embed Container -->
+                            <div id="ytPlayerContainer" class="hidden mt-3 rounded-xl overflow-hidden aspect-video border border-gray-800">
+                                <iframe id="ytIframe" class="w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- TAB 4: Interactive Journal & Nightly Reflection Questionnaire -->
+        <section id="tab-journal" class="tab-content hidden space-y-6">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Daily Entry Questionnaire Form -->
+                <div class="glass-card rounded-2xl p-6 space-y-5 lg:col-span-1 border-t-4 border-t-dream-rose">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-2.5 rounded-xl bg-dream-rose/20 text-dream-rose">
+                            <i class="fa-solid fa-pen-to-square text-xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-bold text-white">Log Today's Sleep</h2>
+                            <p class="text-xs text-gray-400">Quick interactive check-in</p>
+                        </div>
+                    </div>
+
+                    <form id="journalForm" onsubmit="saveJournalEntry(event)" class="space-y-4">
+                        
+                        <!-- Question 1: Bedtime -->
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1">1. What time did you fall asleep?</label>
+                            <input type="time" id="journalBedtime" required class="glass-input w-full px-3 py-2 rounded-xl text-sm" value="22:30">
+                        </div>
+
+                        <!-- Question 2: Sleep Quality Buttons -->
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-2">2. How was your sleep quality?</label>
+                            <input type="hidden" id="journalQuality" value="4">
+                            <div class="grid grid-cols-5 gap-1.5" id="qualityRatingButtons">
+                                <button type="button" onclick="selectQuality(1)" class="quality-btn p-2 rounded-xl bg-gray-800/80 border border-gray-700 text-center hover:border-dream-rose transition text-xs">
+                                    <div class="text-lg">😫</div>
+                                    <div class="text-[9px] text-gray-400 mt-0.5">Poor</div>
+                                </button>
+                                <button type="button" onclick="selectQuality(2)" class="quality-btn p-2 rounded-xl bg-gray-800/80 border border-gray-700 text-center hover:border-dream-rose transition text-xs">
+                                    <div class="text-lg">🥱</div>
+                                    <div class="text-[9px] text-gray-400 mt-0.5">Fair</div>
+                                </button>
+                                <button type="button" onclick="selectQuality(3)" class="quality-btn p-2 rounded-xl bg-gray-800/80 border border-gray-700 text-center hover:border-dream-rose transition text-xs">
+                                    <div class="text-lg">😐</div>
+                                    <div class="text-[9px] text-gray-400 mt-0.5">Okay</div>
+                                </button>
+                                <button type="button" onclick="selectQuality(4)" class="quality-btn p-2 rounded-xl bg-dream-rose/30 border-2 border-dream-rose text-center transition text-xs">
+                                    <div class="text-lg">😊</div>
+                                    <div class="text-[9px] text-gray-200 font-bold mt-0.5">Good</div>
+                                </button>
+                                <button type="button" onclick="selectQuality(5)" class="quality-btn p-2 rounded-xl bg-gray-800/80 border border-gray-700 text-center hover:border-dream-rose transition text-xs">
+                                    <div class="text-lg">😴</div>
+                                    <div class="text-[9px] text-gray-400 mt-0.5">Great</div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Question 3: Completed Evening Tasks -->
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1">3. Did you get all your tasks done?</label>
+                            <div class="flex space-x-3">
+                                <label class="flex-1 cursor-pointer">
+                                    <input type="radio" name="tasksDone" value="yes" checked class="peer sr-only">
+                                    <div class="py-2 text-center text-xs rounded-xl bg-gray-800 border border-gray-700 peer-checked:bg-emerald-950/80 peer-checked:border-emerald-500 peer-checked:text-emerald-300 transition">
+                                        <i class="fa-solid fa-check mr-1"></i> Yes, all done!
+                                    </div>
+                                </label>
+                                <label class="flex-1 cursor-pointer">
+                                    <input type="radio" name="tasksDone" value="no" class="peer sr-only">
+                                    <div class="py-2 text-center text-xs rounded-xl bg-gray-800 border border-gray-700 peer-checked:bg-rose-950/80 peer-checked:border-rose-500 peer-checked:text-rose-300 transition">
+                                        <i class="fa-solid fa-xmark mr-1"></i> Missed some
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Question 4: Reached Sleep Goal -->
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1">4. Did you reach your sleep bedtime goal?</label>
+                            <div class="flex space-x-3">
+                                <label class="flex-1 cursor-pointer">
+                                    <input type="radio" name="goalHit" value="yes" checked class="peer sr-only">
+                                    <div class="py-2 text-center text-xs rounded-xl bg-gray-800 border border-gray-700 peer-checked:bg-purple-950/80 peer-checked:border-purple-500 peer-checked:text-purple-300 transition">
+                                        🎯 Hit Goal
+                                    </div>
+                                </label>
+                                <label class="flex-1 cursor-pointer">
+                                    <input type="radio" name="goalHit" value="no" class="peer sr-only">
+                                    <div class="py-2 text-center text-xs rounded-xl bg-gray-800 border border-gray-700 peer-checked:bg-amber-950/80 peer-checked:border-amber-500 peer-checked:text-amber-300 transition">
+                                        ⏰ Slept Late
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Reflection / Notes -->
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-300 mb-1">Notes / Mind Dump (Optional)</label>
+                            <textarea id="journalNotes" rows="2" placeholder="How felt before sleeping, dreams, or things on your mind..." class="glass-input w-full px-3 py-2 rounded-xl text-xs"></textarea>
+                        </div>
+
+                        <button type="submit" class="w-full py-3 bg-dream-rose hover:bg-rose-600 text-white font-bold text-xs rounded-xl shadow-lg shadow-rose-900/30 transition">
+                            Save Night Log
+                        </button>
+                    </form>
+                </div>
+
+                <!-- History Log & Progress Charts -->
+                <div class="glass-card rounded-2xl p-6 lg:col-span-2 border-t-4 border-t-dream-purple flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <div>
+                                <h2 class="text-lg font-bold text-white">Logged History & Consistency</h2>
+                                <p class="text-xs text-gray-400">Review your past logs stored locally</p>
+                            </div>
+                            <button onclick="exportJournalData()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-lg border border-gray-700">
+                                <i class="fa-solid fa-download mr-1"></i> Export Data
+                            </button>
+                        </div>
+
+                        <!-- Logs Table / Cards -->
+                        <div class="space-y-3 overflow-y-auto max-h-96 pr-1" id="journalLogsContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <div id="emptyLogsNotice" class="hidden text-center py-8 text-gray-500">
+                        No sleep entries logged yet. Answer the questions on the left to start tracking!
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+    </main>
+
+    <script>
+        // APP STATE (Stored in LocalStorage)
+        let appState = {
+            targetBedtime: "22:30",
+            warmShift: false,
+            tasks: [
+                { id: 1, name: "Math Homework", duration: 40, type: "Study" },
+                { id: 2, name: "Eat Dinner & Clean Up", duration: 30, type: "Dinner" },
+                { id: 3, name: "Pack Backpack for School", duration: 15, type: "Chore" },
+                { id: 4, name: "Wind-down & Reading", duration: 25, type: "WindDown" }
+            ],
+            logs: [],
+            factIndex: 0
+        };
+
+        // TEEN SLEEP FACTS LIST (Simple, relatable facts for 14-15 year olds)
+        const TEEN_SLEEP_FACTS = [
+            {
+                title: "Blue Light Tricks Your Brain",
+                content: "Scrolling on your phone or gaming in the dark tricks your brain into thinking it's still 12:00 PM noon! Turning on Warm Night Shift or putting screens away 1 hour before bed boosts your natural sleep hormone (melatonin) so you fall asleep 2x faster."
+            },
+            {
+                title: "Boosts Gaming & Sports Reaction Time",
+                content: "Getting 8.5 to 9 hours of sleep speeds up your visual reaction time by up to 20%. That means sharper reflexes in sports like basketball or gaming titles like Fortnite and Valorant!"
+            },
+            {
+                title: "Memory Consolidation for Exams",
+                content: "During deep REM sleep, your brain literally cleans house and glues new memories together. Pulling all-nighters actually damages test performance because your brain didn't get time to save the information!"
+            },
+            {
+                title: "Beware of 'Social Jetlag'",
+                content: "Going to bed at 10 PM on school nights but 3 AM on weekends causes 'Social Jetlag'. It feels like flying across 5 time zones every Monday morning! Keeping bedtimes within 1 hour of each other keeps you energized."
+            },
+            {
+                title: "Growth Spurt Power Hour",
+                content: "Human Growth Hormone (HGH) is released in massive bursts during deep sleep. If you're looking to grow taller, build muscle, or recover from workouts, deep sleep is where the magic happens."
+            }
+        ];
+
+        // On Page Load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSavedState();
+            setupTabNavigation();
+            rotateSleepFact(false);
+            calculateSleepDuration();
+            renderPlannerTasks();
+            renderJournalLogs();
+            calculateTargetPercentage();
+            initSoundwaveCanvas();
+        });
+
+        function loadSavedState() {
+            try {
+                const saved = localStorage.getItem('slumberpulse_state');
+                if (saved) {
+                    appState = { ...appState, ...JSON.parse(saved) };
+                }
+            } catch (e) {
+                console.warn('Could not load local storage', e);
+            }
+
+            // Populate UI inputs from state
+            if (document.getElementById('targetBedtimeInput')) {
+                document.getElementById('targetBedtimeInput').value = appState.targetBedtime;
+            }
+            if (appState.warmShift) {
+                toggleWarmFilter(true);
+            }
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem('slumberpulse_state', JSON.stringify(appState));
+            } catch (e) {
+                console.warn('Could not save to local storage', e);
+            }
+        }
+
+        function toggleWarmFilter(forceState) {
+            const filterDiv = document.getElementById('warmFilter');
+            const icon = document.getElementById('warmToggleIcon');
+            const label = document.getElementById('warmToggleLabel');
+            
+            if (typeof forceState === 'boolean') {
+                appState.warmShift = forceState;
+            } else {
+                appState.warmShift = !appState.warmShift;
+            }
+
+            if (appState.warmShift) {
+                filterDiv.classList.add('active');
+                icon.className = 'fa-solid fa-moon text-amber-400';
+                label.innerText = 'Warm Shift: ON';
+            } else {
+                filterDiv.classList.remove('active');
+                icon.className = 'fa-solid fa-lightbulb text-gray-300';
+                label.innerText = 'Warm Shift: OFF';
+            }
+            saveState();
+        }
+
+        function setupTabNavigation() {
+            // Default active tab setup
+            switchTab('tab-dashboard');
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            const target = document.getElementById(tabId);
+            if (target) target.classList.remove('hidden');
+
+            // Style tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn flex-1 min-w-[120px] flex items-center justify-center space-x-2 py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 text-gray-400 hover:text-white hover:bg-gray-800/50";
+            });
+
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if (activeBtn) {
+                activeBtn.className = "tab-btn flex-1 min-w-[120px] flex items-center justify-center space-x-2 py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 bg-dream-purple text-white shadow-lg shadow-dream-purple/20";
+            }
+        }
+
+        function saveTargetBedtime() {
+            const input = document.getElementById('targetBedtimeInput').value;
+            if (input) {
+                appState.targetBedtime = input;
+                saveState();
+                calculateTargetPercentage();
+                showToast("Target bedtime saved to " + input + "!");
+            }
+        }
+
+        function rotateSleepFact(manualClick) {
+            if (manualClick) {
+                appState.factIndex = (appState.factIndex + 1) % TEEN_SLEEP_FACTS.length;
+            } else {
+                // Change every 3 hours based on current time block
+                const currentHourBlock = Math.floor(Date.now() / (1000 * 60 * 60 * 3));
+                appState.factIndex = currentHourBlock % TEEN_SLEEP_FACTS.length;
+            }
+
+            const fact = TEEN_SLEEP_FACTS[appState.factIndex];
+            document.getElementById('factTitle').innerText = fact.title;
+            document.getElementById('factContent').innerText = fact.content;
+            saveState();
+        }
+
+        function calculateSleepDuration() {
+            const bedVal = document.getElementById('calcBedtime').value;
+            const wakeVal = document.getElementById('calcWakeTime').value;
+
+            if (!bedVal || !wakeVal) return;
+
+            const [bedH, bedM] = bedVal.split(':').map(Number);
+            const [wakeH, wakeM] = wakeVal.split(':').map(Number);
+
+            let bedMinutes = bedH * 60 + bedM;
+            let wakeMinutes = wakeH * 60 + wakeM;
+
+            // Handle overnight crossing
+            if (wakeMinutes <= bedMinutes) {
+                wakeMinutes += 24 * 60;
+            }
+
+            const diffMins = wakeMinutes - bedMinutes;
+            const hours = Math.floor(diffMins / 60);
+            const mins = diffMins % 60;
+
+            const durationText = `${hours} hours ${mins > 0 ? mins + ' mins' : ''}`;
+            document.getElementById('calcDurationText').innerText = durationText;
+
+            // Feedback badge based on teen sleep recommendations (8.5 - 9.5 hours)
+            const totalHours = diffMins / 60;
+            const badge = document.getElementById('calcFeedbackBadge');
+
+            if (totalHours >= 8.5 && totalHours <= 10) {
+                badge.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+                badge.innerHTML = `<i class="fa-solid fa-check-circle mr-1"></i> Perfect Teen Sleep Duration!`;
+            } else if (totalHours >= 7 && totalHours < 8.5) {
+                badge.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30";
+                badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> A bit light (Aim for 8.5h+)`;
+            } else if (totalHours < 7) {
+                badge.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30";
+                badge.innerHTML = `<i class="fa-solid fa-circle-xmark mr-1"></i> Too short for growing teens`;
+            } else {
+                badge.className = "px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30";
+                badge.innerHTML = `<i class="fa-solid fa-moon mr-1"></i> Long recovery sleep`;
+            }
+        }
+
+        function addTaskToPlanner() {
+            const nameInput = document.getElementById('newTaskName');
+            const durInput = document.getElementById('newTaskDuration');
+            const typeInput = document.getElementById('newTaskType');
+
+            const name = nameInput.value.trim();
+            const duration = parseInt(durInput.value) || 30;
+            const type = typeInput.value;
+
+            if (!name) {
+                showToast("Please enter a task name!");
+                return;
+            }
+
+            const newTask = {
+                id: Date.now(),
+                name,
+                duration,
+                type
+            };
+
+            appState.tasks.push(newTask);
+            saveState();
+
+            nameInput.value = '';
+            durInput.value = '';
+
+            renderPlannerTasks();
+            showToast("Task added to planner");
+        }
+
+        function removePlannerTask(id) {
+            appState.tasks = appState.tasks.filter(t => t.id !== id);
+            saveState();
+            renderPlannerTasks();
+        }
+
+        function clearPlannerTasks() {
+            appState.tasks = [];
+            saveState();
+            renderPlannerTasks();
+        }
+
+        function renderPlannerTasks() {
+            const list = document.getElementById('plannerTaskList');
+            const countLabel = document.getElementById('taskCountLabel');
+            countLabel.innerText = appState.tasks.length;
+
+            if (appState.tasks.length === 0) {
+                list.innerHTML = `<li class="text-xs text-gray-500 text-center py-4">No tasks added yet.</li>`;
+                document.getElementById('totalTaskHoursLabel').innerText = "0h total";
+                return;
+            }
+
+            let totalMins = 0;
+            list.innerHTML = appState.tasks.map(t => {
+                totalMins += t.duration;
+                let badgeColor = "bg-purple-900/40 text-purple-300 border-purple-800";
+                if (t.type === "Study") badgeColor = "bg-blue-900/40 text-blue-300 border-blue-800";
+                if (t.type === "Dinner") badgeColor = "bg-amber-900/40 text-amber-300 border-amber-800";
+                if (t.type === "WindDown") badgeColor = "bg-teal-900/40 text-teal-300 border-teal-800";
+
+                return `
+                    <li class="p-2.5 rounded-xl bg-gray-900/80 border border-gray-800 flex items-center justify-between text-xs">
+                        <div class="flex items-center space-x-2">
+                            <span class="px-2 py-0.5 rounded text-[10px] border ${badgeColor}">${t.type}</span>
+                            <span class="font-medium text-gray-200">${escapeHtml(t.name)}</span>
+                        </div>
+                        <div class="flex items-center space-x-3 text-gray-400">
+                            <span>${t.duration}m</span>
+                            <button onclick="removePlannerTask(${t.id})" class="text-rose-400 hover:text-rose-300">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </li>
+                `;
+            }).join('');
+
+            const hrs = (totalMins / 60).toFixed(1);
+            document.getElementById('totalTaskHoursLabel').innerText = `${hrs} hours required`;
+        }
+
+        async function generateAISchedule() {
+            const homeTime = document.getElementById('planHomeTime').value;
+            const bedTime = document.getElementById('planBedtime').value;
+            const outputDiv = document.getElementById('scheduleOutput');
+            const genBtn = document.getElementById('generateScheduleBtn');
+
+            if (appState.tasks.length === 0) {
+                showToast("Add at least one task first!");
+                return;
+            }
+
+            genBtn.disabled = true;
+            genBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Generating Plan...`;
+
+            // System prompt & user query for Gemini API call
+            const systemPrompt = "You are an expert teen habit and sleep scheduling coach. Create a realistic, time-blocked evening schedule starting from home arrival time up to target bedtime. Return structured HTML with time blocks, estimated durations, wind-down break, and tips.";
+            
+            const taskStr = appState.tasks.map(t => `${t.name} (${t.duration} mins, category: ${t.type})`).join(", ");
+            const userQuery = `I get home at ${homeTime} and want to be asleep by ${bedTime}. My tasks to accomplish tonight are: ${taskStr}. Please organize them efficiently with 10-minute breaks between high-focus study tasks and a mandatory 20-minute blue-light-free wind-down routine right before bedtime. Format the output nicely in HTML with clean styling.`;
+
+            let generatedHtml = "";
+
+            try {
+                // Gemini API fetch call
+                const apiKey = ""; // Canvas runtime populates
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: userQuery }] }],
+                        systemInstruction: { parts: [{ text: systemPrompt }] }
+                    })
+                });
+
+                const data = await response.json();
+                const aiText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (aiText) {
+                    generatedHtml = `
+                        <div class="prose prose-invert max-w-none text-xs sm:text-sm text-gray-300 leading-relaxed bg-gray-900/60 p-4 rounded-xl border border-gray-800">
+                            ${aiText.replace(/```html|```/g, '')}
+                        </div>
+                    `;
+                } else {
+                    throw new Error("No output from API");
+                }
+            } catch (err) {
+                console.warn("AI generation fallback to deterministic algorithm", err);
+                // Fallback deterministic local generator
+                generatedHtml = generateLocalFallbackSchedule(homeTime, bedTime);
+            }
+
+            outputDiv.innerHTML = generatedHtml;
+            genBtn.disabled = false;
+            genBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> <span>Regenerate Schedule</span>`;
+            showToast("Evening Schedule Ready!");
+        }
+
+        // Local Fallback Schedule Builder
+        function generateLocalFallbackSchedule(homeTime, bedTime) {
+            let [hH, hM] = homeTime.split(':').map(Number);
+            let currentMins = hH * 60 + hM;
+
+            let html = `<div class="space-y-3">`;
+
+            // Sort tasks: Dinner first, then Study, Chores, Relax, WindDown
+            const sortedTasks = [...appState.tasks].sort((a,b) => {
+                const priority = { "Dinner": 1, "Study": 2, "Chore": 3, "Relax": 4, "WindDown": 5 };
+                return (priority[a.type] || 3) - (priority[b.type] || 3);
+            });
+
+            sortedTasks.forEach((t, i) => {
+                const startStr = formatMinutesToTime(currentMins);
+                currentMins += t.duration;
+                const endStr = formatMinutesToTime(currentMins);
+
+                html += `
+                    <div class="p-3.5 rounded-xl bg-gray-900/90 border border-gray-800 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <span class="px-2.5 py-1 rounded-lg bg-indigo-950 text-indigo-300 border border-indigo-800 text-xs font-bold">${startStr} - ${endStr}</span>
+                            <div>
+                                <div class="text-sm font-semibold text-white">${escapeHtml(t.name)}</div>
+                                <div class="text-xs text-gray-400">${t.type} • ${t.duration} minutes</div>
+                            </div>
+                        </div>
+                        <input type="checkbox" class="w-5 h-5 rounded border-gray-700 text-dream-purple focus:ring-0 accent-dream-purple">
+                    </div>
+                `;
+
+                // Add 10-minute break if another task follows
+                if (i < sortedTasks.length - 1 && t.type === "Study") {
+                    const breakStart = formatMinutesToTime(currentMins);
+                    currentMins += 10;
+                    const breakEnd = formatMinutesToTime(currentMins);
+                    html += `
+                        <div class="p-2.5 rounded-xl bg-teal-950/30 border border-teal-900/40 text-teal-300 text-xs flex items-center space-x-2">
+                            <i class="fa-solid fa-mug-hot"></i>
+                            <span>${breakStart} - ${breakEnd}: 10-min Brain & Hydration Break</span>
+                        </div>
+                    `;
+                }
+            });
+
+            // Add final Wind-Down
+            const windStart = formatMinutesToTime(currentMins);
+            const windEnd = bedTime;
+            html += `
+                <div class="p-3.5 rounded-xl bg-gradient-to-r from-purple-950/80 to-indigo-950/80 border border-purple-800/50 flex items-center justify-between text-xs">
+                    <div class="flex items-center space-x-3">
+                        <span class="px-2.5 py-1 rounded-lg bg-purple-900/60 text-purple-200 border border-purple-700 font-bold">${windStart} - ${windEnd}</span>
+                        <div>
+                            <div class="text-sm font-bold text-purple-200">Screen-Free Wind-Down Routine</div>
+                            <div class="text-xs text-purple-300/80">Dim lights, listen to sleep sounds, stretch & relax</div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-moon text-purple-300 text-lg"></i>
+                </div>
+            </div>`;
+
+            return html;
+        }
+
+        function formatMinutesToTime(mins) {
+            let h = Math.floor(mins / 60) % 24;
+            let m = mins % 60;
+            let ampm = h >= 12 ? 'PM' : 'AM';
+            let displayH = h % 12 || 12;
+            let displayM = m < 10 ? '0' + m : m;
+            return `${displayH}:${displayM} ${ampm}`;
+        }
+
+        function printOrSaveSchedule() {
+            const output = document.getElementById('scheduleOutput').innerText;
+            if (!output || output.includes("No schedule generated")) {
+                showToast("Generate a schedule first!");
+                return;
+            }
+            document.execCommand('copy');
+            showToast("Schedule copied to clipboard!");
+        }
+
+        let audioCtx = null;
+        let activeNodes = { rain: null, waves: null, synth: null };
+        let volumeNodes = { rain: null, waves: null, synth: null };
+
+        function initAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function toggleSound(type) {
+            initAudioContext();
+            const btn = document.getElementById(`btn-sound-${type}`);
+
+            if (activeNodes[type]) {
+                // Stop sound
+                try {
+                    activeNodes[type].stop ? activeNodes[type].stop() : activeNodes[type].disconnect();
+                } catch(e){}
+                activeNodes[type] = null;
+                btn.className = "w-10 h-10 rounded-lg bg-gray-800 text-gray-400 hover:bg-gray-700 transition flex items-center justify-center";
+                showToast(`${type.toUpperCase()} ambient paused`);
+            } else {
+                // Start synth sound
+                const volVal = parseFloat(document.getElementById(`vol-${type}`).value);
+                const gainNode = audioCtx.createGain();
+                gainNode.gain.value = volVal;
+                gainNode.connect(audioCtx.destination);
+                volumeNodes[type] = gainNode;
+
+                if (type === 'rain') {
+                    // White noise buffer for rain simulation
+                    const bufferSize = audioCtx.sampleRate * 2;
+                    const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                    const output = noiseBuffer.getChannelData(0);
+                    for (let i = 0; i < bufferSize; i++) {
+                        output[i] = Math.random() * 2 - 1;
+                    }
+                    const whiteNoise = audioCtx.createBufferSource();
+                    whiteNoise.buffer = noiseBuffer;
+                    whiteNoise.loop = true;
+
+                    // Filter to create gentle rain sound
+                    const filter = audioCtx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.value = 800;
+
+                    whiteNoise.connect(filter);
+                    filter.connect(gainNode);
+                    whiteNoise.start();
+                    activeNodes.rain = whiteNoise;
+                } else if (type === 'waves') {
+                    // Pink noise generator for ocean waves
+                    const bufferSize = audioCtx.sampleRate * 3;
+                    const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                    const output = noiseBuffer.getChannelData(0);
+                    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+                    for (let i = 0; i < bufferSize; i++) {
+                        let white = Math.random() * 2 - 1;
+                        b0 = 0.99886 * b0 + white * 0.0555179;
+                        b1 = 0.99332 * b1 + white * 0.0750759;
+                        b2 = 0.96900 * b2 + white * 0.1538520;
+                        b3 = 0.86650 * b3 + white * 0.3104856;
+                        b4 = 0.55000 * b4 + white * 0.5329522;
+                        b5 = -0.7616 * b5 - white * 0.0168980;
+                        output[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+                        output[i] *= 0.11;
+                        b6 = white * 0.115926;
+                    }
+                    const pinkSource = audioCtx.createBufferSource();
+                    pinkSource.buffer = noiseBuffer;
+                    pinkSource.loop = true;
+
+                    const lfo = audioCtx.createOscillator();
+                    lfo.frequency.value = 0.12; // Slow wave swelling rhythm
+                    const lfoGain = audioCtx.createGain();
+                    lfoGain.gain.value = 0.3;
+
+                    lfo.connect(gainNode.gain);
+                    pinkSource.connect(gainNode);
+                    pinkSource.start();
+                    lfo.start();
+                    activeNodes.waves = pinkSource;
+                } else if (type === 'synth') {
+                    // 432Hz deep sleep drone pad
+                    const osc1 = audioCtx.createOscillator();
+                    const osc2 = audioCtx.createOscillator();
+                    osc1.type = 'sine';
+                    osc2.type = 'sine';
+                    osc1.frequency.value = 108; // Sub octave of 432Hz
+                    osc2.frequency.value = 108.5; // Subtle binaural beat diff
+
+                    osc1.connect(gainNode);
+                    osc2.connect(gainNode);
+                    osc1.start();
+                    osc2.start();
+                    activeNodes.synth = osc1;
+                }
+
+                btn.className = "w-10 h-10 rounded-lg bg-amber-500 text-white shadow-lg shadow-amber-900/30 transition flex items-center justify-center";
+                showToast(`${type.toUpperCase()} ambient playing`);
+            }
+        }
+
+        function updateVolume(type) {
+            if (volumeNodes[type] && audioCtx) {
+                const val = parseFloat(document.getElementById(`vol-${type}`).value);
+                volumeNodes[type].gain.setValueAtTime(val, audioCtx.currentTime);
+            }
+        }
+
+        function loadYouTubeVideo() {
+            const urlInput = document.getElementById('ytUrlInput').value.trim();
+            if (!urlInput) {
+                showToast("Please enter a YouTube link or ID!");
+                return;
+            }
+
+            let videoId = urlInput;
+            if (urlInput.includes('v=')) {
+                videoId = urlInput.split('v=')[1].split('&')[0];
+            } else if (urlInput.includes('youtu.be/')) {
+                videoId = urlInput.split('youtu.be/')[1].split('?')[0];
+            }
+
+            setPresetYT(videoId, "Custom Imported Sleep Music");
+        }
+
+        function setPresetYT(videoId, title) {
+            const container = document.getElementById('ytPlayerContainer');
+            const iframe = document.getElementById('ytIframe');
+            const label = document.getElementById('activeSoundLabel');
+
+            iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&enablejsapi=1`;
+            container.classList.remove('hidden');
+            label.innerText = `Playing: ${title}`;
+            showToast(`Loaded "${title}"`);
+        }
+
+        function initSoundwaveCanvas() {
+            const canvas = document.getElementById('soundwaveCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            function resize() {
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+
+            let step = 0;
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                const width = canvas.width;
+                const height = canvas.height;
+                const centerY = height / 2;
+
+                step += 0.03;
+
+                // Draw multiple layered sine waves
+                for (let i = 0; i < 4; i++) {
+                    ctx.beginPath();
+                    ctx.lineWidth = 2 + i;
+                    
+                    let opacity = (0.6 - i * 0.12).toFixed(2);
+                    if (i === 0) ctx.strokeStyle = `rgba(245, 158, 11, ${opacity})`; // Amber
+                    else if (i === 1) ctx.strokeStyle = `rgba(139, 92, 246, ${opacity})`; // Purple
+                    else if (i === 2) ctx.strokeStyle = `rgba(99, 102, 241, ${opacity})`; // Indigo
+                    else ctx.strokeStyle = `rgba(20, 184, 166, ${opacity})`; // Teal
+
+                    for (let x = 0; x < width; x += 5) {
+                        const freq = 0.008 + i * 0.003;
+                        const amp = 25 + i * 12;
+                        const y = centerY + Math.sin(x * freq + step + i * 1.5) * amp * Math.cos(step * 0.5);
+                        if (x === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
+                }
+
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        function selectQuality(rating) {
+            document.getElementById('journalQuality').value = rating;
+            const buttons = document.querySelectorAll('#qualityRatingButtons button');
+            buttons.forEach((btn, index) => {
+                if (index + 1 === rating) {
+                    btn.className = "quality-btn p-2 rounded-xl bg-dream-rose/30 border-2 border-dream-rose text-center transition text-xs";
+                } else {
+                    btn.className = "quality-btn p-2 rounded-xl bg-gray-800/80 border border-gray-700 text-center hover:border-dream-rose transition text-xs";
+                }
+            });
+        }
+
+        function saveJournalEntry(e) {
+            e.preventDefault();
+
+            const bedtime = document.getElementById('journalBedtime').value;
+            const quality = parseInt(document.getElementById('journalQuality').value) || 4;
+            const tasksDone = document.querySelector('input[name="tasksDone"]:checked').value === 'yes';
+            const goalHit = document.querySelector('input[name="goalHit"]:checked').value === 'yes';
+            const notes = document.getElementById('journalNotes').value.trim();
+
+            const newEntry = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                bedtime,
+                quality,
+                tasksDone,
+                goalHit,
+                notes
+            };
+
+            appState.logs.unshift(newEntry);
+            saveState();
+
+            document.getElementById('journalNotes').value = '';
+            renderJournalLogs();
+            calculateTargetPercentage();
+            showToast("Nightly Journal Log Saved!");
+        }
+
+        function renderJournalLogs() {
+            const container = document.getElementById('journalLogsContainer');
+            const notice = document.getElementById('emptyLogsNotice');
+
+            if (appState.logs.length === 0) {
+                container.innerHTML = '';
+                notice.classList.remove('hidden');
+                return;
+            }
+            notice.classList.add('hidden');
+
+            const qualityMap = { 1: "😫 Poor", 2: "🥱 Fair", 3: "😐 Okay", 4: "😊 Good", 5: "😴 Great" };
+
+            container.innerHTML = appState.logs.map(log => {
+                return `
+                    <div class="p-4 rounded-xl bg-gray-900/80 border border-gray-800 flex flex-col justify-between space-y-2">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <span class="font-bold text-sm text-gray-200">${log.date}</span>
+                                <span class="text-xs px-2 py-0.5 rounded-full bg-purple-950 text-purple-300 border border-purple-800">Bedtime: ${log.bedtime}</span>
+                            </div>
+                            <button onclick="deleteJournalLog(${log.id})" class="text-xs text-rose-400 hover:underline">Delete</button>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2 text-xs">
+                            <div class="bg-gray-800/60 p-2 rounded-lg text-center">
+                                <div class="text-[10px] text-gray-400">Quality</div>
+                                <div class="font-bold text-white mt-0.5">${qualityMap[log.quality] || "Okay"}</div>
+                            </div>
+                            <div class="bg-gray-800/60 p-2 rounded-lg text-center">
+                                <div class="text-[10px] text-gray-400">Tasks Done</div>
+                                <div class="font-bold ${log.tasksDone ? 'text-emerald-400' : 'text-rose-400'} mt-0.5">${log.tasksDone ? 'Yes ✅' : 'No ❌'}</div>
+                            </div>
+                            <div class="bg-gray-800/60 p-2 rounded-lg text-center">
+                                <div class="text-[10px] text-gray-400">Target Goal</div>
+                                <div class="font-bold ${log.goalHit ? 'text-purple-400' : 'text-amber-400'} mt-0.5">${log.goalHit ? 'Met 🎯' : 'Late ⏰'}</div>
+                            </div>
+                        </div>
+
+                        ${log.notes ? `<p class="text-xs text-gray-400 italic bg-black/30 p-2 rounded-lg border border-gray-800">"${escapeHtml(log.notes)}"</p>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function deleteJournalLog(id) {
+            appState.logs = appState.logs.filter(l => l.id !== id);
+            saveState();
+            renderJournalLogs();
+            calculateTargetPercentage();
+            showToast("Log entry deleted");
+        }
+
+        function calculateTargetPercentage() {
+            if (appState.logs.length === 0) {
+                document.getElementById('targetPercentageText').innerText = "0%";
+                document.getElementById('targetCircleProgress').setAttribute('stroke-dasharray', `0, 100`);
+                return;
+            }
+
+            const hitCount = appState.logs.filter(l => l.goalHit).length;
+            const percentage = Math.round((hitCount / appState.logs.length) * 100);
+
+            document.getElementById('targetPercentageText').innerText = `${percentage}%`;
+            document.getElementById('targetCircleProgress').setAttribute('stroke-dasharray', `${percentage}, 100`);
+            document.getElementById('targetStreakLabel').innerText = `${hitCount} of ${appState.logs.length} nights on target`;
+        }
+
+        function exportJournalData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+            const dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", "SlumberPulse_SleepData.json");
+            dlAnchorElem.click();
+            showToast("Data exported successfully!");
+        }
+
+        function showToast(message) {
+            const existing = document.getElementById('customToast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.id = 'customToast';
+            toast.className = 'fixed bottom-5 right-5 z-50 bg-dream-purple text-white px-4 py-2.5 rounded-xl shadow-xl text-xs font-semibold flex items-center space-x-2 border border-purple-400/30 transition-all duration-300 transform translate-y-2 opacity-0';
+            toast.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>${escapeHtml(message)}</span>`;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>

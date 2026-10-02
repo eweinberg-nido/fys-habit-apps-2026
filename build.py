@@ -34,7 +34,7 @@ TOPICS = [
     ("screen-time", "Screen Time & Doomscrolling", ["screen", "doom", "scroll", "phone"]),
     ("focus", "Focus & Distraction", ["focus", "distract", "concentrat"]),
     ("studying", "Studying & Homework", ["study", "homework"]),
-    ("time-management", "Time Management & Organization", ["time man", "organiz", "organis", "organize", "planner"]),
+    ("time-management", "Time Management & Organization", ["time man", "organiz", "organis", "organz", "organize", "planner"]),
     ("sleep", "Sleep", ["sleep"]),
     ("food", "Healthy Eating", ["food", "eating", "nutrition"]),
 ]
